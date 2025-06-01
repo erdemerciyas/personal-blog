@@ -113,8 +113,8 @@ EMAIL_PASS=your_email_password
 Proje hakkında sorularınız için:
 
 - **Email**: erdem.erciyas@gmail.com
-- **Website**: [Erciyas Engineering](https://www.erdemerciyas.com.tr)
-- **GitHub**: [@erdemdev](https://github.com/erdemerciyas)
+- **Website**: [Erdem Erciyas](https://www.erdemerciyas.com.tr)
+- **GitHub**: [@erdemerciyas](https://github.com/erdemerciyas)
 
 ## 📄 Lisans
 
@@ -125,7 +125,7 @@ Bu proje MIT lisansı altında lisanslanmıştır. Detaylar için `LICENSE` dosy
 **Erdem Erciyas**
 - Full Stack Developer
 - Mühendislik ve Teknoloji Uzmanı
-- Erciyas Engineering Kurucusu
+
 
 ---
 
