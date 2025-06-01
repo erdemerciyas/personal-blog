@@ -139,4 +139,4 @@ Bu proje MIT lisansı altında lisanslanmıştır. Detaylar için `LICENSE` dosy
 
 ---
 
-*Bu proje sürekli geliştirilmekte ve güncellemektedir. Katkılarınız her zaman değerlidir!* ⭐ 
+*Bu proje sürekli geliştirilmekte ve güncellemektedir. Katkılarınız her zaman değerlidir!* ⭐
