@@ -1,0 +1,55 @@
+{
+  "name": "personal-blog",
+  "version": "0.1.0",
+  "private": true,
+  "author": {
+    "name": "Erdem Erciyas",
+    "email": "erdem@erciyasengineering.com",
+    "url": "https://www.erciyasengineering.com"
+  },
+  "description": "Modern kişisel blog ve portfolio sitesi - Next.js ile geliştirilmiştir",
+  "keywords": ["nextjs", "react", "typescript", "portfolio", "blog", "engineering"],
+  "homepage": "https://www.erciyasengineering.com",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/erdemdev/personal-blog"
+  },
+  "license": "MIT",
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "lint": "next lint"
+  },
+  "dependencies": {
+    "@heroicons/react": "^2.2.0",
+    "@types/bcryptjs": "^2.4.6",
+    "@types/multer": "^1.4.12",
+    "@types/react": "^18.2.45",
+    "@types/react-dom": "^18.2.18",
+    "autoprefixer": "^10.4.16",
+    "bcryptjs": "^3.0.2",
+    "cloudinary": "^2.6.1",
+    "dotenv": "^16.5.0",
+    "eslint": "^8.56.0",
+    "eslint-config-next": "^14.0.4",
+    "jsonwebtoken": "^9.0.2",
+    "mongodb": "^6.16.0",
+    "mongoose": "^8.15.1",
+    "multer": "^2.0.0",
+    "next": "^14.0.4",
+    "next-auth": "^4.24.11",
+    "nodemailer": "^7.0.3",
+    "openai": "^5.0.1",
+    "postcss": "^8.4.32",
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0",
+    "tailwindcss": "^3.4.0"
+  },
+  "devDependencies": {
+    "@types/node": "^22.15.24",
+    "@types/nodemailer": "^6.4.17",
+    "ts-node": "^10.9.2",
+    "typescript": "^5.8.3"
+  }
+}
