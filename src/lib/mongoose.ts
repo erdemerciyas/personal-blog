@@ -13,7 +13,7 @@ declare global {
 }
 
 // Fallback to hard-coded URI if environment variable is not available
-const MONGODB_URI = process.env.MONGODB_URI || 'mongodb+srv://erdemerciyasreverse:oI9OMHyFwhIdh54O@erdemerciyas.1xlwobu.mongodb.net/?retryWrites=true&w=majority&appName=erdemerciyas';
+const MONGODB_URI = process.env.MONGODB_URI || '';
 
 if (!MONGODB_URI) {
   throw new Error('Please define the MONGODB_URI environment variable');
