@@ -4,6 +4,39 @@ import connectDB from './mongoose';
 import User from '@/models/User';
 import bcrypt from 'bcryptjs';
 
+// Security validation function - internal use
+async function validateSecurityAnswer(answer: string, hash: string): Promise<boolean> {
+  try {
+    if (!answer || !hash) return false;
+
+    // Hash'i çöz
+    let questionData: any;
+    try {
+      const decodedData = Buffer.from(hash, 'base64').toString('utf-8');
+      questionData = JSON.parse(decodedData);
+    } catch (error) {
+      return false;
+    }
+
+    // Zaman aşımı kontrolü (5 dakika)
+    const now = Date.now();
+    if (now - questionData.timestamp > 5 * 60 * 1000) {
+      return false;
+    }
+
+    // Cevabı kontrol et
+    const userAnswer = answer.toString().toLowerCase().trim();
+    const correctAnswer = questionData.answer.toLowerCase().trim();
+    const alternatives = questionData.alternatives || [];
+
+    return userAnswer === correctAnswer || 
+           alternatives.some((alt: string) => alt.toLowerCase() === userAnswer);
+  } catch (error) {
+    console.error('Security validation error:', error);
+    return false;
+  }
+}
+
 export const authOptions: NextAuthOptions = {
   providers: [
     CredentialsProvider({
@@ -19,34 +52,18 @@ export const authOptions: NextAuthOptions = {
           throw new Error('Email ve şifre gerekli');
         }
 
-        // Security question kontrolü
+        // Security question kontrolü - internal validation
         if (!credentials?.securityHash || !credentials?.securityAnswer) {
           throw new Error('Güvenlik sorusu doğrulaması gerekli');
         }
 
-        // Server-side security question doğrulaması
-        try {
-          const securityResponse = await fetch(`${process.env.NEXTAUTH_URL}/api/auth/verify-captcha`, {
-            method: 'POST',
-            headers: {
-              'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({ 
-              answer: credentials.securityAnswer,
-              hash: credentials.securityHash 
-            }),
-          });
+        // Internal security validation - no external fetch
+        const isSecurityValid = await validateSecurityAnswer(
+          credentials.securityAnswer,
+          credentials.securityHash
+        );
 
-          if (!securityResponse.ok) {
-            const errorData = await securityResponse.json();
-            console.error('Güvenlik doğrulama hatası:', errorData);
-            throw new Error('Güvenlik doğrulaması başarısız');
-          }
-
-          const securityResult = await securityResponse.json();
-          console.log('Güvenlik doğrulama başarılı:', securityResult);
-        } catch (error) {
-          console.error('Güvenlik doğrulama sırasında hata:', error);
+        if (!isSecurityValid) {
           throw new Error('Güvenlik doğrulaması başarısız');
         }
 
