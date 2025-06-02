@@ -166,55 +166,9 @@ export async function POST(request: Request) {
   }
 }
 
-// OpenAI DALL-E 3 generation
+// OpenAI DALL-E 3 generation - DISABLED for deployment
 async function generateWithOpenAI(prompt: string, count: number) {
-  try {
-    const openaiKey = process.env.OPENAI_API_KEY;
-    
-    if (!openaiKey || openaiKey === 'your_openai_api_key_here') {
-      console.log('⚠️ No OpenAI API key found');
-      return null;
-    }
-
-    console.log('🎨 Generating images with OpenAI DALL-E 3 for:', prompt);
-
-    const openaiResponse = await fetch('https://api.openai.com/v1/images/generations', {
-      method: 'POST',
-      headers: {
-        'Authorization': `Bearer ${openaiKey}`,
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
-        model: "dall-e-3",
-        prompt: `Professional high-quality slider image for website: ${prompt}. Style: modern, clean, corporate, high-resolution, 16:9 aspect ratio`,
-        n: Math.min(count, 1), // DALL-E 3 supports only 1 image per request
-        size: "1792x1024", // 16:9 aspect ratio
-        quality: "hd",
-        style: "natural"
-      })
-    });
-
-    if (openaiResponse.ok) {
-      const openaiData = await openaiResponse.json();
-      if (openaiData.data && openaiData.data.length > 0) {
-        console.log('✅ Generated', openaiData.data.length, 'images with DALL-E 3');
-        return openaiData.data.map((image: any, index: number) => ({
-          id: `dalle3-${Date.now()}-${index}`,
-          url: image.url,
-          thumb: image.url,
-          description: `${prompt} - AI Generated with DALL-E 3`,
-          photographer: 'OpenAI DALL-E 3',
-          source: 'dalle3',
-          downloadUrl: image.url
-        }));
-      }
-    } else {
-      console.error('❌ OpenAI API error:', openaiResponse.status);
-    }
-  } catch (error) {
-    console.error('❌ OpenAI error:', error);
-  }
-  
+  console.log('⚠️ OpenAI integration disabled for deployment, using fallback images');
   return null;
 }
 
