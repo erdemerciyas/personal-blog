@@ -1,11 +1,23 @@
-import OpenAI from 'openai';
+// Conditional OpenAI import - only import if package is available
+let OpenAI: any = null;
+try {
+  OpenAI = require('openai').default;
+} catch (error) {
+  console.log('OpenAI package not installed, using fallback images only');
+}
 
-// Initialize OpenAI client
-const openai = new OpenAI({
+// Initialize OpenAI client only if API key is available and package is installed
+const openai = (OpenAI && process.env.OPENAI_API_KEY) ? new OpenAI({
   apiKey: process.env.OPENAI_API_KEY,
-});
+}) : null;
 
 export async function generateAIImage(title: string, description?: string): Promise<string> {
+  // If no OpenAI package or API key is provided, use fallback immediately
+  if (!openai || !OpenAI || !process.env.OPENAI_API_KEY) {
+    console.log('OpenAI not available, using fallback image');
+    return generateFallbackImage(title);
+  }
+
   try {
     // Create a detailed prompt based on the service title and description
     let prompt = `Create a professional, modern, high-quality image for a service titled "${title}".`;
