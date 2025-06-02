@@ -18,15 +18,8 @@
   "scripts": {
     "dev": "next dev",
     "build": "next build",
-    "build:light": "next build && rm -rf .next/cache",
-    "build:standalone": "next build && echo 'Build complete. Use npm run start:standalone for cPanel'",
     "start": "next start",
-    "start:standalone": "node .next/standalone/server.js",
-    "start:prod": "node app.js",
-    "start:cpanel": "node app.js",
-    "prod": "node app.js",
-    "lint": "next lint",
-    "memory-test": "node -e \"console.log('Memory limit test:', process.memoryUsage())\""
+    "lint": "next lint"
   },
   "dependencies": {
     "@heroicons/react": "^2.2.0",
