@@ -1,11 +1,11 @@
 {
   "framework": "nextjs",
   "buildCommand": "npm run build",
+  "installCommand": "npm install --legacy-peer-deps",
   "outputDirectory": ".next",
-  "installCommand": "npm install",
   "functions": {
     "src/app/api/**": {
-      "maxDuration": 10
+      "maxDuration": 30
     }
   },
   "headers": [
@@ -26,5 +26,10 @@
         }
       ]
     }
-  ]
+  ],
+  "env": {
+    "MONGODB_URI": "@mongodb_uri",
+    "NEXTAUTH_SECRET": "@nextauth_secret",
+    "NEXTAUTH_URL": "@nextauth_url"
+  }
 } 
