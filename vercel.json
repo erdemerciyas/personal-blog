@@ -26,10 +26,5 @@
         }
       ]
     }
-  ],
-  "env": {
-    "MONGODB_URI": "@mongodb_uri",
-    "NEXTAUTH_SECRET": "@nextauth_secret",
-    "NEXTAUTH_URL": "@nextauth_url"
-  }
+  ]
 } 
