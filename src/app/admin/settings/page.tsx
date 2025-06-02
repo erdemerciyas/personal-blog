@@ -3,7 +3,7 @@ import { useState, useEffect, useRef } from 'react';
 import { useSession, signOut } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
-import { ImageUpload } from '@/components';
+import ImageUpload from '@/components/ImageUpload';
 import {
   UserIcon,
   KeyIcon,
