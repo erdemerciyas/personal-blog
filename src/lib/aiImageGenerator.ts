@@ -1,64 +1,7 @@
-// Conditional OpenAI import - only import if package is available
-let OpenAI: any = null;
-try {
-  OpenAI = require('openai').default;
-} catch (error) {
-  console.log('OpenAI package not installed, using fallback images only');
-}
-
-// Initialize OpenAI client only if API key is available and package is installed
-const openai = (OpenAI && process.env.OPENAI_API_KEY) ? new OpenAI({
-  apiKey: process.env.OPENAI_API_KEY,
-}) : null;
-
+// Simple fallback image generator - no AI dependencies
 export async function generateAIImage(title: string, description?: string): Promise<string> {
-  // If no OpenAI package or API key is provided, use fallback immediately
-  if (!openai || !OpenAI || !process.env.OPENAI_API_KEY) {
-    console.log('OpenAI not available, using fallback image');
-    return generateFallbackImage(title);
-  }
-
-  try {
-    // Create a detailed prompt based on the service title and description
-    let prompt = `Create a professional, modern, high-quality image for a service titled "${title}".`;
-    
-    if (description) {
-      prompt += ` The service is described as: "${description.slice(0, 200)}".`;
-    }
-    
-    // Add style guidelines
-    prompt += ` The image should be:
-    - Professional and business-oriented
-    - Clean and modern design
-    - Suitable for a technology/engineering company website
-    - High contrast and visually appealing
-    - No text or writing in the image
-    - Focus on relevant technology, tools, or concepts
-    - 16:9 aspect ratio
-    - Bright and engaging colors`;
-
-    // Generate image using DALL-E 3
-    const response = await openai.images.generate({
-      model: "dall-e-3",
-      prompt: prompt,
-      n: 1,
-      size: "1024x1024",
-      quality: "standard",
-      style: "natural"
-    });
-
-    // Return the generated image URL
-    if (response.data && response.data[0] && response.data[0].url) {
-      return response.data[0].url;
-    } else {
-      throw new Error('No image URL received from OpenAI');
-    }
-  } catch (error) {
-    console.error('AI image generation failed:', error);
-    
-    // Fallback to a default tech image if AI generation fails
-    return generateFallbackImage(title);
-  }
+  console.log('Using fallback image for:', title);
+  return generateFallbackImage(title);
 }
 
 // Fallback function that returns a relevant tech image from Unsplash
