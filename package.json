@@ -18,8 +18,15 @@
   "scripts": {
     "dev": "next dev",
     "build": "next build",
+    "build:light": "next build && rm -rf .next/cache",
+    "build:standalone": "next build && echo 'Build complete. Use npm run start:standalone for cPanel'",
     "start": "next start",
-    "lint": "next lint"
+    "start:standalone": "node .next/standalone/server.js",
+    "start:prod": "node app.js",
+    "start:cpanel": "node app.js",
+    "prod": "node app.js",
+    "lint": "next lint",
+    "memory-test": "node -e \"console.log('Memory limit test:', process.memoryUsage())\""
   },
   "dependencies": {
     "@heroicons/react": "^2.2.0",
@@ -39,7 +46,7 @@
     "multer": "^2.0.0",
     "next": "^14.0.4",
     "next-auth": "^4.24.11",
-    "nodemailer": "^7.0.3",
+    "nodemailer": "^6.9.8",
     "openai": "^5.0.1",
     "postcss": "^8.4.32",
     "react": "^18.2.0",
@@ -51,5 +58,11 @@
     "@types/nodemailer": "^6.4.17",
     "ts-node": "^10.9.2",
     "typescript": "^5.8.3"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  },
+  "overrides": {
+    "nodemailer": "^6.9.8"
   }
 }

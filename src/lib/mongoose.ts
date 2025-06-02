@@ -12,7 +12,7 @@ declare global {
   };
 }
 
-// Fallback to hard-coded URI if environment variable is not available
+// MongoDB URI with fallback
 const MONGODB_URI = process.env.MONGODB_URI || 'mongodb+srv://erdemerciyasreverse:oI9OMHyFwhIdh54O@erdemerciyas.1xlwobu.mongodb.net/?retryWrites=true&w=majority&appName=erdemerciyas';
 
 if (!MONGODB_URI) {
@@ -32,11 +32,16 @@ async function connectDB() {
   }
 
   if (!cached.promise) {
+    // cPanel hosting için optimize edilmiş ayarlar
     const opts = {
       bufferCommands: false,
-      maxPoolSize: 10, // Maintain up to 10 socket connections
-      serverSelectionTimeoutMS: 5000, // Keep trying to send operations for 5 seconds
-      socketTimeoutMS: 45000, // Close sockets after 45 seconds of inactivity
+      maxPoolSize: 5, // cPanel için düşük - hosting kaynak limitleri
+      serverSelectionTimeoutMS: 5000, // Hızlı timeout
+      socketTimeoutMS: 30000, // 30s socket timeout
+      maxIdleTimeMS: 30000, // 30s idle timeout
+      // Connection maintenance
+      heartbeatFrequencyMS: 10000,
+      maxStalenessSeconds: 90,
     };
 
     cached.promise = mongoose.connect(MONGODB_URI, opts);
@@ -67,7 +72,12 @@ export async function connectToDatabase() {
   }
 
   if (!clientCached.promise) {
-    const options = {};
+    // cPanel için optimize edilmiş client ayarları
+    const options = {
+      maxPoolSize: 5,
+      serverSelectionTimeoutMS: 5000,
+      socketTimeoutMS: 30000,
+    };
     const client = new MongoClient(MONGODB_URI, options);
     clientCached.promise = client.connect();
   }
@@ -82,5 +92,22 @@ export async function connectToDatabase() {
     throw e;
   }
 }
+
+// Connection cleanup for cPanel
+process.on('SIGINT', async () => {
+  try {
+    if (cached.conn) {
+      await cached.conn.disconnect();
+      console.log('MongoDB Mongoose connection closed.');
+    }
+    if (clientCached.client) {
+      await clientCached.client.close();
+      console.log('MongoDB Client connection closed.');
+    }
+  } catch (err) {
+    console.error('Error closing MongoDB connections:', err);
+  }
+  process.exit(0);
+});
 
 export default connectDB; 
