@@ -26,5 +26,11 @@
         }
       ]
     }
+  ],
+  "rewrites": [
+    {
+      "source": "/admin/(.*)",
+      "destination": "/admin/$1"
+    }
   ]
 } 
