@@ -4,7 +4,7 @@ import { useState, useEffect } from 'react';
 import { useSession, signOut } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
-import ImageUpload from '@/components/ImageUpload';
+import ImageUpload from '../../../../../components/ImageUpload';
 import { 
   PlusIcon,
   PencilIcon,
