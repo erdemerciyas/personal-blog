@@ -46,9 +46,7 @@ export async function PUT(request: NextRequest) {
       'colors',
       'socialMedia',
       'seo',
-      'contact',
-      'security',
-      'pageSettings'
+      'contact'
     ];
     
     const filteredData: any = {};

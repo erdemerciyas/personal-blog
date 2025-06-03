@@ -31,19 +31,6 @@ interface ISiteSettings {
     phone: string;
     address: string;
   };
-  security: {
-    enableSecurityQuestion: boolean;
-    maintenanceMode: boolean;
-    allowRegistration: boolean;
-  };
-  pageSettings: {
-    home: boolean;
-    about: boolean;
-    services: boolean;
-    portfolio: boolean;
-    contact: boolean;
-    blog: boolean;
-  };
   isActive: boolean;
   createdAt?: Date;
   updatedAt?: Date;
@@ -165,55 +152,6 @@ const SiteSettingsSchema = new mongoose.Schema<ISiteSettings>({
       default: ''
     }
   },
-  security: {
-    enableSecurityQuestion: {
-      type: Boolean,
-      required: false,
-      default: true
-    },
-    maintenanceMode: {
-      type: Boolean,
-      required: false,
-      default: false
-    },
-    allowRegistration: {
-      type: Boolean,
-      required: false,
-      default: false
-    }
-  },
-  pageSettings: {
-    home: {
-      type: Boolean,
-      required: false,
-      default: true
-    },
-    about: {
-      type: Boolean,
-      required: false,
-      default: true
-    },
-    services: {
-      type: Boolean,
-      required: false,
-      default: true
-    },
-    portfolio: {
-      type: Boolean,
-      required: false,
-      default: true
-    },
-    contact: {
-      type: Boolean,
-      required: false,
-      default: true
-    },
-    blog: {
-      type: Boolean,
-      required: false,
-      default: false
-    }
-  },
   isActive: {
     type: Boolean,
     required: true,
@@ -232,19 +170,6 @@ SiteSettingsSchema.statics.getSiteSettings = async function() {
     settings = await this.create({
       siteName: '',
       slogan: '',
-      security: {
-        enableSecurityQuestion: true,
-        maintenanceMode: false,
-        allowRegistration: false
-      },
-      pageSettings: {
-        home: true,
-        about: true,
-        services: true,
-        portfolio: true,
-        contact: true,
-        blog: false
-      },
       isActive: true
     });
   }
