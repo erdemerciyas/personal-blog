@@ -5,7 +5,6 @@ import Image from 'next/image';
 import MediaBrowser from './MediaBrowser';
 import {
   PhotoIcon,
-  XMarkIcon,
   ArrowUpTrayIcon,
   ExclamationTriangleIcon,
   CheckIcon,
@@ -40,7 +39,6 @@ const ImageUpload: React.FC<ImageUploadProps> = ({
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
   const [showMediaBrowser, setShowMediaBrowser] = useState(false);
-  const [uploadMode, setUploadMode] = useState<'file' | 'media'>('file');
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   // onChange function güvenlik kontrolü
@@ -51,7 +49,7 @@ const ImageUpload: React.FC<ImageUploadProps> = ({
         onChange(url);
       } else {
         console.error('ImageUpload: Invalid URL provided:', url);
-        setError('Geçersiz görsel URL\'i');
+        setError('Geçersiz görsel URL&apos;i');
       }
     } else {
       console.error('ImageUpload: onChange prop is not a function');
@@ -74,7 +72,7 @@ const ImageUpload: React.FC<ImageUploadProps> = ({
     try {
       // Dosya boyutu kontrolü
       if (file.size > maxSize * 1024 * 1024) {
-        throw new Error(`Dosya boyutu ${maxSize}MB'dan büyük olamaz`);
+        throw new Error(`Dosya boyutu ${maxSize}MB&apos;dan büyük olamaz`);
       }
 
       // Dosya tipi kontrolü
@@ -174,12 +172,10 @@ const ImageUpload: React.FC<ImageUploadProps> = ({
   // MediaBrowser handlers
   const handleBrowseMedia = () => {
     setShowMediaBrowser(true);
-    setUploadMode('media');
   };
 
   const handleUploadNew = () => {
     setShowMediaBrowser(false);
-    setUploadMode('file');
     fileInputRef.current?.click();
   };
 
@@ -191,7 +187,6 @@ const ImageUpload: React.FC<ImageUploadProps> = ({
 
   const handleCloseBrowser = () => {
     setShowMediaBrowser(false);
-    setUploadMode('file');
   };
 
   // value kontrolü - boş string, undefined veya geçersiz URL ise resim yok kabul et
@@ -240,7 +235,7 @@ const ImageUpload: React.FC<ImageUploadProps> = ({
               <div className="w-full h-full flex items-center justify-center bg-slate-200">
                 <PhotoIcon className="w-16 h-16 text-slate-400" />
                 <div className="absolute inset-0 flex items-center justify-center">
-                  <p className="text-slate-500 text-sm">Geçersiz görsel URL'i</p>
+                  <p className="text-slate-500 text-sm">Geçersiz görsel URL&apos;i</p>
                 </div>
               </div>
             )}

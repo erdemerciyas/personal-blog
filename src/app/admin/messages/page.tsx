@@ -4,7 +4,6 @@ import { useSession, signOut } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import {
-  EnvelopeIcon,
   UserIcon,
   PhoneIcon,
   BuildingOfficeIcon,
@@ -172,14 +171,14 @@ export default function AdminMessagesPage() {
 
       if (response.ok) {
         setMessages(prev => prev.map(m => 
-          m._id === messageId ? { ...m, status: newStatus as any } : m
+          m._id === messageId ? { ...m, status: newStatus as string } : m
         ));
         setSuccess('Mesaj durumu güncellendi');
         setTimeout(() => setSuccess(''), 3000);
       } else {
         throw new Error('Durum güncellenemedi');
       }
-    } catch (error) {
+    } catch {
       setError('Durum güncellenirken hata oluştu');
     }
   };
@@ -199,7 +198,7 @@ export default function AdminMessagesPage() {
       } else {
         throw new Error('Mesaj silinemedi');
       }
-    } catch (error) {
+    } catch {
       setError('Mesaj silinirken hata oluştu');
     }
   };

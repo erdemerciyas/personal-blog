@@ -15,9 +15,6 @@ import {
   CubeTransparentIcon,
   EnvelopeIcon,
   UserIcon,
-  BuildingOfficeIcon,
-  ClockIcon,
-  CurrencyDollarIcon,
   ChatBubbleLeftIcon,
   CheckIcon,
   ExclamationTriangleIcon
@@ -46,6 +43,27 @@ interface SiteSettings {
   };
 }
 
+interface PageSetting {
+  pageId: string;
+  title: string;
+  path: string;
+  isActive: boolean;
+  showInNavigation: boolean;
+  order: number;
+}
+
+// Icon mapping for dynamic navigation
+const getIconForPage = (pageId: string) => {
+  const iconMap = {
+    home: HomeIcon,
+    about: UserIcon,
+    services: WrenchScrewdriverIcon,
+    portfolio: FolderOpenIcon,
+    contact: PhoneIcon,
+  };
+  return iconMap[pageId as keyof typeof iconMap] || HomeIcon;
+};
+
 const Header: React.FC = () => {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isScrolled, setIsScrolled] = useState(false);
@@ -53,6 +71,7 @@ const Header: React.FC = () => {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitSuccess, setSubmitSuccess] = useState(false);
   const [submitError, setSubmitError] = useState('');
+  const [navLinks, setNavLinks] = useState<any[]>([]);
   const [siteSettings, setSiteSettings] = useState<SiteSettings | null>({
     siteName: '',
     slogan: '',
@@ -115,6 +134,42 @@ const Header: React.FC = () => {
     fetchSiteSettings();
   }, []);
 
+  // Fetch page settings for navigation
+  useEffect(() => {
+    const fetchPageSettings = async () => {
+      try {
+        const response = await fetch('/api/admin/page-settings');
+        if (response.ok) {
+          const pageSettings: PageSetting[] = await response.json();
+          
+          // Filter active pages that should show in navigation and sort by order
+          const activeNavPages = pageSettings
+            .filter(page => page.isActive && page.showInNavigation)
+            .sort((a, b) => a.order - b.order)
+            .map(page => ({
+              href: page.path,
+              label: page.title,
+              icon: getIconForPage(page.pageId)
+            }));
+          
+          setNavLinks(activeNavPages);
+        }
+      } catch (error) {
+        console.error('Page settings fetch error:', error);
+        // Fallback to default navigation if API fails
+        setNavLinks([
+          { href: "/", label: "Anasayfa", icon: HomeIcon },
+          { href: "/about", label: "Hakkımda", icon: UserIcon },
+          { href: "/services", label: "Hizmetler", icon: WrenchScrewdriverIcon },
+          { href: "/portfolio", label: "Portfolyo", icon: FolderOpenIcon },
+          { href: "/contact", label: "İletişim", icon: PhoneIcon },
+        ]);
+      }
+    };
+
+    fetchPageSettings();
+  }, []);
+
   // Hide header on admin pages
   if (pathname.startsWith('/admin')) {
     return null;
@@ -167,14 +222,6 @@ const Header: React.FC = () => {
       setIsSubmitting(false);
     }
   };
-
-  const navLinks = [
-    { href: "/", label: "Anasayfa", icon: HomeIcon },
-    { href: "/about", label: "Hakkımda", icon: UserIcon },
-    { href: "/services", label: "Hizmetler", icon: WrenchScrewdriverIcon },
-    { href: "/portfolio", label: "Portfolyo", icon: FolderOpenIcon },
-    { href: "/contact", label: "İletişim", icon: PhoneIcon },
-  ];
 
   return (
     <>

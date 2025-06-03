@@ -56,8 +56,8 @@ userSchema.pre('save', async function (next) {
 });
 
 // Şifre karşılaştırma metodu
-userSchema.methods.comparePassword = async function (password: string) {
-  return bcrypt.compare(password, this.password);
+userSchema.methods.comparePassword = async function(candidatePassword: string): Promise<boolean> {
+  return bcrypt.compare(candidatePassword, this.password);
 };
 
 const User = mongoose.models.User || mongoose.model<IUser>('User', userSchema);

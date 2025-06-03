@@ -74,59 +74,40 @@ export async function PUT(request: NextRequest) {
   }
 }
 
-// POST: Logo yükle
+interface SiteSettingsRequest {
+  facebook?: string;
+  twitter?: string;
+  instagram?: string;
+  linkedin?: string;
+  github?: string;
+  youtube?: string;
+}
+
 export async function POST(request: NextRequest) {
   try {
     const session = await getServerSession(authOptions);
     
-    if (!session?.user) {
-      return NextResponse.json(
-        { error: 'Yetkisiz erişim' },
-        { status: 401 }
-      );
+    if (!session?.user?.email) {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
-    const { action, ...data } = await request.json();
+    await connectDB();
     
-    if (action === 'uploadLogo') {
-      await connectDB();
-      
-      const { logoUrl, alt, width, height } = data;
-      
-      if (!logoUrl) {
-        return NextResponse.json(
-          { error: 'Logo URL gerekli' },
-          { status: 400 }
-        );
-      }
-      
-      const settings = await SiteSettings.updateSiteSettings({
-        logo: {
-          url: logoUrl,
-          alt: alt || 'Site Logo',
-          width: width || 200,
-          height: height || 60
-        }
-      });
-      
-      return NextResponse.json(
-        { 
-          message: 'Logo başarıyla güncellendi',
-          logo: settings.logo
-        },
-        { status: 200 }
-      );
+    const body: SiteSettingsRequest = await request.json();
+    
+    let settings = await SiteSettings.findOne();
+    if (!settings) {
+      settings = new SiteSettings(body);
+    } else {
+      Object.assign(settings, body);
     }
     
-    return NextResponse.json(
-      { error: 'Geçersiz işlem' },
-      { status: 400 }
-    );
+    await settings.save();
+    return NextResponse.json({ settings });
   } catch (error) {
-    console.error('Logo yüklenirken hata:', error);
-    return NextResponse.json(
-      { error: 'Logo yüklenemedi' },
-      { status: 500 }
-    );
+    console.error('Site settings update error:', error);
+    return NextResponse.json({ 
+      error: 'Ayarlar güncellenirken bir hata oluştu' 
+    }, { status: 500 });
   }
 } 

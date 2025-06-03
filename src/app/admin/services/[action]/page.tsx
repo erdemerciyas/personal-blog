@@ -36,8 +36,10 @@ export default function ServiceFormPage() {
           }
           const data = await response.json();
           setFormData(data);
-        } catch (error) {
-          setError('Servis yüklenirken bir hata oluştu');
+        } catch {
+          setError('Servis bulunamadı');
+        } finally {
+          setLoading(false);
         }
       };
 
@@ -67,8 +69,8 @@ export default function ServiceFormPage() {
       }
 
       router.push('/admin/dashboard');
-    } catch (error) {
-      setError('Servis kaydedilirken bir hata oluştu');
+    } catch {
+      setError('Servis güncellenirken bir hata oluştu');
     } finally {
       setLoading(false);
     }

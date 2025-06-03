@@ -21,7 +21,6 @@ import {
   GlobeAltIcon,
   EyeIcon,
   ClockIcon,
-  HashtagIcon,
   LinkIcon,
   AdjustmentsHorizontalIcon,
   ArrowsUpDownIcon
@@ -197,6 +196,14 @@ export default function AdminSliderPage() {
     }));
   };
 
+  const handleDurationChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const seconds = parseInt(e.target.value) || 5;
+    setFormData(prev => ({
+      ...prev,
+      duration: seconds * 1000
+    }));
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError('');
@@ -212,7 +219,7 @@ export default function AdminSliderPage() {
         throw new Error('Lütfen bir resim yükleyin veya URL girin');
       }
 
-      let submitData = { ...formData };
+      const submitData = { ...formData };
       
       const url = modalMode === 'create' 
         ? '/api/slider' 
@@ -267,7 +274,7 @@ export default function AdminSliderPage() {
       } else {
         throw new Error('Slider silinirken hata oluştu');
       }
-    } catch (error) {
+    } catch {
       setError('Slider silinirken hata oluştu');
     }
   };
@@ -292,7 +299,7 @@ export default function AdminSliderPage() {
         setSuccess(`Slider ${!slider.isActive ? 'aktif' : 'pasif'} edildi`);
         setTimeout(() => setSuccess(''), 2000);
       }
-    } catch (error) {
+    } catch {
       setError('Durum güncellenirken hata oluştu');
     }
   };
@@ -436,7 +443,7 @@ export default function AdminSliderPage() {
               </button>
             </div>
           ) : (
-            sliders.map((slider, index) => (
+            sliders.map((slider) => (
               <div 
                 key={slider._id}
                 className="bg-white/10 backdrop-blur-xl rounded-2xl p-6 border border-white/20 hover:bg-white/15 transition-all duration-200"
@@ -459,8 +466,8 @@ export default function AdminSliderPage() {
                     <div className="flex items-start justify-between">
                       <div className="flex-1">
                         <div className="flex items-center space-x-3 mb-2">
-                          <h3 className="text-lg font-semibold text-white">
-                            {slider.title}
+                          <h3 className="text-lg font-semibold text-white truncate">
+                            {slider.title || 'İsimsiz Slayt'}
                           </h3>
                           <span className="px-3 py-1 text-xs font-medium bg-teal-500/20 text-teal-300 rounded-full border border-teal-500/30">
                             {slider.badge}
@@ -542,9 +549,12 @@ export default function AdminSliderPage() {
           <div className="bg-slate-800 rounded-3xl max-w-4xl w-full max-h-[95vh] overflow-hidden shadow-2xl">
             <div className="sticky top-0 bg-slate-800 rounded-t-3xl border-b border-slate-700 p-6 z-10">
               <div className="flex items-center justify-between">
-                <h3 className="text-2xl font-bold text-white">
-                  {modalMode === 'create' ? 'Yeni Slider Oluştur' : 'Slider Düzenle'}
-                </h3>
+                <h2 className="text-2xl font-bold text-white mb-6 flex items-center space-x-3">
+                  <PhotoIcon className="w-8 h-8 text-teal-400" />
+                  <span>
+                    {modalMode === 'create' ? 'Yeni Slider Oluştur' : 'Slider Düzenle'}
+                  </span>
+                </h2>
                 <button
                   onClick={() => setShowModal(false)}
                   className="p-2 hover:bg-slate-700 rounded-xl transition-colors"
@@ -725,7 +735,7 @@ export default function AdminSliderPage() {
                     {formData.imageType === 'url' && (
                       <div>
                         <label className="block text-sm font-medium text-slate-300 mb-2">
-                          Resim URL'si <span className="text-red-400">*</span>
+                          Resim URL&apos;si <span className="text-red-400">*</span>
                         </label>
                         <input
                           type="url"
@@ -851,14 +861,7 @@ export default function AdminSliderPage() {
                         min="1"
                         step="1"
                         value={formData.duration / 1000}
-                        onChange={(e) => handleFormChange({
-                          ...e,
-                          target: {
-                            ...e.target,
-                            name: 'duration',
-                            value: (parseInt(e.target.value) || 5) * 1000
-                          }
-                        } as any)}
+                        onChange={handleDurationChange}
                         className="w-full px-4 py-3 bg-slate-600 border border-slate-500 rounded-xl text-white placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-transparent transition-all duration-200"
                       />
                     </div>
@@ -873,7 +876,7 @@ export default function AdminSliderPage() {
                         onChange={handleFormChange}
                         className="w-5 h-5 text-teal-600 bg-slate-600 border-slate-500 rounded focus:ring-teal-500 focus:ring-2"
                       />
-                      <span className="text-slate-300">Sliderayı aktif et</span>
+                      <span className="text-slate-300">Slider&apos;ı aktif et</span>
                     </label>
                   </div>
                 </div>

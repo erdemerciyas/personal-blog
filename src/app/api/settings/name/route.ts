@@ -3,6 +3,13 @@ import { getServerSession } from 'next-auth';
 import { authOptions } from '@/lib/auth';
 import connectDB from '@/lib/mongoose';
 import User from '@/models/User';
+import bcrypt from 'bcryptjs';
+
+interface SessionUser {
+  id: string;
+  email: string;
+  role: string;
+}
 
 // PUT /api/settings/name - Admin kullanıcı adı güncelle
 export async function PUT(request: Request) {
@@ -18,7 +25,8 @@ export async function PUT(request: Request) {
       );
     }
 
-    if ((session.user as any).role !== 'admin') {
+    const sessionUser = session.user as SessionUser;
+    if (sessionUser.role !== 'admin') {
       return NextResponse.json(
         { error: 'Bu işlem için admin yetkisi gerekli' },
         { status: 403 }
@@ -46,7 +54,7 @@ export async function PUT(request: Request) {
     await connectDB();
 
     // Mevcut kullanıcıyı bul
-    const userId = (session.user as any).id;
+    const userId = sessionUser.id;
     const user = await User.findById(userId);
     
     if (!user) {
@@ -86,5 +94,74 @@ export async function PUT(request: Request) {
       { error: 'Kullanıcı adı güncellenirken bir hata oluştu' },
       { status: 500 }
     );
+  }
+}
+
+interface NameSettingsRequest {
+  name?: string;
+  title?: string;
+  description?: string;
+  keywords?: string;
+  author?: string;
+  favicon?: string;
+  logo?: string;
+  ogImage?: string;
+}
+
+export async function POST(request: Request) {
+  try {
+    const session = await getServerSession(authOptions);
+    
+    if (!session?.user?.email) {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    }
+
+    await connectDB();
+    
+    const body: NameSettingsRequest = await request.json();
+    const { newName, currentPassword } = body;
+
+    if (!newName || !currentPassword) {
+      return NextResponse.json({ 
+        error: 'Yeni isim ve mevcut şifre gereklidir' 
+      }, { status: 400 });
+    }
+
+    // Mevcut kullanıcıyı bul
+    const user = await User.findOne({ email: session.user.email });
+    if (!user) {
+      return NextResponse.json({ 
+        error: 'Kullanıcı bulunamadı' 
+      }, { status: 404 });
+    }
+
+    // Mevcut şifreyi doğrula
+    const isPasswordValid = await bcrypt.compare(currentPassword, user.password);
+    if (!isPasswordValid) {
+      return NextResponse.json({ 
+        error: 'Mevcut şifre hatalı' 
+      }, { status: 400 });
+    }
+
+    try {
+      // İsmi güncelle
+      user.name = newName;
+      await user.save();
+
+      return NextResponse.json({ 
+        success: true,
+        message: 'İsim başarıyla güncellendi'
+      });
+    } catch {
+      return NextResponse.json({ 
+        error: 'İsim güncellenirken veritabanı hatası' 
+      }, { status: 500 });
+    }
+
+  } catch (error) {
+    console.error('Name update error:', error);
+    return NextResponse.json({ 
+      error: 'İsim güncellenirken hata oluştu' 
+    }, { status: 500 });
   }
 } 

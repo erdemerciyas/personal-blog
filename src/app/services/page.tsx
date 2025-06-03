@@ -2,53 +2,20 @@
 import { useState, useEffect } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
-import { CubeTransparentIcon, WrenchScrewdriverIcon, SparklesIcon, CheckCircleIcon } from '@heroicons/react/24/outline';
+import { CubeTransparentIcon, WrenchScrewdriverIcon, CheckCircleIcon } from '@heroicons/react/24/outline';
 
-// Default fallback services
-const defaultServices = [
-  {
-    title: '3D Tarama & Modelleme',
-    icon: CubeTransparentIcon,
-    description: 'Yüksek hassasiyetli 3D tarama teknolojileri ile fiziksel objelerinizin veya ortamlarınızın birebir dijital kopyalarını oluşturuyoruz. Bu veriler, kalite kontrol, analiz ve tasarım süreçlerinizde temel oluşturur.',
-    features: [
-      'Endüstriyel parça ve montaj tarama',
-      'Mimari ve kültürel miras taraması',
-      'Kalite kontrol ve boyutsal analiz raporlaması',
-      'Nokta bulutu ve mesh veri işleme',
-      'CAD model karşılaştırma ve sapma analizi',
-    ],
-    image: 'https://images.unsplash.com/photo-1581093450029-9dda7351f304?w=800&h=600&fit=crop&crop=center',
-  },
-  {
-    title: 'Tersine Mühendislik',
-    icon: WrenchScrewdriverIcon,
-    description: 'Mevcut bir ürünün veya parçanın 3D tarama verilerinden yola çıkarak tasarım bilgilerini yeniden elde ediyoruz. Bu sayede yedek parça üretimi, ürün geliştirme veya rakip analizi gibi ihtiyaçlarınıza çözüm sunuyoruz.',
-    features: [
-      'Taranmış veriden parametrik CAD model oluşturma',
-      'Teknik resim ve imalat dökümantasyonu hazırlama',
-      'Malzeme analizi ve seçimi danışmanlığı',
-      'Yüzey ve katı modelleme teknikleri',
-      'Hasarlı veya üretimi durmuş parçaların yeniden üretimi',
-    ],
-    image: 'https://images.unsplash.com/photo-1517077304055-6e89abbf0920?w=800&h=600&fit=crop&crop=center',
-  },
-  {
-    title: '3D Baskı & Hızlı Prototipleme',
-    icon: SparklesIcon,
-    description: 'Fikirlerinizi ve tasarımlarınızı, çeşitli malzeme seçenekleri ve son teknoloji 3D baskı yöntemleriyle hızlıca elle tutulur prototiplere veya son kullanıma hazır parçalara dönüştürüyoruz.',
-    features: [
-      'FDM, SLA, SLS gibi farklı baskı teknolojileri',
-      'Fonksiyonel prototip üretimi ve testleri',
-      'Düşük adetli özel parça imalatı',
-      'Geniş malzeme yelpazesi (PLA, ABS, Reçine, Naylon vb.)',
-      'Tasarım optimizasyonu ve baskı öncesi hazırlık',
-    ],
-    image: 'https://images.unsplash.com/photo-1600717535275-0b319a00a8e3?w=800&h=600&fit=crop&crop=center',
-  },
-];
+interface ServiceItem {
+  _id: string;
+  title: string;
+  description: string;
+  icon: string;
+  features: string[];
+  price?: number;
+  duration?: string;
+}
 
 export default function ServicesPage() {
-  const [services, setServices] = useState<any[]>([]);
+  const [services, setServices] = useState<ServiceItem[]>([]);
   const [loading, setLoading] = useState(true);
 
   // Fetch services from admin panel
@@ -56,31 +23,21 @@ export default function ServicesPage() {
     const fetchServices = async () => {
       try {
         const response = await fetch('/api/services');
-        if (response.ok) {
-          const data = await response.json();
-          
-          // Convert API services to component format
-          const formattedServices = data.map((service: any, index: number) => ({
-            title: service.title,
-            icon: index % 3 === 0 ? CubeTransparentIcon : index % 3 === 1 ? WrenchScrewdriverIcon : SparklesIcon, // Rotate icons
-            description: service.description,
-            features: service.features && service.features.length > 0 ? service.features : [
-              'Profesyonel hizmet sunumu',
-              'Deneyimli uzman kadro',
-              'Modern teknoloji kullanımı',
-              'Kaliteli malzeme seçimi',
-              'Zamanlı teslimat garantisi',
-            ], // Use API features or default fallback
-            image: service.image || 'https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=800&h=600&fit=crop&crop=center',
-          }));
-          setServices(formattedServices);
-        } else {
-          throw new Error('API hatası');
-        }
+        const data: ServiceItem[] = await response.json();
+        setServices(data);
       } catch (error) {
-        console.error('Servisler yüklenirken hata:', error);
-        // Use default services as fallback
-        setServices(defaultServices);
+        console.error('Error fetching services:', error);
+        // Fallback to default services if API fails
+        setServices([
+          {
+            _id: '1',
+            title: '3D Tarama',
+            description: 'Yüksek hassasiyetli 3D tarama hizmetleri',
+            icon: 'cube',
+            features: ['Yüksek çözünürlük', 'Hızlı işlem', 'Detaylı analiz']
+          },
+          // ... other fallback services
+        ]);
       } finally {
         setLoading(false);
       }
@@ -156,7 +113,7 @@ export default function ServicesPage() {
                   <div className="w-full md:w-7/12 lg:w-1/2 space-y-6">
                     <div className="flex items-center space-x-4 mb-6">
                       <div className="p-4 bg-gradient-to-br from-teal-500 to-blue-500 rounded-2xl shadow-lg">
-                        <service.icon className="h-8 w-8 text-white" />
+                        <CubeTransparentIcon className="h-8 w-8 text-white" />
                       </div>
                       <div>
                         <h2 className="text-3xl md:text-4xl font-bold text-slate-800 leading-tight">

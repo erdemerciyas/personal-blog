@@ -8,11 +8,6 @@ import {
   CheckIcon,
   ExclamationTriangleIcon,
   SparklesIcon,
-  HeartIcon,
-  TrophyIcon,
-  AcademicCapIcon,
-  UserGroupIcon,
-  CogIcon,
   EyeIcon
 } from '@heroicons/react/24/outline';
 
@@ -45,15 +40,6 @@ interface AboutData {
   contactPhone: string;
   contactLocation: string;
 }
-
-const iconMap = {
-  SparklesIcon: SparklesIcon,
-  HeartIcon: HeartIcon,
-  TrophyIcon: TrophyIcon,
-  AcademicCapIcon: AcademicCapIcon,
-  UserGroupIcon: UserGroupIcon,
-  CogIcon: CogIcon
-};
 
 export default function AdminAboutPage() {
   const [aboutData, setAboutData] = useState<AboutData>({
@@ -137,24 +123,24 @@ export default function AdminAboutPage() {
     }
   };
 
-  const addArrayItem = (field: keyof AboutData, defaultValue: any) => {
+  const addArrayItem = (field: keyof AboutData, defaultValue: string | Experience | Value) => {
     setAboutData(prev => ({
       ...prev,
-      [field]: [...(prev[field] as any[]), defaultValue]
+      [field]: [...(prev[field] as (string | Experience | Value)[]), defaultValue]
     }));
   };
 
   const removeArrayItem = (field: keyof AboutData, index: number) => {
     setAboutData(prev => ({
       ...prev,
-      [field]: (prev[field] as any[]).filter((_, i) => i !== index)
+      [field]: (prev[field] as (string | Experience | Value)[]).filter((_, i) => i !== index)
     }));
   };
 
-  const updateArrayItem = (field: keyof AboutData, index: number, value: any) => {
+  const updateArrayItem = (field: keyof AboutData, index: number, value: string | Experience | Value) => {
     setAboutData(prev => ({
       ...prev,
-      [field]: (prev[field] as any[]).map((item, i) => i === index ? value : item)
+      [field]: (prev[field] as (string | Experience | Value)[]).map((item, i) => i === index ? value : item)
     }));
   };
 

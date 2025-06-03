@@ -3,147 +3,135 @@ import { getServerSession } from 'next-auth';
 import { authOptions } from '@/lib/auth';
 import connectDB from '@/lib/mongoose';
 import User from '@/models/User';
+import bcrypt from 'bcryptjs';
 
-// PUT /api/settings/email - Admin email güncelle
+interface EmailSettingsRequest {
+  email?: string;
+  emailPassword?: string;
+  smtpHost?: string;
+  smtpPort?: number;
+}
+
+export async function POST(request: Request) {
+  try {
+    const session = await getServerSession(authOptions);
+    
+    if (!session?.user?.email) {
+      return NextResponse.json({ 
+        error: 'Unauthorized' 
+      }, { status: 401 });
+    }
+
+    await connectDB();
+    
+    const body: EmailSettingsRequest = await request.json();
+    const { email: newEmail, emailPassword } = body;
+
+    if (!newEmail || !emailPassword) {
+      return NextResponse.json({ 
+        error: 'E-posta ve şifre gereklidir' 
+      }, { status: 400 });
+    }
+
+    // Mevcut kullanıcıyı bul
+    const user = await User.findOne({ email: session.user.email });
+    if (!user) {
+      return NextResponse.json({ 
+        error: 'Kullanıcı bulunamadı' 
+      }, { status: 404 });
+    }
+
+    try {
+      // Yeni e-posta adresini güncelle
+      user.email = newEmail;
+      await user.save();
+
+      return NextResponse.json({ 
+        success: true,
+        message: 'E-posta ayarları başarıyla güncellendi'
+      });
+    } catch {
+      return NextResponse.json({ 
+        error: 'E-posta ayarları güncellenirken veritabanı hatası' 
+      }, { status: 500 });
+    }
+
+  } catch (error) {
+    console.error('Email settings error:', error);
+    return NextResponse.json({ 
+      error: 'E-posta ayarları güncellenirken hata oluştu' 
+    }, { status: 500 });
+  }
+}
+
 export async function PUT(request: Request) {
   try {
-    console.log('📧 Email değiştirme API endpoint çalışıyor...');
-    
     const session = await getServerSession(authOptions);
-    console.log('🔐 Session:', {
-      user: session?.user ? {
-        id: session.user.id,
-        email: session.user.email,
-        role: (session.user as any).role
-      } : null
-    });
     
-    if (!session?.user) {
-      console.log('❌ Session bulunamadı');
-      return NextResponse.json(
-        { error: 'Bu işlem için yetkiniz yok' },
-        { status: 401 }
-      );
+    if (!session?.user?.email) {
+      return NextResponse.json({ 
+        error: 'Unauthorized' 
+      }, { status: 401 });
     }
 
-    if ((session.user as any).role !== 'admin') {
-      console.log('❌ Admin yetkisi yok');
-      return NextResponse.json(
-        { error: 'Bu işlem için admin yetkisi gerekli' },
-        { status: 403 }
-      );
-    }
-
+    await connectDB();
+    
     const body = await request.json();
-    console.log('📝 Request body:', body);
-    
     const { newEmail, currentPassword } = body;
 
     if (!newEmail || !currentPassword) {
-      console.log('❌ Eksik veriler');
-      return NextResponse.json(
-        { error: 'Yeni email ve mevcut şifre gerekli' },
-        { status: 400 }
-      );
+      return NextResponse.json({ 
+        error: 'Yeni e-posta ve mevcut şifre gereklidir' 
+      }, { status: 400 });
     }
-
-    // Email format kontrolü
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    if (!emailRegex.test(newEmail)) {
-      console.log('❌ Geçersiz email formatı');
-      return NextResponse.json(
-        { error: 'Geçerli bir email adresi girin' },
-        { status: 400 }
-      );
-    }
-
-    console.log('🔗 MongoDB bağlantısı kuruluyor...');
-    await connectDB();
 
     // Mevcut kullanıcıyı bul
-    const userId = (session.user as any).id;
-    console.log('👤 Kullanıcı ID:', userId);
-    console.log('👤 Kullanıcı ID tipi:', typeof userId);
-    console.log('👤 Kullanıcı ID uzunluğu:', userId?.length);
-    
-    // MongoDB ObjectId doğrulaması
-    const mongoose = require('mongoose');
-    if (!mongoose.Types.ObjectId.isValid(userId)) {
-      console.log('❌ Geçersiz ObjectId formatı:', userId);
-      return NextResponse.json(
-        { error: 'Geçersiz kullanıcı ID formatı' },
-        { status: 400 }
-      );
-    }
-    
-    console.log('✅ ObjectId formatı geçerli');
-    
-    const user = await User.findById(userId);
-    console.log('🔍 User.findById sonucu:', user ? 'Kullanıcı bulundu' : 'Kullanıcı bulunamadı');
-    
+    const user = await User.findOne({ email: session.user.email });
     if (!user) {
-      console.log('❌ Kullanıcı bulunamadı:', userId);
-      
-      // Debug: Veritabanındaki tüm kullanıcıları listele
-      const allUsers = await User.find({}, { _id: 1, email: 1, name: 1 });
-      console.log('📋 Veritabanındaki kullanıcılar:', allUsers);
-      
-      return NextResponse.json(
-        { error: 'Kullanıcı bulunamadı' },
-        { status: 404 }
-      );
+      return NextResponse.json({ 
+        error: 'Kullanıcı bulunamadı' 
+      }, { status: 404 });
     }
 
-    console.log('✅ Kullanıcı bulundu:', user.email);
-
-    // Mevcut şifreyi kontrol et
-    const isPasswordValid = await user.comparePassword(currentPassword);
+    // Mevcut şifreyi doğrula
+    const isPasswordValid = await bcrypt.compare(currentPassword, user.password);
     if (!isPasswordValid) {
-      console.log('❌ Şifre yanlış');
-      return NextResponse.json(
-        { error: 'Mevcut şifre yanlış' },
-        { status: 400 }
-      );
+      return NextResponse.json({ 
+        error: 'Mevcut şifre hatalı' 
+      }, { status: 400 });
     }
 
-    console.log('✅ Şifre doğru');
-
-    // Yeni email adresinin kullanımda olup olmadığını kontrol et
+    // Yeni e-posta adresinin zaten kullanımda olup olmadığını kontrol et
     const existingUser = await User.findOne({ 
-      email: newEmail.toLowerCase(),
-      _id: { $ne: user._id }
+      email: newEmail, 
+      _id: { $ne: user._id } 
     });
     
     if (existingUser) {
-      console.log('❌ Email zaten kullanımda');
-      return NextResponse.json(
-        { error: 'Bu email adresi zaten kullanımda' },
-        { status: 400 }
-      );
+      return NextResponse.json({ 
+        error: 'Bu e-posta adresi zaten kullanılıyor' 
+      }, { status: 400 });
     }
 
-    console.log('📧 Email güncelleniyor...', newEmail);
+    try {
+      // E-posta adresini güncelle
+      user.email = newEmail;
+      await user.save();
 
-    // Email adresini güncelle
-    user.email = newEmail.toLowerCase();
-    await user.save();
+      return NextResponse.json({ 
+        success: true,
+        message: 'E-posta adresi başarıyla güncellendi'
+      });
+    } catch {
+      return NextResponse.json({ 
+        error: 'E-posta adresi güncellenirken veritabanı hatası' 
+      }, { status: 500 });
+    }
 
-    console.log('✅ Email başarıyla güncellendi');
-
-    return NextResponse.json({
-      message: 'Email adresi başarıyla güncellendi',
-      user: {
-        id: user._id,
-        name: user.name,
-        email: user.email,
-        role: user.role
-      }
-    });
   } catch (error) {
-    console.error('💥 Email güncelleme hatası:', error);
-    return NextResponse.json(
-      { error: 'Email güncellenirken bir hata oluştu' },
-      { status: 500 }
-    );
+    console.error('Email update error:', error);
+    return NextResponse.json({ 
+      error: 'E-posta güncellenirken hata oluştu' 
+    }, { status: 500 });
   }
 } 

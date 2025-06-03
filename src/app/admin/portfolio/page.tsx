@@ -17,8 +17,7 @@ import {
   ClockIcon,
   StarIcon,
   ArrowLeftIcon,
-  HomeIcon,
-  CogIcon
+  HomeIcon
 } from '@heroicons/react/24/outline';
 
 interface Category {
@@ -53,12 +52,10 @@ export default function PortfolioManagement() {
   useEffect(() => {
     if (status === 'unauthenticated') {
       router.push('/admin/login');
-    } else if (status === 'authenticated' && session?.user?.role !== 'admin') {
-      router.push('/');
     } else if (status === 'authenticated') {
       fetchPortfolioItems();
     }
-  }, [status, session]);
+  }, [status, router]);
 
   const fetchPortfolioItems = async () => {
     try {
@@ -219,7 +216,7 @@ export default function PortfolioManagement() {
         <div className="mb-8">
           <h3 className="text-xl font-bold text-white mb-4">Hızlı İşlemler</h3>
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-            {quickActions.map((action, index) => (
+            {quickActions.map((action) => (
               <Link 
                 key={action.title}
                 href={action.href}

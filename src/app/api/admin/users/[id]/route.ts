@@ -4,6 +4,63 @@ import { authOptions } from '@/lib/auth';
 import connectDB from '@/lib/mongoose';
 import User from '@/models/User';
 
+interface SessionUser {
+  id: string;
+  email: string;
+  name: string;
+  role: string;
+}
+
+interface UserUpdateData {
+  name?: string;
+  email?: string;
+  role?: string;
+  password?: string;
+}
+
+// GET /api/admin/users/[id] - Kullanıcı detayı
+export async function GET(
+  request: Request,
+  { params }: { params: { id: string } }
+) {
+  try {
+    const session = await getServerSession(authOptions);
+    
+    if (!session?.user) {
+      return NextResponse.json(
+        { error: 'Bu işlem için yetkiniz yok' },
+        { status: 401 }
+      );
+    }
+
+    if ((session.user as SessionUser).role !== 'admin') {
+      return NextResponse.json(
+        { error: 'Bu işlem için admin yetkisi gerekli' },
+        { status: 403 }
+      );
+    }
+
+    await connectDB();
+
+    const user = await User.findById(params.id, { password: 0 });
+    
+    if (!user) {
+      return NextResponse.json(
+        { error: 'Kullanıcı bulunamadı' },
+        { status: 404 }
+      );
+    }
+
+    return NextResponse.json(user);
+  } catch (error) {
+    console.error('Kullanıcı detay hatası:', error);
+    return NextResponse.json(
+      { error: 'Kullanıcı bilgileri yüklenirken hata oluştu' },
+      { status: 500 }
+    );
+  }
+}
+
 // PUT /api/admin/users/[id] - Kullanıcı güncelle
 export async function PUT(
   request: Request,
@@ -19,39 +76,31 @@ export async function PUT(
       );
     }
 
-    if ((session.user as any).role !== 'admin') {
+    if ((session.user as SessionUser).role !== 'admin') {
       return NextResponse.json(
         { error: 'Bu işlem için admin yetkisi gerekli' },
         { status: 403 }
       );
     }
 
-    const { name, email, role, password } = await request.json();
-    const { id } = params;
+    const updateData: UserUpdateData = await request.json();
 
-    if (!name || !email) {
+    if (!updateData.name && !updateData.email && !updateData.role && !updateData.password) {
       return NextResponse.json(
-        { error: 'İsim ve email gerekli' },
+        { error: 'Güncellenecek alan belirtilmedi' },
         { status: 400 }
       );
     }
 
     await connectDB();
 
-    const user = await User.findById(id);
-    if (!user) {
-      return NextResponse.json(
-        { error: 'Kullanıcı bulunamadı' },
-        { status: 404 }
-      );
-    }
-
-    // Email çakışması kontrolü
-    if (email.toLowerCase() !== user.email) {
+    // Email kontrolü (eğer email güncelleniyor ise)
+    if (updateData.email) {
       const existingUser = await User.findOne({ 
-        email: email.toLowerCase(),
-        _id: { $ne: id }
+        email: updateData.email.toLowerCase(),
+        _id: { $ne: params.id }
       });
+      
       if (existingUser) {
         return NextResponse.json(
           { error: 'Bu email adresi zaten kullanımda' },
@@ -60,25 +109,22 @@ export async function PUT(
       }
     }
 
-    // Güncelleme
-    user.name = name.trim();
-    user.email = email.toLowerCase();
-    user.role = role || user.role;
+    const user = await User.findByIdAndUpdate(
+      params.id,
+      updateData,
+      { new: true, select: '-password' }
+    );
 
-    // Şifre güncellemesi varsa
-    if (password && password.trim()) {
-      user.password = password;
+    if (!user) {
+      return NextResponse.json(
+        { error: 'Kullanıcı bulunamadı' },
+        { status: 404 }
+      );
     }
-
-    await user.save();
-
-    // Şifreyi response'dan çıkar
-    const userResponse = user.toObject();
-    delete userResponse.password;
 
     return NextResponse.json({
       message: 'Kullanıcı başarıyla güncellendi',
-      user: userResponse
+      user
     });
   } catch (error) {
     console.error('Kullanıcı güncelleme hatası:', error);
@@ -104,35 +150,23 @@ export async function DELETE(
       );
     }
 
-    if ((session.user as any).role !== 'admin') {
+    if ((session.user as SessionUser).role !== 'admin') {
       return NextResponse.json(
         { error: 'Bu işlem için admin yetkisi gerekli' },
         { status: 403 }
       );
     }
 
-    const { id } = params;
-    const currentUserId = (session.user as any).id;
-
-    // Kendi hesabını silmeyi engelle
-    if (id === currentUserId) {
-      return NextResponse.json(
-        { error: 'Kendi hesabınızı silemezsiniz' },
-        { status: 400 }
-      );
-    }
-
     await connectDB();
 
-    const user = await User.findById(id);
+    const user = await User.findByIdAndDelete(params.id);
+
     if (!user) {
       return NextResponse.json(
         { error: 'Kullanıcı bulunamadı' },
         { status: 404 }
       );
     }
-
-    await User.findByIdAndDelete(id);
 
     return NextResponse.json({
       message: 'Kullanıcı başarıyla silindi'

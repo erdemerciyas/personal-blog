@@ -1,9 +1,9 @@
-import { NextRequest, NextResponse } from 'next/server';
+import { NextResponse } from 'next/server';
 import connectDB from '@/lib/mongoose';
 import User from '@/models/User';
 import bcrypt from 'bcryptjs';
 
-export async function POST(request: Request) {
+export async function POST() {
   try {
     console.log('Connecting to MongoDB...');
     await connectDB();
@@ -48,16 +48,16 @@ export async function POST(request: Request) {
         role: user.role
       }
     });
-  } catch (error: any) {
+  } catch (error: unknown) {
     console.error('Registration error:', error);
     return NextResponse.json(
-      { error: 'Internal Server Error', details: error.message },
+      { error: 'Internal Server Error', details: error instanceof Error ? error.message : 'Unknown error' },
       { status: 500 }
     );
   }
 }
 
 // GET metodu ile de kullanıcı oluşturulabilir
-export async function GET(request: Request) {
-  return POST(request);
+export async function GET() {
+  return POST();
 } 

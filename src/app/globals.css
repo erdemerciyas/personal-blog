@@ -152,7 +152,7 @@ body {
 
 /* Global Select Styling Fix */
 select {
-  color: inherit !important;
+  color: inherit;
   background-color: inherit !important;
 }
 

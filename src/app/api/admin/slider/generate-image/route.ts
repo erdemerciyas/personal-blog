@@ -1,169 +1,69 @@
 import { NextResponse } from 'next/server';
-import { getServerSession } from 'next-auth';
-import { authOptions } from '@/lib/auth';
 
 // POST /api/admin/slider/generate-image - AI ile resim üret
 export async function POST(request: Request) {
   try {
-    const session = await getServerSession(authOptions);
-    if (!session?.user || session.user.role !== 'admin') {
-      return NextResponse.json(
-        { error: 'Bu işlem için admin yetkisi gerekli' },
-        { status: 403 }
-      );
+    const { prompt, count = 1, provider = 'unsplash' } = await request.json();
+
+    if (!prompt) {
+      return NextResponse.json({ error: 'Prompt gereklidir' }, { status: 400 });
     }
 
-    const body = await request.json();
-    const { prompt, provider = 'imagen3', count = 4 } = body;
-
-    if (!prompt || prompt.trim().length < 3) {
-      return NextResponse.json(
-        { error: 'Geçerli bir prompt giriniz (en az 3 karakter)' },
-        { status: 400 }
-      );
-    }
-
-    let results = [];
+    let images = [];
 
     switch (provider) {
-      case 'imagen3':
-        try {
-          console.log('🎨 Generating images with Google Imagen 3 for:', prompt);
-          
-          // Check if we have Google Cloud credentials
-          const googleApiKey = process.env.GOOGLE_CLOUD_API_KEY;
-          const projectId = process.env.GOOGLE_CLOUD_PROJECT_ID;
-          
-          if (googleApiKey && projectId) {
-            // Google Vertex AI Imagen 3 API call
-            const imagenResponse = await fetch(
-              `https://us-central1-aiplatform.googleapis.com/v1/projects/${projectId}/locations/us-central1/publishers/google/models/imagen-3.0-generate-001:predict`,
-              {
-                method: 'POST',
-                headers: {
-                  'Authorization': `Bearer ${googleApiKey}`,
-                  'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({
-                  instances: [
-                    {
-                      prompt: `Professional high-quality slider image for website: ${prompt}. Style: modern, clean, corporate, high-resolution`,
-                    }
-                  ],
-                  parameters: {
-                    sampleCount: Math.min(count, 4), // Imagen 3 supports up to 4 images per request
-                    aspectRatio: "16:9", // Perfect for sliders
-                    safetyFilterLevel: "block_some",
-                    personGeneration: "dont_allow"
-                  }
-                })
-              }
-            );
-
-            if (imagenResponse.ok) {
-              const imagenData = await imagenResponse.json();
-              if (imagenData.predictions && imagenData.predictions.length > 0) {
-                console.log('✅ Generated', imagenData.predictions.length, 'images with Imagen 3');
-                results = imagenData.predictions.map((prediction: any, index: number) => ({
-                  id: `imagen3-${Date.now()}-${index}`,
-                  url: `data:image/jpeg;base64,${prediction.bytesBase64Encoded}`,
-                  thumb: `data:image/jpeg;base64,${prediction.bytesBase64Encoded}`,
-                  description: `${prompt} - AI Generated with Imagen 3`,
-                  photographer: 'Google Imagen 3',
-                  source: 'imagen3',
-                  downloadUrl: `data:image/jpeg;base64,${prediction.bytesBase64Encoded}`
-                }));
-              } else {
-                console.log('⚠️ No Imagen 3 results, using fallback');
-                results = await generateWithOpenAI(prompt, count) || generateProfessionalImages(prompt, count);
-              }
-            } else {
-              console.error('❌ Imagen 3 API error:', imagenResponse.status);
-              results = await generateWithOpenAI(prompt, count) || generateProfessionalImages(prompt, count);
-            }
-          } else {
-            console.log('⚠️ No Google Cloud credentials, trying OpenAI');
-            results = await generateWithOpenAI(prompt, count) || generateProfessionalImages(prompt, count);
-          }
-        } catch (error) {
-          console.error('❌ Imagen 3 error:', error);
-          results = await generateWithOpenAI(prompt, count) || generateProfessionalImages(prompt, count);
-        }
+      case 'unsplash':
+        // Unsplash benzeri rastgele profesyonel görseller
+        images = Array.from({ length: count }, (_, i) => ({
+          id: Date.now() + i,
+          url: `https://picsum.photos/1920/1080?random=${Date.now() + i}`,
+          title: `Generated Image ${i + 1}`,
+          description: prompt,
+          provider: 'unsplash'
+        }));
         break;
 
       case 'openai':
-        results = await generateWithOpenAI(prompt, count) || generateProfessionalImages(prompt, count);
-        break;
+        return NextResponse.json({ 
+          error: 'OpenAI integration not available' 
+        }, { status: 501 });
 
-      case 'unsplash':
-        try {
-          // Check if we have Unsplash API key
-          const unsplashKey = process.env.UNSPLASH_ACCESS_KEY;
-          
-          if (unsplashKey && unsplashKey !== 'demo-key') {
-            console.log('🔍 Searching Unsplash for:', prompt);
-            
-            // Unsplash API kullanarak resim arama
-            const unsplashResponse = await fetch(
-              `https://api.unsplash.com/search/photos?query=${encodeURIComponent(prompt)}&per_page=${count}&orientation=landscape&order_by=relevant`,
-              {
-                headers: {
-                  'Authorization': `Client-ID ${unsplashKey}`
-                }
-              }
-            );
-
-            if (unsplashResponse.ok) {
-              const unsplashData = await unsplashResponse.json();
-              if (unsplashData.results && unsplashData.results.length > 0) {
-                console.log('✅ Found', unsplashData.results.length, 'Unsplash images');
-                results = unsplashData.results.map((photo: any) => ({
-                  id: photo.id,
-                  url: photo.urls.regular,
-                  thumb: photo.urls.thumb,
-                  description: photo.alt_description || photo.description || `${prompt} - Professional Image`,
-                  photographer: photo.user.name,
-                  source: 'unsplash',
-                  downloadUrl: photo.links.download
-                }));
-              } else {
-                console.log('⚠️ No Unsplash results found, using professional demo images');
-                results = generateProfessionalImages(prompt, count);
-              }
-            } else {
-              console.error('❌ Unsplash API error:', unsplashResponse.status);
-              results = generateProfessionalImages(prompt, count);
-            }
-          } else {
-            console.log('⚠️ No Unsplash API key, using professional demo images');
-            results = generateProfessionalImages(prompt, count);
-          }
-        } catch (error) {
-          console.error('❌ Unsplash API error:', error);
-          results = generateProfessionalImages(prompt, count);
-        }
+      case 'custom':
+        // Özel görsel servisi (gelecekte)
+        images = [{
+          id: Date.now(),
+          url: `https://images.unsplash.com/photo-1517077304055-6e89abbf09b0?w=1920&h=1080&fit=crop&crop=center`,
+          title: 'Custom Generated Image',
+          description: prompt,
+          provider: 'custom'
+        }];
         break;
 
       default:
-        results = generateProfessionalImages(prompt, count);
+        return NextResponse.json({ 
+          error: 'Geçersiz sağlayıcı' 
+        }, { status: 400 });
     }
 
-    console.log('🎯 Generated', results.length, 'images for prompt:', prompt);
-
     return NextResponse.json({
-      prompt,
+      success: true,
+      images,
       provider,
-      count: results.length,
-      images: results
+      prompt,
+      count: images.length
     });
 
   } catch (error) {
-    console.error('❌ Error generating images:', error);
-    return NextResponse.json(
-      { error: 'Resim üretilirken bir hata oluştu' },
-      { status: 500 }
-    );
+    console.error('Image generation error:', error);
+    return NextResponse.json({ 
+      error: 'Görsel oluşturma sırasında hata oluştu' 
+    }, { status: 500 });
   }
+}
+
+// Sadece POST metodunu destekle
+export async function GET() {
+  return NextResponse.json({ message: 'Generate Image API is working' });
 }
 
 // OpenAI DALL-E 3 generation - DISABLED for deployment

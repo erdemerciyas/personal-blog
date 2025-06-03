@@ -1,7 +1,6 @@
 import { Inter } from 'next/font/google';
 import './globals.css';
 import Header from '@/components/Header';
-import Link from 'next/link';
 import ClientWrapper from '@/components/ClientWrapper';
 import ConditionalFooter from '@/components/ConditionalFooter';
 
