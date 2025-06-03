@@ -5,23 +5,24 @@ import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import ImageUpload from '../../../components/ImageUpload';
 import {
-  UserIcon,
-  KeyIcon,
-  EnvelopeIcon,
-  EyeIcon,
-  EyeSlashIcon,
-  CheckIcon,
-  ExclamationTriangleIcon,
-  ArrowLeftIcon,
   CogIcon,
+  UserIcon,
   ShieldCheckIcon,
+  CheckIcon,
+  PhotoIcon,
   UserGroupIcon,
+  ClockIcon,
+  BuildingStorefrontIcon,
+  DocumentTextIcon,
+  KeyIcon,
+  ExclamationTriangleIcon,
   TrashIcon,
   PencilIcon,
   PlusIcon,
-  ClockIcon,
-  BuildingStorefrontIcon,
-  PhotoIcon
+  EyeIcon,
+  EyeSlashIcon,
+  ArrowLeftIcon,
+  EnvelopeIcon
 } from '@heroicons/react/24/outline';
 
 interface SettingsData {
@@ -62,6 +63,19 @@ interface SiteSettings {
     primary: string;
     secondary: string;
     accent: string;
+  };
+  security: {
+    enableSecurityQuestion: boolean;
+    maintenanceMode: boolean;
+    allowRegistration: boolean;
+  };
+  pageSettings: {
+    home: boolean;
+    about: boolean;
+    services: boolean;
+    portfolio: boolean;
+    contact: boolean;
+    blog: boolean;
   };
 }
 
@@ -170,6 +184,7 @@ export default function AdminSettingsPage() {
   const [success, setSuccess] = useState('');
   const [error, setError] = useState('');
   const [activeTab, setActiveTab] = useState('general');
+  const [savingPageSettings, setSavingPageSettings] = useState(false);
 
   // Auth check
   useEffect(() => {
@@ -691,6 +706,74 @@ export default function AdminSettingsPage() {
     }
   };
 
+  const handleSecurityChange = (field: string, value: boolean) => {
+    setSiteSettings(prev => {
+      if (!prev) return null;
+      
+      return {
+        ...prev,
+        security: {
+          ...prev.security,
+          enableSecurityQuestion: prev.security?.enableSecurityQuestion ?? true,
+          maintenanceMode: prev.security?.maintenanceMode ?? false,
+          allowRegistration: prev.security?.allowRegistration ?? false,
+          [field]: value
+        }
+      } as SiteSettings;
+    });
+  };
+
+  const handlePageSettingChange = (key: string, value: boolean) => {
+    setSiteSettings(prev => {
+      if (!prev) return null;
+      
+      return {
+        ...prev,
+        pageSettings: {
+          ...prev.pageSettings,
+          home: prev.pageSettings?.home ?? true,
+          about: prev.pageSettings?.about ?? true,
+          services: prev.pageSettings?.services ?? true,
+          portfolio: prev.pageSettings?.portfolio ?? true,
+          contact: prev.pageSettings?.contact ?? true,
+          blog: prev.pageSettings?.blog ?? false,
+          [key]: value
+        }
+      } as SiteSettings;
+    });
+  };
+
+  const handlePageSettingsSave = async () => {
+    setSavingPageSettings(true);
+    setError('');
+    setSuccess('');
+
+    try {
+      const response = await fetch('/api/admin/site-settings', {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          security: siteSettings?.security,
+          pageSettings: siteSettings?.pageSettings
+        }),
+      });
+
+      if (response.ok) {
+        setSuccess('Sayfa ayarları başarıyla kaydedildi!');
+        setTimeout(() => setSuccess(''), 3000);
+      } else {
+        throw new Error('Sayfa ayarları kaydedilirken hata oluştu');
+      }
+    } catch (error) {
+      setError('Sayfa ayarları kaydedilirken hata oluştu');
+      setTimeout(() => setError(''), 5000);
+    } finally {
+      setSavingPageSettings(false);
+    }
+  };
+
   if (status === 'loading' || loading) {
     return (
       <div className="min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 flex items-center justify-center">
@@ -709,6 +792,7 @@ export default function AdminSettingsPage() {
   const tabs = [
     { id: 'general', name: 'Genel Ayarlar', icon: CogIcon },
     { id: 'brand', name: 'Marka ve Logo', icon: BuildingStorefrontIcon },
+    { id: 'pages', name: 'Sayfa Yönetimi', icon: DocumentTextIcon },
     { id: 'media', name: 'Medya Yönetimi', icon: PhotoIcon },
     { id: 'seo', name: 'SEO & Meta', icon: UserGroupIcon },
     { id: 'admin', name: 'Admin Ayarları', icon: ShieldCheckIcon },
@@ -1830,7 +1914,7 @@ export default function AdminSettingsPage() {
               {/* Email Change Section */}
               <div className="bg-white/5 border border-white/20 rounded-2xl p-6">
                 <h4 className="text-lg font-semibold text-white mb-6 flex items-center space-x-2">
-                  <EnvelopeIcon className="w-5 h-5 text-teal-400" />
+                  <KeyIcon className="w-5 h-5 text-teal-400" />
                   <span>Email Değiştir</span>
                 </h4>
                 <form onSubmit={handleEmailSubmit} className="space-y-6">
@@ -1891,7 +1975,7 @@ export default function AdminSettingsPage() {
                         </>
                       ) : (
                         <>
-                          <EnvelopeIcon className="w-5 h-5" />
+                          <KeyIcon className="w-5 h-5" />
                           <span>Email Değiştir</span>
                         </>
                       )}
@@ -2118,6 +2202,148 @@ export default function AdminSettingsPage() {
                       </table>
                     </div>
                   )}
+                </div>
+              </div>
+            </div>
+          )}
+
+          {/* Pages Management Tab */}
+          {activeTab === 'pages' && (
+            <div className="space-y-8">
+              <div>
+                <h3 className="text-xl font-bold text-white mb-6 flex items-center space-x-2">
+                  <DocumentTextIcon className="w-6 h-6 text-teal-400" />
+                  <span>Sayfa ve Güvenlik Yönetimi</span>
+                </h3>
+                
+                {/* Security Settings */}
+                <div className="bg-white/5 border border-white/20 rounded-2xl p-6 mb-8">
+                  <h4 className="text-lg font-semibold text-white mb-6 flex items-center space-x-2">
+                    <ShieldCheckIcon className="w-5 h-5 text-orange-400" />
+                    <span>Güvenlik Ayarları</span>
+                  </h4>
+                  
+                  <div className="space-y-4">
+                    <label className="flex items-center justify-between p-4 bg-white/5 rounded-xl">
+                      <div className="flex items-center space-x-3">
+                        <KeyIcon className="w-5 h-5 text-orange-400" />
+                        <div>
+                          <p className="text-white font-medium">Admin Login Güvenlik Sorusu</p>
+                          <p className="text-slate-400 text-sm">Admin giriş yaparken güvenlik sorusu zorunlu olsun</p>
+                        </div>
+                      </div>
+                      <input
+                        type="checkbox"
+                        checked={siteSettings?.security?.enableSecurityQuestion ?? true}
+                        onChange={(e) => handleSecurityChange('enableSecurityQuestion', e.target.checked)}
+                        className="w-5 h-5 text-orange-600 bg-white/10 border-white/20 rounded focus:ring-orange-500 focus:ring-2"
+                      />
+                    </label>
+
+                    <label className="flex items-center justify-between p-4 bg-white/5 rounded-xl">
+                      <div className="flex items-center space-x-3">
+                        <CogIcon className="w-5 h-5 text-yellow-400" />
+                        <div>
+                          <p className="text-white font-medium">Bakım Modu</p>
+                          <p className="text-slate-400 text-sm">Site ziyaretçilere bakım sayfası gösterilsin</p>
+                        </div>
+                      </div>
+                      <input
+                        type="checkbox"
+                        checked={siteSettings?.security?.maintenanceMode ?? false}
+                        onChange={(e) => handleSecurityChange('maintenanceMode', e.target.checked)}
+                        className="w-5 h-5 text-yellow-600 bg-white/10 border-white/20 rounded focus:ring-yellow-500 focus:ring-2"
+                      />
+                    </label>
+
+                    <label className="flex items-center justify-between p-4 bg-white/5 rounded-xl">
+                      <div className="flex items-center space-x-3">
+                        <UserGroupIcon className="w-5 h-5 text-green-400" />
+                        <div>
+                          <p className="text-white font-medium">Yeni Kullanıcı Kaydı</p>
+                          <p className="text-slate-400 text-sm">Ziyaretçiler yeni hesap oluşturabilsin</p>
+                        </div>
+                      </div>
+                      <input
+                        type="checkbox"
+                        checked={siteSettings?.security?.allowRegistration ?? false}
+                        onChange={(e) => handleSecurityChange('allowRegistration', e.target.checked)}
+                        className="w-5 h-5 text-green-600 bg-white/10 border-white/20 rounded focus:ring-green-500 focus:ring-2"
+                      />
+                    </label>
+                  </div>
+                </div>
+
+                {/* Page Management */}
+                <div className="bg-white/5 border border-white/20 rounded-2xl p-6">
+                  <h4 className="text-lg font-semibold text-white mb-6 flex items-center space-x-2">
+                    <DocumentTextIcon className="w-5 h-5 text-blue-400" />
+                    <span>Sayfa Erişim Kontrolü</span>
+                  </h4>
+                  
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    {[
+                      { key: 'home', name: 'Ana Sayfa', icon: '🏠', description: 'Site ana sayfası' },
+                      { key: 'about', name: 'Hakkımda', icon: '👤', description: 'Hakkımda sayfası' },
+                      { key: 'services', name: 'Hizmetler', icon: '⚙️', description: 'Hizmetler sayfası' },
+                      { key: 'portfolio', name: 'Portfolyo', icon: '💼', description: 'Portfolyo sayfası' },
+                      { key: 'contact', name: 'İletişim', icon: '📞', description: 'İletişim sayfası' },
+                      { key: 'blog', name: 'Blog', icon: '📝', description: 'Blog sayfası (gelecekte)' }
+                    ].map((page) => (
+                      <label key={page.key} className="flex items-center justify-between p-4 bg-white/5 rounded-xl">
+                        <div className="flex items-center space-x-3">
+                          <span className="text-2xl">{page.icon}</span>
+                          <div>
+                            <p className="text-white font-medium">{page.name}</p>
+                            <p className="text-slate-400 text-sm">{page.description}</p>
+                          </div>
+                        </div>
+                        <input
+                          type="checkbox"
+                          checked={siteSettings?.pageSettings?.[page.key as keyof typeof siteSettings.pageSettings] ?? true}
+                          onChange={(e) => handlePageSettingChange(page.key, e.target.checked)}
+                          className="w-5 h-5 text-blue-600 bg-white/10 border-white/20 rounded focus:ring-blue-500 focus:ring-2"
+                        />
+                      </label>
+                    ))}
+                  </div>
+
+                  <div className="mt-6 bg-blue-500/10 border border-blue-500/20 rounded-xl p-4">
+                    <h5 className="text-blue-300 font-semibold mb-2 flex items-center space-x-2">
+                      <ExclamationTriangleIcon className="w-5 h-5" />
+                      <span>Önemli Bilgi</span>
+                    </h5>
+                    <p className="text-blue-200 text-sm">
+                      Sayfaları pasif hale getirdiğinizde, ziyaretçiler o sayfalara erişemeyecek ve 404 sayfası göreceklerdir. 
+                      Ana sayfa ve Admin paneli hiçbir zaman kapatılamaz.
+                    </p>
+                  </div>
+                </div>
+
+                {/* Save Button */}
+                <div className="flex items-center justify-end pt-6 border-t border-white/10">
+                  <button
+                    type="button"
+                    onClick={handlePageSettingsSave}
+                    disabled={savingPageSettings}
+                    className={`px-8 py-3 rounded-xl font-semibold transition-all duration-200 flex items-center space-x-2 ${
+                      savingPageSettings
+                        ? 'bg-teal-600/50 cursor-not-allowed text-teal-200'
+                        : 'bg-gradient-to-r from-teal-600 to-blue-600 hover:from-teal-700 hover:to-blue-700 text-white hover:scale-105 hover:shadow-xl'
+                    }`}
+                  >
+                    {savingPageSettings ? (
+                      <>
+                        <div className="animate-spin rounded-full h-5 w-5 border-t-2 border-b-2 border-current"></div>
+                        <span>Kaydediliyor...</span>
+                      </>
+                    ) : (
+                      <>
+                        <CheckIcon className="w-5 h-5" />
+                        <span>Sayfa Ayarlarını Kaydet</span>
+                      </>
+                    )}
+                  </button>
                 </div>
               </div>
             </div>
