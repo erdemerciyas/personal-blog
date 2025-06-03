@@ -9,6 +9,7 @@ interface ServiceItem {
   title: string;
   description: string;
   icon: string;
+  image?: string;
   features: string[];
   price?: number;
   duration?: string;
@@ -100,7 +101,7 @@ export default function ServicesPage() {
                   <div className="w-full md:w-5/12 lg:w-1/2 flex-shrink-0">
                     <div className="relative aspect-square rounded-2xl overflow-hidden shadow-2xl transform transition-all duration-500 hover:scale-105 group">
                       <Image
-                        src={service.image}
+                        src={service.image || 'https://images.unsplash.com/photo-1519389950473-47ba0277781c?w=800&h=600&fit=crop&crop=center'}
                         alt={service.title}
                         fill
                         className="object-cover group-hover:scale-110 transition-transform duration-500"

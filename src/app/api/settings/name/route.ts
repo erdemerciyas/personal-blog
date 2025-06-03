@@ -99,6 +99,8 @@ export async function PUT(request: Request) {
 
 interface NameSettingsRequest {
   name?: string;
+  newName?: string;
+  currentPassword?: string;
   title?: string;
   description?: string;
   keywords?: string;

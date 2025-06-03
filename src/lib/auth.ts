@@ -66,13 +66,13 @@ export const authOptions: NextAuthOptions = {
     error: '/admin/login',
   },
   callbacks: {
-    async jwt({ token, user }: { token: JWT; user?: User }) {
+    async jwt({ token, user }) {
       if (user) {
-        token.role = user.role;
+        token.role = (user as User).role;
       }
       return token;
     },
-    async session({ session, token }: { session: Session; token: JWT }) {
+    async session({ session, token }) {
       if (session.user) {
         (session.user as User).role = token.role as string;
       }

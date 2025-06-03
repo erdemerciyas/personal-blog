@@ -35,7 +35,7 @@ export async function GET(request: Request) {
     const categoryMap = categories.reduce((map, cat) => {
       map[cat._id.toString()] = cat;
       return map;
-    }, {} as any);
+    }, {} as Record<string, typeof categories[0]>);
     
     // Portfolio'lara category bilgisini ekle
     const portfoliosWithCategory = portfolios.map(portfolio => {

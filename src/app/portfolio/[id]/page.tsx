@@ -65,23 +65,30 @@ function PortfolioDetailPageContent({ params }: { params: { id: string } }) {
     }
   }, [params.id]);
 
+  // Calculate allImages after portfolioItem is loaded
+  const allImages = portfolioItem ? [portfolioItem.coverImage, ...(portfolioItem.images || [])].filter(Boolean) as string[] : [];
+
   // Keyboard navigation for lightbox
   useEffect(() => {
     const handleKeyPress = (e: KeyboardEvent) => {
       if (!lightboxOpen) return;
       
-      if (e.key === 'Escape') {
-        setLightboxOpen(false);
-      } else if (e.key === 'ArrowLeft') {
-        navigateLightbox('prev');
-      } else if (e.key === 'ArrowRight') {
-        navigateLightbox('next');
+      switch (e.key) {
+        case 'Escape':
+          setLightboxOpen(false);
+          break;
+        case 'ArrowLeft':
+          setLightboxImageIndex((prev) => (prev > 0 ? prev - 1 : allImages.length - 1));
+          break;
+        case 'ArrowRight':
+          setLightboxImageIndex((prev) => (prev < allImages.length - 1 ? prev + 1 : 0));
+          break;
       }
     };
 
     window.addEventListener('keydown', handleKeyPress);
     return () => window.removeEventListener('keydown', handleKeyPress);
-  }, [lightboxOpen, lightboxImageIndex]);
+  }, [lightboxOpen, lightboxImageIndex, allImages.length]);
 
   if (loading) {
     return (
@@ -107,8 +114,6 @@ function PortfolioDetailPageContent({ params }: { params: { id: string } }) {
       </div>
     );
   }
-
-  const allImages = [portfolioItem.coverImage, ...(portfolioItem.images || [])].filter(Boolean) as string[];
 
   const openLightbox = (imageIndex: number) => {
     setLightboxImageIndex(imageIndex);

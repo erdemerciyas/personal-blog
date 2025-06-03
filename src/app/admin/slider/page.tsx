@@ -3,6 +3,7 @@ import { useState, useEffect } from 'react';
 import { useSession, signOut } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
+import Image from 'next/image';
 import ImageUpload from '../../../components/ImageUpload';
 import { 
   PhotoIcon,
@@ -450,11 +451,12 @@ export default function AdminSliderPage() {
               >
                 <div className="flex items-start space-x-6">
                   {/* Slider Image */}
-                  <div className="flex-shrink-0 w-40 h-24 bg-slate-700 rounded-xl overflow-hidden border border-slate-600">
-                    <img
+                  <div className="flex-shrink-0 w-40 h-24 bg-slate-700 rounded-xl overflow-hidden border border-slate-600 relative">
+                    <Image
                       src={slider.imageUrl}
                       alt={slider.title}
-                      className="w-full h-full object-cover"
+                      fill
+                      className="object-cover"
                       onError={(e) => {
                         (e.target as HTMLImageElement).src = 'https://picsum.photos/400/300?grayscale';
                       }}
@@ -800,11 +802,12 @@ export default function AdminSliderPage() {
                         <label className="block text-sm font-medium text-slate-300 mb-2">
                           Önizleme
                         </label>
-                        <div className="w-full h-40 bg-slate-600 rounded-xl overflow-hidden border border-slate-500">
-                          <img
+                        <div className="w-full h-40 bg-slate-600 rounded-xl overflow-hidden border border-slate-500 relative">
+                          <Image
                             src={formData.imageUrl}
                             alt="Preview"
-                            className="w-full h-full object-cover"
+                            fill
+                            className="object-cover"
                             onError={(e) => {
                               (e.target as HTMLImageElement).src = 'https://picsum.photos/400/300?grayscale';
                             }}

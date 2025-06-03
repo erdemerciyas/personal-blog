@@ -67,12 +67,14 @@ export async function GET() {
 }
 
 // OpenAI DALL-E 3 generation - DISABLED for deployment
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 async function generateWithOpenAI(prompt: string, count: number) {
   console.log('⚠️ OpenAI integration disabled for deployment, using fallback images');
   return null;
 }
 
 // Professional images generator for better quality demo images
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 function generateProfessionalImages(prompt: string, count: number) {
   // Keywords to category mapping for better image selection
   const keywordCategories = {

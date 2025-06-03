@@ -1,15 +1,21 @@
 import mongoose from 'mongoose';
 import { MongoClient } from 'mongodb';
 
+interface GlobalMongoose {
+  conn: typeof mongoose | null;
+  promise: Promise<typeof mongoose> | null;
+}
+
+interface GlobalMongoClient {
+  client: MongoClient | null;
+  promise: Promise<MongoClient> | null;
+}
+
 declare global {
-  let mongooseConnection: {
-    conn: typeof mongoose | null;
-    promise: Promise<typeof mongoose> | null;
-  };
-  let mongoClientConnection: {
-    client: MongoClient | null;
-    promise: Promise<MongoClient> | null;
-  };
+  // eslint-disable-next-line no-var
+  var mongooseConnection: GlobalMongoose | undefined;
+  // eslint-disable-next-line no-var
+  var mongoClientConnection: GlobalMongoClient | undefined;
 }
 
 // MongoDB URI with fallback
@@ -27,11 +33,11 @@ if (!cached) {
 }
 
 async function connectDB() {
-  if (cached.conn) {
-    return cached.conn;
+  if (cached!.conn) {
+    return cached!.conn;
   }
 
-  if (!cached.promise) {
+  if (!cached!.promise) {
     // cPanel hosting için optimize edilmiş ayarlar
     const opts = {
       bufferCommands: false,
@@ -44,19 +50,19 @@ async function connectDB() {
       maxStalenessSeconds: 90,
     };
 
-    cached.promise = mongoose.connect(MONGODB_URI, opts);
+    cached!.promise = mongoose.connect(MONGODB_URI, opts);
   }
 
   try {
-    cached.conn = await cached.promise;
+    cached!.conn = await cached!.promise;
     console.log('✅ MongoDB (Mongoose) bağlantısı başarılı');
   } catch (e) {
-    cached.promise = null;
+    cached!.promise = null;
     console.error('❌ MongoDB (Mongoose) bağlantı hatası:', e);
     throw e;
   }
 
-  return cached.conn;
+  return cached!.conn;
 }
 
 // MongoClient connection for other operations
@@ -67,11 +73,11 @@ if (!clientCached) {
 }
 
 export async function connectToDatabase() {
-  if (clientCached.client) {
-    return { client: clientCached.client, db: clientCached.client.db() };
+  if (clientCached!.client) {
+    return { client: clientCached!.client, db: clientCached!.client.db() };
   }
 
-  if (!clientCached.promise) {
+  if (!clientCached!.promise) {
     // cPanel için optimize edilmiş client ayarları
     const options = {
       maxPoolSize: 5,
@@ -79,15 +85,15 @@ export async function connectToDatabase() {
       socketTimeoutMS: 30000,
     };
     const client = new MongoClient(MONGODB_URI, options);
-    clientCached.promise = client.connect();
+    clientCached!.promise = client.connect();
   }
 
   try {
-    clientCached.client = await clientCached.promise;
+    clientCached!.client = await clientCached!.promise;
     console.log('✅ MongoDB (Client) bağlantısı başarılı');
-    return { client: clientCached.client, db: clientCached.client.db() };
+    return { client: clientCached!.client, db: clientCached!.client.db() };
   } catch (e) {
-    clientCached.promise = null;
+    clientCached!.promise = null;
     console.error('❌ MongoDB (Client) bağlantı hatası:', e);
     throw e;
   }
@@ -96,12 +102,12 @@ export async function connectToDatabase() {
 // Connection cleanup for cPanel
 process.on('SIGINT', async () => {
   try {
-    if (cached.conn) {
-      await cached.conn.disconnect();
+    if (cached!.conn) {
+      await cached!.conn.disconnect();
       console.log('MongoDB Mongoose connection closed.');
     }
-    if (clientCached.client) {
-      await clientCached.client.close();
+    if (clientCached!.client) {
+      await clientCached!.client.close();
       console.log('MongoDB Client connection closed.');
     }
   } catch (err) {
