@@ -38,7 +38,7 @@ Modern, responsive ve kullanıcı dostu kişisel blog ve portfolio sitesi. Next.
 NEXTAUTH_SECRET=f1181d6e1ce33c4ba4135a7497694541679c39f7ea81e7feddeca23a93e39ab9
 NEXTAUTH_URL=https://[VERCEL-URL-IN]
 NODE_ENV=production
-MONGODB_URI=mongodb+srv://erdemerciyasreverse:oI9OMHyFwhIdh54O@erdemerciyas.1xlwobu.mongodb.net/?retryWrites=true&w=majority&appName=erdemerciyas
+MONGODB_URI=mongodb+srv://***************
 ```
 
 ### **3. Build Configuration:**
