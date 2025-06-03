@@ -10,7 +10,7 @@ interface Service {
   description: string;
   icon: string;
   features: string[];
-  price: {
+  price?: {
     type: 'fixed' | 'hourly' | 'project';
     amount?: number;
     currency: string;
@@ -28,6 +28,10 @@ interface ServiceCardProps {
 
 const ServiceCard = ({ service }: ServiceCardProps) => {
   const formatPrice = () => {
+    if (!service.price) {
+      return 'Fiyat Teklifi';
+    }
+    
     if (service.price.type === 'project') {
       return service.price.note || 'Proje Bazlı';
     }
