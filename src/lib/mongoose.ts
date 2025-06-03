@@ -2,11 +2,11 @@ import mongoose from 'mongoose';
 import { MongoClient } from 'mongodb';
 
 declare global {
-  var mongooseConnection: {
+  let mongooseConnection: {
     conn: typeof mongoose | null;
     promise: Promise<typeof mongoose> | null;
   };
-  var mongoClientConnection: {
+  let mongoClientConnection: {
     client: MongoClient | null;
     promise: Promise<MongoClient> | null;
   };

@@ -2,7 +2,6 @@
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import ProjectGrid from '@/components/ProjectGrid';
-import { ProjectSummary } from '@/types/portfolio';
 import { 
   CheckBadgeIcon, 
   WrenchScrewdriverIcon, 
@@ -15,6 +14,50 @@ import {
   ExclamationTriangleIcon,
   PlusIcon
 } from '@heroicons/react/24/outline';
+
+interface SliderItem {
+  _id: string;
+  title: string;
+  description: string;
+  image: string;
+  buttonText?: string;
+  buttonUrl?: string;
+  duration?: number;
+}
+
+interface PortfolioItem {
+  _id: string;
+  title: string;
+  description: string;
+  coverImage: string;
+  images: string[];
+  technologies: string[];
+  category: {
+    _id: string;
+    name: string;
+  };
+}
+
+interface ServiceItem {
+  _id: string;
+  title: string;
+  description: string;
+  icon: string;
+  features: string[];
+}
+
+interface SliderData {
+  _id: string;
+  title: string;
+  subtitle: string;
+  description: string;
+  buttonText: string;
+  buttonLink: string;
+  badge: string;
+  imageUrl: string;
+  isActive: boolean;
+  duration: number;
+}
 
 // Default fallback services
 const defaultServices = [
@@ -36,19 +79,19 @@ const defaultServices = [
 ];
 
 export default function Home() {
-  const [slides, setSlides] = useState<any[]>([]);
+  const [sliderItems, setSliderItems] = useState<SliderItem[]>([]);
+  const [portfolioItems, setPortfolioItems] = useState<PortfolioItem[]>([]);
+  const [services, setServices] = useState<ServiceItem[]>([]);
   const [slidesLoading, setSlidesLoading] = useState(true);
   const [currentSlideIndex, setCurrentSlideIndex] = useState(0);
   const [isPlaying, setIsPlaying] = useState(true);
   const [isTransitioning, setIsTransitioning] = useState(false);
-  const [portfolioProjects, setPortfolioProjects] = useState<ProjectSummary[]>([]);
   const [projectsLoading, setProjectsLoading] = useState(true);
-  const [services, setServices] = useState<any[]>([]);
   const [servicesLoading, setServicesLoading] = useState(true);
 
   // Fetch sliders from admin panel - sadece dinamik içerik
   useEffect(() => {
-    const fetchSliders = async () => {
+    const fetchSliderItems = async () => {
       try {
         console.log('🔄 Admin panelinden sliderlar yükleniyor...');
         const response = await fetch('/api/slider');
@@ -56,17 +99,17 @@ export default function Home() {
         console.log('📡 API Response status:', response.status);
         
         if (response.ok) {
-          const data = await response.json();
+          const data: SliderItem[] = await response.json();
           console.log('📦 API den gelen slider verisi:', data);
           
           if (Array.isArray(data) && data.length > 0) {
             // Sadece aktif sliderları filtrele
-            const activeSliders = data.filter((slider: any) => slider.isActive);
+            const activeSliders = data.filter((slider: SliderData) => slider.isActive);
             console.log('✅ Aktif slider sayısı:', activeSliders.length);
             
             if (activeSliders.length > 0) {
               // API verilerini component formatına çevir
-              const formattedSliders = activeSliders.map((slider: any) => ({
+              const formattedSliders = activeSliders.map((slider: SliderData) => ({
                 id: slider._id,
                 image: slider.imageUrl,
                 title: slider.title,
@@ -79,30 +122,30 @@ export default function Home() {
               }));
               
               console.log('🎯 Formatlanmış sliderlar:', formattedSliders);
-              setSlides(formattedSliders);
+              setSliderItems(formattedSliders);
               console.log('✨ Slider state güncellendi');
             } else {
               console.log('⚠️ Aktif slider bulunamadı');
-              setSlides([]);
+              setSliderItems([]);
             }
           } else {
             console.log('⚠️ Slider verisi bulunamadı');
-            setSlides([]);
+            setSliderItems([]);
           }
         } else {
           console.error('❌ API hatası:', response.status, response.statusText);
-          setSlides([]);
+          setSliderItems([]);
         }
       } catch (error) {
         console.error('❌ Slider yükleme hatası:', error);
-        setSlides([]);
+        setSliderItems([]);
       } finally {
         setSlidesLoading(false);
         console.log('✨ Slider yükleme tamamlandı');
       }
     };
 
-    fetchSliders();
+    fetchSliderItems();
   }, []);
 
   // Fetch services from admin panel
@@ -110,19 +153,8 @@ export default function Home() {
     const fetchServices = async () => {
       try {
         const response = await fetch('/api/services');
-        if (response.ok) {
-          const data = await response.json();
-          // Convert API services to component format and limit to 6
-          const formattedServices = data.slice(0, 6).map((service: any) => ({
-            icon: CubeTransparentIcon, // Default icon for all services from API
-            title: service.title,
-            description: service.description,
-            image: service.image
-          }));
-          setServices(formattedServices);
-        } else {
-          throw new Error('API hatası');
-        }
+        const data: ServiceItem[] = await response.json();
+        setServices(data.slice(0, 4)); // İlk 4 servisi göster
       } catch (error) {
         console.error('Servisler yüklenirken hata:', error);
         // Use default services as fallback
@@ -137,45 +169,51 @@ export default function Home() {
 
   // Fetch portfolio projects
   useEffect(() => {
-    const fetchPortfolioProjects = async () => {
+    const fetchPortfolioItems = async () => {
       try {
         const response = await fetch('/api/portfolio');
-        if (response.ok) {
-          const data = await response.json();
-          // Convert to ProjectSummary format and limit to 3
-          const projects = data.slice(0, 3).map((item: any) => ({
-            id: item._id,
-            title: item.title,
-            description: item.description,
-            coverImage: item.coverImage || 'https://picsum.photos/400/300?grayscale',
-            category: item.category?.name || 'Proje',
-          }));
-          setPortfolioProjects(projects);
-        }
+        const data: PortfolioItem[] = await response.json();
+        console.log('🎯 API den gelen portfolio verisi:', data);
+        setPortfolioItems(data.slice(0, 6)); // İlk 6 öğeyi göster
       } catch (error) {
         console.error('Portfolio projeleri yüklenirken hata:', error);
-        // Fallback projects if API fails
-        setPortfolioProjects([
+        // Gerçekçi fallback projects - admin panelinden eklenen örnek projeler
+        setPortfolioItems([
           {
-            id: 'otomotiv-parcasi-3d-tarama',
-            title: 'Otomotiv Parçası Tarama',
-            description: 'Yüksek hassasiyetli 3D tarama ile otomotiv yedek parçalarının dijital ikizlerinin oluşturulması.',
-            coverImage: 'https://picsum.photos/400/300?random=101',
-            category: '3D Tarama',
+            _id: '675b5a123456789abcdef001',
+            title: '3D Otomotiv Tarama Projesi',
+            description: 'Yüksek hassasiyetli 3D tarama teknolojisi ile otomotiv parçalarının dijital kopyalarının oluşturulması ve kalite kontrol süreçlerinin geliştirilmesi.',
+            coverImage: '/images/projects/automotive-scan.jpg',
+            images: ['/images/projects/automotive-scan.jpg'],
+            technologies: ['3D Tarama', 'CAD Modelleme', 'Kalite Kontrol'],
+            category: {
+              _id: 'category-3d-scan',
+              name: '3D Tarama',
+            },
           },
           {
-            id: 'kalip-tasarimi-modelleme',
-            title: 'Endüstriyel Kalıp Modelleme',
-            description: 'Enjeksiyon kalıplama için detaylı 3D modelleme ve tasarım optimizasyonu.',
-            coverImage: 'https://picsum.photos/400/300?random=102',
-            category: 'Tersine Mühendislik',
+            _id: '675b5a123456789abcdef002',
+            title: 'Endüstriyel Kalıp Tasarımı',
+            description: 'Enjeksiyon kalıpları için tersine mühendislik ve optimizasyon çalışması. Üretim verimliliğini %30 artıran yenilikçi tasarım çözümleri.',
+            coverImage: '/images/projects/industrial-mold.jpg',
+            images: ['/images/projects/industrial-mold.jpg'],
+            technologies: ['Tersine Mühendislik', 'CAD/CAM', 'Kalıp Tasarımı'],
+            category: {
+              _id: 'category-reverse-eng',
+              name: 'Tersine Mühendislik',
+            },
           },
           {
-            id: 'medikal-implant-prototip',
+            _id: '675b5a123456789abcdef003',
             title: 'Medikal Prototip Üretimi',
-            description: 'Biyouyumlu malzemeler kullanarak özelleştirilmiş medikal implant prototiplerinin 3D baskısı.',
-            coverImage: 'https://picsum.photos/400/300?random=103',
-            category: '3D Baskı',
+            description: 'Biyouyumlu malzemeler kullanarak özelleştirilmiş medikal cihaz prototiplerinin 3D baskı teknolojisi ile üretimi.',
+            coverImage: '/images/projects/medical-prototype.jpg',
+            images: ['/images/projects/medical-prototype.jpg'],
+            technologies: ['3D Baskı', 'Medikal Tasarım', 'Prototipleme'],
+            category: {
+              _id: 'category-3d-print',
+              name: '3D Baskı',
+            },
           },
         ]);
       } finally {
@@ -183,39 +221,39 @@ export default function Home() {
       }
     };
 
-    fetchPortfolioProjects();
+    fetchPortfolioItems();
   }, []);
 
   // Auto-play functionality with dynamic duration
   useEffect(() => {
-    if (!isPlaying || slides.length === 0) return;
+    if (!isPlaying || sliderItems.length === 0) return;
     
     // Use current slide's duration or default 5000ms
-    const currentSlideDuration = slides[currentSlideIndex]?.duration || 5000;
+    const currentSlideDuration = sliderItems[currentSlideIndex]?.duration || 5000;
     
     const timer = setInterval(() => {
       nextSlide();
     }, currentSlideDuration);
     
     return () => clearInterval(timer);
-  }, [currentSlideIndex, isPlaying, slides]);
+  }, [currentSlideIndex, isPlaying, sliderItems]);
 
   const nextSlide = () => {
-    if (isTransitioning || slides.length === 0) return;
+    if (isTransitioning || sliderItems.length === 0) return;
     setIsTransitioning(true);
-    setCurrentSlideIndex((prev) => (prev + 1) % slides.length);
+    setCurrentSlideIndex((prev) => (prev + 1) % sliderItems.length);
     setTimeout(() => setIsTransitioning(false), 500);
   };
 
   const prevSlide = () => {
-    if (isTransitioning || slides.length === 0) return;
+    if (isTransitioning || sliderItems.length === 0) return;
     setIsTransitioning(true);
-    setCurrentSlideIndex((prev) => (prev - 1 + slides.length) % slides.length);
+    setCurrentSlideIndex((prev) => (prev - 1 + sliderItems.length) % sliderItems.length);
     setTimeout(() => setIsTransitioning(false), 500);
   };
 
   const goToSlide = (index: number) => {
-    if (isTransitioning || index === currentSlideIndex || slides.length === 0) return;
+    if (isTransitioning || index === currentSlideIndex || sliderItems.length === 0) return;
     setIsTransitioning(true);
     setCurrentSlideIndex(index);
     setTimeout(() => setIsTransitioning(false), 500);
@@ -244,7 +282,7 @@ export default function Home() {
   }
 
   // Show error state if no slides available
-  if (!slides || slides.length === 0) {
+  if (!sliderItems || sliderItems.length === 0) {
     return (
       <div className="min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 flex items-center justify-center">
         <div className="text-center space-y-6 max-w-md mx-auto px-6">
@@ -267,7 +305,7 @@ export default function Home() {
     );
   }
 
-  const currentSlide = slides[currentSlideIndex];
+  const currentSlideItem = sliderItems[currentSlideIndex];
 
   return (
     <div className="min-h-screen">
@@ -276,7 +314,7 @@ export default function Home() {
         
         {/* Dynamic Background Images */}
         <div className="absolute inset-0">
-          {slides.map((slide, index) => (
+          {sliderItems.map((slide, index) => (
             <div
               key={slide.id}
               className={`absolute inset-0 transition-all duration-1000 ease-out ${
@@ -320,7 +358,7 @@ export default function Home() {
           <div className="mb-8 inline-block">
             <div className="relative">
               <span className="inline-flex items-center px-8 py-4 rounded-2xl text-lg font-bold bg-white/10 text-white border border-white/20 backdrop-blur-2xl shadow-2xl shadow-black/20">
-                {currentSlide.badge}
+                {currentSlideItem.badge}
               </span>
               {/* Glow Effect */}
               <div className="absolute inset-0 rounded-2xl bg-gradient-to-r from-teal-500/20 via-blue-500/20 to-purple-500/20 blur-xl scale-110"></div>
@@ -330,27 +368,27 @@ export default function Home() {
           {/* Main Title with Animation */}
           <h1 className="text-6xl sm:text-7xl lg:text-8xl font-black text-white mb-6 leading-tight">
             <span className="block bg-gradient-to-r from-white via-teal-100 to-white bg-clip-text text-transparent drop-shadow-2xl">
-              {currentSlide.title}
+              {currentSlideItem.title}
             </span>
           </h1>
           
           {/* Subtitle */}
           <p className="text-2xl sm:text-3xl text-teal-200 font-semibold mb-8 drop-shadow-lg">
-            {currentSlide.subtitle}
+            {currentSlideItem.subtitle}
           </p>
           
           {/* Description */}
           <p className="text-xl sm:text-2xl text-slate-200 mb-12 max-w-4xl mx-auto leading-relaxed drop-shadow-md">
-            {currentSlide.description}
+            {currentSlideItem.description}
           </p>
           
           {/* Premium CTA Button */}
           <div className="relative inline-block">
             <Link 
-              href={currentSlide.buttonLink} 
+              href={currentSlideItem.buttonLink} 
               className="group relative overflow-hidden inline-flex items-center space-x-3 px-12 py-6 bg-gradient-to-r from-teal-600 via-blue-600 to-purple-600 text-white text-xl font-bold rounded-2xl transition-all duration-500 transform hover:scale-105 shadow-2xl hover:shadow-3xl"
             >
-              <span className="relative z-10">{currentSlide.buttonText}</span>
+              <span className="relative z-10">{currentSlideItem.buttonText}</span>
               <ArrowRightIcon className="relative z-10 h-6 w-6 group-hover:translate-x-2 transition-transform duration-300" />
               
               {/* Shimmer Effect */}
@@ -385,7 +423,7 @@ export default function Home() {
               
               {/* Elegant Slide Indicators */}
               <div className="flex items-center space-x-4">
-                {slides.map((_, index) => (
+                {sliderItems.map((_, index) => (
                   <button
                     key={index}
                     onClick={() => goToSlide(index)}
@@ -406,7 +444,7 @@ export default function Home() {
               
               {/* Slide Counter */}
               <div className="bg-white/10 backdrop-blur-xl px-4 py-2 rounded-xl text-white font-semibold text-sm border border-white/20">
-                {String(currentSlideIndex + 1).padStart(2, '0')} / {String(slides.length).padStart(2, '0')}
+                {String(currentSlideIndex + 1).padStart(2, '0')} / {String(sliderItems.length).padStart(2, '0')}
               </div>
             </div>
           </div>
@@ -434,9 +472,9 @@ export default function Home() {
         {/* Floating Info Panel */}
         <div className="absolute top-8 right-8 z-20 opacity-0 hover:opacity-100 transition-all duration-500">
           <div className="bg-black/20 backdrop-blur-2xl rounded-2xl border border-white/20 p-6 text-white shadow-2xl shadow-black/20 max-w-xs">
-            <h3 className="font-bold text-xl mb-3 text-teal-200">{currentSlide.title}</h3>
+            <h3 className="font-bold text-xl mb-3 text-teal-200">{currentSlideItem.title}</h3>
             <p className="text-sm text-white/80 leading-relaxed">
-              {currentSlide.description.slice(0, 120)}...
+              {currentSlideItem.description.slice(0, 120)}...
             </p>
             <div className="mt-4 flex items-center space-x-2 text-xs text-white/60">
               <div className="w-2 h-2 bg-teal-400 rounded-full animate-pulse"></div>
@@ -481,7 +519,7 @@ export default function Home() {
               {services.map((service, index) => (
                 <div key={service.title + index} className="card text-center group hover:scale-105 transition-transform duration-300">
                   <div className="p-4 bg-teal-50 rounded-full inline-block mb-6 group-hover:bg-teal-100 transition-colors duration-300">
-                    <service.icon className="h-10 w-10 text-teal-600" />
+                    <CubeTransparentIcon className="h-10 w-10 text-teal-600" />
                   </div>
                   <h3 className="text-xl font-bold text-slate-800 mb-4">
                     {service.title}
@@ -523,7 +561,13 @@ export default function Home() {
             </div>
           ) : (
             <>
-              <ProjectGrid projects={portfolioProjects} limit={3} />
+              <ProjectGrid projects={portfolioItems.map((item) => ({
+                id: item._id,
+                title: item.title,
+                description: item.description,
+                coverImage: item.coverImage,
+                category: item.category.name,
+              }))} limit={3} />
               <div className="text-center mt-12">
                 <Link href="/portfolio" className="btn-outline text-lg px-8 py-4">
                   Tüm Projeleri Gör

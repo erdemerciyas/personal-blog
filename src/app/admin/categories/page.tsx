@@ -15,7 +15,6 @@ import {
   ClockIcon,
   ArrowLeftIcon,
   HomeIcon,
-  DocumentTextIcon,
   FolderOpenIcon,
   XMarkIcon,
   CheckIcon
@@ -49,7 +48,7 @@ export default function Categories() {
     } else if (status === 'authenticated') {
       fetchCategories();
     }
-  }, [status, session]);
+  }, [status, session, router]);
 
   const fetchCategories = async () => {
     try {
@@ -278,7 +277,7 @@ export default function Categories() {
         <div className="mb-8">
           <h3 className="text-xl font-bold text-white mb-4">Hızlı İşlemler</h3>
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-            {quickActions.map((action, index) => (
+            {quickActions.map((action) => (
               <Link 
                 key={action.title}
                 href={action.href}

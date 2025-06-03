@@ -63,8 +63,8 @@ export default function NewServicePage() {
       setTimeout(() => {
         router.push('/admin/services');
       }, 1500);
-    } catch (error) {
-      setError('Servis eklenirken bir hata oluştu');
+    } catch {
+      setCategories([]);
     } finally {
       setLoading(false);
     }

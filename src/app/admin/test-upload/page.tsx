@@ -112,7 +112,7 @@ export default function TestUploadPage() {
               <li>• Maksimum dosya boyutu: 10MB</li>
               <li>• Desteklenen formatlar: JPEG, PNG, GIF, WebP</li>
               <li>• Dosyalar otomatik olarak yeniden adlandırılır</li>
-              <li>• Upload edilen resimlerin URL'i: /uploads/dosyaadi.uzanti</li>
+              <li>• Upload edilen resimlerin URL&apos;si: /uploads/dosyaadi.uzanti</li>
             </ul>
           </div>
         </div>

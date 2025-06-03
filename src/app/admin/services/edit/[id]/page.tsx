@@ -53,8 +53,8 @@ export default function EditServicePage({ params }: { params: { id: string } }) 
         const data = await response.json();
         setService(data);
         setFeatures(data.features && data.features.length > 0 ? data.features : ['']);
-      } catch (error) {
-        setError('Servis yüklenirken bir hata oluştu');
+      } catch {
+        setError('Servis bilgileri yüklenirken bir hata oluştu');
       } finally {
         setLoading(false);
       }
@@ -110,7 +110,7 @@ export default function EditServicePage({ params }: { params: { id: string } }) 
       setTimeout(() => {
         router.push('/admin/services');
       }, 1500);
-    } catch (error) {
+    } catch {
       setError('Servis güncellenirken bir hata oluştu');
     } finally {
       setSaving(false);

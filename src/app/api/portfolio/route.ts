@@ -1,78 +1,55 @@
 import { NextResponse } from 'next/server';
 import { getServerSession } from 'next-auth';
-import { connectToDatabase } from '@/lib/mongoose';
 import { authOptions } from '@/lib/auth';
-import { ObjectId } from 'mongodb';
-
-const DEFAULT_IMAGE = 'https://picsum.photos/800/600?grayscale';
-const DEFAULT_DETAIL_IMAGES = [
-  'https://picsum.photos/800/600?random=1&grayscale',
-  'https://picsum.photos/800/600?random=2&grayscale',
-  'https://picsum.photos/800/600?random=3&grayscale'
-];
+import connectDB from '@/lib/mongoose';
+import Portfolio from '@/models/Portfolio';
+import Category from '@/models/Category';
 
 // GET - Tüm portfolyo öğelerini getir
 export async function GET(request: Request) {
   try {
-    const { db } = await connectToDatabase();
+    await connectDB();
+    
+    // URL'den category query parameter'ını al
     const { searchParams } = new URL(request.url);
     const categorySlug = searchParams.get('category');
     
-    // Baz sorgu pipeline'ı
-    const pipeline: any[] = [];
-
-    // Eğer kategori filtresi varsa, önce kategoriyi bul
+    let query = {};
+    
+    // Eğer kategori filtresi varsa, önce kategori ID'sini bul
     if (categorySlug) {
-      const category = await db.collection('categories').findOne({ slug: categorySlug });
+      const category = await Category.findOne({ slug: categorySlug });
       if (category) {
-        pipeline.push({
-          $match: { categoryId: new ObjectId(category._id) }
-        });
+        query = { categoryId: category._id };
+      } else {
+        // Geçersiz kategori slug'ı durumunda boş array döndür
+        return NextResponse.json([]);
       }
     }
-
-    // Kategori bilgilerini ekle ve sırala
-    pipeline.push(
-      {
-        $lookup: {
-          from: 'categories',
-          localField: 'categoryId',
-          foreignField: '_id',
-          as: 'category'
-        }
-      },
-      {
-        $unwind: {
-          path: '$category',
-          preserveNullAndEmptyArrays: true
-        }
-      },
-      {
-        $sort: { order: 1, _id: -1 }
-      }
-    );
-
-    const portfolios = await db
-      .collection('portfolios')
-      .aggregate(pipeline)
-      .toArray();
-
-    return NextResponse.json(portfolios, {
-      headers: {
-        'Content-Type': 'application/json; charset=utf-8',
-      },
+    
+    const portfolios = await Portfolio.find(query)
+      .sort({ createdAt: -1 });
+    
+    // Kategorileri ayrıca al ve manuel olarak birleştir
+    const categories = await Category.find();
+    const categoryMap = categories.reduce((map, cat) => {
+      map[cat._id.toString()] = cat;
+      return map;
+    }, {} as any);
+    
+    // Portfolio'lara category bilgisini ekle
+    const portfoliosWithCategory = portfolios.map(portfolio => {
+      const portfolioObj = portfolio.toObject();
+      portfolioObj.category = categoryMap[portfolioObj.categoryId?.toString()];
+      return portfolioObj;
     });
+    
+    return NextResponse.json(portfoliosWithCategory);
   } catch (error) {
-    console.error('Portfolyo listesi getirme hatası:', error);
-    return NextResponse.json(
-      { error: 'Portfolyo listesi getirilemedi' },
-      { 
-        status: 500,
-        headers: {
-          'Content-Type': 'application/json; charset=utf-8',
-        },
-      }
-    );
+    console.error('Portfolio fetch error:', error);
+    return NextResponse.json({ 
+      error: 'Failed to fetch portfolios' 
+    }, { status: 500 });
   }
 }
 
@@ -80,60 +57,24 @@ export async function GET(request: Request) {
 export async function POST(request: Request) {
   try {
     const session = await getServerSession(authOptions);
-
-    if (!session || session.user?.role !== 'admin') {
-      return NextResponse.json(
-        { error: 'Bu işlem için yetkiniz yok' },
-        { status: 403 }
-      );
-    }
-
-    const { db } = await connectToDatabase();
-    const data = await request.json();
     
-    // Zorunlu alanları kontrol et
-    if (!data.title || !data.description || !data.categoryId || !data.client || !data.completionDate) {
-      return NextResponse.json(
-        { error: 'Tüm zorunlu alanları doldurun' },
-        { status: 400 }
-      );
+    if (!session?.user?.email) {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
-    // Kategori ID'sinin geçerli olduğunu kontrol et
-    const category = await db
-      .collection('categories')
-      .findOne({ _id: new ObjectId(data.categoryId) });
-
-    if (!category) {
-      return NextResponse.json(
-        { error: 'Geçersiz kategori' },
-        { status: 400 }
-      );
-    }
-
-    const cleanedData = {
-      ...data,
-      coverImage: data.coverImage || DEFAULT_IMAGE,
-      images: data.images && data.images.length > 0 && data.images[0] ? data.images : DEFAULT_DETAIL_IMAGES,
-      categoryId: new ObjectId(data.categoryId),
-      createdAt: new Date(),
-      updatedAt: new Date(),
-    };
-
-    const result = await db.collection('portfolios').insertOne(cleanedData);
-
-    return NextResponse.json(
-      { 
-        message: 'Portfolyo öğesi başarıyla eklendi',
-        id: result.insertedId 
-      },
-      { status: 201 }
-    );
+    await connectDB();
+    
+    const data: Record<string, unknown> = await request.json();
+    
+    const portfolio = new Portfolio(data);
+    await portfolio.save();
+    
+    return NextResponse.json(portfolio, { status: 201 });
+    
   } catch (error) {
-    console.error('Portfolyo öğesi ekleme hatası:', error);
-    return NextResponse.json(
-      { error: 'Portfolyo öğesi eklenemedi' },
-      { status: 500 }
-    );
+    console.error('Portfolio creation error:', error);
+    return NextResponse.json({ 
+      error: 'Failed to create portfolio' 
+    }, { status: 500 });
   }
 } 

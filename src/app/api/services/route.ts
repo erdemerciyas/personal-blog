@@ -2,7 +2,6 @@ import { NextResponse } from 'next/server';
 import { getServerSession } from 'next-auth';
 import { connectToDatabase } from '@/lib/mongoose';
 import { authOptions } from '@/lib/auth';
-import { ObjectId } from 'mongodb';
 import { generateAIImage } from '@/lib/aiImageGenerator';
 
 // GET /api/services - Tüm servisleri getir
@@ -40,7 +39,7 @@ export async function POST(request: Request) {
     if (!imageUrl || imageUrl.trim() === '') {
       console.log(`Generating AI image for service: ${body.title}`);
       try {
-        imageUrl = await generateAIImage(body.title, body.description);
+        imageUrl = await generateAIImage(body.title);
         console.log(`AI image generated successfully: ${imageUrl}`);
       } catch (error) {
         console.error('AI image generation failed, using fallback:', error);

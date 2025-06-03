@@ -7,9 +7,6 @@ import Link from 'next/link';
 import ImageUpload from '../../../../components/ImageUpload';
 import { 
   PlusIcon,
-  PencilIcon,
-  TrashIcon,
-  EyeIcon,
   UserIcon,
   CubeTransparentIcon,
   FolderOpenIcon,
@@ -61,6 +58,8 @@ export default function NewPortfolioItem() {
     images: [''],
     featured: false,
     order: 0,
+    projectUrl: '',
+    githubUrl: '',
   });
 
   useEffect(() => {
@@ -71,7 +70,7 @@ export default function NewPortfolioItem() {
     } else if (status === 'authenticated') {
       fetchCategories();
     }
-  }, [status, session]);
+  }, [status, session, router]);
 
   const fetchCategories = async () => {
     try {
@@ -288,7 +287,7 @@ export default function NewPortfolioItem() {
                   <span>Yeni Proje Ekle</span>
                 </h2>
                 <p className="text-slate-300 text-lg">
-                  Portfolio'nuzun taze yeni bir projesi oluşturun.
+                  Portfolio&apos;nuzun taze yeni bir projesi oluşturun.
                 </p>
               </div>
               <div className="hidden lg:flex items-center space-x-2 text-sm text-slate-400">
@@ -312,7 +311,7 @@ export default function NewPortfolioItem() {
         <div className="mb-8">
           <h3 className="text-xl font-bold text-white mb-4">Hızlı İşlemler</h3>
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-            {quickActions.map((action, index) => (
+            {quickActions.map((action) => (
               <Link 
                 key={action.title}
                 href={action.href}
@@ -369,15 +368,9 @@ export default function NewPortfolioItem() {
                       }}
                       required
                     >
-                      <option value="" style={{ color: '#1e293b', backgroundColor: '#ffffff' }}>
-                        Kategori seçin
-                      </option>
-                      {categories.map((category) => (
-                        <option 
-                          key={category._id} 
-                          value={category._id} 
-                          style={{ color: '#1e293b', backgroundColor: '#ffffff' }}
-                        >
+                      <option value="">Kategori seçin</option>
+                      {categories.map((category: Category) => (
+                        <option key={category._id} value={category._id}>
                           {category.name}
                         </option>
                       ))}
@@ -568,6 +561,34 @@ export default function NewPortfolioItem() {
                       />
                     </div>
                   </div>
+                </div>
+
+                {/* Project URL */}
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    Proje URL&apos;si
+                  </label>
+                  <input
+                    type="url"
+                    value={formData.projectUrl}
+                    onChange={(e) => setFormData({...formData, projectUrl: e.target.value})}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    placeholder="https://example.com"
+                  />
+                </div>
+
+                {/* GitHub URL */}
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    GitHub URL
+                  </label>
+                  <input
+                    type="url"
+                    value={formData.githubUrl}
+                    onChange={(e) => setFormData({...formData, githubUrl: e.target.value})}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    placeholder="https://github.com/username/repo"
+                  />
                 </div>
 
                 {/* Form Actions */}

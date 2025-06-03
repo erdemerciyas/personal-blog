@@ -1,24 +1,21 @@
 'use client';
 
-import { useState, useEffect, Suspense } from 'react';
+import { useState, useEffect } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
-import { useRouter } from 'next/navigation';
-import { PortfolioItem } from '@/types/portfolio'; // Assuming PortfolioItem type is correctly defined
-import ProjectCard from '@/components/ProjectCard'; // For related projects
-import ProjectGrid from '@/components/ProjectGrid'; // Ensuring this import is correct
 import {
   ArrowLeftIcon,
-  CalendarDaysIcon,
-  UserGroupIcon,
-  CpuChipIcon,
   TagIcon,
+  CalendarIcon,
+  UserIcon,
   PhotoIcon,
+  MagnifyingGlassIcon,
   XMarkIcon,
   ChevronLeftIcon,
-  ChevronRightIcon,
-  MagnifyingGlassIcon
+  ChevronRightIcon
 } from '@heroicons/react/24/outline';
+import { PortfolioItem } from '@/types/portfolio'; // Assuming PortfolioItem type is correctly defined
+import ProjectGrid from '@/components/ProjectGrid'; // Ensuring this import is correct
 
 // Helper component to handle client-side logic dependent on Suspense
 function PortfolioDetailPageContent({ params }: { params: { id: string } }) {
@@ -29,7 +26,6 @@ function PortfolioDetailPageContent({ params }: { params: { id: string } }) {
   const [selectedImage, setSelectedImage] = useState<string | null>(null);
   const [lightboxOpen, setLightboxOpen] = useState(false);
   const [lightboxImageIndex, setLightboxImageIndex] = useState(0);
-  const router = useRouter();
 
   useEffect(() => {
     const fetchPortfolioData = async () => {
@@ -240,7 +236,7 @@ function PortfolioDetailPageContent({ params }: { params: { id: string } }) {
                   <div className="space-y-6">
                     <div className="flex items-start">
                       <div className="p-2 bg-teal-50 rounded-lg mr-4 flex-shrink-0">
-                        <UserGroupIcon className="h-6 w-6 text-teal-600" />
+                        <UserIcon className="h-6 w-6 text-teal-600" />
                       </div>
                       <div className="flex-1">
                         <h3 className="text-sm font-semibold text-slate-600 uppercase tracking-wide mb-1">Müşteri</h3>
@@ -250,7 +246,7 @@ function PortfolioDetailPageContent({ params }: { params: { id: string } }) {
                     
                     <div className="flex items-start">
                       <div className="p-2 bg-teal-50 rounded-lg mr-4 flex-shrink-0">
-                        <CalendarDaysIcon className="h-6 w-6 text-teal-600" />
+                        <CalendarIcon className="h-6 w-6 text-teal-600" />
                       </div>
                       <div className="flex-1">
                         <h3 className="text-sm font-semibold text-slate-600 uppercase tracking-wide mb-1">Tamamlanma Tarihi</h3>
@@ -263,27 +259,6 @@ function PortfolioDetailPageContent({ params }: { params: { id: string } }) {
                         </p>
                       </div>
                     </div>
-                    
-                    {portfolioItem.technologies && portfolioItem.technologies.length > 0 && (
-                      <div className="flex items-start">
-                        <div className="p-2 bg-teal-50 rounded-lg mr-4 flex-shrink-0">
-                          <CpuChipIcon className="h-6 w-6 text-teal-600" />
-                        </div>
-                        <div className="flex-1">
-                          <h3 className="text-sm font-semibold text-slate-600 uppercase tracking-wide mb-3">Kullanılan Teknolojiler</h3>
-                          <div className="flex flex-wrap gap-2">
-                            {portfolioItem.technologies.map((tech, index) => (
-                              <span
-                                key={index}
-                                className="bg-gradient-to-r from-teal-500 to-teal-600 text-white text-xs px-3 py-1.5 rounded-full font-medium shadow-sm"
-                              >
-                                {tech}
-                              </span>
-                            ))}
-                          </div>
-                        </div>
-                      </div>
-                    )}
                   </div>
                 </div>
               </div>
@@ -433,14 +408,5 @@ function PortfolioDetailPageContent({ params }: { params: { id: string } }) {
 
 // Wrap with Suspense for useSearchParams if it were used, not strictly needed here but good practice if params were dynamic from client
 export default function PortfolioDetailPage({ params }: { params: { id: string } }) {
-  return (
-    <Suspense fallback={
-      <div className="flex flex-col items-center justify-center min-h-[calc(100vh-10rem)]">
-        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-teal-500 mb-4"></div>
-        <p className="text-slate-500">Sayfa yükleniyor...</p>
-      </div>
-    }>
-      <PortfolioDetailPageContent params={params} />
-    </Suspense>
-  );
+  return <PortfolioDetailPageContent params={params} />;
 } 

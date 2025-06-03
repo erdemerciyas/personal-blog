@@ -57,6 +57,11 @@ export async function GET(
   }
 }
 
+interface MessageUpdateRequest {
+  isRead?: boolean;
+  status?: string;
+}
+
 // PUT /api/messages/[id] - Mesaj durumunu güncelle
 export async function PUT(
   request: Request,
@@ -64,59 +69,32 @@ export async function PUT(
 ) {
   try {
     const session = await getServerSession(authOptions);
-    if (!session?.user || session.user.role !== 'admin') {
-      return NextResponse.json(
-        { error: 'Bu işlem için admin yetkisi gerekli' },
-        { status: 403 }
-      );
-    }
-
-    const { id } = params;
-    const body = await request.json();
     
-    if (!ObjectId.isValid(id)) {
-      return NextResponse.json(
-        { error: 'Geçersiz mesaj ID' },
-        { status: 400 }
-      );
+    if (!session?.user?.email) {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
     await connectDB();
     
-    const updateData: any = { ...body };
+    const body: MessageUpdateRequest = await request.json();
     
-    // Durum değişikliklerine göre timestamp'leri güncelle
-    if (body.status === 'replied' && body.status !== body.currentStatus) {
-      updateData.repliedAt = new Date();
-    }
-    
-    if (body.isRead && !body.wasRead) {
-      updateData.readAt = new Date();
-    }
-
     const message = await Message.findByIdAndUpdate(
-      id,
-      updateData,
+      params.id,
+      body,
       { new: true }
     );
-
+    
     if (!message) {
-      return NextResponse.json(
-        { error: 'Mesaj bulunamadı' },
-        { status: 404 }
-      );
+      return NextResponse.json({ error: 'Message not found' }, { status: 404 });
     }
     
-    return NextResponse.json({
-      message: 'Mesaj başarıyla güncellendi',
-      data: message
-    });
+    return NextResponse.json(message);
+    
   } catch (error) {
-    console.error('Mesaj güncellenirken hata:', error);
-    return NextResponse.json(
-      { error: 'Mesaj güncellenirken bir hata oluştu' },
-      { status: 500 }
-    );
+    console.error('Message update error:', error);
+    return NextResponse.json({ 
+      error: 'Failed to update message' 
+    }, { status: 500 });
   }
 }
 

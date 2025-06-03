@@ -18,10 +18,10 @@ import {
   BellIcon,
   ChartBarIcon,
   DocumentTextIcon,
-  ChatBubbleLeftIcon,
   PhotoIcon,
   PhoneIcon,
-  ChatBubbleLeftRightIcon
+  ChatBubbleLeftRightIcon,
+  TagIcon
 } from '@heroicons/react/24/outline';
 
 export default function AdminDashboard() {
@@ -34,7 +34,6 @@ export default function AdminDashboard() {
     categoriesCount: 0,
     sliderCount: 0
   });
-  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     if (status === 'unauthenticated') {
@@ -78,8 +77,6 @@ export default function AdminDashboard() {
           categoriesCount: 0,
           sliderCount: 0
         });
-      } finally {
-        setLoading(false);
       }
     };
 
@@ -146,6 +143,15 @@ export default function AdminDashboard() {
       badge: 'Slider'
     },
     {
+      title: 'Sayfa Yönetimi',
+      description: 'Sayfaları aktif/pasif yapın ve menü görünürlüğü ayarlayın',
+      icon: DocumentTextIcon,
+      href: '/admin/pages',
+      color: 'from-amber-500 to-amber-600',
+      stats: '5',
+      badge: 'Sayfalar'
+    },
+    {
       title: 'Mesaj Yönetimi',
       description: 'Gelen mesajları görüntüleyin',
       icon: ChatBubbleLeftRightIcon,
@@ -166,7 +172,7 @@ export default function AdminDashboard() {
     {
       title: 'Kategori Yönetimi',
       description: 'Proje kategorilerini düzenle',
-      icon: DocumentTextIcon,
+      icon: TagIcon,
       href: '/admin/categories',
       color: 'from-orange-500 to-orange-600',
       stats: stats.categoriesCount,
@@ -359,7 +365,7 @@ export default function AdminDashboard() {
         <div className="mb-8">
           <h3 className="text-xl font-bold text-white mb-4">Hızlı İşlemler</h3>
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-            {quickActions.map((action, index) => (
+            {quickActions.map((action) => (
               <Link 
                 key={action.title}
                 href={action.href}
@@ -381,7 +387,7 @@ export default function AdminDashboard() {
         <div className="mb-8">
           <h3 className="text-xl font-bold text-white mb-4">Yönetim Paneli</h3>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            {menuItems.map((item, index) => (
+            {menuItems.map((item) => (
               <Link 
                 key={item.title}
                 href={item.href}

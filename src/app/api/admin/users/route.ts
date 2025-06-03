@@ -3,7 +3,13 @@ import { getServerSession } from 'next-auth';
 import { authOptions } from '@/lib/auth';
 import connectDB from '@/lib/mongoose';
 import User from '@/models/User';
-import bcrypt from 'bcryptjs';
+
+interface SessionUser {
+  id: string;
+  email: string;
+  name: string;
+  role: string;
+}
 
 // GET /api/admin/users - Tüm kullanıcıları listele
 export async function GET() {
@@ -17,7 +23,7 @@ export async function GET() {
       );
     }
 
-    if ((session.user as any).role !== 'admin') {
+    if ((session.user as SessionUser).role !== 'admin') {
       return NextResponse.json(
         { error: 'Bu işlem için admin yetkisi gerekli' },
         { status: 403 }
@@ -50,7 +56,7 @@ export async function POST(request: Request) {
       );
     }
 
-    if ((session.user as any).role !== 'admin') {
+    if ((session.user as SessionUser).role !== 'admin') {
       return NextResponse.json(
         { error: 'Bu işlem için admin yetkisi gerekli' },
         { status: 403 }

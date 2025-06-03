@@ -16,8 +16,7 @@ import {
   ClockIcon,
   ArrowLeftIcon,
   HomeIcon,
-  FolderOpenIcon,
-  TagIcon
+  FolderOpenIcon
 } from '@heroicons/react/24/outline';
 
 interface Service {
@@ -49,7 +48,7 @@ export default function ServicesPage() {
         }
         const data = await response.json();
         setServices(data);
-      } catch (error) {
+      } catch {
         setError('Servisler yüklenirken bir hata oluştu');
       } finally {
         setLoading(false);
@@ -74,7 +73,7 @@ export default function ServicesPage() {
       }
 
       setServices(services.filter(service => service._id !== id));
-    } catch (error) {
+    } catch {
       setError('Servis silinirken bir hata oluştu');
     }
   };
@@ -205,7 +204,7 @@ export default function ServicesPage() {
         <div className="mb-8">
           <h3 className="text-xl font-bold text-white mb-4">Hızlı İşlemler</h3>
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-            {quickActions.map((action, index) => (
+            {quickActions.map((action) => (
               <Link 
                 key={action.title}
                 href={action.href}

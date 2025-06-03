@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { useSession, signOut } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
@@ -8,8 +8,6 @@ import ImageUpload from '../../../../../components/ImageUpload';
 import { 
   PlusIcon,
   PencilIcon,
-  TrashIcon,
-  EyeIcon,
   UserIcon,
   CubeTransparentIcon,
   FolderOpenIcon,
@@ -63,7 +61,6 @@ export default function EditPortfolioItem({ params }: { params: { id: string } }
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState('');
   const [categories, setCategories] = useState<Category[]>([]);
-  const [coverImageUrl, setCoverImageUrl] = useState('');
 
   const [formData, setFormData] = useState<PortfolioItem>({
     _id: '',
@@ -79,17 +76,6 @@ export default function EditPortfolioItem({ params }: { params: { id: string } }
     order: 0,
   });
 
-  useEffect(() => {
-    if (status === 'unauthenticated') {
-      router.push('/admin/login');
-    } else if (status === 'authenticated' && session?.user?.role !== 'admin') {
-      router.push('/');
-    } else if (status === 'authenticated') {
-      fetchCategories();
-      fetchPortfolioItem();
-    }
-  }, [status, session]);
-
   const fetchCategories = async () => {
     try {
       const response = await fetch('/api/categories');
@@ -102,7 +88,7 @@ export default function EditPortfolioItem({ params }: { params: { id: string } }
     }
   };
 
-  const fetchPortfolioItem = async () => {
+  const fetchPortfolioItem = useCallback(async () => {
     try {
       const response = await fetch(`/api/portfolio/${params.id}`);
       if (!response.ok) throw new Error('Portfolyo öğesi getirilemedi');
@@ -118,16 +104,22 @@ export default function EditPortfolioItem({ params }: { params: { id: string } }
         technologies: [...data.technologies, ''],
         images: [...data.images, ''],
       });
-
-      // Set cover image URL for display
-      setCoverImageUrl(data.coverImage);
     } catch (err) {
       setError('Portfolyo öğesi yüklenirken bir hata oluştu');
       console.error(err);
     } finally {
       setLoading(false);
     }
-  };
+  }, [params.id]);
+
+  useEffect(() => {
+    if (status === 'authenticated') {
+      fetchCategories();
+      fetchPortfolioItem();
+    } else if (status === 'unauthenticated') {
+      router.push('/admin/login');
+    }
+  }, [status, router, fetchPortfolioItem]);
 
   const getRandomImage = () => {
     return RANDOM_IMAGES[Math.floor(Math.random() * RANDOM_IMAGES.length)];
@@ -221,12 +213,10 @@ export default function EditPortfolioItem({ params }: { params: { id: string } }
 
   const handleCoverImageUpload = (url: string) => {
     setFormData(prev => ({ ...prev, coverImage: url }));
-    setCoverImageUrl(url);
   };
 
   const handleCoverImageRemove = () => {
     setFormData(prev => ({ ...prev, coverImage: '' }));
-    setCoverImageUrl('');
   };
 
   const handleSignOut = async () => {
@@ -355,7 +345,7 @@ export default function EditPortfolioItem({ params }: { params: { id: string } }
         <div className="mb-8">
           <h3 className="text-xl font-bold text-white mb-4">Hızlı İşlemler</h3>
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-            {quickActions.map((action, index) => (
+            {quickActions.map((action) => (
               <Link 
                 key={action.title}
                 href={action.href}

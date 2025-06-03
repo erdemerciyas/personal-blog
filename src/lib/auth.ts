@@ -4,6 +4,18 @@ import connectDB from './mongoose';
 import User from '@/models/User';
 import bcrypt from 'bcryptjs';
 
+interface User {
+  id: string;
+  email: string;
+  name: string;
+  role?: string;
+}
+
+interface Credentials {
+  email: string;
+  password: string;
+}
+
 export const authOptions: NextAuthOptions = {
   providers: [
     CredentialsProvider({
@@ -12,34 +24,37 @@ export const authOptions: NextAuthOptions = {
         email: { label: 'Email', type: 'email' },
         password: { label: 'Password', type: 'password' }
       },
-      async authorize(credentials) {
+      async authorize(credentials: Credentials | undefined): Promise<User | null> {
         if (!credentials?.email || !credentials?.password) {
-          throw new Error('Email ve şifre gerekli');
+          return null;
         }
 
-        await connectDB();
+        try {
+          await connectDB();
+          
+          const user = await User.findOne({ email: credentials.email });
+          
+          if (!user) {
+            return null;
+          }
 
-        const user = await User.findOne({ email: credentials.email });
-        if (!user) {
-          throw new Error('Kullanıcı bulunamadı');
+          const isPasswordValid = await bcrypt.compare(credentials.password, user.password);
+          
+          if (!isPasswordValid) {
+            return null;
+          }
+
+          return {
+            id: user._id.toString(),
+            email: user.email,
+            name: user.name,
+            role: user.role,
+          };
+        } catch (error) {
+          console.error('Auth error:', error);
+          return null;
         }
-
-        const isPasswordValid = await bcrypt.compare(
-          credentials.password,
-          user.password
-        );
-
-        if (!isPasswordValid) {
-          throw new Error('Geçersiz şifre');
-        }
-
-        return {
-          id: user._id.toString(),
-          email: user.email,
-          name: user.name,
-          role: user.role,
-        };
-      },
+      }
     }),
   ],
   session: {
@@ -51,17 +66,15 @@ export const authOptions: NextAuthOptions = {
     error: '/admin/login',
   },
   callbacks: {
-    async jwt({ token, user }) {
+    async jwt({ token, user }: { token: JWT; user?: User }) {
       if (user) {
         token.role = user.role;
-        token.id = user.id;
       }
       return token;
     },
-    async session({ session, token }) {
+    async session({ session, token }: { session: Session; token: JWT }) {
       if (session.user) {
-        (session.user as any).role = token.role;
-        (session.user as any).id = token.id;
+        (session.user as User).role = token.role as string;
       }
       return session;
     },

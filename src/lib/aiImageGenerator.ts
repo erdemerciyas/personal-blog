@@ -1,5 +1,5 @@
 // Simple fallback image generator - no AI dependencies
-export async function generateAIImage(title: string, description?: string): Promise<string> {
+export async function generateAIImage(title: string): Promise<string> {
   console.log('Using fallback image for:', title);
   return generateFallbackImage(title);
 }
