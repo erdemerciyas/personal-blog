@@ -10,7 +10,7 @@ interface Service {
   description: string;
   icon: string;
   features: string[];
-  price: {
+  price?: {
     type: 'fixed' | 'hourly' | 'project';
     amount?: number;
     currency: string;
