@@ -131,7 +131,7 @@ src/
 NEXTAUTH_SECRET=f1181d6e1ce33c4ba4135a7497694541679c39f7ea81e7feddeca23a93e39ab9
 NEXTAUTH_URL=https://[VERCEL-URL]
 NODE_ENV=production
-MONGODB_URI=mongodb+srv://erdemerciyasreverse:oI9OMHyFwhIdh54O@erdemerciyas.1xlwobu.mongodb.net/?retryWrites=true&w=majority&appName=erdemerciyas
+MONGODB_URI=********
 ```
 
 ### **Development (Local):**
@@ -139,7 +139,7 @@ MONGODB_URI=mongodb+srv://erdemerciyasreverse:oI9OMHyFwhIdh54O@erdemerciyas.1xlw
 NEXTAUTH_SECRET=f1181d6e1ce33c4ba4135a7497694541679c39f7ea81e7feddeca23a93e39ab9
 NEXTAUTH_URL=http://localhost:3000
 NODE_ENV=development
-MONGODB_URI=mongodb+srv://erdemerciyasreverse:oI9OMHyFwhIdh54O@erdemerciyas.1xlwobu.mongodb.net/?retryWrites=true&w=majority&appName=erdemerciyas
+MONGODB_URI=*************
 ```
 
 ## 📧 İletişim & Destek
