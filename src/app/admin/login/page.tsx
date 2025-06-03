@@ -35,6 +35,8 @@ export default function LoginPage() {
   const [attemptCount, setAttemptCount] = useState(0);
   const [isBlocked, setIsBlocked] = useState(false);
   const [blockTimeLeft, setBlockTimeLeft] = useState(0);
+  const [securityQuestionEnabled, setSecurityQuestionEnabled] = useState(true);
+  const [loadingSiteSettings, setLoadingSiteSettings] = useState(true);
   
   const [formData, setFormData] = useState({
     email: '',
@@ -42,6 +44,9 @@ export default function LoginPage() {
   });
 
   useEffect(() => {
+    // İlk olarak site ayarlarını yükle
+    loadSiteSettings();
+    
     const errorMessage = searchParams.get('error');
     if (errorMessage) {
       switch (errorMessage) {
@@ -77,12 +82,32 @@ export default function LoginPage() {
     if (attempts) {
       setAttemptCount(parseInt(attempts));
     }
-
-    // Load initial security question
-    if (!isBlocked) {
-      loadSecurityQuestion();
-    }
   }, [searchParams]);
+
+  const loadSiteSettings = async () => {
+    try {
+      const response = await fetch('/api/admin/site-settings');
+      if (response.ok) {
+        const data = await response.json();
+        const isEnabled = data?.security?.enableSecurityQuestion ?? true;
+        setSecurityQuestionEnabled(isEnabled);
+        
+        // Güvenlik sorusu etkinse ve bloklanmamışsa soruyu yükle
+        if (isEnabled && !isBlocked) {
+          loadSecurityQuestion();
+        }
+      }
+    } catch (error) {
+      console.error('Site ayarları yüklenirken hata:', error);
+      // Varsayılan olarak güvenlik sorusu etkin
+      setSecurityQuestionEnabled(true);
+      if (!isBlocked) {
+        loadSecurityQuestion();
+      }
+    } finally {
+      setLoadingSiteSettings(false);
+    }
+  };
 
   const startBlockTimer = (blockUntil: number) => {
     const timer = setInterval(() => {
@@ -170,62 +195,62 @@ export default function LoginPage() {
       return;
     }
 
-    if (!securityQuestion) {
-      setError('Güvenlik sorusu yüklenmedi. Lütfen sayfayı yenileyin.');
-      return;
-    }
+    // Güvenlik sorusu etkinse kontrol et
+    if (securityQuestionEnabled) {
+      if (!securityQuestion) {
+        setError('Güvenlik sorusu yüklenmedi. Lütfen sayfayı yenileyin.');
+        return;
+      }
 
-    if (!securityAnswer.trim()) {
-      setError('Lütfen güvenlik sorusunu cevaplayın.');
-      return;
+      if (!securityAnswer.trim()) {
+        setError('Lütfen güvenlik sorusunu cevaplayın.');
+        return;
+      }
     }
 
     setError(null);
     setLoading(true);
 
     try {
-      // First verify security question
-      const securityResponse = await fetch('/api/auth/verify-captcha', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ 
-          answer: securityAnswer, 
-          hash: securityQuestion.hash 
-        }),
-      });
+      // Güvenlik sorusu etkinse önce doğrula
+      if (securityQuestionEnabled && securityQuestion) {
+        const securityResponse = await fetch('/api/auth/verify-captcha', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({ 
+            answer: securityAnswer, 
+            hash: securityQuestion.hash 
+          }),
+        });
 
-      if (!securityResponse.ok) {
-        const errorData = await securityResponse.json();
-        setError(errorData.error || 'Güvenlik doğrulaması başarısız.');
-        loadSecurityQuestion(); // Load new question
-        setSecurityAnswer('');
-        return;
+        if (!securityResponse.ok) {
+          const errorData = await securityResponse.json();
+          setError(errorData.error || 'Güvenlik sorusu doğrulaması başarısız.');
+          handleFailedAttempt();
+          return;
+        }
       }
 
+      // Now attempt login
       const result = await signIn('credentials', {
         email: formData.email,
         password: formData.password,
-        securityHash: securityQuestion.hash,
-        securityAnswer: securityAnswer,
         redirect: false,
       });
 
       if (result?.error) {
         setError('Geçersiz email veya şifre.');
         handleFailedAttempt();
-        setSecurityAnswer('');
-      } else {
-        // Success - clear attempt count
+      } else if (result?.ok) {
+        // Clear all failed attempts on successful login
         localStorage.removeItem('loginAttempts');
         localStorage.removeItem('loginBlockedUntil');
         router.push('/admin/dashboard');
       }
     } catch (error) {
-      setError('Bir hata oluştu. Lütfen tekrar deneyin.');
-      loadSecurityQuestion();
-      setSecurityAnswer('');
+      setError('Giriş yapılırken bir hata oluştu.');
     } finally {
       setLoading(false);
     }
@@ -368,69 +393,65 @@ export default function LoginPage() {
               </div>
             </div>
 
-            {/* Security Question */}
-            {!isBlocked && (
-              <div>
-                <div className="flex items-center justify-between mb-3">
-                  <label htmlFor="securityAnswer" className="block text-sm font-semibold text-slate-200">
-                    Güvenlik Sorusu
-                  </label>
-                  <button
-                    type="button"
-                    onClick={loadSecurityQuestion}
-                    disabled={loadingQuestion}
-                    className="text-slate-400 hover:text-white transition-colors duration-200 disabled:opacity-50"
-                    title="Yeni soru yükle"
-                  >
-                    <ArrowPathIcon className={`w-4 h-4 ${loadingQuestion ? 'animate-spin' : ''}`} />
-                  </button>
-                </div>
-                
-                <div className="bg-white/5 rounded-2xl p-4 border border-white/10 mb-3">
-                  <div className="flex items-start space-x-3">
-                    <QuestionMarkCircleIcon className="w-5 h-5 text-blue-400 flex-shrink-0 mt-0.5" />
-                    <div className="flex-1">
-                      {loadingQuestion ? (
-                        <div className="flex items-center space-x-2">
-                          <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-blue-400"></div>
-                          <span className="text-slate-300 text-sm">Yeni soru yükleniyor...</span>
-                        </div>
-                      ) : securityQuestion ? (
-                        <div>
-                          <p className="text-white font-medium text-sm mb-1">
-                            {securityQuestion.question}
-                          </p>
-                          <span className={`inline-block px-2 py-1 rounded-full text-xs ${
-                            securityQuestion.type === 'math' 
-                              ? 'bg-green-500/20 text-green-300 border border-green-500/30' 
-                              : 'bg-blue-500/20 text-blue-300 border border-blue-500/30'
-                          }`}>
-                            {securityQuestion.type === 'math' ? 'Matematik' : 'Genel Bilgi'}
-                          </span>
-                        </div>
-                      ) : (
-                        <p className="text-slate-400 text-sm">Güvenlik sorusu yükleniyor...</p>
-                      )}
-                    </div>
+            {/* Security Question - Sadece etkinse göster */}
+            {securityQuestionEnabled && (
+              <div className="space-y-4">
+                <div className="bg-amber-500/10 border border-amber-500/20 rounded-2xl p-6">
+                  <div className="flex items-center justify-between mb-4">
+                    <h3 className="text-lg font-semibold text-amber-300 flex items-center space-x-2">
+                      <ShieldCheckIcon className="w-5 h-5" />
+                      <span>Güvenlik Doğrulaması</span>
+                    </h3>
+                    <button
+                      type="button"
+                      onClick={loadSecurityQuestion}
+                      disabled={loadingQuestion || isBlocked}
+                      className="p-2 rounded-lg bg-amber-500/20 text-amber-300 hover:bg-amber-500/30 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                      title="Yeni soru yükle"
+                    >
+                      <ArrowPathIcon className={`w-4 h-4 ${loadingQuestion ? 'animate-spin' : ''}`} />
+                    </button>
                   </div>
+                  
+                  {loadingQuestion ? (
+                    <div className="flex items-center justify-center py-8">
+                      <div className="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-amber-400"></div>
+                    </div>
+                  ) : securityQuestion ? (
+                    <div className="space-y-4">
+                      <div className="bg-white/5 rounded-xl p-4 border border-white/10">
+                        <p className="text-white font-medium flex items-center space-x-2">
+                          <QuestionMarkCircleIcon className="w-5 h-5 text-amber-400" />
+                          <span>{securityQuestion.question}</span>
+                        </p>
+                      </div>
+                      
+                      <div className="relative">
+                        <input
+                          type="text"
+                          value={securityAnswer}
+                          onChange={handleSecurityAnswerChange}
+                          placeholder="Cevabınızı yazın..."
+                          disabled={isBlocked || loading}
+                          className="w-full px-4 py-3 pl-12 bg-white/10 border border-white/20 rounded-xl text-white placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-amber-500 focus:border-transparent disabled:opacity-50 disabled:cursor-not-allowed"
+                          required={securityQuestionEnabled}
+                        />
+                        <ShieldExclamationIcon className="absolute left-4 top-1/2 transform -translate-y-1/2 w-5 h-5 text-amber-400" />
+                      </div>
+                    </div>
+                  ) : (
+                    <div className="text-center py-4">
+                      <p className="text-amber-300">Güvenlik sorusu yüklenemedi</p>
+                      <button
+                        type="button"
+                        onClick={loadSecurityQuestion}
+                        className="mt-2 text-amber-400 hover:text-amber-300 underline"
+                      >
+                        Tekrar dene
+                      </button>
+                    </div>
+                  )}
                 </div>
-
-                <div className="relative">
-                  <input
-                    id="securityAnswer"
-                    type="text"
-                    required
-                    disabled={isBlocked || loadingQuestion || !securityQuestion}
-                    value={securityAnswer}
-                    onChange={handleSecurityAnswerChange}
-                    className="block w-full px-4 py-4 bg-white/10 border border-white/20 rounded-2xl text-white placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 backdrop-blur-xl disabled:opacity-50 disabled:cursor-not-allowed"
-                    placeholder="Cevabınızı buraya yazın..."
-                  />
-                </div>
-                
-                <p className="text-xs text-slate-500 mt-2">
-                  💡 İpucu: Büyük/küçük harf farkı yoktur. Türkçe karakterler kullanabilirsiniz.
-                </p>
               </div>
             )}
 
