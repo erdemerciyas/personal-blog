@@ -2,7 +2,7 @@
 import { useState } from 'react';
 import { useSession } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
-import ImageUpload from '@/components/ImageUpload';
+import ImageUpload from '../../../components/ImageUpload';
 import Link from 'next/link';
 import { ArrowLeftIcon, PhotoIcon } from '@heroicons/react/24/outline';
 
