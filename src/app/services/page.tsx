@@ -53,7 +53,6 @@ export default function ServicesPage() {
         <Hero 
           title="Hizmetlerim"
           subtitle="Profesyonel web çözümleri ve yazılım geliştirme hizmetleri"
-          backgroundImage="/images/services-hero.jpg"
         />
 
         <main className="container mx-auto px-4 py-16">

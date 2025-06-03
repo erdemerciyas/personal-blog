@@ -315,10 +315,14 @@ export default function LoginPage() {
             </p>
             
             {/* Security Badge */}
-            <div className="inline-flex items-center space-x-2 mt-4 px-4 py-2 bg-white/10 rounded-full border border-white/20">
-              <ShieldCheckIcon className="w-4 h-4 text-green-400" />
-              <span className="text-sm text-slate-200 font-medium">Güvenlik Sorusu Korumalı</span>
-            </div>
+            {!loadingSiteSettings && (
+              <div className="inline-flex items-center space-x-2 mt-4 px-4 py-2 bg-white/10 rounded-full border border-white/20">
+                <ShieldCheckIcon className="w-4 h-4 text-green-400" />
+                <span className="text-sm text-slate-200 font-medium">
+                  {securityQuestionEnabled ? 'Güvenlik Sorusu Korumalı' : 'Standart Giriş'}
+                </span>
+              </div>
+            )}
 
             {/* Attempt Counter */}
             {attemptCount > 0 && !isBlocked && (
@@ -394,7 +398,7 @@ export default function LoginPage() {
             </div>
 
             {/* Security Question - Sadece etkinse göster */}
-            {securityQuestionEnabled && (
+            {!loadingSiteSettings && securityQuestionEnabled && (
               <div className="space-y-4">
                 <div className="bg-amber-500/10 border border-amber-500/20 rounded-2xl p-6">
                   <div className="flex items-center justify-between mb-4">
@@ -468,7 +472,13 @@ export default function LoginPage() {
             {/* Submit Button */}
             <button
               type="submit"
-              disabled={loading || !formData.email || !formData.password || !securityAnswer.trim() || isBlocked || !securityQuestion}
+              disabled={
+                loading || 
+                !formData.email || 
+                !formData.password || 
+                isBlocked ||
+                (securityQuestionEnabled && (!securityQuestion || !securityAnswer.trim()))
+              }
               className="group relative w-full bg-gradient-to-r from-teal-600 to-blue-600 text-white py-4 px-6 rounded-2xl font-bold text-lg transition-all duration-300 hover:shadow-xl hover:shadow-teal-500/25 hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100 disabled:hover:shadow-none"
             >
               <div className="flex items-center justify-center space-x-3">
