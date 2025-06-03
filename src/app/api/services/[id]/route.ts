@@ -71,7 +71,7 @@ export async function PUT(
     if (!imageUrl || imageUrl.trim() === '') {
       console.log(`Generating AI image for updated service: ${body.title}`);
       try {
-        imageUrl = await generateAIImage(body.title, body.description);
+        imageUrl = await generateAIImage(body.title);
         console.log(`AI image generated successfully for update: ${imageUrl}`);
       } catch (error) {
         console.error('AI image generation failed during update, using fallback:', error);

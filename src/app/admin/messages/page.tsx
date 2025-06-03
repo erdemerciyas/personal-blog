@@ -159,10 +159,10 @@ export default function AdminMessagesPage() {
     }
   };
 
-  const handleUpdateStatus = async (messageId: string, newStatus: string) => {
+  const handleUpdateStatus = async (messageId: string, newStatus: 'new' | 'read' | 'replied' | 'closed') => {
     try {
       const response = await fetch(`/api/messages/${messageId}`, {
-        method: 'PUT',
+        method: 'PATCH',
         headers: {
           'Content-Type': 'application/json',
         },
@@ -171,7 +171,7 @@ export default function AdminMessagesPage() {
 
       if (response.ok) {
         setMessages(prev => prev.map(m => 
-          m._id === messageId ? { ...m, status: newStatus as string } : m
+          m._id === messageId ? { ...m, status: newStatus } : m
         ));
         setSuccess('Mesaj durumu güncellendi');
         setTimeout(() => setSuccess(''), 3000);
@@ -543,7 +543,7 @@ export default function AdminMessagesPage() {
                       
                       <select
                         value={message.status}
-                        onChange={(e) => handleUpdateStatus(message._id, e.target.value)}
+                        onChange={(e) => handleUpdateStatus(message._id, e.target.value as 'new' | 'read' | 'replied' | 'closed')}
                         className="bg-white/5 border border-white/20 rounded-lg px-2 py-1 text-xs text-white focus:outline-none focus:ring-2 focus:ring-teal-500"
                         style={{
                           color: 'white',

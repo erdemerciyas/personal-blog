@@ -22,7 +22,7 @@ async function checkPageAccess(path: string): Promise<boolean> {
     }
     
     const pageSettings = await response.json();
-    const pageSetting = pageSettings.find((page: any) => 
+    const pageSetting = pageSettings.find((page: { pageId: string; path: string; isActive?: boolean }) => 
       page.pageId === pageId || page.path === path
     );
     

@@ -17,11 +17,15 @@ import {
 
 interface SliderItem {
   _id: string;
+  id?: string;
   title: string;
+  subtitle?: string;
   description: string;
   image: string;
   buttonText?: string;
   buttonUrl?: string;
+  buttonLink?: string;
+  badge?: string;
   duration?: number;
 }
 
@@ -99,7 +103,7 @@ export default function Home() {
         console.log('📡 API Response status:', response.status);
         
         if (response.ok) {
-          const data: SliderItem[] = await response.json();
+          const data: SliderData[] = await response.json();
           console.log('📦 API den gelen slider verisi:', data);
           
           if (Array.isArray(data) && data.length > 0) {
@@ -109,7 +113,8 @@ export default function Home() {
             
             if (activeSliders.length > 0) {
               // API verilerini component formatına çevir
-              const formattedSliders = activeSliders.map((slider: SliderData) => ({
+              const formattedSliders: SliderItem[] = activeSliders.map((slider: SliderData) => ({
+                _id: slider._id,
                 id: slider._id,
                 image: slider.imageUrl,
                 title: slider.title,
@@ -157,8 +162,15 @@ export default function Home() {
         setServices(data.slice(0, 4)); // İlk 4 servisi göster
       } catch (error) {
         console.error('Servisler yüklenirken hata:', error);
-        // Use default services as fallback
-        setServices(defaultServices);
+        // Use default services as fallback with proper structure
+        const fallbackServices: ServiceItem[] = defaultServices.map((service, index) => ({
+          _id: `fallback-${index}`,
+          title: service.title,
+          description: service.description,
+          icon: service.icon.name || 'cube',
+          features: []
+        }));
+        setServices(fallbackServices);
       } finally {
         setServicesLoading(false);
       }
@@ -232,7 +244,7 @@ export default function Home() {
     const currentSlideDuration = sliderItems[currentSlideIndex]?.duration || 5000;
     
     const timer = setInterval(() => {
-      nextSlide();
+      setCurrentSlideIndex((prev) => (prev + 1) % sliderItems.length);
     }, currentSlideDuration);
     
     return () => clearInterval(timer);
@@ -316,7 +328,7 @@ export default function Home() {
         <div className="absolute inset-0">
           {sliderItems.map((slide, index) => (
             <div
-              key={slide.id}
+              key={slide._id}
               className={`absolute inset-0 transition-all duration-1000 ease-out ${
                 index === currentSlideIndex 
                   ? 'opacity-100 scale-100' 
@@ -358,7 +370,7 @@ export default function Home() {
           <div className="mb-8 inline-block">
             <div className="relative">
               <span className="inline-flex items-center px-8 py-4 rounded-2xl text-lg font-bold bg-white/10 text-white border border-white/20 backdrop-blur-2xl shadow-2xl shadow-black/20">
-                {currentSlideItem.badge}
+                {currentSlideItem.badge || 'Yenilik'}
               </span>
               {/* Glow Effect */}
               <div className="absolute inset-0 rounded-2xl bg-gradient-to-r from-teal-500/20 via-blue-500/20 to-purple-500/20 blur-xl scale-110"></div>
@@ -374,7 +386,7 @@ export default function Home() {
           
           {/* Subtitle */}
           <p className="text-2xl sm:text-3xl text-teal-200 font-semibold mb-8 drop-shadow-lg">
-            {currentSlideItem.subtitle}
+            {currentSlideItem.subtitle || ''}
           </p>
           
           {/* Description */}
@@ -385,7 +397,7 @@ export default function Home() {
           {/* Premium CTA Button */}
           <div className="relative inline-block">
             <Link 
-              href={currentSlideItem.buttonLink} 
+              href={currentSlideItem.buttonLink || '/contact'} 
               className="group relative overflow-hidden inline-flex items-center space-x-3 px-12 py-6 bg-gradient-to-r from-teal-600 via-blue-600 to-purple-600 text-white text-xl font-bold rounded-2xl transition-all duration-500 transform hover:scale-105 shadow-2xl hover:shadow-3xl"
             >
               <span className="relative z-10">{currentSlideItem.buttonText}</span>

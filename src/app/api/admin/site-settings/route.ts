@@ -49,7 +49,7 @@ export async function PUT(request: NextRequest) {
       'contact'
     ];
     
-    const filteredData: any = {};
+    const filteredData: Record<string, unknown> = {};
     for (const field of allowedFields) {
       if (updateData[field] !== undefined) {
         filteredData[field] = updateData[field];

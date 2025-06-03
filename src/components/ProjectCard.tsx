@@ -2,7 +2,7 @@ import React from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
 import { ProjectSummary } from '@/types/portfolio';
-import { ArrowRightIcon, CubeTransparentIcon } from '@heroicons/react/24/outline';
+import { ArrowRightIcon } from '@heroicons/react/24/outline';
 
 interface ProjectCardProps {
   project: ProjectSummary;

@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
+import Image from 'next/image';
 import { usePathname } from 'next/navigation';
 import { 
   Bars3Icon, 
@@ -71,7 +72,7 @@ const Header: React.FC = () => {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitSuccess, setSubmitSuccess] = useState(false);
   const [submitError, setSubmitError] = useState('');
-  const [navLinks, setNavLinks] = useState<any[]>([]);
+  const [navLinks, setNavLinks] = useState<Array<{ href: string; label: string; icon: React.ComponentType<React.SVGProps<SVGSVGElement>> }>>([]);
   const [siteSettings, setSiteSettings] = useState<SiteSettings | null>({
     siteName: '',
     slogan: '',
@@ -241,10 +242,12 @@ const Header: React.FC = () => {
               <Link href="/" className="flex items-center space-x-3">
                 <div className="relative w-12 h-12 lg:w-16 lg:h-16">
                   {siteSettings?.logo?.url ? (
-                    <img
+                    <Image
                       src={siteSettings.logo.url}
                       alt={siteSettings.logo.alt}
-                      className="w-full h-full object-contain rounded-xl group-hover:shadow-md transition-all duration-200"
+                      fill
+                      sizes="(max-width: 768px) 48px, 64px"
+                      className="object-contain rounded-xl group-hover:shadow-md transition-all duration-200"
                     />
                   ) : (
                     <div className="w-full h-full bg-gradient-to-br from-teal-500 to-blue-600 rounded-xl flex items-center justify-center shadow-sm group-hover:shadow-md transition-all duration-200">

@@ -1,6 +1,7 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
+import Image from 'next/image';
 import {
   XMarkIcon,
   PhotoIcon,
@@ -240,12 +241,13 @@ const MediaBrowser: React.FC<MediaBrowserProps> = ({
                   )}
 
                   {/* Image Preview */}
-                  <div className="aspect-square mb-2 bg-slate-700 rounded-lg overflow-hidden">
+                  <div className="aspect-square mb-2 bg-slate-700 rounded-lg overflow-hidden relative">
                     {item.mimeType.startsWith('image/') && item.url && isValidUrl(item.url) ? (
-                      <img
+                      <Image
                         src={item.url}
                         alt={item.originalName}
-                        className="w-full h-full object-cover"
+                        fill
+                        className="object-cover"
                         loading="lazy"
                         onError={(e) => {
                           console.error('Image load error for:', item.url);
