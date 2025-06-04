@@ -2,12 +2,12 @@ import type { Metadata } from 'next'
 import { Inter } from 'next/font/google'
 import './globals.css'
 import { getServerSession } from 'next-auth'
-import { authOptions } from '@/lib/auth'
-import { config } from '@/lib/config'
-import Header from '@/components/Header'
-import ClientWrapper from '@/components/ClientWrapper'
-import ConditionalFooter from '@/components/ConditionalFooter'
-import Providers from '@/components/Providers'
+import { authOptions } from '../lib/auth'
+import { config } from '../lib/config'
+import Header from '../components/Header'
+import ClientWrapper from '../components/ClientWrapper'
+import ConditionalFooter from '../components/ConditionalFooter'
+import Providers from '../components/Providers'
 
 const inter = Inter({ subsets: ['latin'] })
 
