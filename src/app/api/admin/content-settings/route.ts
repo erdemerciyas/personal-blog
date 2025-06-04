@@ -1,8 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { getServerSession } from 'next-auth/next';
-import { authOptions } from '@/lib/auth';
-import connectDB from '@/lib/mongoose';
-import ContentSettings from '@/models/ContentSettings';
+import { authOptions } from '../../../../lib/auth';
+import connectDB from '../../../../lib/mongoose';
+import ContentSettings from '../../../../models/ContentSettings';
 
 // GET: İçerik ayarlarını getir
 export async function GET() {

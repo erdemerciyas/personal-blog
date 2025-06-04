@@ -1,11 +1,11 @@
 import { NextResponse } from 'next/server';
 import { getServerSession } from 'next-auth';
-import { connectToDatabase } from '@/lib/mongoose';
-import { authOptions } from '@/lib/auth';
-import { generateAIImage } from '@/lib/aiImageGenerator';
-import { logger } from '@/lib/logger';
-import { createError, handleApiError, asyncHandler } from '@/lib/errorHandler';
-import { cache, CacheKeys, CacheTTL, cacheHelpers } from '@/lib/cache';
+import { connectToDatabase } from '../../../lib/mongoose';
+import { authOptions } from '../../../lib/auth';
+import { generateAIImage } from '../../../lib/aiImageGenerator';
+import { logger } from '../../../lib/logger';
+import { createError, handleApiError, asyncHandler } from '../../../lib/errorHandler';
+import { cache, CacheKeys, CacheTTL, cacheHelpers } from '../../../lib/cache';
 
 // GET /api/services - Tüm servisleri getir
 export const GET = asyncHandler(async (request: Request) => {

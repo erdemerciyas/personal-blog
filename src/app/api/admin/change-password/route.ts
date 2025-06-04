@@ -1,7 +1,7 @@
 import { NextResponse } from 'next/server';
 import { getServerSession } from 'next-auth';
-import { connectToDatabase } from '@/lib/mongoose';
-import { authOptions } from '@/lib/auth';
+import { connectToDatabase } from '../../../../lib/mongoose';
+import { authOptions } from '../../../../lib/auth';
 import bcrypt from 'bcryptjs';
 
 export async function POST(request: Request) {
