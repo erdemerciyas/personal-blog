@@ -1,0 +1,41 @@
+# Vercel ignore file - exclude files that aren't needed for deployment
+
+# Test and documentation files
+*.test.js
+*.test.ts
+*.test.tsx
+*.spec.js
+*.spec.ts
+*.spec.tsx
+__tests__/
+test/
+tests/
+
+# Development files
+.env.local
+.env.development
+*.local
+
+# Documentation
+README.md
+LOGO_*.md
+SECURITY_*.md
+deployment-checklist.md
+vercel-env-guide.md
+personal-blog.code-workspace
+
+# IDE files
+.vscode/
+.idea/
+
+# License and temp files
+LICENSE.zip
+*.log
+
+# Scripts (keep only essential ones)
+scripts/test-*
+scripts/dev-*
+
+# OS files
+.DS_Store
+Thumbs.db 
