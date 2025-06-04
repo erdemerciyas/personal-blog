@@ -31,7 +31,7 @@ class PerformanceMonitor {
   }
 
   // Start a performance measurement
-  startMeasurement(name: string): () => void {
+  startMeasurement(name: string): (metadata?: any) => void {
     const startTime = Date.now();
     
     return (metadata?: any) => {
@@ -135,14 +135,14 @@ class PerformanceMonitor {
   // Start collecting system metrics periodically
   private startSystemMetricsCollection(): void {
     this.systemMetricsInterval = setInterval(() => {
-      const metrics = this.getSystemMetrics();
+      const systemMetrics = this.getSystemMetrics();
       
       // Log if memory usage is high
-      const memoryMB = metrics.memoryUsage.heapUsed / 1024 / 1024;
+      const memoryMB = systemMetrics.memoryUsage.heapUsed / 1024 / 1024;
       if (memoryMB > 500) { // > 500MB
         logger.warn('High memory usage detected', 'PERFORMANCE', {
           memoryMB: Math.round(memoryMB),
-          uptime: Math.round(metrics.uptime / 60) // minutes
+          uptime: Math.round(systemMetrics.uptime / 60) // minutes
         });
       }
     }, 60000); // Every minute

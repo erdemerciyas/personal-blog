@@ -76,7 +76,7 @@ class MemoryCache {
     const now = Date.now();
     let cleaned = 0;
 
-    for (const [key, item] of this.cache.entries()) {
+    for (const [key, item] of Array.from(this.cache.entries())) {
       const isExpired = (now - item.timestamp) > item.ttl;
       if (isExpired) {
         this.cache.delete(key);
