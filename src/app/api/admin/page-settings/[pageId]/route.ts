@@ -1,8 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { getServerSession } from 'next-auth/next';
-import { authOptions } from '@/lib/auth';
-import connectDB from '@/lib/mongoose';
-import PageSettings from '@/models/PageSettings';
+import { authOptions } from '../../../../../lib/auth';
+import connectDB from '../../../../../lib/mongoose';
+import PageSettings from '../../../../../models/PageSettings';
 
 // PUT - Belirli bir sayfanın ayarlarını güncelle
 export async function PUT(

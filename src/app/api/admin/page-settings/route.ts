@@ -1,8 +1,8 @@
 import { NextResponse } from 'next/server';
 import { getServerSession } from 'next-auth';
-import { authOptions } from '@/lib/auth';
-import connectDB from '@/lib/mongoose';
-import PageSettings from '@/models/PageSettings';
+import { authOptions } from '../../../../lib/auth';
+import connectDB from '../../../../lib/mongoose';
+import PageSettings from '../../../../models/PageSettings';
 
 const DEFAULT_PAGES = [
   {
