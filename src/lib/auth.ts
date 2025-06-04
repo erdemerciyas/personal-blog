@@ -33,6 +33,9 @@ export const authOptions: NextAuthOptions = {
 
         try {
           console.log('🔐 Auth attempt for:', credentials.email);
+          console.log('🌍 Environment:', process.env.NODE_ENV);
+          console.log('🔗 NEXTAUTH_URL:', process.env.NEXTAUTH_URL);
+          
           await connectDB();
           
           const user = await User.findOne({ email: credentials.email });
@@ -90,27 +93,37 @@ export const authOptions: NextAuthOptions = {
       return session;
     },
     async redirect({ url, baseUrl }) {
-      console.log('🔄 NextAuth Redirect:', { url, baseUrl });
+      console.log('🔄 NextAuth Redirect:', { url, baseUrl, nodeEnv: process.env.NODE_ENV });
+      
+      // Vercel için NEXTAUTH_URL kullan
+      const actualBaseUrl = process.env.NEXTAUTH_URL || baseUrl;
       
       // Login başarılı ise dashboard'a yönlendir
-      if (url === '/admin/login' || url === baseUrl || url === '/') {
-        return `${baseUrl}/admin/dashboard`;
+      if (url === '/admin/login' || url === baseUrl || url === '/' || url === actualBaseUrl) {
+        const redirectUrl = `${actualBaseUrl}/admin/dashboard`;
+        console.log('✅ Redirecting to dashboard:', redirectUrl);
+        return redirectUrl;
       }
       
       // URL baseUrl ile başlıyorsa o URL'e git
-      if (url.startsWith(baseUrl)) {
+      if (url.startsWith(actualBaseUrl)) {
+        console.log('✅ Using provided URL:', url);
         return url;
       }
       
       // Relative URL ise baseUrl'e ekle
       if (url.startsWith('/')) {
-        return `${baseUrl}${url}`;
+        const redirectUrl = `${actualBaseUrl}${url}`;
+        console.log('✅ Relative URL redirect:', redirectUrl);
+        return redirectUrl;
       }
       
       // Varsayılan olarak dashboard'a yönlendir
-      return `${baseUrl}/admin/dashboard`;
+      const defaultUrl = `${actualBaseUrl}/admin/dashboard`;
+      console.log('✅ Default redirect to dashboard:', defaultUrl);
+      return defaultUrl;
     },
   },
   secret: process.env.NEXTAUTH_SECRET,
-  debug: process.env.NODE_ENV === 'development',
+  debug: true, // Her zaman debug mode açık
 }; 
