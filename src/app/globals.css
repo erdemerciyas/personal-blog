@@ -2,6 +2,9 @@
 @tailwind components;
 @tailwind utilities;
 
+/* Add Inter font from Google Fonts */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap');
+
 :root {
   --foreground-rgb: 15, 23, 42; /* slate-900 */
   --background-start-rgb: 248, 250, 252; /* slate-50 */
@@ -146,9 +149,6 @@ body {
     @apply transition-all duration-300 ease-in-out;
   }
 }
-
-/* Add Inter font from Google Fonts */
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap');
 
 /* Global Select Styling Fix */
 select {
