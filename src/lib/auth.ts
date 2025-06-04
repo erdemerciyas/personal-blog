@@ -26,23 +26,31 @@ export const authOptions: NextAuthOptions = {
       },
       async authorize(credentials: Credentials | undefined): Promise<User | null> {
         if (!credentials?.email || !credentials?.password) {
+          console.log('❌ Missing credentials');
           return null;
         }
 
         try {
+          console.log('🔐 Auth attempt for:', credentials.email);
           await connectDB();
           
           const user = await User.findOne({ email: credentials.email });
           
           if (!user) {
+            console.log('❌ User not found:', credentials.email);
             return null;
           }
+
+          console.log('👤 User found:', { email: user.email, role: user.role });
 
           const isPasswordValid = await bcrypt.compare(credentials.password, user.password);
           
           if (!isPasswordValid) {
+            console.log('❌ Invalid password for:', credentials.email);
             return null;
           }
+
+          console.log('✅ Login successful for:', credentials.email);
 
           return {
             id: user._id.toString(),
@@ -51,7 +59,7 @@ export const authOptions: NextAuthOptions = {
             role: user.role,
           };
         } catch (error) {
-          console.error('Auth error:', error);
+          console.error('❌ Auth error:', error);
           return null;
         }
       }

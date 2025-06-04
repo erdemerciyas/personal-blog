@@ -28,6 +28,7 @@ interface MediaBrowserProps {
   onUploadNew: () => void;
   title?: string;
   allowedTypes?: string[];
+  theme?: 'dark' | 'light';
 }
 
 const MediaBrowser: React.FC<MediaBrowserProps> = ({
@@ -36,13 +37,40 @@ const MediaBrowser: React.FC<MediaBrowserProps> = ({
   onSelect,
   onUploadNew,
   title = 'Medya Seç',
-  allowedTypes = ['image/']
+  allowedTypes = ['image/'],
+  theme = 'dark'
 }) => {
   const [mediaItems, setMediaItems] = useState<MediaItem[]>([]);
   const [loading, setLoading] = useState(false);
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedItem, setSelectedItem] = useState<string | null>(null);
   const [filter, setFilter] = useState('all');
+  const [windowSize, setWindowSize] = useState({
+    width: 1024,
+    height: 768
+  });
+  const [isMounted, setIsMounted] = useState(false);
+
+  // Mount and window size setup
+  useEffect(() => {
+    setIsMounted(true);
+    if (typeof window !== 'undefined') {
+      setWindowSize({
+        width: window.innerWidth,
+        height: window.innerHeight
+      });
+
+      const handleResize = () => {
+        setWindowSize({
+          width: window.innerWidth,
+          height: window.innerHeight
+        });
+      };
+
+      window.addEventListener('resize', handleResize);
+      return () => window.removeEventListener('resize', handleResize);
+    }
+  }, []);
 
   // URL validation helper
   const isValidUrl = (url: string) => {
@@ -126,24 +154,56 @@ const MediaBrowser: React.FC<MediaBrowserProps> = ({
     onClose();
   };
 
-  if (!isOpen) return null;
+  if (!isOpen || !isMounted) return null;
 
   const filteredItems = getFilteredItems();
 
+  // Theme-based styles
+  const themeStyles = {
+    modal: theme === 'dark' 
+      ? 'bg-slate-900 border-slate-700' 
+      : 'bg-white/10 backdrop-blur-xl border-white/20',
+    header: theme === 'dark' 
+      ? 'bg-slate-800/50 border-slate-700' 
+      : 'bg-white/5 border-white/10',
+    text: theme === 'dark' ? 'text-white' : 'text-white',
+    textSecondary: theme === 'dark' ? 'text-slate-400' : 'text-slate-300',
+    input: theme === 'dark' 
+      ? 'bg-slate-800 border-slate-600 text-white placeholder-slate-400' 
+      : 'bg-white/5 border-white/20 text-white placeholder-slate-300',
+    select: theme === 'dark' 
+      ? 'bg-slate-800 border-slate-600 text-white' 
+      : 'bg-white/5 border-white/20 text-white',
+    card: theme === 'dark' 
+      ? 'bg-slate-800 border-slate-600' 
+      : 'bg-white/5 border-white/10',
+    cardSelected: theme === 'dark' 
+      ? 'border-teal-500 bg-teal-500/10' 
+      : 'border-teal-400 bg-teal-400/20',
+    footer: theme === 'dark' 
+      ? 'bg-slate-800/50 border-slate-700' 
+      : 'bg-white/5 border-white/10'
+  };
+
   return (
     <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-[100] p-4">
-      <div className="bg-slate-900 rounded-3xl max-w-6xl w-full max-h-[90vh] overflow-hidden shadow-2xl border border-slate-700">
+      <div 
+        className={`${themeStyles.modal} rounded-3xl overflow-hidden shadow-2xl w-[90vw] max-w-6xl h-[85vh] max-h-[800px] min-h-[600px] relative flex flex-col`}
+        style={{
+          minWidth: windowSize.width < 768 ? '320px' : '800px'
+        }}
+      >
         
         {/* Header */}
-        <div className="bg-slate-800/50 border-b border-slate-700 p-6">
+        <div className={`${themeStyles.header} p-6 flex-shrink-0`}>
           <div className="flex items-center justify-between">
             <div className="flex items-center space-x-3">
               <div className="w-10 h-10 bg-gradient-to-r from-teal-500 to-blue-500 rounded-xl flex items-center justify-center">
                 <PhotoIcon className="w-6 h-6 text-white" />
               </div>
               <div>
-                <h3 className="text-xl font-bold text-white">{title}</h3>
-                <p className="text-slate-400">Mevcut görselleri seçin veya yeni yükleyin</p>
+                <h3 className={`${themeStyles.text} text-xl font-bold`}>{title}</h3>
+                <p className={`${themeStyles.textSecondary} text-slate-400`}>Mevcut görselleri seçin veya yeni yükleyin</p>
               </div>
             </div>
             <button
@@ -164,11 +224,7 @@ const MediaBrowser: React.FC<MediaBrowserProps> = ({
                 placeholder="Görsel ara..."
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
-                className="w-full bg-slate-800 border border-slate-600 rounded-xl pl-10 pr-4 py-2 text-white placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-teal-500"
-                style={{
-                  color: 'white',
-                  backgroundColor: '#1e293b' // slate-800
-                }}
+                className={`${themeStyles.input} w-full rounded-xl pl-10 pr-4 py-2 focus:outline-none focus:ring-2 focus:ring-teal-500`}
               />
             </div>
 
@@ -176,11 +232,7 @@ const MediaBrowser: React.FC<MediaBrowserProps> = ({
             <select
               value={filter}
               onChange={(e) => setFilter(e.target.value)}
-              className="bg-slate-800 border border-slate-600 rounded-xl px-4 py-2 text-white focus:outline-none focus:ring-2 focus:ring-teal-500"
-              style={{
-                color: 'white',
-                backgroundColor: '#1e293b' // slate-800
-              }}
+              className={`${themeStyles.select} rounded-xl px-4 py-2 focus:outline-none focus:ring-2 focus:ring-teal-500`}
             >
               <option value="all" style={{ color: '#1e293b', backgroundColor: '#ffffff' }}>
                 Tüm Dosyalar
@@ -202,7 +254,7 @@ const MediaBrowser: React.FC<MediaBrowserProps> = ({
         </div>
 
         {/* Content */}
-        <div className="p-6 overflow-y-auto max-h-[60vh]">
+        <div className="p-6 overflow-y-auto flex-1">
           {loading ? (
             <div className="flex items-center justify-center py-12">
               <div className="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-teal-500"></div>
@@ -227,9 +279,9 @@ const MediaBrowser: React.FC<MediaBrowserProps> = ({
                 <div
                   key={item._id}
                   onClick={() => setSelectedItem(item._id)}
-                  className={`relative bg-slate-800 border rounded-xl p-3 cursor-pointer transition-all duration-200 hover:scale-105 ${
+                  className={`${themeStyles.card} rounded-xl p-3 cursor-pointer transition-all duration-200 hover:scale-105 ${
                     selectedItem === item._id
-                      ? 'border-teal-500 bg-teal-500/10 ring-2 ring-teal-500/50'
+                      ? themeStyles.cardSelected
                       : 'border-slate-600 hover:border-slate-500'
                   }`}
                 >
@@ -263,7 +315,7 @@ const MediaBrowser: React.FC<MediaBrowserProps> = ({
 
                   {/* File Info */}
                   <div className="space-y-1">
-                    <h5 className="text-white text-xs font-medium truncate" title={item.originalName}>
+                    <h5 className={`${themeStyles.text} text-xs font-medium truncate`} title={item.originalName}>
                       {item.originalName}
                     </h5>
                     <div className="flex items-center justify-between text-xs text-slate-400">
@@ -279,12 +331,12 @@ const MediaBrowser: React.FC<MediaBrowserProps> = ({
 
         {/* Footer */}
         {filteredItems.length > 0 && (
-          <div className="bg-slate-800/50 border-t border-slate-700 p-6">
+          <div className={`${themeStyles.footer} p-6 flex-shrink-0`}>
             <div className="flex items-center justify-between">
-              <p className="text-slate-400">
+              <p className={`${themeStyles.textSecondary} text-slate-400`}>
                 {filteredItems.length} dosya bulundu
                 {selectedItem && (
-                  <span className="text-teal-400 font-medium">
+                  <span className={`${themeStyles.text} font-medium`}>
                     {' • '}{mediaItems.find(item => item._id === selectedItem)?.originalName} seçildi
                   </span>
                 )}
