@@ -10,9 +10,6 @@ const nextConfig = {
     ignoreBuildErrors: true,
   },
   
-  // Disable CSS optimization to prevent critters module errors
-  optimizeCss: false,
-  
   // Image optimization - Fixed deprecated domains config
   images: {
     remotePatterns: [
@@ -58,6 +55,8 @@ const nextConfig = {
   // Experimental features for better performance
   experimental: {
     scrollRestoration: true,
+    // Disable CSS optimization to prevent critters module errors
+    optimizeCss: false,
   },
   
   // Compiler optimizations
