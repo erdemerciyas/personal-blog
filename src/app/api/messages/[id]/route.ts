@@ -1,8 +1,8 @@
 import { NextResponse } from 'next/server';
 import { getServerSession } from 'next-auth';
-import { authOptions } from '@/lib/auth';
-import connectDB from '@/lib/mongoose';
-import Message from '@/models/Message';
+import { authOptions } from '../../../../lib/auth';
+import connectDB from '../../../../lib/mongoose';
+import Message from '../../../../models/Message';
 import { ObjectId } from 'mongodb';
 
 // GET /api/messages/[id] - Tek mesaj getir
