@@ -8,6 +8,7 @@ const nextConfig = {
   // TypeScript configuration - ignore errors during build for faster deployment
   typescript: {
     ignoreBuildErrors: true,
+    tsconfigPath: './tsconfig.json',
   },
   
   // Image optimization - Fixed deprecated domains config
