@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react';
 import { useSession, signOut } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
+import ImageUpload from '../../../../../components/ImageUpload';
 import { 
   ArrowLeftIcon,
   CubeTransparentIcon,
@@ -32,6 +33,7 @@ export default function EditServicePage({ params }: { params: { id: string } }) 
   const router = useRouter();
   const [service, setService] = useState<Service | null>(null);
   const [features, setFeatures] = useState<string[]>(['']);
+  const [serviceImage, setServiceImage] = useState('');
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -52,6 +54,7 @@ export default function EditServicePage({ params }: { params: { id: string } }) 
         }
         const data = await response.json();
         setService(data);
+        setServiceImage(data.image || '');
         setFeatures(data.features && data.features.length > 0 ? data.features : ['']);
       } catch {
         setError('Servis bilgileri yüklenirken bir hata oluştu');
@@ -89,7 +92,7 @@ export default function EditServicePage({ params }: { params: { id: string } }) 
     const data = {
       title: formData.get('title'),
       description: formData.get('description'),
-      image: formData.get('image'),
+      image: serviceImage || undefined,
       features: filteredFeatures
     };
 
@@ -274,19 +277,20 @@ export default function EditServicePage({ params }: { params: { id: string } }) 
 
             {/* Image Field */}
             <div className="space-y-3">
-              <label htmlFor="image" className="flex items-center space-x-2 text-sm font-semibold text-slate-200">
+              <label className="flex items-center space-x-2 text-sm font-semibold text-slate-200">
                 <PhotoIcon className="w-5 h-5 text-teal-400" />
-                <span>Görsel URL</span>
+                <span>Servis Görseli</span>
                 <span className="text-slate-400 text-xs font-normal">(İsteğe bağlı)</span>
               </label>
-              <input
-                type="url"
-                id="image"
-                name="image"
-                defaultValue={service.image}
-                className="w-full bg-white/5 border border-white/20 rounded-xl px-4 py-3 text-white placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-transparent transition-all duration-200"
-                placeholder="https://example.com/image.jpg"
+              
+              <ImageUpload
+                value={serviceImage}
+                onChange={setServiceImage}
+                onRemove={() => setServiceImage('')}
+                label="Servis Görseli"
+                className="w-full"
               />
+              
               <p className="text-xs text-slate-400">Boş bırakılırsa servis başlığına uygun otomatik görsel atanır</p>
             </div>
 

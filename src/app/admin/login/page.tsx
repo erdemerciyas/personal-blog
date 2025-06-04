@@ -21,8 +21,8 @@ export default function LoginPage() {
   const [showPassword, setShowPassword] = useState(false);
   
   const [formData, setFormData] = useState({
-    email: '',
-    password: ''
+    email: 'erdem.erciyas@gmail.com', // Test için default
+    password: '6026341' // Test için default
   });
 
   useEffect(() => {
@@ -35,6 +35,17 @@ export default function LoginPage() {
         default:
           setError('Bir hata oluştu. Lütfen tekrar deneyin.');
       }
+    }
+
+    // URL'den email ve password parametrelerini oku (geliştirme için)
+    const urlEmail = searchParams.get('email');
+    const urlPassword = searchParams.get('password');
+    
+    if (urlEmail && urlPassword) {
+      setFormData({
+        email: urlEmail,
+        password: urlPassword
+      });
     }
   }, [searchParams]);
 
@@ -59,19 +70,28 @@ export default function LoginPage() {
     setLoading(true);
 
     try {
+      console.log('🔐 Login attempt:', { email: formData.email, passwordLength: formData.password.length });
+      
       const result = await signIn('credentials', {
         email: formData.email,
         password: formData.password,
         redirect: false,
       });
 
+      console.log('🔐 Login result:', result);
+
       if (result?.error) {
-        setError('Geçersiz email veya şifre.');
+        console.error('❌ Login error:', result.error);
+        setError(`Giriş hatası: ${result.error}`);
       } else if (result?.ok) {
+        console.log('✅ Login successful, redirecting...');
         router.push('/admin/dashboard');
+      } else {
+        console.error('❌ Unexpected login result:', result);
+        setError('Beklenmeyen bir hata oluştu.');
       }
     } catch (error) {
-      console.error('Login error:', error);
+      console.error('❌ Login exception:', error);
       setError('Giriş yaparken bir hata oluştu.');
     } finally {
       setLoading(false);

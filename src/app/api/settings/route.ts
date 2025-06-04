@@ -3,6 +3,7 @@ import { getServerSession } from 'next-auth';
 import { authOptions } from '@/lib/auth';
 import connectDB from '@/lib/mongoose';
 import Settings from '@/models/Settings';
+import SiteSettings from '@/models/SiteSettings';
 
 // GET /api/settings - Site ayarlarını getir
 export async function GET() {
@@ -83,6 +84,55 @@ export async function PUT(request: Request) {
         setDefaultsOnInsert: true 
       }
     );
+
+    // SiteSettings'i de senkronize et (Header için)
+    if (settings) {
+      const siteSettingsUpdate: any = {};
+      
+      // Logo güncellenmişse SiteSettings'teki logo object'ini güncelle
+      if (body.logo !== undefined) {
+        siteSettingsUpdate.logo = {
+          url: body.logo,
+          alt: 'Site Logo',
+          width: 200,
+          height: 60
+        };
+      }
+      
+      // Site adı güncellenmişse
+      if (body.siteName !== undefined) {
+        siteSettingsUpdate.siteName = body.siteName;
+      }
+      
+      // Açıklama güncellenmişse
+      if (body.siteDescription !== undefined) {
+        siteSettingsUpdate.description = body.siteDescription;
+      }
+
+      // SEO bilgileri güncellenmişse
+      if (body.siteTitle || body.siteDescription || body.siteKeywords) {
+        siteSettingsUpdate.seo = {
+          metaTitle: body.siteTitle || settings.siteTitle,
+          metaDescription: body.siteDescription || settings.siteDescription,
+          keywords: body.siteKeywords ? body.siteKeywords.split(',').map((k: string) => k.trim()) : []
+        };
+      }
+
+      // Twitter handle güncellenmişse
+      if (body.twitterHandle !== undefined) {
+        siteSettingsUpdate.socialMedia = {
+          twitter: body.twitterHandle,
+          linkedin: '',
+          github: '',
+          instagram: ''
+        };
+      }
+
+      // SiteSettings'i güncelle
+      if (Object.keys(siteSettingsUpdate).length > 0) {
+        await SiteSettings.updateSiteSettings(siteSettingsUpdate);
+      }
+    }
 
     return NextResponse.json({
       message: 'Site ayarları başarıyla güncellendi',

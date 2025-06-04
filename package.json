@@ -17,9 +17,24 @@
   "license": "MIT",
   "scripts": {
     "dev": "next dev",
+    "dev:turbo": "next dev --turbo",
     "build": "next build",
+    "build:analyze": "ANALYZE=true next build",
     "start": "NODE_ENV=production node server.js",
-    "lint": "next lint"
+    "start:dev": "NODE_ENV=development node server.js",
+    "lint": "next lint",
+    "lint:fix": "next lint --fix",
+    "type-check": "tsc --noEmit",
+    "test:config": "node -e \"require('./src/lib/config').config.getSafeConfig() && console.log('✅ Configuration valid')\"",
+    "test:db": "node -e \"require('./src/lib/test-mongodb')\"",
+    "seed": "node -e \"require('./src/lib/seed-data')\"",
+    "clean": "rm -rf .next out node_modules/.cache",
+    "postinstall": "npm run type-check",
+    "check-deps": "npm audit --audit-level moderate",
+    "update-deps": "npm update",
+    "format": "prettier --write .",
+    "precommit": "npm run lint && npm run type-check",
+    "prebuild": "npm run clean && npm run type-check"
   },
   "dependencies": {
     "@heroicons/react": "^2.2.0",
@@ -46,10 +61,24 @@
   },
   "devDependencies": {
     "@types/node": "^22.15.24",
+    "prettier": "^3.0.0",
     "ts-node": "^10.9.2",
     "typescript": "^5.8.3"
   },
   "engines": {
-    "node": ">=18.0.0"
+    "node": ">=18.0.0",
+    "npm": ">=8.0.0"
+  },
+  "browserslist": {
+    "production": [
+      ">0.2%",
+      "not dead",
+      "not op_mini all"
+    ],
+    "development": [
+      "last 1 chrome version",
+      "last 1 firefox version",
+      "last 1 safari version"
+    ]
   }
 }

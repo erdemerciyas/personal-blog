@@ -93,6 +93,36 @@ export default function Home() {
   const [projectsLoading, setProjectsLoading] = useState(true);
   const [servicesLoading, setServicesLoading] = useState(true);
 
+  // Default fallback slider
+  const defaultSlider: SliderItem[] = [
+    {
+      _id: 'default-1',
+      title: 'Mühendislik Çözümleri',
+      subtitle: '3D Tarama & Modelleme',
+      description: 'Profesyonel 3D tarama ve tersine mühendislik hizmetleri ile projelerinizi hayata geçiriyoruz.',
+      image: 'https://images.unsplash.com/photo-1581091226825-a6a2a5aee158?ixlib=rb-4.0.3&auto=format&fit=crop&w=2070&q=80',
+      buttonText: 'İletişime Geçin',
+      buttonLink: '/contact',
+      badge: 'Profesyonel',
+      duration: 5000
+    }
+  ];
+
+  // Loading timeout to prevent infinite loading
+  useEffect(() => {
+    const timeout = setTimeout(() => {
+      if (slidesLoading) {
+        console.log('⏰ Loading timeout - Using fallback slider');
+        setSlidesLoading(false);
+        if (sliderItems.length === 0) {
+          setSliderItems(defaultSlider);
+        }
+      }
+    }, 8000); // 8 saniye timeout
+
+    return () => clearTimeout(timeout);
+  }, [slidesLoading, sliderItems.length]);
+
   // Fetch sliders from admin panel - sadece dinamik içerik
   useEffect(() => {
     const fetchSliderItems = async () => {
@@ -130,20 +160,20 @@ export default function Home() {
               setSliderItems(formattedSliders);
               console.log('✨ Slider state güncellendi');
             } else {
-              console.log('⚠️ Aktif slider bulunamadı');
-              setSliderItems([]);
+              console.log('⚠️ Aktif slider bulunamadı - Using fallback');
+              setSliderItems(defaultSlider);
             }
           } else {
-            console.log('⚠️ Slider verisi bulunamadı');
-            setSliderItems([]);
+            console.log('⚠️ Slider verisi bulunamadı - Using fallback');
+            setSliderItems(defaultSlider);
           }
         } else {
           console.error('❌ API hatası:', response.status, response.statusText);
-          setSliderItems([]);
+          setSliderItems(defaultSlider);
         }
       } catch (error) {
         console.error('❌ Slider yükleme hatası:', error);
-        setSliderItems([]);
+        setSliderItems(defaultSlider);
       } finally {
         setSlidesLoading(false);
         console.log('✨ Slider yükleme tamamlandı');
