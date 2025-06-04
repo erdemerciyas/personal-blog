@@ -70,12 +70,18 @@ export default function LoginPage() {
     setLoading(true);
 
     try {
-      console.log('🔐 Login attempt:', { email: formData.email, passwordLength: formData.password.length });
+      console.log('🔐 Login attempt:', { 
+        email: formData.email, 
+        passwordLength: formData.password.length,
+        currentUrl: window.location.href,
+        nextAuthUrl: process.env.NEXTAUTH_URL 
+      });
       
       const result = await signIn('credentials', {
         email: formData.email,
         password: formData.password,
         redirect: false,
+        callbackUrl: '/admin/dashboard'
       });
 
       console.log('🔐 Login result:', result);
