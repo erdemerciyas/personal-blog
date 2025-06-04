@@ -2,8 +2,8 @@
 
 import { useState, useEffect, Suspense } from 'react';
 import { useSearchParams, useRouter } from 'next/navigation';
-import ProjectGrid from '@/components/ProjectGrid';
-import { PortfolioItem, Category } from '@/types/portfolio'; // Assuming types are defined here
+import ProjectGrid from '../../components/ProjectGrid';
+import { PortfolioItem, Category } from '../../types/portfolio'; // Assuming types are defined here
 import { TagIcon, Squares2X2Icon } from '@heroicons/react/24/outline';
 
 // Helper component to handle client-side logic dependent on Suspense
