@@ -72,6 +72,20 @@ export const authOptions: NextAuthOptions = {
     strategy: 'jwt',
     maxAge: 30 * 24 * 60 * 60, // 30 days
   },
+  cookies: {
+    sessionToken: {
+      name: process.env.NODE_ENV === 'production' 
+        ? '__Secure-next-auth.session-token'
+        : 'next-auth.session-token',
+      options: {
+        httpOnly: true,
+        sameSite: 'lax',
+        path: '/',
+        secure: process.env.NODE_ENV === 'production',
+        domain: process.env.NODE_ENV === 'production' ? '.vercel.app' : undefined,
+      },
+    },
+  },
   pages: {
     signIn: '/admin/login',
     error: '/admin/login',
@@ -89,6 +103,19 @@ export const authOptions: NextAuthOptions = {
       }
       return session;
     },
+    async redirect({ url, baseUrl }) {
+      // Production'da doğru redirect için
+      const redirectUrl = url.startsWith('/') ? `${baseUrl}${url}` : url;
+      console.log('🔄 Redirect:', { url, baseUrl, redirectUrl });
+      
+      // Login sonrası admin dashboard'a yönlendir
+      if (url === '/admin/login' || url === baseUrl) {
+        return `${baseUrl}/admin/dashboard`;
+      }
+      
+      return redirectUrl.startsWith(baseUrl) ? redirectUrl : baseUrl;
+    },
   },
+  debug: process.env.NODE_ENV === 'development',
   secret: process.env.NEXTAUTH_SECRET,
 }; 
