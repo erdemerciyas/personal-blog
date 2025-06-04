@@ -4,11 +4,11 @@ import { connectToDatabase } from '../../../lib/mongoose';
 import { authOptions } from '../../../lib/auth';
 import { generateAIImage } from '../../../lib/aiImageGenerator';
 import { logger } from '../../../lib/logger';
-import { createError, handleApiError, asyncHandler } from '../../../lib/errorHandler';
+import { createError, asyncHandler } from '../../../lib/errorHandler';
 import { cache, CacheKeys, CacheTTL, cacheHelpers } from '../../../lib/cache';
 
 // GET /api/services - Tüm servisleri getir
-export const GET = asyncHandler(async (request: Request) => {
+export const GET = asyncHandler(async () => {
   const startTime = Date.now();
   logger.apiRequest('GET', '/api/services');
 
@@ -77,7 +77,7 @@ export const POST = asyncHandler(async (request: Request) => {
       imageUrl = await generateAIImage(body.title);
       logger.info('AI image generated successfully', 'API', { title: body.title, imageUrl });
     } catch (error) {
-      logger.warn('AI image generation failed, using fallback', 'API', { title: body.title }, error as Error);
+      logger.warn('AI image generation failed, using fallback', 'API', { title: body.title, error: (error as Error).message });
       // AI generation failed, will use fallback image from generateAIImage function
     }
   }

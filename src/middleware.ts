@@ -64,7 +64,7 @@ async function checkPageAccess(path: string): Promise<boolean> {
     
     // Sayfa ayarı bulunamazsa veya aktifse erişime izin ver
     return !pageSetting || pageSetting.isActive !== false;
-  } catch (error) {
+  } catch {
     // Hata durumunda varsayılan olarak erişime izin ver
     return true;
   }
