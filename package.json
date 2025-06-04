@@ -27,7 +27,7 @@
     "dev:turbo": "next dev --turbo",
     "build": "next build",
     "build:analyze": "ANALYZE=true next build", 
-    "vercel-build": "npm install typescript @types/node --no-save && next build",
+    "vercel-build": "node build-fallback.js",
     "start": "node server.js",
     "start:dev": "next start",
     "lint": "next lint",
