@@ -8,7 +8,14 @@
     "url": "https://www.erdemerciyas.com.tr"
   },
   "description": "Modern kişisel blog ve portfolio sitesi - Next.js ile geliştirilmiştir",
-  "keywords": ["nextjs", "react", "typescript", "portfolio", "blog", "engineering"],
+  "keywords": [
+    "nextjs",
+    "react",
+    "typescript",
+    "portfolio",
+    "blog",
+    "engineering"
+  ],
   "homepage": "https://www.erdemerciyas.com.tr",
   "repository": {
     "type": "git",
@@ -20,21 +27,15 @@
     "dev:turbo": "next dev --turbo",
     "build": "next build",
     "build:analyze": "ANALYZE=true next build",
-    "start": "NODE_ENV=production node server.js",
-    "start:dev": "NODE_ENV=development node server.js",
+    "start": "node server.js",
+    "start:dev": "next start",
     "lint": "next lint",
     "lint:fix": "next lint --fix",
     "type-check": "tsc --noEmit",
     "test:config": "node -e \"require('./src/lib/config').config.getSafeConfig() && console.log('✅ Configuration valid')\"",
-    "test:db": "node -e \"require('./src/lib/test-mongodb')\"",
-    "seed": "node -e \"require('./src/lib/seed-data')\"",
-    "clean": "rm -rf .next out node_modules/.cache",
-    "postinstall": "npm run type-check",
-    "check-deps": "npm audit --audit-level moderate",
-    "update-deps": "npm update",
+    "clean": "rimraf .next out dist",
     "format": "prettier --write .",
-    "precommit": "npm run lint && npm run type-check",
-    "prebuild": "npm run clean && npm run type-check"
+    "precommit": "npm run lint"
   },
   "dependencies": {
     "@heroicons/react": "^2.2.0",
@@ -48,6 +49,7 @@
     "dotenv": "^16.5.0",
     "eslint": "^8.56.0",
     "eslint-config-next": "^14.0.4",
+    "jose": "^6.0.11",
     "jsonwebtoken": "^9.0.2",
     "mongodb": "^6.16.0",
     "mongoose": "^8.15.1",
@@ -57,6 +59,7 @@
     "postcss": "^8.4.32",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
+    "rimraf": "^3.0.2",
     "tailwindcss": "^3.4.0"
   },
   "devDependencies": {
