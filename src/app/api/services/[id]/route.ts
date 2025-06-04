@@ -1,9 +1,9 @@
 import { NextResponse } from 'next/server';
 import { getServerSession } from 'next-auth';
-import { connectToDatabase } from '@/lib/mongoose';
-import { authOptions } from '@/lib/auth';
+import { connectToDatabase } from '../../../../lib/mongoose';
+import { authOptions } from '../../../../lib/auth';
 import { ObjectId } from 'mongodb';
-import { generateAIImage } from '@/lib/aiImageGenerator';
+import { generateAIImage } from '../../../../lib/aiImageGenerator';
 
 // GET /api/services/[id] - Belirli bir servisi getir
 export async function GET(
