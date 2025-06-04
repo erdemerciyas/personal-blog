@@ -3,9 +3,6 @@ import CredentialsProvider from 'next-auth/providers/credentials';
 import connectDB from './mongoose';
 import User from '../models/User';
 import bcrypt from 'bcryptjs';
-import NextAuth from 'next-auth';
-import GoogleProvider from 'next-auth/providers/google';
-import { JWT } from 'next-auth/jwt';
 
 interface User {
   id: string;
@@ -22,6 +19,7 @@ interface Credentials {
 export const authOptions: NextAuthOptions = {
   providers: [
     CredentialsProvider({
+      id: 'credentials',
       name: 'credentials',
       credentials: {
         email: { label: 'Email', type: 'email' },
@@ -72,20 +70,6 @@ export const authOptions: NextAuthOptions = {
     strategy: 'jwt',
     maxAge: 30 * 24 * 60 * 60, // 30 days
   },
-  cookies: {
-    sessionToken: {
-      name: process.env.NODE_ENV === 'production' 
-        ? '__Secure-next-auth.session-token'
-        : 'next-auth.session-token',
-      options: {
-        httpOnly: true,
-        sameSite: 'lax',
-        path: '/',
-        secure: process.env.NODE_ENV === 'production',
-        domain: process.env.NODE_ENV === 'production' ? '.vercel.app' : undefined,
-      },
-    },
-  },
   pages: {
     signIn: '/admin/login',
     error: '/admin/login',
@@ -94,28 +78,39 @@ export const authOptions: NextAuthOptions = {
     async jwt({ token, user }) {
       if (user) {
         token.role = (user as User).role;
+        token.id = user.id;
       }
       return token;
     },
     async session({ session, token }) {
       if (session.user) {
-        (session.user as User).role = token.role as string;
+        (session.user as any).role = token.role;
+        (session.user as any).id = token.id;
       }
       return session;
     },
     async redirect({ url, baseUrl }) {
-      // Production'da doğru redirect için
-      const redirectUrl = url.startsWith('/') ? `${baseUrl}${url}` : url;
-      console.log('🔄 Redirect:', { url, baseUrl, redirectUrl });
+      console.log('🔄 NextAuth Redirect:', { url, baseUrl });
       
-      // Login sonrası admin dashboard'a yönlendir
-      if (url === '/admin/login' || url === baseUrl) {
+      // Login başarılı ise dashboard'a yönlendir
+      if (url === '/admin/login' || url === baseUrl || url === '/') {
         return `${baseUrl}/admin/dashboard`;
       }
       
-      return redirectUrl.startsWith(baseUrl) ? redirectUrl : baseUrl;
+      // URL baseUrl ile başlıyorsa o URL'e git
+      if (url.startsWith(baseUrl)) {
+        return url;
+      }
+      
+      // Relative URL ise baseUrl'e ekle
+      if (url.startsWith('/')) {
+        return `${baseUrl}${url}`;
+      }
+      
+      // Varsayılan olarak dashboard'a yönlendir
+      return `${baseUrl}/admin/dashboard`;
     },
   },
-  debug: process.env.NODE_ENV === 'development',
   secret: process.env.NEXTAUTH_SECRET,
+  debug: process.env.NODE_ENV === 'development',
 }; 
