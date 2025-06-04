@@ -27,6 +27,7 @@
     "dev:turbo": "next dev --turbo",
     "build": "next build",
     "build:analyze": "ANALYZE=true next build",
+    "vercel-build": "next build",
     "start": "node server.js",
     "start:dev": "next start",
     "lint": "next lint",
