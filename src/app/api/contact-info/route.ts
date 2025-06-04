@@ -1,8 +1,8 @@
 import { NextResponse } from 'next/server';
 import { getServerSession } from 'next-auth';
-import { authOptions } from '@/lib/auth';
-import connectDB from '@/lib/mongoose';
-import Contact from '@/models/Contact';
+import { authOptions } from '../../../lib/auth';
+import connectDB from '../../../lib/mongoose';
+import Contact from '../../../models/Contact';
 
 // GET /api/contact-info - İletişim bilgilerini getir
 export async function GET() {
