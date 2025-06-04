@@ -1,9 +1,9 @@
 import { NextResponse } from 'next/server';
 import { getServerSession } from 'next-auth';
-import { authOptions } from '@/lib/auth';
-import connectDB from '@/lib/mongoose';
-import Portfolio from '@/models/Portfolio';
-import Category from '@/models/Category';
+import { authOptions } from '../../../lib/auth';
+import connectDB from '../../../lib/mongoose';
+import Portfolio from '../../../models/Portfolio';
+import Category from '../../../models/Category';
 
 // GET - Tüm portfolyo öğelerini getir
 export async function GET(request: Request) {

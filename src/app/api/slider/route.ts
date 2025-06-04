@@ -1,8 +1,8 @@
 import { NextResponse } from 'next/server';
 import { getServerSession } from 'next-auth';
-import { authOptions } from '@/lib/auth';
-import connectDB from '@/lib/mongoose';
-import Slider from '@/models/Slider';
+import { authOptions } from '../../../lib/auth';
+import connectDB from '../../../lib/mongoose';
+import Slider from '../../../models/Slider';
 
 // GET /api/slider - Slider'ları getir
 export async function GET() {

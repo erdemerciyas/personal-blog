@@ -1,6 +1,6 @@
+import connectDB from '../../../lib/mongoose';
+import Message from '../../../models/Message';
 import { NextResponse } from 'next/server';
-import connectDB from '@/lib/mongoose';
-import Message from '@/models/Message';
 
 export async function POST(request: Request) {
   try {

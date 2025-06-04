@@ -1,9 +1,9 @@
 import { NextResponse } from 'next/server';
 import { getServerSession } from 'next-auth';
-import { authOptions } from '@/lib/auth';
-import connectDB from '@/lib/mongoose';
-import Settings from '@/models/Settings';
-import SiteSettings from '@/models/SiteSettings';
+import { authOptions } from '../../../lib/auth';
+import connectDB from '../../../lib/mongoose';
+import Settings from '../../../models/Settings';
+import SiteSettings from '../../../models/SiteSettings';
 
 // GET /api/settings - Site ayarlarını getir
 export async function GET() {
