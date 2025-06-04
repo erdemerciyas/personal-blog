@@ -3,9 +3,27 @@
   "buildCommand": "npm run build",
   "installCommand": "npm install --legacy-peer-deps",
   "outputDirectory": ".next",
+  "builds": [
+    {
+      "src": "package.json",
+      "use": "@vercel/next",
+      "config": {
+        "maxLambdaSize": "50mb"
+      }
+    }
+  ],
   "functions": {
     "src/app/api/**": {
-      "maxDuration": 30
+      "maxDuration": 60,
+      "memory": 1024
+    },
+    "src/app/api/auth/**": {
+      "maxDuration": 30,
+      "memory": 512
+    },
+    "src/app/api/debug/**": {
+      "maxDuration": 30,
+      "memory": 512
     }
   },
   "headers": [

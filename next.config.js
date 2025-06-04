@@ -57,6 +57,35 @@ const nextConfig = {
     scrollRestoration: true,
     // Disable CSS optimization to prevent critters module errors
     optimizeCss: false,
+    // Build performance optimization
+    esmExternals: 'loose',
+  },
+  
+  // Build optimization for Vercel
+  swcMinify: true,
+  
+  // Memory optimization
+  webpack: (config, { dev, isServer }) => {
+    // Memory optimization for production builds
+    if (!dev) {
+      config.optimization = {
+        ...config.optimization,
+        splitChunks: {
+          ...config.optimization.splitChunks,
+          cacheGroups: {
+            ...config.optimization.splitChunks.cacheGroups,
+            commons: {
+              name: 'commons',
+              chunks: 'all',
+              minChunks: 2,
+              priority: 0,
+            },
+          },
+        },
+      };
+    }
+    
+    return config;
   },
   
   // Compiler optimizations
