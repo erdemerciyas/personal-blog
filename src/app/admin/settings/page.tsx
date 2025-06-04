@@ -4,7 +4,7 @@ import { useSession, signOut } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import Image from 'next/image';
-import MediaBrowser from '@/components/MediaBrowser';
+import MediaBrowser from '../../../components/MediaBrowser';
 import { 
   CogIcon,
   ArrowLeftIcon,

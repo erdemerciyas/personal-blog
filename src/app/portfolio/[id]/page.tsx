@@ -14,8 +14,8 @@ import {
   ChevronLeftIcon,
   ChevronRightIcon
 } from '@heroicons/react/24/outline';
-import { PortfolioItem } from '@/types/portfolio'; // Assuming PortfolioItem type is correctly defined
-import ProjectGrid from '@/components/ProjectGrid'; // Ensuring this import is correct
+import { PortfolioItem } from '../../../types/portfolio'; // Assuming PortfolioItem type is correctly defined
+import ProjectGrid from '../../../components/ProjectGrid'; // Ensuring this import is correct
 
 // Helper component to handle client-side logic dependent on Suspense
 function PortfolioDetailPageContent({ params }: { params: { id: string } }) {

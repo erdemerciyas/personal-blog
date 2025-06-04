@@ -1,7 +1,7 @@
 'use client';
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
-import ProjectGrid from '@/components/ProjectGrid';
+import ProjectGrid from '../components/ProjectGrid';
 import { 
   CheckBadgeIcon, 
   WrenchScrewdriverIcon, 

@@ -1,8 +1,8 @@
 import { NextResponse } from 'next/server';
 import { getServerSession } from 'next-auth';
-import { authOptions } from '@/lib/auth';
-import connectDB from '@/lib/mongoose';
-import About from '@/models/About';
+import { authOptions } from '../../../../lib/auth';
+import connectDB from '../../../../lib/mongoose';
+import About from '../../../../models/About';
 
 // GET /api/admin/about - Get about page content
 export async function GET() {
