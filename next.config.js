@@ -5,12 +5,14 @@ const nextConfig = {
     ignoreDuringBuilds: true,
   },
   
-  // TypeScript configuration - ignore errors during build for faster deployment
+  // TypeScript configuration - flexible for different hosting environments  
   typescript: {
     ignoreBuildErrors: true,
-    tsconfigPath: false,
     tsconfigPath: './tsconfig.json',
   },
+  
+  // Output configuration for hosting compatibility
+  output: 'standalone',
   
   // Image optimization - Fixed deprecated domains config
   images: {

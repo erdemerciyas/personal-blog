@@ -25,9 +25,11 @@
   "scripts": {
     "dev": "next dev",
     "dev:turbo": "next dev --turbo",
-    "build": "next build",
+    "build": "node scripts/universal-build.js",
+    "build:next": "next build",
     "build:analyze": "ANALYZE=true next build", 
-    "vercel-build": "node build-fallback.js",
+    "vercel-build": "node scripts/universal-build.js",
+    "cpanel-build": "node scripts/universal-build.js",
     "start": "node server.js",
     "start:dev": "next start",
     "lint": "next lint",
@@ -36,7 +38,8 @@
     "test:config": "node -e \"require('./src/lib/config').config.getSafeConfig() && console.log('✅ Configuration valid')\"",
     "clean": "rimraf .next out dist",
     "format": "prettier --write .",
-    "precommit": "npm run lint"
+    "precommit": "npm run lint",
+    "postinstall": "echo 'Dependencies installed successfully'"
   },
   "dependencies": {
     "@heroicons/react": "^2.2.0",
@@ -68,7 +71,8 @@
   },
   "devDependencies": {
     "prettier": "^3.0.0",
-    "ts-node": "^10.9.2"
+    "ts-node": "^10.9.2",
+    "@types/jsonwebtoken": "^9.0.6"
   },
   "engines": {
     "node": ">=18.0.0",
