@@ -8,7 +8,7 @@ export default function ServiceFormPage() {
   const { data: session, status } = useSession();
   const router = useRouter();
   const params = useParams();
-  const isEditing = params.action === 'edit';
+  const isEditing = params?.action === 'edit';
 
   const [formData, setFormData] = useState<Partial<IService>>({
     title: '',
@@ -27,7 +27,7 @@ export default function ServiceFormPage() {
   }, [status, router]);
 
   useEffect(() => {
-    if (isEditing) {
+    if (isEditing && params?.id) {
       const fetchService = async () => {
         try {
           const response = await fetch(`/api/services/${params.id}`);
@@ -45,7 +45,7 @@ export default function ServiceFormPage() {
 
       fetchService();
     }
-  }, [isEditing, params.id]);
+  }, [isEditing, params?.id]);
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -53,7 +53,7 @@ export default function ServiceFormPage() {
     setLoading(true);
 
     try {
-      const url = isEditing ? `/api/services/${params.id}` : '/api/services';
+      const url = isEditing ? `/api/services/${params?.id}` : '/api/services';
       const method = isEditing ? 'PUT' : 'POST';
 
       const response = await fetch(url, {

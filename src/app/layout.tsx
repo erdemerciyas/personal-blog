@@ -1,8 +1,6 @@
 import type { Metadata } from 'next'
 import { Inter } from 'next/font/google'
 import './globals.css'
-import { getServerSession } from 'next-auth'
-import { authOptions } from '../lib/auth'
 import { config } from '../lib/config'
 import Header from '../components/Header'
 import ClientWrapper from '../components/ClientWrapper'
@@ -42,13 +40,11 @@ export const metadata: Metadata = {
   },
 }
 
-export default async function RootLayout({
+export default function RootLayout({
   children,
 }: {
   children: React.ReactNode
 }) {
-  const session = await getServerSession(authOptions)
-
   return (
     <html lang="tr" className="scroll-smooth">
       <head>
@@ -73,7 +69,7 @@ export default async function RootLayout({
         <link rel="dns-prefetch" href="//res.cloudinary.com" />
       </head>
       <body className={`${inter.className} min-h-screen bg-slate-50 flex flex-col text-slate-900 antialiased`}>
-        <Providers session={session}>
+        <Providers>
           <ClientWrapper>
             <Header />
 

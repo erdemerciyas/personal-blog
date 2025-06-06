@@ -15,7 +15,7 @@ function PortfolioPageContent() {
   
   const searchParams = useSearchParams();
   const router = useRouter();
-  const currentCategorySlug = searchParams.get('category');
+  const currentCategorySlug = searchParams?.get('category');
 
   useEffect(() => {
     const fetchInitialData = async () => {

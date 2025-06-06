@@ -26,6 +26,8 @@ export default function LoginPage() {
   });
 
   useEffect(() => {
+    if (!searchParams) return;
+    
     const errorMessage = searchParams.get('error');
     if (errorMessage) {
       switch (errorMessage) {
@@ -91,7 +93,10 @@ export default function LoginPage() {
         setError(`Giriş hatası: ${result.error}`);
       } else if (result?.ok) {
         console.log('✅ Login successful, redirecting...');
-        router.push('/admin/dashboard');
+        // Session yenilemesi için kısa bir bekleme ekleyelim
+        setTimeout(() => {
+          window.location.href = '/admin/dashboard';
+        }, 100);
       } else {
         console.error('❌ Unexpected login result:', result);
         setError('Beklenmeyen bir hata oluştu.');

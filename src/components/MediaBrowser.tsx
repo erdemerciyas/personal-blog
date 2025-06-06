@@ -19,6 +19,8 @@ interface MediaItem {
   mimeType: string;
   uploadedAt: Date;
   uploader?: string;
+  source?: 'cloudinary' | 'local';
+  publicId?: string;
 }
 
 interface MediaBrowserProps {
@@ -320,7 +322,18 @@ const MediaBrowser: React.FC<MediaBrowserProps> = ({
                     </h5>
                     <div className="flex items-center justify-between text-xs text-slate-400">
                       <span>{formatFileSize(item.size)}</span>
-                      <span>{item._id?.includes('/') ? item._id.split('/')[0] : 'root'}</span>
+                      <div className="flex items-center space-x-1">
+                        {item.source === 'cloudinary' && (
+                          <span className="bg-gradient-to-r from-blue-500 to-purple-500 text-white px-1.5 py-0.5 rounded text-xs font-semibold">
+                            ☁️ Cloud
+                          </span>
+                        )}
+                        {item.source === 'local' && (
+                          <span className="bg-slate-600 text-slate-300 px-1.5 py-0.5 rounded text-xs">
+                            💾 Local
+                          </span>
+                        )}
+                      </div>
                     </div>
                   </div>
                 </div>

@@ -1,19 +1,18 @@
-import { NextResponse } from 'next/server';
+import { NextRequest, NextResponse } from 'next/server';
 import { getServerSession } from 'next-auth';
 import { authOptions } from '../../../lib/auth';
 import connectDB from '../../../lib/mongoose';
 import Settings from '../../../models/Settings';
 import SiteSettings from '../../../models/SiteSettings';
 
-// GET /api/settings - Site ayarlarını getir
+// GET Method
 export async function GET() {
+  console.log('🔍 GET /api/settings called');
   try {
     await connectDB();
     
-    // Aktif olan ilk settings kaydını getir (tek kayıt olması bekleniyor)
     let settings = await Settings.findOne({ isActive: true });
     
-    // Eğer hiç kayıt yoksa default kayıt oluştur
     if (!settings) {
       settings = await Settings.create({
         siteName: 'Erciyas Engineering',
@@ -42,7 +41,7 @@ export async function GET() {
     
     return NextResponse.json(settings);
   } catch (error) {
-    console.error('Site ayarları getirilirken hata:', error);
+    console.error('Settings GET error:', error);
     return NextResponse.json(
       { error: 'Site ayarları getirilirken bir hata oluştu' },
       { status: 500 }
@@ -50,11 +49,16 @@ export async function GET() {
   }
 }
 
-// PUT /api/settings - Site ayarlarını güncelle
-export async function PUT(request: Request) {
+// PUT Method
+export async function PUT(request: NextRequest) {
+  console.log('🔥 PUT /api/settings called - WORKING!');
+  
   try {
     const session = await getServerSession(authOptions);
+    console.log('👤 Session check:', !!session?.user, session?.user?.role);
+    
     if (!session?.user) {
+      console.log('❌ No session');
       return NextResponse.json(
         { error: 'Bu işlem için yetkiniz yok' },
         { status: 401 }
@@ -62,6 +66,7 @@ export async function PUT(request: Request) {
     }
 
     if (session.user.role !== 'admin') {
+      console.log('❌ Not admin:', session.user.role);
       return NextResponse.json(
         { error: 'Bu işlem için admin yetkisi gerekli' },
         { status: 403 }
@@ -69,9 +74,11 @@ export async function PUT(request: Request) {
     }
 
     const body = await request.json();
+    console.log('📝 Body keys:', Object.keys(body));
+    
     await connectDB();
+    console.log('🔗 Database connected');
 
-    // Mevcut settings kaydını bul ve güncelle, yoksa oluştur
     const settings = await Settings.findOneAndUpdate(
       { isActive: true },
       {
@@ -80,16 +87,17 @@ export async function PUT(request: Request) {
       },
       { 
         new: true, 
-        upsert: true, // Eğer kayıt yoksa oluştur
+        upsert: true,
         setDefaultsOnInsert: true 
       }
     );
 
-    // SiteSettings'i de senkronize et (Header için)
+    console.log('✅ Settings updated:', !!settings);
+
+    // SiteSettings sync
     if (settings) {
       const siteSettingsUpdate: any = {};
       
-      // Logo güncellenmişse SiteSettings'teki logo object'ini güncelle
       if (body.logo !== undefined) {
         siteSettingsUpdate.logo = {
           url: body.logo,
@@ -99,17 +107,14 @@ export async function PUT(request: Request) {
         };
       }
       
-      // Site adı güncellenmişse
       if (body.siteName !== undefined) {
         siteSettingsUpdate.siteName = body.siteName;
       }
       
-      // Açıklama güncellenmişse
       if (body.siteDescription !== undefined) {
         siteSettingsUpdate.description = body.siteDescription;
       }
 
-      // SEO bilgileri güncellenmişse
       if (body.siteTitle || body.siteDescription || body.siteKeywords) {
         siteSettingsUpdate.seo = {
           metaTitle: body.siteTitle || settings.siteTitle,
@@ -118,7 +123,6 @@ export async function PUT(request: Request) {
         };
       }
 
-      // Twitter handle güncellenmişse
       if (body.twitterHandle !== undefined) {
         siteSettingsUpdate.socialMedia = {
           twitter: body.twitterHandle,
@@ -128,9 +132,9 @@ export async function PUT(request: Request) {
         };
       }
 
-      // SiteSettings'i güncelle
       if (Object.keys(siteSettingsUpdate).length > 0) {
         await SiteSettings.updateSiteSettings(siteSettingsUpdate);
+        console.log('✅ SiteSettings synced');
       }
     }
 
@@ -138,11 +142,21 @@ export async function PUT(request: Request) {
       message: 'Site ayarları başarıyla güncellendi',
       settings
     });
+    
   } catch (error) {
-    console.error('Site ayarları güncellenirken hata:', error);
+    console.error('❌ PUT Error:', error);
     return NextResponse.json(
       { error: 'Site ayarları güncellenirken bir hata oluştu' },
       { status: 500 }
     );
   }
+}
+
+// POST Method
+export async function POST(request: NextRequest) {
+  console.log('📬 POST /api/settings called');
+  return NextResponse.json(
+    { error: 'POST method not supported. Use PUT.' },
+    { status: 405 }
+  );
 } 

@@ -13,7 +13,7 @@ export async function GET() {
 
     // MongoDB Connection Test
     let mongoStatus = '❌ Failed';
-    let mongoError = null;
+    let mongoError: string | null = null;
     
     try {
       await connectDB();

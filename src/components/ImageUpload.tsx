@@ -95,7 +95,7 @@ const ImageUpload: React.FC<ImageUploadProps> = ({
         });
       }, 200);
 
-      const response = await fetch('/api/upload', {
+      const response = await fetch('/api/admin/upload', {
         method: 'POST',
         body: formData,
       });
@@ -151,12 +151,26 @@ const ImageUpload: React.FC<ImageUploadProps> = ({
     if (!value || !onRemove) return;
 
     try {
-      // Extract filename from URL
-      const fileName = value.split('/').pop();
-      if (fileName) {
-        await fetch(`/api/upload?fileName=${fileName}`, {
-          method: 'DELETE',
-        });
+      // Extract public_id from Cloudinary URL for deletion
+      if (value.includes('cloudinary.com')) {
+        // Cloudinary URL - extract public_id
+        const matches = value.match(/\/v\d+\/(.+)\./);
+        if (matches) {
+          const publicId = matches[1];
+          await fetch('/api/admin/media', {
+            method: 'DELETE',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ mediaIds: [publicId] })
+          });
+        }
+      } else {
+        // Local file - use old method
+        const fileName = value.split('/').pop();
+        if (fileName) {
+          await fetch(`/api/upload?fileName=${fileName}`, {
+            method: 'DELETE',
+          });
+        }
       }
       if (typeof onRemove === 'function') {
         onRemove();

@@ -11,10 +11,14 @@ interface User {
   role?: string;
 }
 
+// @ts-ignore
 interface Credentials {
-  email: string;
-  password: string;
+  email?: string;
+  password?: string;
 }
+
+// Vercel'de `VERCEL_URL` varsa onu kullan, yoksa env'den al.
+const vercelUrl = process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : process.env.NEXTAUTH_URL;
 
 export const authOptions: NextAuthOptions = {
   providers: [
@@ -27,34 +31,22 @@ export const authOptions: NextAuthOptions = {
       },
       async authorize(credentials: Credentials | undefined): Promise<User | null> {
         if (!credentials?.email || !credentials?.password) {
-          console.log('❌ Missing credentials');
           return null;
         }
 
         try {
-          console.log('🔐 Auth attempt for:', credentials.email);
-          console.log('🌍 Environment:', process.env.NODE_ENV);
-          console.log('🔗 NEXTAUTH_URL:', process.env.NEXTAUTH_URL);
-          
           await connectDB();
-          
           const user = await User.findOne({ email: credentials.email });
-          
+
           if (!user) {
-            console.log('❌ User not found:', credentials.email);
             return null;
           }
-
-          console.log('👤 User found:', { email: user.email, role: user.role });
 
           const isPasswordValid = await bcrypt.compare(credentials.password, user.password);
           
           if (!isPasswordValid) {
-            console.log('❌ Invalid password for:', credentials.email);
             return null;
           }
-
-          console.log('✅ Login successful for:', credentials.email);
 
           return {
             id: user._id.toString(),
@@ -63,7 +55,7 @@ export const authOptions: NextAuthOptions = {
             role: user.role,
           };
         } catch (error) {
-          console.error('❌ Auth error:', error);
+          console.error('Auth error:', error);
           return null;
         }
       }
@@ -72,6 +64,22 @@ export const authOptions: NextAuthOptions = {
   session: {
     strategy: 'jwt',
     maxAge: 30 * 24 * 60 * 60, // 30 days
+    updateAge: 24 * 60 * 60, // 24 hours
+  },
+  jwt: {
+    maxAge: 30 * 24 * 60 * 60, // 30 days
+  },
+  cookies: {
+    sessionToken: {
+      name: process.env.NODE_ENV === 'production' ? '__Secure-next-auth.session-token' : 'next-auth.session-token',
+      options: {
+        httpOnly: true,
+        sameSite: 'lax',
+        path: '/',
+        secure: process.env.NODE_ENV === 'production',
+        // Domain ayarını kaldırıyoruz, Vercel otomatik olarak ayarlayacak
+      },
+    },
   },
   pages: {
     signIn: '/admin/login',
@@ -82,48 +90,33 @@ export const authOptions: NextAuthOptions = {
       if (user) {
         token.role = (user as User).role;
         token.id = user.id;
+        token.email = user.email;
       }
       return token;
     },
     async session({ session, token }) {
-      if (session.user) {
+      if (session.user && token) {
         (session.user as any).role = token.role;
         (session.user as any).id = token.id;
+        session.user.email = token.email as string;
       }
       return session;
     },
     async redirect({ url, baseUrl }) {
-      console.log('🔄 NextAuth Redirect:', { url, baseUrl, nodeEnv: process.env.NODE_ENV });
+      const finalBaseUrl = vercelUrl || baseUrl;
       
-      // Vercel için NEXTAUTH_URL kullan
-      const actualBaseUrl = process.env.NEXTAUTH_URL || baseUrl;
-      
-      // Login başarılı ise dashboard'a yönlendir
-      if (url === '/admin/login' || url === baseUrl || url === '/' || url === actualBaseUrl) {
-        const redirectUrl = `${actualBaseUrl}/admin/dashboard`;
-        console.log('✅ Redirecting to dashboard:', redirectUrl);
-        return redirectUrl;
+      // Login veya ana sayfadan geliyorsa her zaman dashboard'a yönlendir.
+      if (url.startsWith('/admin/login') || url === finalBaseUrl) {
+        return `${finalBaseUrl}/admin/dashboard`;
       }
-      
-      // URL baseUrl ile başlıyorsa o URL'e git
-      if (url.startsWith(actualBaseUrl)) {
-        console.log('✅ Using provided URL:', url);
-        return url;
+      // Göreceli bir URL ise tam adrese çevir.
+      else if (url.startsWith('/')) {
+        return new URL(url, finalBaseUrl).toString();
       }
-      
-      // Relative URL ise baseUrl'e ekle
-      if (url.startsWith('/')) {
-        const redirectUrl = `${actualBaseUrl}${url}`;
-        console.log('✅ Relative URL redirect:', redirectUrl);
-        return redirectUrl;
-      }
-      
-      // Varsayılan olarak dashboard'a yönlendir
-      const defaultUrl = `${actualBaseUrl}/admin/dashboard`;
-      console.log('✅ Default redirect to dashboard:', defaultUrl);
-      return defaultUrl;
-    },
+      // Zaten tam bir URL ise dokunma.
+      return url;
+    }
   },
   secret: process.env.NEXTAUTH_SECRET,
-  debug: true, // Her zaman debug mode açık
+  debug: process.env.NODE_ENV === 'development',
 }; 
