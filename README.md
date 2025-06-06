@@ -15,8 +15,15 @@ Modern, performant ve güvenli bir kişisel blog ve portfolio uygulaması. Next.
 - **Secure Authentication**: NextAuth.js ile güvenli giriş sistemi
 - **User Management**: Kullanıcı yönetimi ve rol bazlı yetkilendirme
 - **Content Management**: Blog yazıları, projeler, hizmetler yönetimi
-- **Media Library**: Unified media browser ile görsel yönetimi
+- **Independent Media Library**: 
+  - Drag & drop dosya yükleme
+  - Multi-select ve bulk delete
+  - Advanced filtering (tüm dosyalar, sadece resimler, Cloudinary, yerel)
+  - Responsive grid layout ve source badges
+  - Modern UI with glassmorphism effects
+  - Search ve advanced filter özellikleri
 - **Settings Management**: Site ayarları ve konfigürasyon yönetimi
+- **Dashboard Overview**: Comprehensive statistics ve quick actions
 
 ### 🛠 Technical Features
 - **Advanced Error Handling**: Centralized error management
@@ -162,6 +169,11 @@ src/
 ├── app/                    # Next.js App Router
 │   ├── (pages)/           # Public pages
 │   ├── admin/             # Admin panel pages
+│   │   ├── dashboard/     # Admin dashboard
+│   │   ├── media/         # Independent media library
+│   │   ├── portfolio/     # Portfolio management
+│   │   ├── settings/      # Site settings
+│   │   └── [other]/       # Other admin pages
 │   ├── api/               # API routes
 │   ├── globals.css        # Global styles
 │   ├── layout.tsx         # Root layout
@@ -198,6 +210,18 @@ Uygulama, type-safe configuration management sistemi kullanır. Tüm environment
 - **ERROR**: Production errors
 - **WARN**: Warning durumları
 - **INFO**: Genel bilgi logları
+
+## 📝 Recent Updates
+
+### v2.1.0 - Media Library Migration (Latest)
+- ✅ **Independent Media Library**: Medya kütüphanesi artık admin settings'ten ayrı bir sayfa olarak çalışıyor (`/admin/media`)
+- 🎨 **Enhanced UI**: Modern glassmorphism effects ve animations
+- 🔍 **Advanced Filtering**: Tüm dosyalar, sadece resimler, Cloudinary/yerel dosyalar filtresi
+- 📤 **Drag & Drop Upload**: İyileştirilmiş dosya yükleme deneyimi
+- ✨ **Multi-Select**: Toplu seçim ve silme işlemleri
+- 🏷️ **Source Badges**: Cloud vs Local dosya gösterimi
+- 📱 **Responsive Design**: Mobil uyumlu responsive grid layout
+- 🔗 **Updated Navigation**: Dashboard'daki tüm linkler yeni medya sayfasına yönlendiriliyor
 - **DEBUG**: Development detayları (sadece dev mode)
 
 ### Performance Thresholds
