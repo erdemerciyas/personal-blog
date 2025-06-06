@@ -552,4 +552,3 @@ export default function AdminMediaPage() {
     </div>
   );
 }
-</rewritten_file>
