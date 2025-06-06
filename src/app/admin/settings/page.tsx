@@ -261,8 +261,8 @@ export default function AdminSettingsPage() {
 
   const handleUploadNew = () => {
     setShowMediaLibrary(false);
-    // Dosya input'unu aç
-    document.getElementById('logo-upload')?.click();
+    // Medya kütüphanesine yönlendir
+    window.location.href = '/admin/media';
   };
 
   const saveSettings = async () => {
@@ -1335,121 +1335,7 @@ export default function AdminSettingsPage() {
         theme="light"
       />
 
-      {/* Media Upload Modal */}
-      {showUploadModal && (
-        <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-[110] p-4">
-          <div className="bg-white/10 backdrop-blur-xl rounded-3xl max-w-2xl w-full border border-white/20 p-6">
-            <div className="flex items-center justify-between mb-6">
-              <h3 className="text-lg font-semibold text-white flex items-center space-x-2">
-                <CloudArrowUpIcon className="w-5 h-5 text-teal-400" />
-                <span>Dosya Yükle</span>
-              </h3>
-              <button
-                onClick={() => setShowUploadModal(false)}
-                className="p-2 hover:bg-white/10 rounded-xl transition-colors"
-                disabled={uploadingMedia}
-              >
-                <XMarkIcon className="w-5 h-5 text-slate-400" />
-              </button>
-            </div>
 
-            <div className="space-y-6">
-              {/* Upload Area */}
-              <div
-                className={`border-2 border-dashed rounded-xl p-8 text-center transition-all duration-200 ${
-                  uploadingMedia
-                    ? 'border-teal-500 bg-teal-500/10'
-                    : 'border-white/30 hover:border-teal-500 hover:bg-white/5'
-                }`}
-                onDragOver={(e) => e.preventDefault()}
-                onDrop={(e) => {
-                  e.preventDefault();
-                  if (!uploadingMedia && e.dataTransfer.files) {
-                    handleMediaUpload(e.dataTransfer.files);
-                  }
-                }}
-              >
-                <input
-                  type="file"
-                  id="media-upload"
-                  accept="image/*,video/*"
-                  multiple
-                  onChange={(e) => {
-                    if (e.target.files) {
-                      handleMediaUpload(e.target.files);
-                    }
-                  }}
-                  className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
-                  disabled={uploadingMedia}
-                />
-                
-                {uploadingMedia ? (
-                  <div className="space-y-4">
-                    <CloudArrowUpIcon className="w-16 h-16 mx-auto text-teal-400 animate-pulse" />
-                    <div>
-                      <p className="text-teal-300 font-semibold text-lg">Dosyalar yükleniyor...</p>
-                      <p className="text-slate-400 text-sm mt-1">Lütfen bekleyin</p>
-                    </div>
-                    <div className="w-full max-w-xs mx-auto bg-white/20 rounded-full h-2">
-                      <div className="bg-gradient-to-r from-teal-500 to-blue-500 h-2 rounded-full animate-pulse"></div>
-                    </div>
-                  </div>
-                ) : (
-                  <div className="space-y-4">
-                    <CloudArrowUpIcon className="w-16 h-16 mx-auto text-slate-400" />
-                    <div>
-                      <p className="text-white font-semibold text-lg">Dosya Yükle</p>
-                      <p className="text-slate-400 text-sm mt-1">
-                        Dosyaları buraya sürükleyin veya tıklayın
-                      </p>
-                    </div>
-                    <div className="space-y-2">
-                      <p className="text-xs text-slate-500">
-                        Desteklenen formatlar: JPG, PNG, GIF, WebP, MP4, MOV
-                      </p>
-                      <p className="text-xs text-slate-500">
-                        Maksimum dosya boyutu: 10MB
-                      </p>
-                    </div>
-                    <button
-                      type="button"
-                      className="bg-gradient-to-r from-teal-600 to-blue-600 hover:from-teal-700 hover:to-blue-700 text-white px-6 py-3 rounded-xl font-semibold transition-all duration-200"
-                      onClick={() => document.getElementById('media-upload')?.click()}
-                    >
-                      Dosya Seç
-                    </button>
-                  </div>
-                )}
-              </div>
-
-              {/* Upload Tips */}
-              <div className="bg-blue-500/10 border border-blue-500/30 rounded-xl p-4">
-                <h4 className="text-blue-300 font-semibold mb-2 flex items-center space-x-2">
-                  <InformationCircleIcon className="w-5 h-5" />
-                  <span>İpuçları</span>
-                </h4>
-                <ul className="text-blue-200 text-sm space-y-1">
-                  <li>• Aynı anda birden fazla dosya seçebilirsiniz</li>
-                  <li>• Dosyalar otomatik olarak Cloudinary'ye yüklenecek</li>
-                  <li>• Yüklenen dosyalar anında medya kütüphanesinde görünecek</li>
-                  <li>• Büyük dosyalar için sabırlı olun</li>
-                </ul>
-              </div>
-
-              {/* Action Buttons */}
-              <div className="flex items-center justify-end space-x-3">
-                <button
-                  onClick={() => setShowUploadModal(false)}
-                  disabled={uploadingMedia}
-                  className="px-4 py-2 text-slate-400 hover:text-white transition-colors disabled:opacity-50"
-                >
-                  {uploadingMedia ? 'Yükleniyor...' : 'Kapat'}
-                </button>
-              </div>
-            </div>
-          </div>
-        </div>
-      )}
 
       {/* Password Change Modal */}
       {showPasswordModal && selectedUser && (
