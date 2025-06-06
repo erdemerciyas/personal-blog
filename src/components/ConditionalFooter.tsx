@@ -7,7 +7,7 @@ const ConditionalFooter: React.FC = () => {
   const pathname = usePathname();
   
   // Admin sayfalarında footer'ı gizle
-  const isAdminPage = pathname.startsWith('/admin');
+  const isAdminPage = pathname?.startsWith('/admin');
   
   // Eğer admin sayfasındaysak footer'ı render etme
   if (isAdminPage) {

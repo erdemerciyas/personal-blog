@@ -57,7 +57,13 @@ export async function POST(request: Request) {
 
 export async function GET() {
   return NextResponse.json({
-    message: 'Test Auth Endpoint',
-    instructions: 'POST ile { email, password } gönderin'
+    timestamp: new Date().toISOString(),
+    environment: {
+      NODE_ENV: process.env.NODE_ENV || 'Missing',
+      NEXTAUTH_URL: process.env.NEXTAUTH_URL || 'Missing',
+      NEXTAUTH_SECRET: process.env.NEXTAUTH_SECRET ? '✅ Set' : '❌ Missing',
+      MONGODB_URI: process.env.MONGODB_URI ? `✅ Set (${process.env.MONGODB_URI.substring(0, 20)}...)` : '❌ Missing',
+    },
+    message: 'Environment variables check'
   });
 } 

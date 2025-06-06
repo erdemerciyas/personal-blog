@@ -9,7 +9,13 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: 'Prompt gereklidir' }, { status: 400 });
     }
 
-    let images = [];
+    let images: Array<{
+      id: number;
+      url: string;
+      title: string;
+      description: string;
+      provider: string;
+    }> = [];
 
     switch (provider) {
       case 'unsplash':

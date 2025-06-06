@@ -180,7 +180,7 @@ const Header: React.FC = () => {
   }, []);
 
   // Hide header on admin pages
-  if (pathname.startsWith('/admin')) {
+  if (pathname?.startsWith('/admin')) {
     return null;
   }
 

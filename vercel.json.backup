@@ -1,21 +1,12 @@
 {
-  "framework": "nextjs",
-  "buildCommand": "npm run vercel-build",
-  "installCommand": "npm install --legacy-peer-deps",
+  "version": 2,
+  "buildCommand": "npm run build",
   "outputDirectory": ".next",
-  "builds": [
-    {
-      "src": "package.json",
-      "use": "@vercel/next",
-      "config": {
-        "maxLambdaSize": "50mb"
-      }
-    }
-  ],
+  "installCommand": "npm install",
+  "framework": "nextjs",
   "functions": {
     "src/app/api/**": {
-      "maxDuration": 60,
-      "memory": 1024
+      "maxDuration": 60
     },
     "src/app/api/auth/**": {
       "maxDuration": 30,
@@ -50,5 +41,8 @@
       "source": "/admin/(.*)",
       "destination": "/admin/$1"
     }
-  ]
+  ],
+  "env": {
+    "NODE_ENV": "production"
+  }
 } 

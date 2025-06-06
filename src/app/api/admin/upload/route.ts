@@ -1,9 +1,14 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { getServerSession } from 'next-auth/next';
 import { authOptions } from '../../../../lib/auth';
-import { writeFile, mkdir } from 'fs/promises';
-import path from 'path';
-import crypto from 'crypto';
+import { v2 as cloudinary } from 'cloudinary';
+
+// Cloudinary config
+cloudinary.config({
+  cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
+  api_key: process.env.CLOUDINARY_API_KEY,
+  api_secret: process.env.CLOUDINARY_API_SECRET,
+});
 
 export async function POST(request: NextRequest) {
   try {
@@ -35,43 +40,46 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Dosya boyutu kontrolü (5MB)
-    if (file.size > 5 * 1024 * 1024) {
+    // Dosya boyutu kontrolü (10MB)
+    if (file.size > 10 * 1024 * 1024) {
       return NextResponse.json(
-        { error: 'Dosya boyutu 5MB\'dan küçük olmalıdır.' },
+        { error: 'Dosya boyutu 10MB\'dan küçük olmalıdır.' },
         { status: 400 }
       );
     }
 
-    // Unique dosya adı oluştur
-    const fileExtension = file.name.split('.').pop();
-    const fileName = `${crypto.randomUUID()}.${fileExtension}`;
-    
-    // Upload klasörünü oluştur
-    const uploadDir = path.join(process.cwd(), 'public/uploads');
-    try {
-      await mkdir(uploadDir, { recursive: true });
-    } catch (error) {
-      // Klasör zaten varsa hata verme
-    }
-
-    // Dosyayı kaydet
-    const filePath = path.join(uploadDir, fileName);
+    // Dosyayı buffer'a çevir
     const bytes = await file.arrayBuffer();
     const buffer = Buffer.from(bytes);
-    
-    await writeFile(filePath, buffer);
 
-    // Public URL oluştur
-    const fileUrl = `/uploads/${fileName}`;
+    // Cloudinary'e yükle
+    const uploadResult = await new Promise<any>((resolve, reject) => {
+      cloudinary.uploader.upload_stream(
+        {
+          resource_type: 'auto',
+          folder: 'personal-blog/uploads',
+          use_filename: true,
+          unique_filename: true,
+        },
+        (error, result) => {
+          if (error) {
+            console.error('Cloudinary upload error:', error);
+            reject(error);
+          } else {
+            resolve(result);
+          }
+        }
+      ).end(buffer);
+    });
 
     return NextResponse.json({
       success: true,
-      url: fileUrl,
-      fileName: fileName,
+      url: uploadResult.secure_url,
+      fileName: uploadResult.public_id,
       originalName: file.name,
       size: file.size,
-      type: file.type
+      type: file.type,
+      publicId: uploadResult.public_id
     });
 
   } catch (error) {

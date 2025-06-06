@@ -1,8 +1,16 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { getServerSession } from 'next-auth';
 import { authOptions } from '../../../../lib/auth';
+import { v2 as cloudinary } from 'cloudinary';
 import fs from 'fs';
 import path from 'path';
+
+// Cloudinary config
+cloudinary.config({
+  cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
+  api_key: process.env.CLOUDINARY_API_KEY,
+  api_secret: process.env.CLOUDINARY_API_SECRET,
+});
 
 interface MediaItem {
   _id?: string;
@@ -13,9 +21,11 @@ interface MediaItem {
   mimeType: string;
   uploadedAt: Date;
   uploader?: string;
+  source?: 'cloudinary' | 'local';
+  publicId?: string;
 }
 
-// GET - List all media files
+// GET - List all media files from both Cloudinary and local storage
 export async function GET() {
   try {
     const session = await getServerSession(authOptions);
@@ -24,65 +34,142 @@ export async function GET() {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
-    // Read files from uploads directory
-    const uploadsDir = path.join(process.cwd(), 'public', 'uploads');
     const mediaItems: MediaItem[] = [];
 
-    if (fs.existsSync(uploadsDir)) {
-      // Function to recursively scan directories
-      const scanDirectory = (dirPath: string, relativePath: string = '') => {
-        const items = fs.readdirSync(dirPath);
+    // 1. Cloudinary'den dosyaları çek
+    try {
+      console.log('🔍 Fetching from Cloudinary...');
+      console.log('🔑 Cloudinary config:', {
+        cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
+        api_key: process.env.CLOUDINARY_API_KEY ? 'SET' : 'MISSING',
+        api_secret: process.env.CLOUDINARY_API_SECRET ? 'SET' : 'MISSING'
+      });
+      
+      // Search API çalışmıyor, direkt Admin API kullan
+      let cloudinaryResult = { total_count: 0, resources: [] };
+      
+      console.log('🔄 Using Admin API directly...');
+      
+      try {
+        // Admin API ile tüm görselleri çek
+        const adminResult = await cloudinary.api.resources({
+          resource_type: 'image',
+          max_results: 100,
+          type: 'upload'
+        });
         
-        for (const item of items) {
-          if (item.startsWith('.')) continue; // Skip hidden files
+        console.log('📋 Admin API raw response:', JSON.stringify(adminResult, null, 2));
+        
+        if (adminResult.resources && adminResult.resources.length > 0) {
+          // Admin API response'unu search API formatına çevir
+          cloudinaryResult = {
+            total_count: adminResult.resources.length,
+            resources: adminResult.resources.map(resource => ({
+              ...resource,
+              created_at: resource.created_at,
+              secure_url: resource.secure_url,
+              public_id: resource.public_id,
+              bytes: resource.bytes,
+              format: resource.format,
+              resource_type: resource.resource_type
+            }))
+          };
           
-          const itemPath = path.join(dirPath, item);
-          const stats = fs.statSync(itemPath);
-          
-          if (stats.isFile()) {
-            const ext = path.extname(item).toLowerCase();
-            let mimeType = 'application/octet-stream';
-            
-            // Determine MIME type based on extension
-            if (['.jpg', '.jpeg'].includes(ext)) mimeType = 'image/jpeg';
-            else if (ext === '.png') mimeType = 'image/png';
-            else if (ext === '.gif') mimeType = 'image/gif';
-            else if (ext === '.webp') mimeType = 'image/webp';
-            else if (ext === '.svg') mimeType = 'image/svg+xml';
-            else if (['.mp4', '.webm', '.ogg'].includes(ext)) mimeType = 'video/' + ext.slice(1);
-            else if (ext === '.pdf') mimeType = 'application/pdf';
-            
-            // Create ID and URL based on location
-            const fileId = relativePath ? `${relativePath}/${item}` : item;
-            const fileUrl = relativePath ? `/uploads/${relativePath}/${item}` : `/uploads/${item}`;
-            
-            mediaItems.push({
-              _id: fileId,
-              filename: item,
-              originalName: item,
-              url: fileUrl,
-              size: stats.size,
-              mimeType,
-              uploadedAt: stats.birthtime,
-              uploader: 'system'
-            });
-          } else if (stats.isDirectory()) {
-            // Recursively scan subdirectories
-            scanDirectory(itemPath, relativePath ? `${relativePath}/${item}` : item);
-          }
+          console.log('📋 Admin API files found:', cloudinaryResult.total_count);
+        } else {
+          console.log('📋 No files found in Admin API');
         }
-      };
+      } catch (adminError) {
+        console.log('❌ Admin API error:', adminError);
+        cloudinaryResult = { total_count: 0, resources: [] };
+      }
 
-      // Start scanning from uploads root
-      scanDirectory(uploadsDir);
+      console.log('📁 Cloudinary files found:', cloudinaryResult.resources?.length || 0);
+      console.log('📊 Cloudinary response:', JSON.stringify(cloudinaryResult, null, 2));
+
+      if (cloudinaryResult.resources) {
+        for (const resource of cloudinaryResult.resources) {
+          const fileName = resource.display_name || resource.public_id.split('/').pop() || resource.public_id;
+          
+          mediaItems.push({
+            _id: resource.public_id,
+            filename: fileName,
+            originalName: fileName,
+            url: resource.secure_url,
+            size: resource.bytes || 0,
+            mimeType: resource.resource_type === 'image' ? `image/${resource.format}` : 'application/octet-stream',
+            uploadedAt: new Date(resource.created_at),
+            uploader: 'cloudinary',
+            source: 'cloudinary',
+            publicId: resource.public_id
+          });
+        }
+      }
+    } catch (cloudinaryError) {
+      console.error('❌ Cloudinary fetch error:', cloudinaryError);
+      // Cloudinary hatası olsa bile devam et
+    }
+
+    // 2. Local dosyalarını da ekle (eski yöntem ile uyumluluk için)
+    try {
+      const uploadsDir = path.join(process.cwd(), 'public', 'uploads');
+      
+      if (fs.existsSync(uploadsDir)) {
+        const scanDirectory = (dirPath: string, relativePath: string = '') => {
+          const items = fs.readdirSync(dirPath);
+          
+          for (const item of items) {
+            if (item.startsWith('.')) continue;
+            
+            const itemPath = path.join(dirPath, item);
+            const stats = fs.statSync(itemPath);
+            
+            if (stats.isFile()) {
+              const ext = path.extname(item).toLowerCase();
+              let mimeType = 'application/octet-stream';
+              
+              if (['.jpg', '.jpeg'].includes(ext)) mimeType = 'image/jpeg';
+              else if (ext === '.png') mimeType = 'image/png';
+              else if (ext === '.gif') mimeType = 'image/gif';
+              else if (ext === '.webp') mimeType = 'image/webp';
+              else if (ext === '.svg') mimeType = 'image/svg+xml';
+              
+              const fileId = relativePath ? `local/${relativePath}/${item}` : `local/${item}`;
+              const fileUrl = relativePath ? `/uploads/${relativePath}/${item}` : `/uploads/${item}`;
+              
+              mediaItems.push({
+                _id: fileId,
+                filename: item,
+                originalName: item,
+                url: fileUrl,
+                size: stats.size,
+                mimeType,
+                uploadedAt: stats.birthtime,
+                uploader: 'local',
+                source: 'local'
+              });
+            } else if (stats.isDirectory()) {
+              scanDirectory(itemPath, relativePath ? `${relativePath}/${item}` : item);
+            }
+          }
+        };
+
+        scanDirectory(uploadsDir);
+      }
+    } catch (localError) {
+      console.error('❌ Local files scan error:', localError);
     }
 
     // Sort by upload date (newest first)
     mediaItems.sort((a, b) => new Date(b.uploadedAt).getTime() - new Date(a.uploadedAt).getTime());
 
+    console.log('📊 Total media items found:', mediaItems.length);
+    console.log('📊 Cloudinary items:', mediaItems.filter(item => item.source === 'cloudinary').length);
+    console.log('📊 Local items:', mediaItems.filter(item => item.source === 'local').length);
+
     return NextResponse.json(mediaItems);
   } catch (error) {
-    console.error('Media listing error:', error);
+    console.error('❌ Media listing error:', error);
     return NextResponse.json({ error: 'Failed to list media files' }, { status: 500 });
   }
 }
@@ -104,18 +191,29 @@ export async function DELETE(request: NextRequest) {
 
     const deletedFiles: string[] = [];
     const errors: string[] = [];
-    const uploadsDir = path.join(process.cwd(), 'public', 'uploads');
 
     for (const mediaId of mediaIds) {
       try {
-        // mediaId can be either "filename" (root level) or "subdir/filename" (subdirectory)
-        const filePath = path.join(uploadsDir, mediaId);
-        
-        if (fs.existsSync(filePath)) {
-          fs.unlinkSync(filePath);
-          deletedFiles.push(mediaId);
+        if (mediaId.startsWith('local/')) {
+          // Local file deletion
+          const localPath = mediaId.replace('local/', '');
+          const uploadsDir = path.join(process.cwd(), 'public', 'uploads');
+          const filePath = path.join(uploadsDir, localPath);
+          
+          if (fs.existsSync(filePath)) {
+            fs.unlinkSync(filePath);
+            deletedFiles.push(mediaId);
+          } else {
+            errors.push(`File not found: ${mediaId}`);
+          }
         } else {
-          errors.push(`File not found: ${mediaId}`);
+          // Cloudinary file deletion
+          const result = await cloudinary.uploader.destroy(mediaId);
+          if (result.result === 'ok' || result.result === 'not found') {
+            deletedFiles.push(mediaId);
+          } else {
+            errors.push(`Failed to delete from Cloudinary: ${mediaId}`);
+          }
         }
       } catch (error) {
         console.error(`Error deleting file ${mediaId}:`, error);

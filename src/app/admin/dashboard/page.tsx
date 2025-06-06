@@ -3,6 +3,7 @@ import { useState, useEffect } from 'react';
 import { useSession, signOut } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
+
 import {
   FolderOpenIcon,
   WrenchScrewdriverIcon,
@@ -21,8 +22,11 @@ import {
   PhotoIcon,
   PhoneIcon,
   ChatBubbleLeftRightIcon,
-  TagIcon
+  TagIcon,
+  CloudIcon
 } from '@heroicons/react/24/outline';
+
+
 
 export default function AdminDashboard() {
   const { data: session, status } = useSession();
@@ -32,8 +36,12 @@ export default function AdminDashboard() {
     servicesCount: 0,
     messagesCount: 0,
     categoriesCount: 0,
-    sliderCount: 0
+    sliderCount: 0,
+    mediaCount: 0,
+    cloudinaryCount: 0,
+    localCount: 0
   });
+
 
   useEffect(() => {
     if (status === 'unauthenticated') {
@@ -42,16 +50,17 @@ export default function AdminDashboard() {
   }, [status, router]);
 
   useEffect(() => {
-    // Fetch statistics
+    // Fetch statistics and recent media
     const fetchData = async () => {
       try {
         // Fetch statistics
-        const [portfolioRes, categoriesRes, servicesRes, messagesRes, sliderRes] = await Promise.all([
+        const [portfolioRes, categoriesRes, servicesRes, messagesRes, sliderRes, mediaRes] = await Promise.all([
           fetch('/api/portfolio'),
           fetch('/api/categories'),
           fetch('/api/services'),
           fetch('/api/messages'),
-          fetch('/api/admin/slider')
+          fetch('/api/admin/slider'),
+          fetch('/api/admin/media')
         ]);
 
         const portfolioData = portfolioRes.ok ? await portfolioRes.json() : [];
@@ -59,14 +68,24 @@ export default function AdminDashboard() {
         const servicesData = servicesRes.ok ? await servicesRes.json() : [];
         const messagesData = messagesRes.ok ? await messagesRes.json() : [];
         const sliderData = sliderRes.ok ? await sliderRes.json() : [];
+        const mediaData = mediaRes.ok ? await mediaRes.json() : [];
+
+        // Calculate media stats
+        const cloudinaryCount = mediaData.filter((item: any) => item.source === 'cloudinary').length;
+        const localCount = mediaData.filter((item: any) => item.source === 'local').length;
 
         setStats({
           portfolioCount: portfolioData.length || 0,
           servicesCount: servicesData.length || 0,
           messagesCount: messagesData.length || 0,
           categoriesCount: categoriesData.length || 0,
-          sliderCount: sliderData.length || 0
+          sliderCount: sliderData.length || 0,
+          mediaCount: mediaData.length || 0,
+          cloudinaryCount,
+          localCount
         });
+
+
       } catch (error) {
         console.error('Error fetching data:', error);
         // Fallback to default values if API fails
@@ -75,8 +94,12 @@ export default function AdminDashboard() {
           servicesCount: 0,
           messagesCount: 0,
           categoriesCount: 0,
-          sliderCount: 0
+          sliderCount: 0,
+          mediaCount: 0,
+          cloudinaryCount: 0,
+          localCount: 0
         });
+
       }
     };
 
@@ -89,6 +112,8 @@ export default function AdminDashboard() {
     await signOut({ redirect: false });
     router.push('/admin/login');
   };
+
+
 
   if (status === 'loading') {
     return (
@@ -114,6 +139,15 @@ export default function AdminDashboard() {
       color: 'from-blue-500 to-blue-600',
       stats: stats.portfolioCount,
       badge: 'Projeler'
+    },
+    {
+      title: 'Medya Kütüphanesi',
+      description: 'Resim ve dosyalarınızı yönetin',
+      icon: PhotoIcon,
+      href: '/admin/media',
+      color: 'from-violet-500 to-purple-600',
+      stats: stats.mediaCount,
+      badge: 'Dosyalar'
     },
     {
       title: 'Hakkımda Sayfası',
@@ -188,6 +222,12 @@ export default function AdminDashboard() {
       color: 'bg-gradient-to-r from-teal-600 to-blue-600'
     },
     {
+      title: 'Dosya Yükle',
+      icon: CloudIcon,
+      href: '/admin/media',
+      color: 'bg-gradient-to-r from-violet-600 to-purple-700'
+    },
+    {
       title: 'Yeni Slider Ekle',
       icon: PhotoIcon,
       href: '/admin/slider',
@@ -217,7 +257,7 @@ export default function AdminDashboard() {
     <div className="min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900">
       
       {/* Header */}
-      <header className="bg-white/10 backdrop-blur-xl border-b border-white/20">
+      <header className="bg-white/10 backdrop-blur-xl border-b border-white/20 sticky top-0 z-50">
         <div className="max-w-7xl mx-auto px-6 sm:px-8">
           <div className="flex items-center justify-between h-16">
             
@@ -227,8 +267,8 @@ export default function AdminDashboard() {
                 <CubeTransparentIcon className="w-6 h-6 text-white" />
               </div>
               <div>
-                <h1 className="text-xl font-bold text-white">Admin Panel</h1>
-                <p className="text-sm text-slate-300">Admin Panel</p>
+                <h1 className="text-xl font-bold text-white">Admin Dashboard</h1>
+                <p className="text-sm text-slate-300">İçerik Yönetim Sistemi</p>
               </div>
             </div>
 
@@ -279,7 +319,7 @@ export default function AdminDashboard() {
         </div>
 
         {/* Statistics Overview */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-6 mb-8">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-6 gap-6 mb-8">
           <div className="bg-white/10 backdrop-blur-xl rounded-2xl p-6 border border-white/20">
             <div className="flex items-center justify-between">
               <div>
@@ -292,6 +332,22 @@ export default function AdminDashboard() {
               </div>
               <div className="w-12 h-12 bg-gradient-to-r from-blue-500 to-blue-600 rounded-xl flex items-center justify-center">
                 <FolderOpenIcon className="w-6 h-6 text-white" />
+              </div>
+            </div>
+          </div>
+
+          <div className="bg-white/10 backdrop-blur-xl rounded-2xl p-6 border border-white/20">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-slate-400 text-sm font-medium">Medya Dosyası</p>
+                <p className="text-3xl font-bold text-white mt-1">{stats.mediaCount}</p>
+                <div className="flex items-center space-x-1 mt-2">
+                  <CloudIcon className="w-4 h-4 text-violet-400" />
+                  <span className="text-violet-400 text-sm">{stats.cloudinaryCount} Cloud</span>
+                </div>
+              </div>
+              <div className="w-12 h-12 bg-gradient-to-r from-violet-500 to-purple-600 rounded-xl flex items-center justify-center">
+                <PhotoIcon className="w-6 h-6 text-white" />
               </div>
             </div>
           </div>
@@ -364,7 +420,7 @@ export default function AdminDashboard() {
         {/* Quick Actions */}
         <div className="mb-8">
           <h3 className="text-xl font-bold text-white mb-4">Hızlı İşlemler</h3>
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
             {quickActions.map((action) => (
               <Link 
                 key={action.title}
@@ -383,10 +439,12 @@ export default function AdminDashboard() {
           </div>
         </div>
 
+
+
         {/* Main Menu Grid */}
         <div className="mb-8">
           <h3 className="text-xl font-bold text-white mb-4">Yönetim Paneli</h3>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {menuItems.map((item) => (
               <Link 
                 key={item.title}
@@ -430,7 +488,7 @@ export default function AdminDashboard() {
                 <CubeTransparentIcon className="w-4 h-4" />
                 <span>Ana Sayfa</span>
               </Link>
-              <span>Admin Panel v2.0</span>
+              <span>Admin Panel v2.1</span>
             </div>
           </div>
         </div>
