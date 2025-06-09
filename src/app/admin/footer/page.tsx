@@ -13,7 +13,11 @@ import {
   ExclamationTriangleIcon,
   ArrowLeftIcon,
   CubeTransparentIcon,
-  UserIcon
+  UserIcon,
+  LinkIcon,
+  ArrowUpIcon,
+  ArrowDownIcon,
+  PencilIcon
 } from '@heroicons/react/24/outline';
 
 interface FooterSettings {
@@ -185,6 +189,22 @@ export default function FooterSettingsPage() {
     });
   };
 
+  const moveQuickLink = (index: number, direction: 'up' | 'down') => {
+    if (!settings) return;
+    
+    const newLinks = [...settings.quickLinks];
+    const targetIndex = direction === 'up' ? index - 1 : index + 1;
+    
+    if (targetIndex < 0 || targetIndex >= newLinks.length) return;
+    
+    [newLinks[index], newLinks[targetIndex]] = [newLinks[targetIndex], newLinks[index]];
+    
+    setSettings({
+      ...settings,
+      quickLinks: newLinks
+    });
+  };
+
   if (status === 'loading' || loading) {
     return (
       <div className="min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 flex items-center justify-center">
@@ -264,9 +284,9 @@ export default function FooterSettingsPage() {
           </div>
         )}
 
-        {/* Action Bar */}
+        {/* Tabs Navigation */}
         <div className="mb-8 bg-white/10 backdrop-blur-xl rounded-2xl p-6 border border-white/20">
-          <div className="flex justify-between items-center">
+          <div className="flex justify-between items-center mb-6">
             <div>
               <h2 className="text-2xl font-bold text-white mb-2">Footer Yönetimi</h2>
               <p className="text-slate-400">Site alt kısmındaki içeriği ve görünümü düzenleyin</p>
@@ -287,132 +307,368 @@ export default function FooterSettingsPage() {
               </button>
             </div>
           </div>
+
+          {/* Tab Navigation */}
+          <div className="border-b border-white/20">
+            <nav className="-mb-px flex space-x-8">
+              {[
+                { id: 'content', label: 'İçerik & İletişim', icon: CogIcon },
+                { id: 'links', label: 'Hızlı Bağlantılar', icon: LinkIcon },
+                { id: 'social', label: 'Sosyal Medya', icon: LinkIcon },
+                { id: 'appearance', label: 'Görünüm', icon: PencilIcon }
+              ].map((tab) => (
+                <button
+                  key={tab.id}
+                  onClick={() => setActiveTab(tab.id as any)}
+                  className={`py-2 px-1 border-b-2 font-medium text-sm flex items-center space-x-2 ${
+                    activeTab === tab.id
+                      ? 'border-teal-400 text-teal-300'
+                      : 'border-transparent text-slate-400 hover:text-slate-300 hover:border-slate-400'
+                  }`}
+                >
+                  <tab.icon className="w-4 h-4" />
+                  <span>{tab.label}</span>
+                </button>
+              ))}
+            </nav>
+          </div>
         </div>
 
-        {/* Form Content */}
+        {/* Tab Content */}
         <div className="space-y-6">
           
-          {/* Ana Açıklama */}
-          <div className="bg-white/10 backdrop-blur-xl rounded-2xl p-6 border border-white/20">
-            <h3 className="text-lg font-semibold text-white mb-4 flex items-center">
-              <CogIcon className="h-5 w-5 mr-2 text-teal-400" />
-              Ana Açıklama
-            </h3>
-            <textarea
-              value={settings.mainDescription}
-              onChange={(e) => setSettings({ ...settings, mainDescription: e.target.value })}
-              rows={3}
-              className="w-full px-4 py-3 bg-white/10 border border-white/20 rounded-xl text-white placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-transparent resize-none"
-              placeholder="Footer'da görünecek ana açıklama metni..."
-            />
-          </div>
+          {/* Content Tab */}
+          {activeTab === 'content' && (
+            <>
+              {/* Ana Açıklama */}
+              <div className="bg-white/10 backdrop-blur-xl rounded-2xl p-6 border border-white/20">
+                <h3 className="text-lg font-semibold text-white mb-4 flex items-center">
+                  <CogIcon className="h-5 w-5 mr-2 text-teal-400" />
+                  Ana Açıklama
+                </h3>
+                <textarea
+                  value={settings.mainDescription}
+                  onChange={(e) => setSettings({ ...settings, mainDescription: e.target.value })}
+                  rows={3}
+                  className="w-full px-4 py-3 bg-white/10 border border-white/20 rounded-xl text-white placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-transparent resize-none"
+                  placeholder="Footer'da görünecek ana açıklama metni..."
+                />
+              </div>
 
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-            
-            {/* İletişim Bilgileri */}
+              <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                
+                {/* İletişim Bilgileri */}
+                <div className="bg-white/10 backdrop-blur-xl rounded-2xl p-6 border border-white/20">
+                  <h3 className="text-lg font-semibold text-white mb-4 flex items-center">
+                    <CogIcon className="h-5 w-5 mr-2 text-teal-400" />
+                    İletişim Bilgileri
+                  </h3>
+                  <div className="space-y-4">
+                    <div>
+                      <label className="block text-sm font-medium text-slate-300 mb-2">E-posta</label>
+                      <input
+                        type="email"
+                        value={settings.contactInfo.email}
+                        onChange={(e) => setSettings({
+                          ...settings,
+                          contactInfo: { ...settings.contactInfo, email: e.target.value }
+                        })}
+                        className="w-full px-4 py-3 bg-white/10 border border-white/20 rounded-xl text-white placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-transparent"
+                        placeholder="ornek@email.com"
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-sm font-medium text-slate-300 mb-2">Telefon</label>
+                      <input
+                        type="text"
+                        value={settings.contactInfo.phone}
+                        onChange={(e) => setSettings({
+                          ...settings,
+                          contactInfo: { ...settings.contactInfo, phone: e.target.value }
+                        })}
+                        className="w-full px-4 py-3 bg-white/10 border border-white/20 rounded-xl text-white placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-transparent"
+                        placeholder="+90 (500) 123 45 67"
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-sm font-medium text-slate-300 mb-2">Adres</label>
+                      <input
+                        type="text"
+                        value={settings.contactInfo.address}
+                        onChange={(e) => setSettings({
+                          ...settings,
+                          contactInfo: { ...settings.contactInfo, address: e.target.value }
+                        })}
+                        className="w-full px-4 py-3 bg-white/10 border border-white/20 rounded-xl text-white placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-transparent"
+                        placeholder="Şehir, Ülke"
+                      />
+                    </div>
+                  </div>
+                </div>
+
+                {/* Copyright ve Geliştirici Bilgileri */}
+                <div className="bg-white/10 backdrop-blur-xl rounded-2xl p-6 border border-white/20">
+                  <h3 className="text-lg font-semibold text-white mb-4">Copyright & Geliştirici</h3>
+                  <div className="space-y-4">
+                    <div>
+                      <label className="block text-sm font-medium text-slate-300 mb-2">Şirket Adı</label>
+                      <input
+                        type="text"
+                        value={settings.copyrightInfo.companyName}
+                        onChange={(e) => setSettings({
+                          ...settings,
+                          copyrightInfo: { ...settings.copyrightInfo, companyName: e.target.value }
+                        })}
+                        className="w-full px-4 py-3 bg-white/10 border border-white/20 rounded-xl text-white placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-transparent"
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-sm font-medium text-slate-300 mb-2">Yıl</label>
+                      <input
+                        type="number"
+                        value={settings.copyrightInfo.year}
+                        onChange={(e) => setSettings({
+                          ...settings,
+                          copyrightInfo: { ...settings.copyrightInfo, year: parseInt(e.target.value) }
+                        })}
+                        className="w-full px-4 py-3 bg-white/10 border border-white/20 rounded-xl text-white placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-transparent"
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-sm font-medium text-slate-300 mb-2">Geliştirici Website</label>
+                      <input
+                        type="url"
+                        value={settings.developerInfo.website}
+                        onChange={(e) => setSettings({
+                          ...settings,
+                          developerInfo: { ...settings.developerInfo, website: e.target.value }
+                        })}
+                        className="w-full px-4 py-3 bg-white/10 border border-white/20 rounded-xl text-white placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-transparent"
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-sm font-medium text-slate-300 mb-2">Şirket Adı</label>
+                      <input
+                        type="text"
+                        value={settings.developerInfo.companyName}
+                        onChange={(e) => setSettings({
+                          ...settings,
+                          developerInfo: { ...settings.developerInfo, companyName: e.target.value }
+                        })}
+                        className="w-full px-4 py-3 bg-white/10 border border-white/20 rounded-xl text-white placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-transparent"
+                      />
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </>
+          )}
+
+          {/* Quick Links Tab */}
+          {activeTab === 'links' && (
             <div className="bg-white/10 backdrop-blur-xl rounded-2xl p-6 border border-white/20">
-              <h3 className="text-lg font-semibold text-white mb-4 flex items-center">
-                <CogIcon className="h-5 w-5 mr-2 text-teal-400" />
-                İletişim Bilgileri
+              <div className="flex justify-between items-center mb-6">
+                <h3 className="text-lg font-semibold text-white flex items-center">
+                  <LinkIcon className="h-5 w-5 mr-2 text-teal-400" />
+                  Hızlı Bağlantılar
+                </h3>
+                <button
+                  onClick={addQuickLink}
+                  className="bg-gradient-to-r from-teal-600 to-blue-600 hover:from-teal-700 hover:to-blue-700 text-white px-4 py-2 rounded-xl font-semibold transition-all duration-200 flex items-center space-x-2 text-sm"
+                >
+                  <PlusIcon className="h-4 w-4" />
+                  <span>Yeni Bağlantı</span>
+                </button>
+              </div>
+              
+              <div className="space-y-4">
+                {settings.quickLinks.map((link, index) => (
+                  <div key={index} className="bg-white/10 rounded-xl p-4 border border-white/20">
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      <div>
+                        <label className="block text-sm font-medium text-slate-300 mb-2">Bağlantı Adı</label>
+                        <input
+                          type="text"
+                          value={link.title}
+                          onChange={(e) => updateQuickLink(index, 'title', e.target.value)}
+                          placeholder="Örn: Anasayfa"
+                          className="w-full px-4 py-3 bg-white/10 border border-white/20 rounded-xl text-white placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-transparent"
+                        />
+                      </div>
+                      <div>
+                        <label className="block text-sm font-medium text-slate-300 mb-2">URL</label>
+                        <input
+                          type="text"
+                          value={link.url}
+                          onChange={(e) => updateQuickLink(index, 'url', e.target.value)}
+                          placeholder="Örn: /contact veya https://..."
+                          className="w-full px-4 py-3 bg-white/10 border border-white/20 rounded-xl text-white placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-transparent"
+                        />
+                      </div>
+                    </div>
+                    
+                    <div className="flex items-center justify-between mt-4">
+                      <div className="flex items-center space-x-4">
+                        <label className="flex items-center">
+                          <input
+                            type="checkbox"
+                            checked={link.isExternal}
+                            onChange={(e) => updateQuickLink(index, 'isExternal', e.target.checked)}
+                            className="rounded border-slate-400 text-teal-600 focus:ring-teal-500 bg-white/10"
+                          />
+                          <span className="ml-2 text-sm text-slate-300">Harici bağlantı</span>
+                        </label>
+                      </div>
+                      
+                      <div className="flex items-center space-x-2">
+                        <button
+                          onClick={() => moveQuickLink(index, 'up')}
+                          disabled={index === 0}
+                          className="p-2 text-slate-400 hover:text-white hover:bg-white/10 rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                        >
+                          <ArrowUpIcon className="h-4 w-4" />
+                        </button>
+                        <button
+                          onClick={() => moveQuickLink(index, 'down')}
+                          disabled={index === settings.quickLinks.length - 1}
+                          className="p-2 text-slate-400 hover:text-white hover:bg-white/10 rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                        >
+                          <ArrowDownIcon className="h-4 w-4" />
+                        </button>
+                        <button
+                          onClick={() => removeQuickLink(index)}
+                          className="p-2 text-red-400 hover:text-red-300 hover:bg-red-500/10 rounded-lg transition-colors"
+                        >
+                          <TrashIcon className="h-4 w-4" />
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+                ))}
+                
+                {settings.quickLinks.length === 0 && (
+                  <div className="text-center py-8 text-slate-400">
+                    <LinkIcon className="h-12 w-12 mx-auto mb-4 opacity-50" />
+                    <p>Henüz hızlı bağlantı eklenmemiş</p>
+                    <p className="text-sm">Yukarıdaki "Yeni Bağlantı" butonunu kullanarak ekleyebilirsiniz</p>
+                  </div>
+                )}
+              </div>
+            </div>
+          )}
+
+          {/* Social Media Tab */}
+          {activeTab === 'social' && (
+            <div className="bg-white/10 backdrop-blur-xl rounded-2xl p-6 border border-white/20">
+              <h3 className="text-lg font-semibold text-white mb-6 flex items-center">
+                <LinkIcon className="h-5 w-5 mr-2 text-teal-400" />
+                Sosyal Medya Bağlantıları
               </h3>
-              <div className="space-y-4">
-                <div>
-                  <label className="block text-sm font-medium text-slate-300 mb-2">E-posta</label>
-                  <input
-                    type="email"
-                    value={settings.contactInfo.email}
-                    onChange={(e) => setSettings({
-                      ...settings,
-                      contactInfo: { ...settings.contactInfo, email: e.target.value }
-                    })}
-                    className="w-full px-4 py-3 bg-white/10 border border-white/20 rounded-xl text-white placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-transparent"
-                    placeholder="ornek@email.com"
-                  />
-                </div>
-                <div>
-                  <label className="block text-sm font-medium text-slate-300 mb-2">Telefon</label>
-                  <input
-                    type="text"
-                    value={settings.contactInfo.phone}
-                    onChange={(e) => setSettings({
-                      ...settings,
-                      contactInfo: { ...settings.contactInfo, phone: e.target.value }
-                    })}
-                    className="w-full px-4 py-3 bg-white/10 border border-white/20 rounded-xl text-white placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-transparent"
-                    placeholder="+90 (500) 123 45 67"
-                  />
-                </div>
-                <div>
-                  <label className="block text-sm font-medium text-slate-300 mb-2">Adres</label>
-                  <input
-                    type="text"
-                    value={settings.contactInfo.address}
-                    onChange={(e) => setSettings({
-                      ...settings,
-                      contactInfo: { ...settings.contactInfo, address: e.target.value }
-                    })}
-                    className="w-full px-4 py-3 bg-white/10 border border-white/20 rounded-xl text-white placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-transparent"
-                    placeholder="Şehir, Ülke"
-                  />
-                </div>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                {Object.entries(settings.socialLinks).map(([platform, url]) => (
+                  <div key={platform}>
+                    <label className="block text-sm font-medium text-slate-300 mb-2 capitalize">{platform}</label>
+                    <input
+                      type="url"
+                      value={url}
+                      onChange={(e) => setSettings({
+                        ...settings,
+                        socialLinks: { ...settings.socialLinks, [platform]: e.target.value }
+                      })}
+                      placeholder={`https://${platform}.com/username`}
+                      className="w-full px-4 py-3 bg-white/10 border border-white/20 rounded-xl text-white placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-transparent"
+                    />
+                  </div>
+                ))}
               </div>
             </div>
+          )}
 
-            {/* Copyright ve Geliştirici Bilgileri */}
-            <div className="bg-white/10 backdrop-blur-xl rounded-2xl p-6 border border-white/20">
-              <h3 className="text-lg font-semibold text-white mb-4">Copyright & Geliştirici</h3>
-              <div className="space-y-4">
-                <div>
-                  <label className="block text-sm font-medium text-slate-300 mb-2">Şirket Adı</label>
-                  <input
-                    type="text"
-                    value={settings.copyrightInfo.companyName}
-                    onChange={(e) => setSettings({
-                      ...settings,
-                      copyrightInfo: { ...settings.copyrightInfo, companyName: e.target.value }
-                    })}
-                    className="w-full px-4 py-3 bg-white/10 border border-white/20 rounded-xl text-white placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-transparent"
-                  />
+          {/* Appearance Tab */}
+          {activeTab === 'appearance' && (
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+              {/* Görünürlük Ayarları */}
+              <div className="bg-white/10 backdrop-blur-xl rounded-2xl p-6 border border-white/20">
+                <h3 className="text-lg font-semibold text-white mb-6">Görünürlük Ayarları</h3>
+                <div className="space-y-4">
+                  {Object.entries(settings.visibility).map(([key, value]) => (
+                    <label key={key} className="flex items-center">
+                      <input
+                        type="checkbox"
+                        checked={value}
+                        onChange={(e) => setSettings({
+                          ...settings,
+                          visibility: { ...settings.visibility, [key]: e.target.checked }
+                        })}
+                        className="rounded border-slate-400 text-teal-600 focus:ring-teal-500 bg-white/10"
+                      />
+                      <span className="ml-3 text-sm text-slate-300">
+                        {key === 'showQuickLinks' && 'Hızlı Bağlantıları Göster'}
+                        {key === 'showSocialLinks' && 'Sosyal Medya Bağlantılarını Göster'}
+                        {key === 'showContactInfo' && 'İletişim Bilgilerini Göster'}
+                        {key === 'showDeveloperInfo' && 'Geliştirici Bilgilerini Göster'}
+                      </span>
+                    </label>
+                  ))}
                 </div>
-                <div>
-                  <label className="block text-sm font-medium text-slate-300 mb-2">Yıl</label>
-                  <input
-                    type="number"
-                    value={settings.copyrightInfo.year}
-                    onChange={(e) => setSettings({
-                      ...settings,
-                      copyrightInfo: { ...settings.copyrightInfo, year: parseInt(e.target.value) }
-                    })}
-                    className="w-full px-4 py-3 bg-white/10 border border-white/20 rounded-xl text-white placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-transparent"
-                  />
-                </div>
-                <div>
-                  <label className="block text-sm font-medium text-slate-300 mb-2">Geliştirici Website</label>
-                  <input
-                    type="url"
-                    value={settings.developerInfo.website}
-                    onChange={(e) => setSettings({
-                      ...settings,
-                      developerInfo: { ...settings.developerInfo, website: e.target.value }
-                    })}
-                    className="w-full px-4 py-3 bg-white/10 border border-white/20 rounded-xl text-white placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-transparent"
-                  />
-                </div>
-                <div>
-                  <label className="block text-sm font-medium text-slate-300 mb-2">Şirket Adı</label>
-                  <input
-                    type="text"
-                    value={settings.developerInfo.companyName}
-                    onChange={(e) => setSettings({
-                      ...settings,
-                      developerInfo: { ...settings.developerInfo, companyName: e.target.value }
-                    })}
-                    className="w-full px-4 py-3 bg-white/10 border border-white/20 rounded-xl text-white placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-transparent"
-                  />
+              </div>
+
+              {/* Tema Ayarları */}
+              <div className="bg-white/10 backdrop-blur-xl rounded-2xl p-6 border border-white/20">
+                <h3 className="text-lg font-semibold text-white mb-6">Tema Ayarları</h3>
+                <div className="space-y-4">
+                  <div>
+                    <label className="block text-sm font-medium text-slate-300 mb-2">Arkaplan Rengi</label>
+                    <select
+                      value={settings.theme.backgroundColor}
+                      onChange={(e) => setSettings({
+                        ...settings,
+                        theme: { ...settings.theme, backgroundColor: e.target.value }
+                      })}
+                      className="w-full px-4 py-3 bg-white/10 border border-white/20 rounded-xl text-white focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-transparent"
+                    >
+                      <option value="bg-slate-800">Koyu Gri</option>
+                      <option value="bg-gray-900">Siyah</option>
+                      <option value="bg-slate-900">Koyu Slate</option>
+                      <option value="bg-teal-800">Koyu Teal</option>
+                    </select>
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-slate-300 mb-2">Metin Rengi</label>
+                    <select
+                      value={settings.theme.textColor}
+                      onChange={(e) => setSettings({
+                        ...settings,
+                        theme: { ...settings.theme, textColor: e.target.value }
+                      })}
+                      className="w-full px-4 py-3 bg-white/10 border border-white/20 rounded-xl text-white focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-transparent"
+                    >
+                      <option value="text-slate-300">Açık Gri</option>
+                      <option value="text-gray-300">Gri</option>
+                      <option value="text-white">Beyaz</option>
+                    </select>
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-slate-300 mb-2">Vurgu Rengi</label>
+                    <select
+                      value={settings.theme.accentColor}
+                      onChange={(e) => setSettings({
+                        ...settings,
+                        theme: { ...settings.theme, accentColor: e.target.value }
+                      })}
+                      className="w-full px-4 py-3 bg-white/10 border border-white/20 rounded-xl text-white focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-transparent"
+                    >
+                      <option value="text-teal-400">Teal</option>
+                      <option value="text-blue-400">Mavi</option>
+                      <option value="text-green-400">Yeşil</option>
+                      <option value="text-purple-400">Mor</option>
+                      <option value="text-orange-400">Turuncu</option>
+                    </select>
+                  </div>
                 </div>
               </div>
             </div>
-          </div>
+          )}
         </div>
 
         {/* Footer Info */}
