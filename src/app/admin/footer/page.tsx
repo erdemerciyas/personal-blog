@@ -1,13 +1,19 @@
 'use client';
 
 import { useState, useEffect } from 'react';
+import { useSession, signOut } from 'next-auth/react';
+import { useRouter } from 'next/navigation';
+import Link from 'next/link';
 import { 
   CogIcon, 
   PlusIcon,
   TrashIcon,
   CheckIcon,
   ArrowPathIcon,
-  ExclamationTriangleIcon
+  ExclamationTriangleIcon,
+  ArrowLeftIcon,
+  CubeTransparentIcon,
+  UserIcon
 } from '@heroicons/react/24/outline';
 
 interface FooterSettings {
@@ -55,6 +61,8 @@ interface FooterSettings {
 }
 
 export default function FooterSettingsPage() {
+  const { data: session, status } = useSession();
+  const router = useRouter();
   const [settings, setSettings] = useState<FooterSettings | null>(null);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
@@ -63,8 +71,21 @@ export default function FooterSettingsPage() {
   const [activeTab, setActiveTab] = useState<'content' | 'links' | 'social' | 'appearance'>('content');
 
   useEffect(() => {
-    fetchSettings();
-  }, []);
+    if (status === 'unauthenticated') {
+      router.push('/admin/login');
+    }
+  }, [status, router]);
+
+  useEffect(() => {
+    if (session) {
+      fetchSettings();
+    }
+  }, [session]);
+
+  const handleSignOut = async () => {
+    await signOut({ redirect: false });
+    router.push('/admin/login');
+  };
 
   const fetchSettings = async () => {
     try {
@@ -164,179 +185,255 @@ export default function FooterSettingsPage() {
     });
   };
 
-  if (loading) {
+  if (status === 'loading' || loading) {
     return (
-      <div className="flex items-center justify-center h-64">
-        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-teal-500"></div>
+      <div className="min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 flex items-center justify-center">
+        <div className="flex flex-col items-center space-y-4">
+          <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-teal-500"></div>
+          <p className="text-slate-300">Footer ayarları yükleniyor...</p>
+        </div>
       </div>
     );
+  }
+
+  if (!session?.user) {
+    return null;
   }
 
   if (!settings) return null;
 
   return (
-    <div className="space-y-6">
+    <div className="min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900">
+      
       {/* Header */}
-      <div className="flex justify-between items-center">
-        <div>
-          <h1 className="text-3xl font-bold text-slate-800">Footer Ayarları</h1>
-          <p className="text-slate-600 mt-2">Site alt kısmının görünümünü ve içeriğini yönetin</p>
+      <header className="bg-white/10 backdrop-blur-xl border-b border-white/20 sticky top-0 z-50">
+        <div className="max-w-7xl mx-auto px-6 sm:px-8">
+          <div className="flex items-center justify-between h-16">
+            
+            {/* Logo & Title */}
+            <div className="flex items-center space-x-4">
+              <Link 
+                href="/admin/dashboard"
+                className="flex items-center space-x-3 hover:opacity-80 transition-opacity"
+              >
+                <ArrowLeftIcon className="w-5 h-5 text-slate-400" />
+                <div className="w-10 h-10 bg-gradient-to-br from-teal-500 to-blue-600 rounded-xl flex items-center justify-center">
+                  <CubeTransparentIcon className="w-6 h-6 text-white" />
+                </div>
+              </Link>
+              <div>
+                <h1 className="text-xl font-bold text-white">Footer Ayarları</h1>
+                <p className="text-sm text-slate-300">Site alt kısmının görünümünü ve içeriğini yönetin</p>
+              </div>
+            </div>
+
+            {/* User Info & Actions */}
+            <div className="flex items-center space-x-4">
+              <div className="hidden sm:flex items-center space-x-3">
+                <div className="text-right">
+                  <p className="text-sm font-medium text-white">{session.user.name}</p>
+                  <p className="text-xs text-slate-400">{session.user.email}</p>
+                </div>
+                <div className="w-10 h-10 bg-gradient-to-r from-teal-500 to-blue-500 rounded-full flex items-center justify-center">
+                  <UserIcon className="w-5 h-5 text-white" />
+                </div>
+              </div>
+              
+              <button
+                onClick={handleSignOut}
+                className="text-slate-300 hover:text-white transition-colors"
+              >
+                Çıkış Yap
+              </button>
+            </div>
+          </div>
         </div>
+      </header>
+
+      {/* Main Content */}
+      <main className="max-w-7xl mx-auto px-6 sm:px-8 py-8">
         
-        <div className="flex space-x-3">
-          <button
-            onClick={handleReset}
-            disabled={resetting}
-            className="flex items-center space-x-2 px-4 py-2 text-slate-600 bg-slate-200 hover:bg-slate-300 rounded-lg transition-colors disabled:opacity-50"
-          >
-            {resetting ? (
-              <ArrowPathIcon className="h-5 w-5 animate-spin" />
-            ) : (
-              <ExclamationTriangleIcon className="h-5 w-5" />
-            )}
-            <span>Sıfırla</span>
-          </button>
+        {/* Success/Error Message */}
+        {message && (
+          <div className={`mb-6 p-4 rounded-xl ${
+            message.type === 'success' 
+              ? 'bg-green-500/20 text-green-300 border border-green-500/30' 
+              : 'bg-red-500/20 text-red-300 border border-red-500/30'
+          }`}>
+            {message.text}
+          </div>
+        )}
+
+        {/* Action Bar */}
+        <div className="mb-8 bg-white/10 backdrop-blur-xl rounded-2xl p-6 border border-white/20">
+          <div className="flex justify-between items-center">
+            <div>
+              <h2 className="text-2xl font-bold text-white mb-2">Footer Yönetimi</h2>
+              <p className="text-slate-400">Site alt kısmındaki içeriği ve görünümü düzenleyin</p>
+            </div>
+            
+            <div className="flex space-x-3">
+              <button
+                onClick={handleSave}
+                disabled={saving}
+                className="bg-gradient-to-r from-teal-600 to-blue-600 hover:from-teal-700 hover:to-blue-700 text-white px-6 py-3 rounded-xl font-semibold transition-all duration-200 flex items-center space-x-2 disabled:opacity-50"
+              >
+                {saving ? (
+                  <ArrowPathIcon className="h-5 w-5 animate-spin" />
+                ) : (
+                  <CheckIcon className="h-5 w-5" />
+                )}
+                <span>{saving ? 'Kaydediliyor...' : 'Değişiklikleri Kaydet'}</span>
+              </button>
+            </div>
+          </div>
+        </div>
+
+        {/* Form Content */}
+        <div className="space-y-6">
           
-          <button
-            onClick={handleSave}
-            disabled={saving}
-            className="btn-primary flex items-center space-x-2"
-          >
-            {saving ? (
-              <ArrowPathIcon className="h-5 w-5 animate-spin" />
-            ) : (
-              <CheckIcon className="h-5 w-5" />
-            )}
-            <span>Kaydet</span>
-          </button>
-        </div>
-      </div>
+          {/* Ana Açıklama */}
+          <div className="bg-white/10 backdrop-blur-xl rounded-2xl p-6 border border-white/20">
+            <h3 className="text-lg font-semibold text-white mb-4 flex items-center">
+              <CogIcon className="h-5 w-5 mr-2 text-teal-400" />
+              Ana Açıklama
+            </h3>
+            <textarea
+              value={settings.mainDescription}
+              onChange={(e) => setSettings({ ...settings, mainDescription: e.target.value })}
+              rows={3}
+              className="w-full px-4 py-3 bg-white/10 border border-white/20 rounded-xl text-white placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-transparent resize-none"
+              placeholder="Footer'da görünecek ana açıklama metni..."
+            />
+          </div>
 
-      {/* Success/Error Message */}
-      {message && (
-        <div className={`p-4 rounded-lg ${message.type === 'success' ? 'bg-green-50 text-green-800' : 'bg-red-50 text-red-800'}`}>
-          {message.text}
-        </div>
-      )}
-
-      {/* Form Content */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        {/* Ana Açıklama */}
-        <div className="lg:col-span-2">
-          <label className="label-text">Ana Açıklama</label>
-          <textarea
-            value={settings.mainDescription}
-            onChange={(e) => setSettings({ ...settings, mainDescription: e.target.value })}
-            rows={3}
-            className="input-field resize-none"
-            placeholder="Footer'da görünecek ana açıklama metni..."
-          />
-        </div>
-
-        {/* İletişim Bilgileri */}
-        <div className="card">
-          <h3 className="text-lg font-semibold text-slate-800 mb-4 flex items-center">
-            <CogIcon className="h-5 w-5 mr-2" />
-            İletişim Bilgileri
-          </h3>
-          <div className="space-y-4">
-            <div>
-              <label className="label-text">E-posta</label>
-              <input
-                type="email"
-                value={settings.contactInfo.email}
-                onChange={(e) => setSettings({
-                  ...settings,
-                  contactInfo: { ...settings.contactInfo, email: e.target.value }
-                })}
-                className="input-field"
-                placeholder="ornek@email.com"
-              />
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+            
+            {/* İletişim Bilgileri */}
+            <div className="bg-white/10 backdrop-blur-xl rounded-2xl p-6 border border-white/20">
+              <h3 className="text-lg font-semibold text-white mb-4 flex items-center">
+                <CogIcon className="h-5 w-5 mr-2 text-teal-400" />
+                İletişim Bilgileri
+              </h3>
+              <div className="space-y-4">
+                <div>
+                  <label className="block text-sm font-medium text-slate-300 mb-2">E-posta</label>
+                  <input
+                    type="email"
+                    value={settings.contactInfo.email}
+                    onChange={(e) => setSettings({
+                      ...settings,
+                      contactInfo: { ...settings.contactInfo, email: e.target.value }
+                    })}
+                    className="w-full px-4 py-3 bg-white/10 border border-white/20 rounded-xl text-white placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-transparent"
+                    placeholder="ornek@email.com"
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-slate-300 mb-2">Telefon</label>
+                  <input
+                    type="text"
+                    value={settings.contactInfo.phone}
+                    onChange={(e) => setSettings({
+                      ...settings,
+                      contactInfo: { ...settings.contactInfo, phone: e.target.value }
+                    })}
+                    className="w-full px-4 py-3 bg-white/10 border border-white/20 rounded-xl text-white placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-transparent"
+                    placeholder="+90 (500) 123 45 67"
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-slate-300 mb-2">Adres</label>
+                  <input
+                    type="text"
+                    value={settings.contactInfo.address}
+                    onChange={(e) => setSettings({
+                      ...settings,
+                      contactInfo: { ...settings.contactInfo, address: e.target.value }
+                    })}
+                    className="w-full px-4 py-3 bg-white/10 border border-white/20 rounded-xl text-white placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-transparent"
+                    placeholder="Şehir, Ülke"
+                  />
+                </div>
+              </div>
             </div>
-            <div>
-              <label className="label-text">Telefon</label>
-              <input
-                type="text"
-                value={settings.contactInfo.phone}
-                onChange={(e) => setSettings({
-                  ...settings,
-                  contactInfo: { ...settings.contactInfo, phone: e.target.value }
-                })}
-                className="input-field"
-                placeholder="+90 (500) 123 45 67"
-              />
-            </div>
-            <div>
-              <label className="label-text">Adres</label>
-              <input
-                type="text"
-                value={settings.contactInfo.address}
-                onChange={(e) => setSettings({
-                  ...settings,
-                  contactInfo: { ...settings.contactInfo, address: e.target.value }
-                })}
-                className="input-field"
-                placeholder="Şehir, Ülke"
-              />
+
+            {/* Copyright ve Geliştirici Bilgileri */}
+            <div className="bg-white/10 backdrop-blur-xl rounded-2xl p-6 border border-white/20">
+              <h3 className="text-lg font-semibold text-white mb-4">Copyright & Geliştirici</h3>
+              <div className="space-y-4">
+                <div>
+                  <label className="block text-sm font-medium text-slate-300 mb-2">Şirket Adı</label>
+                  <input
+                    type="text"
+                    value={settings.copyrightInfo.companyName}
+                    onChange={(e) => setSettings({
+                      ...settings,
+                      copyrightInfo: { ...settings.copyrightInfo, companyName: e.target.value }
+                    })}
+                    className="w-full px-4 py-3 bg-white/10 border border-white/20 rounded-xl text-white placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-transparent"
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-slate-300 mb-2">Yıl</label>
+                  <input
+                    type="number"
+                    value={settings.copyrightInfo.year}
+                    onChange={(e) => setSettings({
+                      ...settings,
+                      copyrightInfo: { ...settings.copyrightInfo, year: parseInt(e.target.value) }
+                    })}
+                    className="w-full px-4 py-3 bg-white/10 border border-white/20 rounded-xl text-white placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-transparent"
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-slate-300 mb-2">Geliştirici Website</label>
+                  <input
+                    type="url"
+                    value={settings.developerInfo.website}
+                    onChange={(e) => setSettings({
+                      ...settings,
+                      developerInfo: { ...settings.developerInfo, website: e.target.value }
+                    })}
+                    className="w-full px-4 py-3 bg-white/10 border border-white/20 rounded-xl text-white placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-transparent"
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-slate-300 mb-2">Şirket Adı</label>
+                  <input
+                    type="text"
+                    value={settings.developerInfo.companyName}
+                    onChange={(e) => setSettings({
+                      ...settings,
+                      developerInfo: { ...settings.developerInfo, companyName: e.target.value }
+                    })}
+                    className="w-full px-4 py-3 bg-white/10 border border-white/20 rounded-xl text-white placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-transparent"
+                  />
+                </div>
+              </div>
             </div>
           </div>
         </div>
 
-        {/* Copyright Bilgileri */}
-        <div className="card">
-          <h3 className="text-lg font-semibold text-slate-800 mb-4">Copyright & Geliştirici</h3>
-          <div className="space-y-4">
-            <div>
-              <label className="label-text">Şirket Adı</label>
-              <input
-                type="text"
-                value={settings.copyrightInfo.companyName}
-                onChange={(e) => setSettings({
-                  ...settings,
-                  copyrightInfo: { ...settings.copyrightInfo, companyName: e.target.value }
-                })}
-                className="input-field"
-              />
+        {/* Footer Info */}
+        <div className="mt-8 bg-blue-500/10 backdrop-blur-xl rounded-2xl p-6 border border-blue-500/30">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center space-x-3">
+              <div className="w-2 h-2 bg-blue-400 rounded-full animate-pulse"></div>
+              <span className="text-slate-300 text-sm">Footer Yönetimi Aktif</span>
             </div>
-            <div>
-              <label className="label-text">Yıl</label>
-              <input
-                type="number"
-                value={settings.copyrightInfo.year}
-                onChange={(e) => setSettings({
-                  ...settings,
-                  copyrightInfo: { ...settings.copyrightInfo, year: parseInt(e.target.value) }
-                })}
-                className="input-field"
-              />
-            </div>
-            <div>
-              <label className="label-text">Geliştirici Adı</label>
-              <input
-                type="text"
-                value={settings.developerInfo.name}
-                onChange={(e) => setSettings({
-                  ...settings,
-                  developerInfo: { ...settings.developerInfo, name: e.target.value }
-                })}
-                className="input-field"
-              />
-            </div>
-            <div>
-              <label className="label-text">Geliştirici Website</label>
-              <input
-                type="url"
-                value={settings.developerInfo.website}
-                onChange={(e) => setSettings({
-                  ...settings,
-                  developerInfo: { ...settings.developerInfo, website: e.target.value }
-                })}
-                className="input-field"
-              />
+            <div className="flex items-center space-x-6 text-sm text-slate-400">
+              <Link href="/admin/dashboard" className="hover:text-white transition-colors duration-200 flex items-center space-x-1">
+                <CubeTransparentIcon className="w-4 h-4" />
+                <span>Dashboard</span>
+              </Link>
+              <Link href="/" className="hover:text-white transition-colors duration-200 flex items-center space-x-1">
+                <span>Site Görünümü</span>
+              </Link>
             </div>
           </div>
         </div>
-      </div>
+      </main>
     </div>
   );
 } 
