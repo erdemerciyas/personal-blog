@@ -217,9 +217,9 @@ export default function ServicesPage() {
                       {/* CTA Button */}
                       <Link
                         href={`/contact?service=${encodeURIComponent(service.title)}`}
-                        className="inline-flex items-center bg-teal-600 text-white px-6 py-3 rounded-lg font-semibold hover:bg-teal-700 transition-all duration-300 group shadow-lg hover:shadow-xl text-sm md:text-base"
+                        className="btn-primary inline-flex items-center group text-sm md:text-base"
                       >
-                        Detaylı Bilgi Al
+                        <span>Detaylı Bilgi Al</span>
                         <ArrowRightIcon className="w-4 h-4 md:w-5 md:h-5 ml-2 group-hover:translate-x-1 transition-transform" />
                       </Link>
                     </div>
@@ -242,9 +242,9 @@ export default function ServicesPage() {
           </p>
           <Link
             href="/contact"
-            className="inline-flex items-center bg-teal-600 text-white px-6 md:px-8 py-3 md:py-4 rounded-lg font-semibold hover:bg-teal-700 transition-colors text-base md:text-lg shadow-lg hover:shadow-xl"
+            className="btn-primary inline-flex items-center text-base md:text-lg"
           >
-            Proje Teklifi Al
+            <span>Proje Teklifi Al</span>
             <ArrowRightIcon className="w-5 h-5 md:w-6 md:h-6 ml-2" />
           </Link>
         </div>

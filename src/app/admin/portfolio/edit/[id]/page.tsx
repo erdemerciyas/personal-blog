@@ -480,6 +480,9 @@ export default function EditPortfolioItem({ params }: { params: { id: string } }
                     onRemove={handleCoverImageRemove}
                     label="Kapak Görseli"
                     className="w-full"
+                    showAIGeneration={true}
+                    showUrlInput={true}
+                    projectTitle={formData.title}
                   />
                   
                   <p className="text-xs text-slate-400 mt-2">

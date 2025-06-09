@@ -26,6 +26,7 @@ export default function NewServicePage() {
   const [success, setSuccess] = useState(false);
   const [features, setFeatures] = useState<string[]>(['']);
   const [serviceImage, setServiceImage] = useState('');
+  const [serviceTitle, setServiceTitle] = useState('');
 
   useEffect(() => {
     if (status === 'unauthenticated') {
@@ -215,6 +216,8 @@ export default function NewServicePage() {
                 id="title"
                 name="title"
                 required
+                value={serviceTitle}
+                onChange={(e) => setServiceTitle(e.target.value)}
                 className="w-full bg-white/5 border border-white/20 rounded-xl px-4 py-3 text-white placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-transparent transition-all duration-200"
                 placeholder="Örn: Web Tasarım Hizmeti"
               />
@@ -253,6 +256,9 @@ export default function NewServicePage() {
                 onRemove={() => setServiceImage('')}
                 label="Servis Görseli"
                 className="w-full"
+                showAIGeneration={true}
+                showUrlInput={true}
+                projectTitle={serviceTitle}
               />
               
               <p className="text-xs text-slate-400">Boş bırakılırsa servis başlığına uygun otomatik görsel atanır</p>

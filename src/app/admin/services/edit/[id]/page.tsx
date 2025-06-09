@@ -34,6 +34,7 @@ export default function EditServicePage({ params }: { params: { id: string } }) 
   const [service, setService] = useState<Service | null>(null);
   const [features, setFeatures] = useState<string[]>(['']);
   const [serviceImage, setServiceImage] = useState('');
+  const [serviceTitle, setServiceTitle] = useState('');
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -55,6 +56,7 @@ export default function EditServicePage({ params }: { params: { id: string } }) 
         const data = await response.json();
         setService(data);
         setServiceImage(data.image || '');
+        setServiceTitle(data.title || '');
         setFeatures(data.features && data.features.length > 0 ? data.features : ['']);
       } catch {
         setError('Servis bilgileri yüklenirken bir hata oluştu');
@@ -249,7 +251,8 @@ export default function EditServicePage({ params }: { params: { id: string } }) 
                 id="title"
                 name="title"
                 required
-                defaultValue={service.title}
+                value={serviceTitle}
+                onChange={(e) => setServiceTitle(e.target.value)}
                 className="w-full bg-white/5 border border-white/20 rounded-xl px-4 py-3 text-white placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-transparent transition-all duration-200"
                 placeholder="Örn: Web Tasarım Hizmeti"
               />
@@ -289,6 +292,9 @@ export default function EditServicePage({ params }: { params: { id: string } }) 
                 onRemove={() => setServiceImage('')}
                 label="Servis Görseli"
                 className="w-full"
+                showAIGeneration={true}
+                showUrlInput={true}
+                projectTitle={serviceTitle}
               />
               
               <p className="text-xs text-slate-400">Boş bırakılırsa servis başlığına uygun otomatik görsel atanır</p>

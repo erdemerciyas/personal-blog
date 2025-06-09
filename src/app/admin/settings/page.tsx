@@ -261,8 +261,19 @@ export default function AdminSettingsPage() {
 
   const handleUploadNew = () => {
     setShowMediaLibrary(false);
-    // Medya kütüphanesine yönlendir
-    window.location.href = '/admin/media';
+    // File input'u direkt açıyoruz, media sayfasına yönlendirmiyoruz
+    setTimeout(() => {
+      const fileInput = document.createElement('input');
+      fileInput.type = 'file';
+      fileInput.accept = 'image/*';
+      fileInput.onchange = (e) => {
+        const target = e.target as HTMLInputElement;
+        if (target.files && target.files[0]) {
+          handleLogoUpload(target.files[0]);
+        }
+      };
+      fileInput.click();
+    }, 100);
   };
 
   const saveSettings = async () => {

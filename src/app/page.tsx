@@ -1,6 +1,7 @@
 'use client';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import Link from 'next/link';
+import Image from 'next/image';
 import ProjectGrid from '../components/ProjectGrid';
 import { 
   CheckBadgeIcon, 
@@ -428,7 +429,7 @@ export default function Home() {
           <div className="relative inline-block">
             <Link 
               href={currentSlideItem.buttonLink || '/contact'} 
-              className="group relative overflow-hidden inline-flex items-center space-x-3 px-12 py-6 bg-gradient-to-r from-teal-600 via-blue-600 to-purple-600 text-white text-xl font-bold rounded-2xl transition-all duration-500 transform hover:scale-105 shadow-2xl hover:shadow-3xl"
+              className="group relative overflow-hidden inline-flex items-center space-x-3 px-12 py-6 bg-gradient-to-r from-teal-600 via-teal-500 to-blue-600 text-white text-xl font-bold rounded-2xl transition-all duration-500 transform hover:scale-105 shadow-2xl hover:shadow-3xl"
             >
               <span className="relative z-10">{currentSlideItem.buttonText}</span>
               <ArrowRightIcon className="relative z-10 h-6 w-6 group-hover:translate-x-2 transition-transform duration-300" />
@@ -438,7 +439,7 @@ export default function Home() {
             </Link>
             
             {/* Button Glow */}
-            <div className="absolute inset-0 bg-gradient-to-r from-teal-600/50 via-blue-600/50 to-purple-600/50 rounded-2xl blur-2xl scale-110 opacity-50"></div>
+            <div className="absolute inset-0 bg-gradient-to-r from-teal-600/50 via-teal-500/50 to-blue-600/50 rounded-2xl blur-2xl scale-110 opacity-50"></div>
           </div>
         </div>
 
@@ -557,18 +558,27 @@ export default function Home() {
               <p className="text-slate-500 text-lg">Henüz hizmet eklenmemiş</p>
             </div>
           ) : (
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
               {services.map((service, index) => (
-                <div key={service.title + index} className="card text-center group hover:scale-105 transition-transform duration-300">
-                  <div className="p-4 bg-teal-50 rounded-full inline-block mb-6 group-hover:bg-teal-100 transition-colors duration-300">
-                    <CubeTransparentIcon className="h-10 w-10 text-teal-600" />
+                <div key={service.title + index} className="card text-center group">
+                  <div className="p-4 bg-gradient-to-r from-teal-50 to-blue-50 rounded-full inline-block mb-6 group-hover:from-teal-100 group-hover:to-blue-100 transition-all duration-300">
+                    <CubeTransparentIcon className="h-12 w-12 text-teal-600 group-hover:text-teal-700 transition-colors duration-300" />
                   </div>
-                  <h3 className="text-xl font-bold text-slate-800 mb-4">
+                  <h3 className="text-xl font-bold text-slate-800 mb-4 group-hover:text-teal-700 transition-colors duration-300">
                     {service.title}
                   </h3>
-                  <p className="text-body">
+                  <p className="text-body mb-6">
                     {service.description}
                   </p>
+                  <div className="mt-auto">
+                    <Link
+                      href={`/contact?service=${encodeURIComponent(service.title)}`}
+                      className="inline-flex items-center text-teal-600 hover:text-teal-700 font-semibold text-sm transition-colors duration-200 group/link"
+                    >
+                      <span>Detaylı Bilgi</span>
+                      <ArrowRightIcon className="ml-2 h-4 w-4 group-hover/link:translate-x-1 transition-transform duration-200" />
+                    </Link>
+                  </div>
                 </div>
               ))}
             </div>
@@ -577,8 +587,9 @@ export default function Home() {
           {/* Link to all services */}
           {!servicesLoading && services.length > 0 && (
             <div className="text-center mt-12">
-              <Link href="/services" className="btn-outline text-lg px-8 py-4">
-                Tüm Hizmetlerimizi Gör
+              <Link href="/services" className="btn-primary inline-flex items-center space-x-2 text-lg">
+                <span>Tüm Hizmetlerimizi Gör</span>
+                <ArrowRightIcon className="h-5 w-5" />
               </Link>
             </div>
           )}
@@ -611,8 +622,9 @@ export default function Home() {
                 category: item.category.name,
               }))} limit={3} />
               <div className="text-center mt-12">
-                <Link href="/portfolio" className="btn-outline text-lg px-8 py-4">
-                  Tüm Projeleri Gör
+                <Link href="/portfolio" className="btn-secondary inline-flex items-center space-x-2 text-lg">
+                  <span>Tüm Projeleri Gör</span>
+                  <ArrowRightIcon className="h-5 w-5" />
                 </Link>
               </div>
             </>
@@ -621,7 +633,7 @@ export default function Home() {
       </section>
 
       {/* CTA Section */}
-      <section className="section-padding bg-gradient-to-br from-teal-500 to-teal-600 text-white">
+      <section className="section-padding bg-gradient-to-br from-teal-500 to-blue-600 text-white">
         <div className="container-content text-center">
           <h2 className="text-3xl sm:text-4xl lg:text-5xl font-bold mb-6 leading-tight">
             Projeniz İçin Hazırız!
@@ -630,8 +642,9 @@ export default function Home() {
             Fikirlerinizi gerçeğe dönüştürmek için bizimle iletişime geçin.
             Size özel çözümlerimizle yanınızdayız.
           </p>
-          <Link href="/contact" className="bg-white text-teal-600 hover:bg-slate-50 px-10 py-4 rounded-lg font-bold text-lg shadow-lg hover:shadow-xl transition-all duration-300 focus-ring">
-            İletişime Geçin
+          <Link href="/contact" className="inline-flex items-center space-x-2 bg-white text-teal-600 hover:bg-slate-50 px-10 py-4 rounded-xl font-bold text-lg shadow-lg hover:shadow-xl transition-all duration-300 focus-ring">
+            <span>İletişime Geçin</span>
+            <ArrowRightIcon className="h-5 w-5" />
           </Link>
         </div>
       </section>
