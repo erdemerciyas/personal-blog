@@ -211,6 +211,15 @@ export default function AdminDashboard() {
       color: 'from-orange-500 to-orange-600',
       stats: stats.categoriesCount,
       badge: 'Kategoriler'
+    },
+    {
+      title: 'Footer Yönetimi',
+      description: 'Site alt kısmı ayarları ve içeriği',
+      icon: CogIcon,
+      href: '/admin/footer',
+      color: 'from-slate-500 to-slate-600',
+      stats: '1',
+      badge: 'Aktif'
     }
   ];
 
