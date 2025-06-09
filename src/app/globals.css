@@ -69,15 +69,15 @@ body {
 /* Custom component styles */
 @layer components {
   .btn-primary {
-    @apply bg-teal-500 text-white px-6 py-3 rounded-lg font-medium shadow-lg hover:bg-teal-600 hover:shadow-xl transition-all duration-300 ease-in-out transform hover:-translate-y-0.5 focus:outline-none focus:ring-2 focus:ring-teal-400 focus:ring-opacity-75 active:transform active:scale-95;
+    @apply bg-gradient-to-r from-teal-500 to-blue-600 text-white px-6 py-3 rounded-xl font-medium shadow-lg hover:from-teal-600 hover:to-blue-700 hover:shadow-xl transition-all duration-300 ease-in-out transform hover:-translate-y-0.5 focus:outline-none focus:ring-2 focus:ring-teal-400 focus:ring-opacity-75 active:transform active:scale-95;
   }
   
   .btn-secondary {
-    @apply bg-indigo-500 text-white px-6 py-3 rounded-lg font-medium shadow-lg hover:bg-indigo-600 hover:shadow-xl transition-all duration-300 ease-in-out transform hover:-translate-y-0.5 focus:outline-none focus:ring-2 focus:ring-indigo-400 focus:ring-opacity-75 active:transform active:scale-95;
+    @apply bg-gradient-to-r from-indigo-500 to-purple-600 text-white px-6 py-3 rounded-xl font-medium shadow-lg hover:from-indigo-600 hover:to-purple-700 hover:shadow-xl transition-all duration-300 ease-in-out transform hover:-translate-y-0.5 focus:outline-none focus:ring-2 focus:ring-indigo-400 focus:ring-opacity-75 active:transform active:scale-95;
   }
 
   .btn-outline {
-    @apply bg-transparent border-2 border-teal-500 text-teal-600 px-6 py-3 rounded-lg font-medium shadow-sm hover:bg-teal-500 hover:text-white hover:shadow-lg transition-all duration-300 ease-in-out transform hover:-translate-y-0.5 focus:outline-none focus:ring-2 focus:ring-teal-400 focus:ring-opacity-75 active:transform active:scale-95;
+    @apply bg-transparent border-2 border-teal-500 text-teal-600 px-6 py-3 rounded-xl font-medium shadow-sm hover:bg-teal-500 hover:text-white hover:shadow-lg transition-all duration-300 ease-in-out transform hover:-translate-y-0.5 focus:outline-none focus:ring-2 focus:ring-teal-400 focus:ring-opacity-75 active:transform active:scale-95;
   }
   
   .card {
@@ -310,20 +310,7 @@ select::-webkit-scrollbar-thumb:hover {
 
 /* Focus visible styles */
 .focus-ring {
-  @apply focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2;
-}
-
-/* Custom button styles */
-.btn-primary {
-  @apply bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-4 rounded-lg transition-colors duration-200 focus-ring;
-}
-
-.btn-secondary {
-  @apply bg-slate-200 hover:bg-slate-300 text-slate-800 font-semibold py-2 px-4 rounded-lg transition-colors duration-200 focus-ring;
-}
-
-.btn-outline {
-  @apply border-2 border-blue-600 text-blue-600 hover:bg-blue-600 hover:text-white font-semibold py-2 px-4 rounded-lg transition-all duration-200 focus-ring;
+  @apply focus:outline-none focus:ring-2 focus:ring-teal-500 focus:ring-offset-2;
 }
 
 /* Card styles */

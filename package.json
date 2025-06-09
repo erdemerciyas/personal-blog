@@ -26,7 +26,7 @@
     "dev": "next dev",
     "dev:turbo": "next dev --turbo",
     "build": "next build",
-    "build:analyze": "ANALYZE=true next build", 
+    "build:analyze": "ANALYZE=true next build",
     "vercel-build": "next build",
     "cpanel-build": "node scripts/universal-build.js",
     "start": "next start",
@@ -44,6 +44,7 @@
     "@heroicons/react": "^2.2.0",
     "@types/bcryptjs": "^2.4.6",
     "@types/multer": "^1.4.12",
+    "@types/node": "^22.15.24",
     "@types/react": "^18.2.45",
     "@types/react-dom": "^18.2.18",
     "autoprefixer": "^10.4.16",
@@ -60,18 +61,18 @@
     "multer": "^2.0.0",
     "next": "^14.0.4",
     "next-auth": "^4.24.11",
+    "openai": "^5.2.0",
     "postcss": "^8.4.32",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "rimraf": "^3.0.2",
     "tailwindcss": "^3.4.0",
-    "typescript": "^5.8.3",
-    "@types/node": "^22.15.24"
+    "typescript": "^5.8.3"
   },
   "devDependencies": {
+    "@types/jsonwebtoken": "^9.0.6",
     "prettier": "^3.0.0",
-    "ts-node": "^10.9.2",
-    "@types/jsonwebtoken": "^9.0.6"
+    "ts-node": "^10.9.2"
   },
   "engines": {
     "node": ">=18.0.0",

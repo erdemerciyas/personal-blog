@@ -312,7 +312,7 @@ const Header: React.FC = () => {
               {/* CTA Button - Desktop */}
               <button 
                 onClick={() => setShowModal(true)}
-                className="hidden sm:flex items-center space-x-2 px-4 py-2 lg:px-6 lg:py-3 bg-gradient-to-r from-teal-600 to-blue-600 text-white rounded-lg font-semibold text-sm hover:shadow-lg hover:scale-105 transition-all duration-200"
+                className="hidden sm:flex items-center space-x-2 btn-primary text-sm"
               >
                 <SparklesIcon className="h-4 w-4" />
                 <span>Proje Başlat</span>
@@ -367,7 +367,7 @@ const Header: React.FC = () => {
                   setShowModal(true);
                   setIsMobileMenuOpen(false);
                 }}
-                className="w-full flex items-center justify-center space-x-2 p-3 bg-gradient-to-r from-teal-600 to-blue-600 text-white rounded-lg font-semibold"
+                className="w-full btn-primary flex items-center justify-center space-x-2"
               >
                 <SparklesIcon className="h-5 w-5" />
                 <span>Proje Başlat</span>
@@ -603,10 +603,10 @@ const Header: React.FC = () => {
                 <button
                   type="submit"
                   disabled={isSubmitting || submitSuccess}
-                  className={`px-8 py-3 rounded-xl font-semibold transition-all duration-200 flex items-center space-x-2 ${
+                  className={`flex items-center space-x-2 transition-all duration-200 ${
                     isSubmitting || submitSuccess
-                      ? 'bg-slate-300 cursor-not-allowed text-slate-500'
-                      : 'bg-gradient-to-r from-teal-600 to-blue-600 hover:from-teal-700 hover:to-blue-700 text-white hover:scale-105 hover:shadow-xl'
+                      ? 'bg-slate-300 cursor-not-allowed text-slate-500 px-8 py-3 rounded-xl font-semibold'
+                      : 'btn-primary hover:scale-105 hover:shadow-xl'
                   }`}
                 >
                   {isSubmitting ? (

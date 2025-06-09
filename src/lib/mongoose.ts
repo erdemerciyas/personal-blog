@@ -18,11 +18,11 @@ declare global {
   var mongoClientConnection: GlobalMongoClient | undefined;
 }
 
-// MongoDB URI with fallback
-const MONGODB_URI = process.env.MONGODB_URI || 'mongodb+srv://erdemerciyasreverse:oI9OMHyFwhIdh54O@erdemerciyas.1xlwobu.mongodb.net/?retryWrites=true&w=majority&appName=erdemerciyas';
+// MongoDB URI from environment variable
+const MONGODB_URI = process.env.MONGODB_URI;
 
 if (!MONGODB_URI) {
-  throw new Error('Please define the MONGODB_URI environment variable');
+  throw new Error('Please define the MONGODB_URI environment variable in .env.local');
 }
 
 // Mongoose connection

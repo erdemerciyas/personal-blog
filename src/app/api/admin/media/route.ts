@@ -2,8 +2,6 @@ import { NextRequest, NextResponse } from 'next/server';
 import { getServerSession } from 'next-auth';
 import { authOptions } from '../../../../lib/auth';
 import { v2 as cloudinary } from 'cloudinary';
-import fs from 'fs';
-import path from 'path';
 
 // Cloudinary config
 cloudinary.config({
@@ -110,55 +108,7 @@ export async function GET() {
       // Cloudinary hatası olsa bile devam et
     }
 
-    // 2. Local dosyalarını da ekle (eski yöntem ile uyumluluk için)
-    try {
-      const uploadsDir = path.join(process.cwd(), 'public', 'uploads');
-      
-      if (fs.existsSync(uploadsDir)) {
-        const scanDirectory = (dirPath: string, relativePath: string = '') => {
-          const items = fs.readdirSync(dirPath);
-          
-          for (const item of items) {
-            if (item.startsWith('.')) continue;
-            
-            const itemPath = path.join(dirPath, item);
-            const stats = fs.statSync(itemPath);
-            
-            if (stats.isFile()) {
-              const ext = path.extname(item).toLowerCase();
-              let mimeType = 'application/octet-stream';
-              
-              if (['.jpg', '.jpeg'].includes(ext)) mimeType = 'image/jpeg';
-              else if (ext === '.png') mimeType = 'image/png';
-              else if (ext === '.gif') mimeType = 'image/gif';
-              else if (ext === '.webp') mimeType = 'image/webp';
-              else if (ext === '.svg') mimeType = 'image/svg+xml';
-              
-              const fileId = relativePath ? `local/${relativePath}/${item}` : `local/${item}`;
-              const fileUrl = relativePath ? `/uploads/${relativePath}/${item}` : `/uploads/${item}`;
-              
-              mediaItems.push({
-                _id: fileId,
-                filename: item,
-                originalName: item,
-                url: fileUrl,
-                size: stats.size,
-                mimeType,
-                uploadedAt: stats.birthtime,
-                uploader: 'local',
-                source: 'local'
-              });
-            } else if (stats.isDirectory()) {
-              scanDirectory(itemPath, relativePath ? `${relativePath}/${item}` : item);
-            }
-          }
-        };
-
-        scanDirectory(uploadsDir);
-      }
-    } catch (localError) {
-      console.error('❌ Local files scan error:', localError);
-    }
+    // Only Cloudinary files are supported now
 
     // Sort by upload date (newest first)
     mediaItems.sort((a, b) => new Date(b.uploadedAt).getTime() - new Date(a.uploadedAt).getTime());
@@ -194,26 +144,12 @@ export async function DELETE(request: NextRequest) {
 
     for (const mediaId of mediaIds) {
       try {
-        if (mediaId.startsWith('local/')) {
-          // Local file deletion
-          const localPath = mediaId.replace('local/', '');
-          const uploadsDir = path.join(process.cwd(), 'public', 'uploads');
-          const filePath = path.join(uploadsDir, localPath);
-          
-          if (fs.existsSync(filePath)) {
-            fs.unlinkSync(filePath);
-            deletedFiles.push(mediaId);
-          } else {
-            errors.push(`File not found: ${mediaId}`);
-          }
+        // Only Cloudinary file deletion is supported
+        const result = await cloudinary.uploader.destroy(mediaId);
+        if (result.result === 'ok' || result.result === 'not found') {
+          deletedFiles.push(mediaId);
         } else {
-          // Cloudinary file deletion
-          const result = await cloudinary.uploader.destroy(mediaId);
-          if (result.result === 'ok' || result.result === 'not found') {
-            deletedFiles.push(mediaId);
-          } else {
-            errors.push(`Failed to delete from Cloudinary: ${mediaId}`);
-          }
+          errors.push(`Failed to delete from Cloudinary: ${mediaId}`);
         }
       } catch (error) {
         console.error(`Error deleting file ${mediaId}:`, error);
