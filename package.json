@@ -36,6 +36,7 @@
     "type-check": "tsc --noEmit",
     "test:config": "node -e \"require('./src/lib/config').config.getSafeConfig() && console.log('✅ Configuration valid')\"",
     "clean": "rimraf .next out dist",
+    "clean:cloudinary": "node scripts/clean-invalid-cloudinary-urls.js",
     "format": "prettier --write .",
     "precommit": "npm run lint",
     "postinstall": "echo 'Dependencies installed successfully'"
