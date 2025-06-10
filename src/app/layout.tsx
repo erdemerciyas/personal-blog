@@ -6,38 +6,86 @@ import Header from '../components/Header'
 import ClientWrapper from '../components/ClientWrapper'
 import ConditionalFooter from '../components/ConditionalFooter'
 import Providers from '../components/Providers'
+import connectDB from '../lib/mongoose'
+import SiteSettings from '../models/SiteSettings'
 
 const inter = Inter({ subsets: ['latin'] })
 
-export const metadata: Metadata = {
-  title: config.app.name,
-  description: 'Modern kişisel blog ve portfolio sitesi',
-  keywords: ['nextjs', 'react', 'typescript', 'portfolio', 'blog', 'engineering'],
-  authors: [{ name: 'Erdem Erciyas', url: 'https://www.erdemerciyas.com.tr' }],
-  creator: 'Erdem Erciyas',
-  publisher: 'Erdem Erciyas',
-  openGraph: {
-    type: 'website',
-    locale: 'tr_TR',
-    url: config.app.url,
-    title: config.app.name,
-    description: 'Modern kişisel blog ve portfolio sitesi',
-    siteName: config.app.name,
-  },
-  robots: {
-    index: true,
-    follow: true,
-    googleBot: {
-      index: true,
-      follow: true,
-      'max-video-preview': -1,
-      'max-image-preview': 'large',
-      'max-snippet': -1,
-    },
-  },
-  verification: {
-    google: 'google-site-verification-code', // Add your Google verification code
-  },
+// Dynamic metadata function
+export async function generateMetadata(): Promise<Metadata> {
+  try {
+    await connectDB();
+    const siteSettings = await SiteSettings.getSiteSettings();
+    
+    const title = siteSettings?.seo?.metaTitle || siteSettings?.siteName || config.app.name;
+    const description = siteSettings?.seo?.metaDescription || siteSettings?.description || 'Modern kişisel blog ve portfolio sitesi';
+    const keywords = siteSettings?.seo?.keywords || ['nextjs', 'react', 'typescript', 'portfolio', 'blog', 'engineering'];
+    const siteName = siteSettings?.siteName || config.app.name;
+    
+    return {
+      title,
+      description,
+      keywords,
+      authors: [{ name: 'Erdem Erciyas', url: 'https://www.erdemerciyas.com.tr' }],
+      creator: 'Erdem Erciyas',
+      publisher: 'Erdem Erciyas',
+      openGraph: {
+        type: 'website',
+        locale: 'tr_TR',
+        url: config.app.url,
+        title,
+        description,
+        siteName,
+      },
+      robots: {
+        index: true,
+        follow: true,
+        googleBot: {
+          index: true,
+          follow: true,
+          'max-video-preview': -1,
+          'max-image-preview': 'large',
+          'max-snippet': -1,
+        },
+      },
+      verification: {
+        google: 'google-site-verification-code', // Add your Google verification code
+      },
+    };
+  } catch (error) {
+    console.error('Metadata generation error:', error);
+    // Fallback to static metadata
+    return {
+      title: config.app.name,
+      description: 'Modern kişisel blog ve portfolio sitesi',
+      keywords: ['nextjs', 'react', 'typescript', 'portfolio', 'blog', 'engineering'],
+      authors: [{ name: 'Erdem Erciyas', url: 'https://www.erdemerciyas.com.tr' }],
+      creator: 'Erdem Erciyas',
+      publisher: 'Erdem Erciyas',
+      openGraph: {
+        type: 'website',
+        locale: 'tr_TR',
+        url: config.app.url,
+        title: config.app.name,
+        description: 'Modern kişisel blog ve portfolio sitesi',
+        siteName: config.app.name,
+      },
+      robots: {
+        index: true,
+        follow: true,
+        googleBot: {
+          index: true,
+          follow: true,
+          'max-video-preview': -1,
+          'max-image-preview': 'large',
+          'max-snippet': -1,
+        },
+      },
+      verification: {
+        google: 'google-site-verification-code', // Add your Google verification code
+      },
+    };
+  }
 }
 
 export default function RootLayout({
