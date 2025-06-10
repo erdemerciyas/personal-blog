@@ -19,7 +19,6 @@ import {
   PauseIcon,
   XMarkIcon,
   SparklesIcon,
-  GlobeAltIcon,
   EyeIcon,
   ClockIcon,
   LinkIcon,
@@ -35,7 +34,7 @@ interface Slider {
   buttonText: string;
   buttonLink: string;
   badge: string;
-  imageType: 'upload' | 'url' | 'ai-generated' | 'random';
+  imageType: 'upload' | 'url' | 'ai-generated';
   imageUrl: string;
   aiPrompt?: string;
   aiProvider?: string;
@@ -67,7 +66,7 @@ export default function AdminSliderPage() {
     buttonText: 'Daha Fazla',
     buttonLink: '/contact',
     badge: 'Yenilik',
-    imageType: 'upload' as 'upload' | 'url' | 'ai-generated' | 'random',
+    imageType: 'upload' as 'upload' | 'url' | 'ai-generated',
     imageUrl: '',
     aiPrompt: '',
     aiProvider: 'unsplash',
@@ -124,7 +123,7 @@ export default function AdminSliderPage() {
       buttonText: 'Daha Fazla',
       buttonLink: '/contact',
       badge: 'Yenilik',
-      imageType: 'upload' as 'upload' | 'url' | 'ai-generated' | 'random',
+      imageType: 'upload' as 'upload' | 'url' | 'ai-generated',
       imageUrl: '',
       aiPrompt: '',
       aiProvider: 'unsplash',
@@ -187,15 +186,7 @@ export default function AdminSliderPage() {
     }));
   };
 
-  const generateRandomImage = () => {
-    const randomId = Date.now();
-    const randomUrl = `https://picsum.photos/1920/1080?random=${randomId}`;
-    setFormData(prev => ({
-      ...prev,
-      imageUrl: randomUrl,
-      imageType: 'random'
-    }));
-  };
+
 
   const handleDurationChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const seconds = parseInt(e.target.value) || 5;
@@ -664,7 +655,7 @@ export default function AdminSliderPage() {
                       <label className="block text-sm font-medium text-slate-300 mb-3">
                         Görsel Türü
                       </label>
-                      <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+                      <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
                         <button
                           type="button"
                           onClick={() => setFormData(prev => ({ ...prev, imageType: 'upload', imageUrl: '' }))}
@@ -675,7 +666,8 @@ export default function AdminSliderPage() {
                           }`}
                         >
                           <PhotoIcon className="w-6 h-6 mx-auto mb-2 text-slate-300" />
-                          <span className="text-sm text-slate-300">Upload</span>
+                          <span className="text-sm text-slate-300">Dosya Yükle</span>
+                          <p className="text-xs text-slate-400 mt-1">Cloudinary & AI Destekli</p>
                         </button>
                         
                         <button
@@ -688,20 +680,8 @@ export default function AdminSliderPage() {
                           }`}
                         >
                           <LinkIcon className="w-6 h-6 mx-auto mb-2 text-slate-300" />
-                          <span className="text-sm text-slate-300">URL</span>
-                        </button>
-                        
-                        <button
-                          type="button"
-                          onClick={generateRandomImage}
-                          className={`p-4 rounded-xl border transition-all duration-200 ${
-                            formData.imageType === 'random'
-                              ? 'border-teal-500 bg-teal-500/20'
-                              : 'border-slate-500 bg-slate-600/30 hover:border-teal-400'
-                          }`}
-                        >
-                          <GlobeAltIcon className="w-6 h-6 mx-auto mb-2 text-slate-300" />
-                          <span className="text-sm text-slate-300">Random</span>
+                          <span className="text-sm text-slate-300">URL Girin</span>
+                          <p className="text-xs text-slate-400 mt-1">Doğrudan Link</p>
                         </button>
                         
                         <button
@@ -714,7 +694,8 @@ export default function AdminSliderPage() {
                           }`}
                         >
                           <SparklesIcon className="w-6 h-6 mx-auto mb-2 text-slate-300" />
-                          <span className="text-sm text-slate-300">AI</span>
+                          <span className="text-sm text-slate-300">AI Prompt</span>
+                          <p className="text-xs text-slate-400 mt-1">Metin ile Oluştur</p>
                         </button>
                       </div>
                     </div>
@@ -729,6 +710,10 @@ export default function AdminSliderPage() {
                           value={formData.imageUrl}
                           onChange={handleImageChange}
                           onRemove={handleImageRemove}
+                          showAIGeneration={true}
+                          showUrlInput={true}
+                          projectTitle={formData.title}
+                          label="Slider Görseli"
                         />
                       </div>
                     )}
@@ -765,8 +750,13 @@ export default function AdminSliderPage() {
                             value={formData.aiPrompt}
                             onChange={handleFormChange}
                             className="w-full px-4 py-3 bg-slate-600 border border-slate-500 rounded-xl text-white placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-transparent transition-all duration-200 resize-none"
-                            placeholder="Modern technology workspace with computers and gadgets..."
+                            placeholder="Modern teknoloji ofisi, profesyonel iş ortamı, minimalist tasarım..."
                           />
+                          <div className="mt-2 p-3 bg-purple-500/10 border border-purple-500/30 rounded-lg">
+                            <p className="text-purple-200 text-xs">
+                              <strong>💡 İpucu:</strong> "Modern", "profesyonel", "teknoloji", "minimalist" gibi kelimeler daha iyi sonuçlar verir.
+                            </p>
+                          </div>
                         </div>
                         <div>
                           <label className="block text-sm font-medium text-slate-300 mb-2">

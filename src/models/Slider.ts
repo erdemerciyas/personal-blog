@@ -35,7 +35,7 @@ const SliderSchema = new mongoose.Schema({
     type: String,
     enum: ['upload', 'url', 'ai-generated'],
     required: true,
-    default: 'url',
+    default: 'upload',
   },
   imageUrl: {
     type: String,
