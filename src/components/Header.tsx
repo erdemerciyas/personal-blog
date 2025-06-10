@@ -409,7 +409,7 @@ const Header: React.FC = () => {
                   <CheckIcon className="w-6 h-6 text-green-500" />
                   <div>
                     <p className="font-semibold text-green-800">Başarılı!</p>
-                    <p className="text-green-700">Mesajınız başarıyla gönderildi. En kısa sürede size dönüş yapacağız.</p>
+                    <p className="text-green-700">Proje talebiniz başarıyla gönderildi! 24 saat içinde geri dönüş yapacağız. Size onay emaili gönderdik.</p>
                   </div>
                 </div>
               )}
