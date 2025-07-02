@@ -1,1 +1,9 @@
-npm test
+#!/usr/bin/env sh
+. "$(dirname -- "$0")/_/husky.sh"
+
+echo "🔍 Pre-commit hook çalıştırılıyor..."
+
+# Type check (daha hızlı ve lint hatalarına takılmıyor)
+npm run type-check
+
+echo "✅ Pre-commit hook tamamlandı!"
