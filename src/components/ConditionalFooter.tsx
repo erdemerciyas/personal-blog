@@ -3,6 +3,7 @@
 import { usePathname } from 'next/navigation';
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
+import Version from './Version';
 
 interface FooterSettings {
   mainDescription: string;
@@ -236,6 +237,11 @@ const ConditionalFooter: React.FC = () => {
           <p className="text-sm text-slate-400 mb-2">
             &copy; {settings.copyrightInfo.year} {settings.copyrightInfo.companyName}. {settings.copyrightInfo.additionalText}
           </p>
+          
+          {/* Version Bilgisi */}
+          <div className="mb-2">
+            <Version variant="badge" size="sm" />
+          </div>
           
           {settings.visibility.showDeveloperInfo && (
             <p className="text-xs text-slate-500">
