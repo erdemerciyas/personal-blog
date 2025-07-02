@@ -316,3 +316,16 @@ Bu proje MIT lisansı altında lisanslanmıştır. Detaylar için [LICENSE](LICE
 ---
 
 ⭐ Bu projeyi beğendiyseniz yıldız vermeyi unutmayın!
+
+## 📦 Versiyon Sistemi
+
+Bu proje otomatik versiyon yönetimi kullanır:
+
+- **PATCH** (x.x.X): Bug fix'ler ve küçük güncellemeler
+- **MINOR** (x.X.0): Yeni özellikler ve iyileştirmeler  
+- **MAJOR** (X.0.0): Breaking change'ler
+
+### Commit Mesaj Kuralları:
+- `feat:` - Yeni özellik (MINOR versiyon)
+- `fix:` - Bug fix (PATCH versiyon)
+- `BREAKING CHANGE:` - Major değişiklik (MAJOR versiyon)

@@ -1,0 +1,9 @@
+#!/usr/bin/env sh
+. "$(dirname -- "$0")/_/husky.sh"
+
+echo "🚀 Pre-push hook çalıştırılıyor..."
+
+# Otomatik versiyon güncelleme
+npm run version:auto
+
+echo "✅ Pre-push hook tamamlandı!" 
