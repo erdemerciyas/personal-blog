@@ -3,6 +3,7 @@ import { useState, useEffect } from 'react';
 import { useSession, signOut } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
+import { Version } from '../../../components';
 
 import {
   FolderOpenIcon,
@@ -276,7 +277,10 @@ export default function AdminDashboard() {
                 <CubeTransparentIcon className="w-6 h-6 text-white" />
               </div>
               <div>
-                <h1 className="text-xl font-bold text-white">Admin Dashboard</h1>
+                <div className="flex items-center space-x-3">
+                  <h1 className="text-xl font-bold text-white">Admin Dashboard</h1>
+                  <Version variant="pill" size="sm" />
+                </div>
                 <p className="text-sm text-slate-300">İçerik Yönetim Sistemi</p>
               </div>
             </div>
