@@ -111,21 +111,12 @@ const Header: React.FC = () => {
   useEffect(() => {
     const fetchSiteSettings = async () => {
       try {
-        console.log('🔄 Header: Site settings getiriliyor...');
         const response = await fetch('/api/admin/site-settings');
         if (response.ok) {
           const data = await response.json();
-          console.log('📦 Header: Site settings alındı:', {
-            logo: data.logo,
-            siteName: data.siteName,
-            fullData: data
-          });
           setSiteSettings(data);
-        } else {
-          console.error('❌ Header: Site settings API hatası:', response.status);
         }
       } catch (error) {
-        console.error('Site settings fetch error:', error);
         // Set fallback values on error
         setSiteSettings({
           siteName: '',

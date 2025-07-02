@@ -21,6 +21,7 @@ export async function generateMetadata(): Promise<Metadata> {
     const description = siteSettings?.seo?.metaDescription || siteSettings?.description || 'Modern kişisel blog ve portfolio sitesi';
     const keywords = siteSettings?.seo?.keywords || ['nextjs', 'react', 'typescript', 'portfolio', 'blog', 'engineering'];
     const siteName = siteSettings?.siteName || config.app.name;
+    const logoUrl = siteSettings?.logo?.url;
     
     return {
       title,
@@ -50,6 +51,10 @@ export async function generateMetadata(): Promise<Metadata> {
       },
       verification: {
         google: 'google-site-verification-code', // Add your Google verification code
+      },
+      icons: {
+        icon: logoUrl || '/favicon.svg',
+        apple: logoUrl || '/favicon.svg',
       },
     };
   } catch (error) {
@@ -84,6 +89,10 @@ export async function generateMetadata(): Promise<Metadata> {
       verification: {
         google: 'google-site-verification-code', // Add your Google verification code
       },
+      icons: {
+        icon: '/favicon.svg',
+        apple: '/favicon.svg',
+      },
     };
   }
 }
@@ -108,8 +117,9 @@ export default function RootLayout({
         <link rel="preconnect" href="https://res.cloudinary.com" />
         
         {/* Favicon and app icons */}
+        <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
         <link rel="icon" href="/favicon.ico" />
-        <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+        <link rel="apple-touch-icon" href="/favicon.svg" />
         
         {/* DNS prefetch for better performance */}
         <link rel="dns-prefetch" href="//fonts.googleapis.com" />
