@@ -47,7 +47,8 @@ interface ServiceItem {
   _id: string;
   title: string;
   description: string;
-  icon: string;
+  icon?: string;
+  image?: string;
   features: string[];
 }
 
@@ -81,6 +82,21 @@ const defaultServices = [
     title: '3D Baskı & Prototipleme',
     description: 'Fikirlerinizi hızlı ve uygun maliyetli bir şekilde elle tutulur prototiplere dönüştürüyoruz.',
   },
+  {
+    icon: CubeTransparentIcon,
+    title: 'CAD Tasarım',
+    description: 'Profesyonel CAD yazılımları ile endüstriyel tasarım ve mühendislik çözümleri sunuyoruz.',
+  },
+  {
+    icon: WrenchScrewdriverIcon,
+    title: 'Kalite Kontrol',
+    description: 'Üretim süreçlerinde hassas ölçüm ve kalite kontrol hizmetleri ile standartları sağlıyoruz.',
+  },
+  {
+    icon: CheckBadgeIcon,
+    title: 'Danışmanlık',
+    description: 'Mühendislik projelerinizde teknik danışmanlık ve çözüm ortaklığı hizmetleri veriyoruz.',
+  },
 ];
 
 export default function Home() {
@@ -93,6 +109,10 @@ export default function Home() {
   const [isTransitioning, setIsTransitioning] = useState(false);
   const [projectsLoading, setProjectsLoading] = useState(true);
   const [servicesLoading, setServicesLoading] = useState(true);
+  
+  // Service carousel states
+  const [currentServiceIndex, setCurrentServiceIndex] = useState(0);
+  const [isServiceAutoPlaying, setIsServiceAutoPlaying] = useState(true);
 
   // Default fallback slider
   const defaultSlider: SliderItem[] = [
@@ -124,7 +144,7 @@ export default function Home() {
     return () => clearTimeout(timeout);
   }, [slidesLoading, sliderItems.length]);
 
-  // Fetch sliders from admin panel - sadece dinamik içerik
+  // Fetch sliders from admin panel
   useEffect(() => {
     const fetchSliderItems = async () => {
       try {
@@ -190,18 +210,16 @@ export default function Home() {
       try {
         const response = await fetch('/api/services');
         const data: ServiceItem[] = await response.json();
-        setServices(data.slice(0, 4)); // İlk 4 servisi göster
+        setServices(data.slice(0, 6)); // İlk 6 servisi göster
       } catch (error) {
         console.error('Servisler yüklenirken hata:', error);
-        // Use default services as fallback with proper structure
-        const fallbackServices: ServiceItem[] = defaultServices.map((service, index) => ({
-          _id: `fallback-${index}`,
-          title: service.title,
-          description: service.description,
-          icon: service.icon.name || 'cube',
+        // Use default services as fallback
+        setServices(defaultServices.map((service, index) => ({
+          ...service,
+          _id: `default-${index}`,
+          icon: service.icon.name,
           features: []
-        }));
-        setServices(fallbackServices);
+        })));
       } finally {
         setServicesLoading(false);
       }
@@ -210,55 +228,17 @@ export default function Home() {
     fetchServices();
   }, []);
 
-  // Fetch portfolio projects
+  // Fetch portfolio items
   useEffect(() => {
     const fetchPortfolioItems = async () => {
       try {
-        const response = await fetch('/api/portfolio');
-        const data: PortfolioItem[] = await response.json();
-        console.log('🎯 API den gelen portfolio verisi:', data);
-        setPortfolioItems(data.slice(0, 6)); // İlk 6 öğeyi göster
+        const response = await fetch('/api/portfolio?limit=3');
+        if (response.ok) {
+          const data: PortfolioItem[] = await response.json();
+          setPortfolioItems(data);
+        }
       } catch (error) {
-        console.error('Portfolio projeleri yüklenirken hata:', error);
-        // Gerçekçi fallback projects - admin panelinden eklenen örnek projeler
-        setPortfolioItems([
-          {
-            _id: '675b5a123456789abcdef001',
-            title: '3D Otomotiv Tarama Projesi',
-            description: 'Yüksek hassasiyetli 3D tarama teknolojisi ile otomotiv parçalarının dijital kopyalarının oluşturulması ve kalite kontrol süreçlerinin geliştirilmesi.',
-            coverImage: '/images/projects/automotive-scan.jpg',
-            images: ['/images/projects/automotive-scan.jpg'],
-            technologies: ['3D Tarama', 'CAD Modelleme', 'Kalite Kontrol'],
-            category: {
-              _id: 'category-3d-scan',
-              name: '3D Tarama',
-            },
-          },
-          {
-            _id: '675b5a123456789abcdef002',
-            title: 'Endüstriyel Kalıp Tasarımı',
-            description: 'Enjeksiyon kalıpları için tersine mühendislik ve optimizasyon çalışması. Üretim verimliliğini %30 artıran yenilikçi tasarım çözümleri.',
-            coverImage: '/images/projects/industrial-mold.jpg',
-            images: ['/images/projects/industrial-mold.jpg'],
-            technologies: ['Tersine Mühendislik', 'CAD/CAM', 'Kalıp Tasarımı'],
-            category: {
-              _id: 'category-reverse-eng',
-              name: 'Tersine Mühendislik',
-            },
-          },
-          {
-            _id: '675b5a123456789abcdef003',
-            title: 'Medikal Prototip Üretimi',
-            description: 'Biyouyumlu malzemeler kullanarak özelleştirilmiş medikal cihaz prototiplerinin 3D baskı teknolojisi ile üretimi.',
-            coverImage: '/images/projects/medical-prototype.jpg',
-            images: ['/images/projects/medical-prototype.jpg'],
-            technologies: ['3D Baskı', 'Medikal Tasarım', 'Prototipleme'],
-            category: {
-              _id: 'category-3d-print',
-              name: '3D Baskı',
-            },
-          },
-        ]);
+        console.error('Portfolio items fetch error:', error);
       } finally {
         setProjectsLoading(false);
       }
@@ -267,29 +247,26 @@ export default function Home() {
     fetchPortfolioItems();
   }, []);
 
-  // Auto-play functionality with dynamic duration
+  // Auto-slide functionality
   useEffect(() => {
-    if (!isPlaying || sliderItems.length === 0) return;
-    
-    // Use current slide's duration or default 5000ms
-    const currentSlideDuration = sliderItems[currentSlideIndex]?.duration || 5000;
-    
-    const timer = setInterval(() => {
+    if (!isPlaying || sliderItems.length <= 1) return;
+
+    const interval = setInterval(() => {
       setCurrentSlideIndex((prev) => (prev + 1) % sliderItems.length);
-    }, currentSlideDuration);
-    
-    return () => clearInterval(timer);
-  }, [currentSlideIndex, isPlaying, sliderItems]);
+    }, 5000);
+
+    return () => clearInterval(interval);
+  }, [isPlaying, sliderItems.length]);
 
   const nextSlide = () => {
-    if (isTransitioning || sliderItems.length === 0) return;
+    if (isTransitioning) return;
     setIsTransitioning(true);
     setCurrentSlideIndex((prev) => (prev + 1) % sliderItems.length);
     setTimeout(() => setIsTransitioning(false), 500);
   };
 
   const prevSlide = () => {
-    if (isTransitioning || sliderItems.length === 0) return;
+    if (isTransitioning) return;
     setIsTransitioning(true);
     setCurrentSlideIndex((prev) => (prev - 1 + sliderItems.length) % sliderItems.length);
     setTimeout(() => setIsTransitioning(false), 500);
@@ -305,6 +282,34 @@ export default function Home() {
   const togglePlayPause = () => {
     setIsPlaying(!isPlaying);
   };
+
+  // Service carousel functions
+  const nextService = useCallback(() => {
+    if (services.length <= 1) return;
+    setCurrentServiceIndex((prev) => (prev + 1) % services.length);
+  }, [services.length]);
+
+  const prevService = useCallback(() => {
+    if (services.length <= 1) return;
+    setCurrentServiceIndex((prev) => (prev - 1 + services.length) % services.length);
+  }, [services.length]);
+
+  const goToService = useCallback((index: number) => {
+    setCurrentServiceIndex(index);
+  }, []);
+
+  const handleServiceInteraction = useCallback(() => {
+    setIsServiceAutoPlaying(false);
+    setTimeout(() => setIsServiceAutoPlaying(true), 8000);
+  }, []);
+
+  // Service carousel auto-play
+  useEffect(() => {
+    if (!isServiceAutoPlaying || services.length <= 1) return;
+    
+    const interval = setInterval(nextService, 4000);
+    return () => clearInterval(interval);
+  }, [isServiceAutoPlaying, nextService, services.length]);
 
   // Show enhanced loading state while sliders are loading
   if (slidesLoading) {
@@ -348,190 +353,49 @@ export default function Home() {
     );
   }
 
-  const currentSlideItem = sliderItems[currentSlideIndex];
-
   return (
     <div className="min-h-screen">
-      {/* Premium Hero Slider */}
+      {/* Basic Hero Section */}
       <section className="relative min-h-screen flex items-center justify-center overflow-hidden pt-28 lg:pt-32">
-        
-        {/* Dynamic Background Images */}
         <div className="absolute inset-0">
-          {sliderItems.map((slide, index) => (
-            <div
-              key={slide._id}
-              className={`absolute inset-0 transition-all duration-1000 ease-out ${
-                index === currentSlideIndex 
-                  ? 'opacity-100 scale-100' 
-                  : 'opacity-0 scale-110'
-              }`}
-            >
-              <div
-                className="w-full h-full bg-cover bg-center bg-no-repeat"
-                style={{
-                  backgroundImage: `url(${slide.image})`,
-                }}
-              />
-              {/* Premium Overlay */}
-              <div className="absolute inset-0 bg-gradient-to-br from-slate-900/80 via-slate-800/60 to-slate-900/70"></div>
-              
-              {/* Animated Particles */}
-              <div className="absolute inset-0">
-                {[...Array(6)].map((_, i) => (
-                  <div
-                    key={i}
-                    className="absolute w-2 h-2 bg-white/10 rounded-full animate-pulse"
-                    style={{
-                      left: `${Math.random() * 100}%`,
-                      top: `${Math.random() * 100}%`,
-                      animationDelay: `${i * 0.5}s`,
-                      animationDuration: `${3 + Math.random() * 2}s`
-                    }}
-                  />
-                ))}
-              </div>
-            </div>
-          ))}
+          <div
+            className="w-full h-full bg-cover bg-center bg-no-repeat"
+            style={{
+              backgroundImage: `url(${sliderItems[currentSlideIndex]?.image})`,
+            }}
+          />
+          <div className="absolute inset-0 bg-gradient-to-br from-slate-900/80 via-slate-800/60 to-slate-900/70"></div>
         </div>
         
-        {/* Floating Content Container */}
         <div className="relative z-10 max-w-6xl mx-auto px-6 sm:px-8 text-center py-20">
-          
-          {/* Floating Badge */}
-          <div className="mb-8 inline-block">
-            <div className="relative">
-              <span className="inline-flex items-center px-8 py-4 rounded-2xl text-lg font-bold bg-white/10 text-white border border-white/20 backdrop-blur-2xl shadow-2xl shadow-black/20">
-                {currentSlideItem.badge || 'Yenilik'}
-              </span>
-              {/* Glow Effect */}
-              <div className="absolute inset-0 rounded-2xl bg-gradient-to-r from-teal-500/20 via-blue-500/20 to-purple-500/20 blur-xl scale-110"></div>
-            </div>
+          <div className="mb-8">
+            <span className="inline-flex items-center px-8 py-4 rounded-2xl text-lg font-bold bg-white/10 text-white border border-white/20 backdrop-blur-2xl shadow-2xl shadow-black/20">
+              {sliderItems[currentSlideIndex]?.badge || 'Yenilik'}
+            </span>
           </div>
           
-          {/* Main Title with Animation */}
           <h1 className="text-6xl sm:text-7xl lg:text-8xl font-black text-white mb-6 leading-tight">
             <span className="block bg-gradient-to-r from-white via-teal-100 to-white bg-clip-text text-transparent drop-shadow-2xl">
-              {currentSlideItem.title}
+              {sliderItems[currentSlideIndex]?.title}
             </span>
           </h1>
           
-          {/* Subtitle */}
           <p className="text-2xl sm:text-3xl text-teal-200 font-semibold mb-8 drop-shadow-lg">
-            {currentSlideItem.subtitle || ''}
+            {sliderItems[currentSlideIndex]?.subtitle || ''}
           </p>
           
-          {/* Description */}
           <p className="text-xl sm:text-2xl text-slate-200 mb-12 max-w-4xl mx-auto leading-relaxed drop-shadow-md">
-            {currentSlideItem.description}
+            {sliderItems[currentSlideIndex]?.description}
           </p>
           
-          {/* Premium CTA Button */}
           <div className="relative inline-block">
             <Link 
-              href={currentSlideItem.buttonLink || '/contact'} 
+              href={sliderItems[currentSlideIndex]?.buttonLink || '/contact'} 
               className="group relative overflow-hidden inline-flex items-center space-x-3 px-12 py-6 bg-gradient-to-r from-teal-600 via-teal-500 to-blue-600 text-white text-xl font-bold rounded-2xl transition-all duration-500 transform hover:scale-105 shadow-2xl hover:shadow-3xl"
             >
-              <span className="relative z-10">{currentSlideItem.buttonText}</span>
+              <span className="relative z-10">{sliderItems[currentSlideIndex]?.buttonText}</span>
               <ArrowRightIcon className="relative z-10 h-6 w-6 group-hover:translate-x-2 transition-transform duration-300" />
-              
-              {/* Shimmer Effect */}
-              <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/30 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-1000"></div>
             </Link>
-            
-            {/* Button Glow */}
-            <div className="absolute inset-0 bg-gradient-to-r from-teal-600/50 via-teal-500/50 to-blue-600/50 rounded-2xl blur-2xl scale-110 opacity-50"></div>
-          </div>
-        </div>
-
-        {/* Floating Navigation System */}
-        <div className="absolute bottom-8 left-1/2 transform -translate-x-1/2 z-20">
-          <div className="bg-black/20 backdrop-blur-2xl rounded-3xl border border-white/20 p-6 shadow-2xl shadow-black/30">
-            <div className="flex items-center justify-center space-x-8">
-              
-              {/* Play/Pause Control */}
-              <button
-                onClick={togglePlayPause}
-                className="group relative p-4 bg-gradient-to-r from-teal-500 to-blue-500 rounded-2xl text-white transition-all duration-300 hover:scale-110 shadow-xl hover:shadow-2xl"
-                aria-label={isPlaying ? 'Duraklat' : 'Oynat'}
-              >
-                {isPlaying ? (
-                  <PauseIcon className="h-6 w-6" />
-                ) : (
-                  <PlayIcon className="h-6 w-6" />
-                )}
-                
-                {/* Button Pulse */}
-                <div className="absolute inset-0 bg-gradient-to-r from-teal-500 to-blue-500 rounded-2xl animate-pulse opacity-30"></div>
-              </button>
-              
-              {/* Elegant Slide Indicators */}
-              <div className="flex items-center space-x-4">
-                {sliderItems.map((_, index) => (
-                  <button
-                    key={index}
-                    onClick={() => goToSlide(index)}
-                    className={`relative transition-all duration-500 ${
-                      index === currentSlideIndex 
-                        ? 'w-16 h-4 bg-gradient-to-r from-teal-400 to-blue-400 shadow-lg shadow-teal-500/50' 
-                        : 'w-4 h-4 bg-white/40 hover:bg-white/60 hover:scale-125'
-                    } rounded-full`}
-                    aria-label={`Slayt ${index + 1}`}
-                  >
-                    {/* Active Indicator Glow */}
-                    {index === currentSlideIndex && (
-                      <div className="absolute inset-0 bg-gradient-to-r from-teal-400 to-blue-400 rounded-full blur-md scale-150 opacity-50"></div>
-                    )}
-                  </button>
-                ))}
-              </div>
-              
-              {/* Slide Counter */}
-              <div className="bg-white/10 backdrop-blur-xl px-4 py-2 rounded-xl text-white font-semibold text-sm border border-white/20">
-                {String(currentSlideIndex + 1).padStart(2, '0')} / {String(sliderItems.length).padStart(2, '0')}
-              </div>
-            </div>
-          </div>
-        </div>
-
-        {/* Floating Arrow Controls */}
-        <button
-          onClick={prevSlide}
-          disabled={isTransitioning}
-          className="group absolute left-8 top-1/2 transform -translate-y-1/2 z-20 p-5 bg-white/10 backdrop-blur-2xl rounded-2xl border border-white/20 text-white transition-all duration-300 hover:bg-white/20 hover:scale-110 disabled:opacity-50 shadow-2xl shadow-black/20"
-          aria-label="Önceki"
-        >
-          <ChevronLeftIcon className="h-8 w-8 group-hover:-translate-x-1 transition-transform duration-300" />
-        </button>
-        
-        <button
-          onClick={nextSlide}
-          disabled={isTransitioning}
-          className="group absolute right-8 top-1/2 transform -translate-y-1/2 z-20 p-5 bg-white/10 backdrop-blur-2xl rounded-2xl border border-white/20 text-white transition-all duration-300 hover:bg-white/20 hover:scale-110 disabled:opacity-50 shadow-2xl shadow-black/20"
-          aria-label="Sonraki"
-        >
-          <ChevronRightIcon className="h-8 w-8 group-hover:translate-x-1 transition-transform duration-300" />
-        </button>
-        
-        {/* Floating Info Panel */}
-        <div className="absolute top-8 right-8 z-20 opacity-0 hover:opacity-100 transition-all duration-500">
-          <div className="bg-black/20 backdrop-blur-2xl rounded-2xl border border-white/20 p-6 text-white shadow-2xl shadow-black/20 max-w-xs">
-            <h3 className="font-bold text-xl mb-3 text-teal-200">{currentSlideItem.title}</h3>
-            <p className="text-sm text-white/80 leading-relaxed">
-              {currentSlideItem.description.slice(0, 120)}...
-            </p>
-            <div className="mt-4 flex items-center space-x-2 text-xs text-white/60">
-              <div className="w-2 h-2 bg-teal-400 rounded-full animate-pulse"></div>
-              <span>Otomatik geçiş aktif</span>
-            </div>
-          </div>
-        </div>
-
-        {/* Scroll Indicator */}
-        <div className="absolute bottom-8 right-8 z-20 opacity-60 hover:opacity-100 transition-opacity duration-300">
-          <div className="flex flex-col items-center space-y-2 text-white/60">
-            <span className="text-xs font-medium">Kaydır</span>
-            <div className="w-px h-8 bg-gradient-to-b from-transparent via-white/40 to-transparent"></div>
-            <ChevronRightIcon className="h-4 w-4 rotate-90 animate-bounce" />
           </div>
         </div>
       </section>
@@ -545,38 +409,54 @@ export default function Home() {
               Projelerinizi hayata geçirmek için kapsamlı mühendislik ve teknoloji hizmetleri sunuyoruz.
             </p>
           </div>
-
-          {/* Services Grid with Loading State */}
-          {servicesLoading ? (
-            <div className="flex flex-col items-center justify-center py-20">
-              <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-teal-500 mb-4"></div>
-              <p className="text-slate-500 text-lg">Hizmetler yükleniyor...</p>
-            </div>
-          ) : services.length === 0 ? (
-            <div className="flex flex-col items-center justify-center py-20">
-              <WrenchScrewdriverIcon className="w-16 h-16 text-slate-300 mb-4" />
-              <p className="text-slate-500 text-lg">Henüz hizmet eklenmemiş</p>
+          
+                    {servicesLoading ? (
+            <div className="flex justify-center items-center py-20">
+              <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-teal-500"></div>
             </div>
           ) : (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-              {services.map((service, index) => (
-                <div key={service.title + index} className="card text-center group">
-                  <div className="p-4 bg-gradient-to-r from-teal-50 to-blue-50 rounded-full inline-block mb-6 group-hover:from-teal-100 group-hover:to-blue-100 transition-all duration-300">
-                    <CubeTransparentIcon className="h-12 w-12 text-teal-600 group-hover:text-teal-700 transition-colors duration-300" />
+              {(services.length > 0 ? services : defaultServices).map((service, index) => (
+                <div key={service._id || index} className="card text-center group h-full flex flex-col">
+                  <div className="mb-6 group-hover:scale-105 transition-transform duration-300">
+                    {service.image ? (
+                      <div className="relative w-full h-48 rounded-xl overflow-hidden shadow-md group-hover:shadow-lg transition-shadow duration-300">
+                        <Image
+                          src={service.image}
+                          alt={service.title}
+                          fill
+                          sizes="320px"
+                          className="object-cover"
+                        />
+                      </div>
+                    ) : (
+                      <div className="p-4 bg-gradient-to-r from-teal-50 to-blue-50 rounded-full inline-block group-hover:from-teal-100 group-hover:to-blue-100 transition-all duration-300">
+                        <CubeTransparentIcon className="h-12 w-12 text-teal-600 group-hover:text-teal-700 transition-colors duration-300" />
+                      </div>
+                    )}
                   </div>
+                  
                   <h3 className="text-xl font-bold text-slate-800 mb-4 group-hover:text-teal-700 transition-colors duration-300">
                     {service.title}
                   </h3>
-                  <p className="text-body mb-6">
+                  
+                  <p className="text-slate-600 mb-6 flex-grow" style={{
+                    display: '-webkit-box',
+                    WebkitLineClamp: 4,
+                    WebkitBoxOrient: 'vertical',
+                    overflow: 'hidden',
+                    minHeight: '6rem'
+                  }}>
                     {service.description}
                   </p>
+                  
                   <div className="mt-auto">
                     <Link
                       href={`/contact?service=${encodeURIComponent(service.title)}`}
-                      className="inline-flex items-center text-teal-600 hover:text-teal-700 font-semibold text-sm transition-colors duration-200 group/link"
+                      className="inline-flex items-center text-teal-600 hover:text-teal-700 font-semibold group-hover:underline transition-all duration-200"
                     >
                       <span>Detaylı Bilgi</span>
-                      <ArrowRightIcon className="ml-2 h-4 w-4 group-hover/link:translate-x-1 transition-transform duration-200" />
+                      <ArrowRightIcon className="ml-2 h-4 w-4 group-hover:translate-x-1 transition-transform duration-200" />
                     </Link>
                   </div>
                 </div>
@@ -585,7 +465,7 @@ export default function Home() {
           )}
 
           {/* Link to all services */}
-          {!servicesLoading && services.length > 0 && (
+          {!servicesLoading && (services.length > 0 || defaultServices.length > 0) && (
             <div className="text-center mt-12">
               <Link href="/services" className="btn-primary inline-flex items-center space-x-2 text-lg">
                 <span>Tüm Hizmetlerimizi Gör</span>
@@ -606,7 +486,6 @@ export default function Home() {
             </p>
           </div>
           
-          {/* Projects Grid with Loading State */}
           {projectsLoading ? (
             <div className="flex flex-col items-center justify-center py-20">
               <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-teal-500 mb-4"></div>

@@ -7,7 +7,9 @@ import {
   ArrowRightIcon, 
   CheckBadgeIcon,
   ClockIcon,
-  StarIcon 
+  StarIcon,
+  ChevronDownIcon,
+  ChevronUpIcon
 } from '@heroicons/react/24/outline';
 
 interface Service {
@@ -26,6 +28,7 @@ export default function ServicesPage() {
   const [services, setServices] = useState<Service[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [expandedServices, setExpandedServices] = useState<Set<string>>(new Set());
 
   useEffect(() => {
     // Set page metadata
@@ -53,10 +56,25 @@ export default function ServicesPage() {
     fetchServices();
   }, []);
 
+  const toggleExpand = (serviceId: string) => {
+    const newExpanded = new Set(expandedServices);
+    if (newExpanded.has(serviceId)) {
+      newExpanded.delete(serviceId);
+    } else {
+      newExpanded.add(serviceId);
+    }
+    setExpandedServices(newExpanded);
+  };
+
+  const getDescriptionPreview = (description: string, maxLength: number = 180) => {
+    if (description.length <= maxLength) return description;
+    return description.substring(0, maxLength).trim() + '...';
+  };
+
   if (loading) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-slate-50">
-        <div className="text-center">
+          <div className="text-center">
           <div className="animate-spin rounded-full h-16 w-16 border-t-2 border-b-2 border-teal-500 mx-auto mb-4"></div>
           <p className="text-slate-600 text-lg">Hizmetler yükleniyor...</p>
         </div>
@@ -67,7 +85,7 @@ export default function ServicesPage() {
   if (error) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-slate-50">
-        <div className="text-center">
+          <div className="text-center">
           <div className="bg-red-50 border border-red-200 rounded-xl p-8 max-w-md mx-auto shadow-lg">
             <div className="w-16 h-16 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-4">
               <svg className="w-8 h-8 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -76,12 +94,12 @@ export default function ServicesPage() {
             </div>
             <h2 className="text-xl font-bold text-red-800 mb-3">Bir Hata Oluştu</h2>
             <p className="text-red-600 mb-6">{error}</p>
-            <button 
-              onClick={() => window.location.reload()}
+              <button 
+                onClick={() => window.location.reload()}
               className="bg-red-600 hover:bg-red-700 text-white px-6 py-3 rounded-lg font-medium transition-colors"
-            >
-              Tekrar Dene
-            </button>
+              >
+                Tekrar Dene
+              </button>
           </div>
         </div>
       </div>
@@ -134,7 +152,7 @@ export default function ServicesPage() {
           ) : (
             <div className="space-y-12 md:space-y-16 lg:space-y-20">
               {services.map((service, index) => (
-                <div key={service._id} className="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-12 items-center max-w-6xl mx-auto">
+                <div key={service._id} className="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-12 items-start max-w-6xl mx-auto">
                   {/* Service Image */}
                   <div className={`${index % 2 === 1 ? 'lg:order-2' : ''}`}>
                     <div className="relative h-64 md:h-72 lg:h-80 rounded-xl overflow-hidden shadow-lg">
@@ -157,22 +175,47 @@ export default function ServicesPage() {
 
                   {/* Service Info */}
                   <div className={`${index % 2 === 1 ? 'lg:order-1' : ''}`}>
-                    <div className="bg-white rounded-xl p-6 md:p-8 shadow-lg">
-                      {/* Service Badge */}
-                      <div className="inline-flex items-center bg-teal-100 text-teal-600 px-4 py-2 rounded-full text-sm font-medium mb-4">
-                        <div className="w-8 h-8 bg-teal-500 rounded-full flex items-center justify-center text-white text-sm font-bold mr-3">
-                          {service.title.charAt(0)}
-                        </div>
-                        {service.title}
+                    {/* Service Badge - Outside container for perfect alignment */}
+                    <div className="inline-flex items-center bg-teal-100 text-teal-600 px-4 py-2 rounded-full text-sm font-medium mb-4">
+                      <div className="w-8 h-8 bg-teal-500 rounded-full flex items-center justify-center text-white text-sm font-bold mr-3">
+                        {service.title.charAt(0)}
                       </div>
+                      {service.title}
+                    </div>
 
+                    <div className="bg-white rounded-xl p-6 md:p-8 shadow-lg h-fit">
                       <h3 className="text-xl md:text-2xl font-bold text-gray-900 mb-4">
                         {service.title}
                       </h3>
                       
-                      <p className="text-gray-600 mb-6 leading-relaxed text-sm md:text-base">
-                        {service.description}
-                      </p>
+                      {/* Description with Collapse */}
+                      <div className="mb-6">
+                        <p className="text-gray-600 leading-relaxed text-sm md:text-base">
+                          {expandedServices.has(service._id) 
+                            ? service.description 
+                            : getDescriptionPreview(service.description)
+                          }
+                        </p>
+                        
+                        {service.description.length > 180 && (
+                          <button
+                            onClick={() => toggleExpand(service._id)}
+                            className="mt-3 inline-flex items-center text-teal-600 hover:text-teal-700 font-medium text-sm transition-colors group"
+                          >
+                            {expandedServices.has(service._id) ? (
+                              <>
+                                <span>Daha Az Göster</span>
+                                <ChevronUpIcon className="w-4 h-4 ml-1 group-hover:-translate-y-0.5 transition-transform" />
+                              </>
+                            ) : (
+                              <>
+                                <span>Daha Fazla Göster</span>
+                                <ChevronDownIcon className="w-4 h-4 ml-1 group-hover:translate-y-0.5 transition-transform" />
+                              </>
+                            )}
+                          </button>
+                        )}
+                      </div>
 
                       {/* Features Section */}
                       {service.features && service.features.length > 0 && (
