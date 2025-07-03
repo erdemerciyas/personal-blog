@@ -101,7 +101,7 @@ function ContactPageContent() {
   return (
     <div className="min-h-screen">
       {/* Hero Section */}
-      <section className="bg-gradient-to-br from-teal-500 to-cyan-600 text-white pt-32 pb-20 md:pt-40 md:pb-32 rounded-b-3xl shadow-xl relative">
+      <section className="bg-gradient-to-br from-teal-500 to-cyan-600 text-white pt-32 pb-20 md:pt-40 md:pb-32 shadow-xl relative">
         {/* Beautiful spacing for nav overlay */}
         <div className="absolute top-0 left-0 right-0 h-32 md:h-40 bg-gradient-to-b from-black/10 to-transparent pointer-events-none"></div>
         
@@ -116,8 +116,8 @@ function ContactPageContent() {
       </section>
 
       {/* Main Content */}
-      <div className="section-padding">
-        <div className="container-main">
+      <section className="py-12 md:py-16 lg:py-20 bg-gray-50">
+        <div className="container mx-auto px-4">
           
           {/* Contact Form and Info Section */}
           <div className="max-w-6xl mx-auto">
@@ -488,7 +488,7 @@ function ContactPageContent() {
             </div>
           </div>
         </div>
-      </div>
+      </section>
     </div>
   );
 }

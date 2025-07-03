@@ -129,39 +129,46 @@ function PortfolioDetailPageContent({ params }: { params: { id: string } }) {
   };
 
   return (
-    <div className="section-padding bg-gradient-to-br from-slate-100 via-slate-50 to-white min-h-screen">
-      {/* Decorative background elements */}
-      <div className="absolute inset-0 overflow-hidden pointer-events-none">
-        <div className="absolute top-20 left-20 w-72 h-72 bg-teal-100/30 rounded-full blur-3xl"></div>
-        <div className="absolute top-60 right-32 w-96 h-96 bg-indigo-100/30 rounded-full blur-3xl"></div>
-        <div className="absolute bottom-40 left-1/3 w-64 h-64 bg-cyan-100/30 rounded-full blur-3xl"></div>
-      </div>
-      
-      {/* Main Content Container */}
-      <div className="relative z-10">
-        <div className="container-main">
-          {/* Content Container with distinctive background */}
-          <div className="bg-white/70 backdrop-blur-sm rounded-3xl shadow-2xl border border-white/50 p-8 lg:p-12 xl:p-16">
-            {/* Back Button and Header */}
-            <div className="mb-8">
-              <Link href="/portfolio" className="inline-flex items-center text-sm text-teal-600 hover:text-teal-700 mb-6 group focus-ring rounded px-2 py-1">
-                <ArrowLeftIcon className="h-5 w-5 mr-2 transition-transform duration-200 group-hover:-translate-x-1" />
-                Tüm Projelere Dön
-              </Link>
-              <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-                <div>
-                  <h1 className="text-3xl sm:text-4xl lg:text-5xl font-bold text-slate-900 mb-3 leading-tight">
-                    {portfolioItem.title}
-                  </h1>
-                  {portfolioItem.category && (
-                    <span className="inline-flex items-center px-4 py-2 rounded-full text-sm font-medium bg-teal-100 text-teal-700 border border-teal-200">
-                      <TagIcon className="h-4 w-4 mr-2" />
-                      {portfolioItem.category.name}
-                    </span>
-                  )}
-                </div>
-              </div>
-            </div>
+    <div className="min-h-screen">
+      {/* Hero Section */}
+      <section className="bg-gradient-to-br from-teal-500 to-cyan-600 text-white pt-32 pb-20 md:pt-40 md:pb-32 shadow-xl relative">
+        {/* Beautiful spacing for nav overlay */}
+        <div className="absolute top-0 left-0 right-0 h-32 md:h-40 bg-gradient-to-b from-black/10 to-transparent pointer-events-none"></div>
+        
+        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center relative z-10">
+          {/* Back Button */}
+          <div className="mb-8">
+            <Link href="/portfolio" className="inline-flex items-center text-teal-100 hover:text-white mb-6 group transition-colors">
+              <ArrowLeftIcon className="h-5 w-5 mr-2 transition-transform duration-200 group-hover:-translate-x-1" />
+              Tüm Projelere Dön
+            </Link>
+          </div>
+          
+          <h1 className="text-4xl sm:text-5xl md:text-6xl font-bold mb-6 tracking-tight leading-tight">
+            {portfolioItem.title}
+          </h1>
+          
+          <div className="flex justify-center mb-8">
+            {portfolioItem.category && (
+              <span className="inline-flex items-center px-6 py-3 rounded-full text-sm font-medium bg-white/20 text-white border border-white/30 backdrop-blur-sm">
+                <TagIcon className="h-4 w-4 mr-2" />
+                {portfolioItem.category.name}
+              </span>
+            )}
+          </div>
+          
+          <p className="text-lg sm:text-xl text-teal-100 max-w-3xl mx-auto leading-relaxed">
+            Proje detaylarını inceleyin ve gerçekleştirdiğimiz çalışmanın tüm aşamalarını keşfedin.
+          </p>
+        </div>
+      </section>
+
+      {/* Main Content */}
+      <section className="py-12 md:py-16 lg:py-20 bg-gray-50">
+        <div className="container mx-auto px-4">
+          {/* Content Container */}
+          <div className="bg-white rounded-3xl shadow-lg p-8 md:p-12 lg:p-16">
+            <div className="max-w-6xl mx-auto">
 
             {/* Main Content Grid */}
             <div className="grid grid-cols-1 xl:grid-cols-3 gap-8 lg:gap-12 mb-16">
@@ -304,9 +311,10 @@ function PortfolioDetailPageContent({ params }: { params: { id: string } }) {
                 </div>
               </section>
             )}
+            </div>
           </div>
         </div>
-      </div>
+      </section>
 
       {/* Lightbox Modal */}
       {lightboxOpen && (

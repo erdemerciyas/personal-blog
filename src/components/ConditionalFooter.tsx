@@ -4,6 +4,13 @@ import { usePathname } from 'next/navigation';
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import Version from './Version';
+import { 
+  EnvelopeIcon, 
+  PhoneIcon, 
+  MapPinIcon,
+  HeartIcon,
+  SparklesIcon
+} from '@heroicons/react/24/outline';
 
 interface FooterSettings {
   mainDescription: string;
@@ -41,11 +48,6 @@ interface FooterSettings {
     showContactInfo: boolean;
     showDeveloperInfo: boolean;
   };
-  theme: {
-    backgroundColor: string;
-    textColor: string;
-    accentColor: string;
-  };
 }
 
 const ConditionalFooter: React.FC = () => {
@@ -53,7 +55,6 @@ const ConditionalFooter: React.FC = () => {
   const [settings, setSettings] = useState<FooterSettings | null>(null);
   const [loading, setLoading] = useState(true);
   
-  // Admin sayfalarında footer'ı gizle
   const isAdminPage = pathname?.startsWith('/admin');
   
   useEffect(() => {
@@ -66,7 +67,6 @@ const ConditionalFooter: React.FC = () => {
         }
       } catch (error) {
         console.error('Footer settings fetch error:', error);
-        // Hata durumunda varsayılan ayarları kullan
         setSettings({
           mainDescription: 'Mühendislik ve teknoloji alanında yenilikçi çözümler sunarak projelerinizi hayata geçiriyoruz.',
           contactInfo: {
@@ -103,11 +103,6 @@ const ConditionalFooter: React.FC = () => {
             showSocialLinks: true,
             showContactInfo: true,
             showDeveloperInfo: true
-          },
-          theme: {
-            backgroundColor: 'bg-slate-800',
-            textColor: 'text-slate-300',
-            accentColor: 'text-teal-400'
           }
         });
       } finally {
@@ -122,40 +117,40 @@ const ConditionalFooter: React.FC = () => {
     }
   }, [isAdminPage]);
   
-  // Eğer admin sayfasındaysak footer'ı render etme
-  if (isAdminPage) {
+  if (isAdminPage || loading || !settings) {
     return null;
   }
 
-  // Loading durumu
-  if (loading) {
-    return null;
-  }
-
-  // Ayarlar yüklenmemişse gösterme
-  if (!settings) {
-    return null;
-  }
-
-  // Sosyal medya linklerini filtrele (boş olmayanlar)
   const activeSocialLinks = Object.entries(settings.socialLinks).filter(([_, url]) => url.trim() !== '');
 
   return (
-    <footer className={`${settings.theme.backgroundColor} ${settings.theme.textColor}`}>
-      <div className="container-main section-padding-sm">
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-8">
-          {/* Ana Açıklama */}
+    <footer className="bg-slate-900 text-white relative overflow-hidden">
+      {/* Background Pattern */}
+      <div className="absolute inset-0 opacity-5">
+        <div className="absolute top-10 right-10 w-32 h-32 border-2 border-white rounded-full"></div>
+        <div className="absolute bottom-20 left-20 w-24 h-24 border-2 border-white rotate-45"></div>
+        <div className="absolute top-1/2 left-1/4 w-16 h-16 border-2 border-white rounded-full"></div>
+      </div>
+
+      <div className="container-main section-sm relative z-10">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-12 mb-16">
+          {/* About Section */}
           <div>
-            <h3 className="text-xl font-bold text-white mb-4">Hakkımızda</h3>
-            <p className="text-slate-400 leading-relaxed">
+            <div className="flex items-center space-x-3 mb-6">
+              <div className="w-10 h-10 bg-gradient-primary rounded-xl flex items-center justify-center">
+                <SparklesIcon className="w-5 h-5 text-white" />
+              </div>
+              <h3 className="text-xl font-bold">Hakkımızda</h3>
+            </div>
+            <p className="text-slate-400 leading-relaxed text-lg">
               {settings.mainDescription}
             </p>
           </div>
           
-          {/* Hızlı Bağlantılar */}
+          {/* Quick Links */}
           {settings.visibility.showQuickLinks && settings.quickLinks.length > 0 && (
             <div>
-              <h3 className="text-lg font-semibold text-white mb-4">Hızlı Bağlantılar</h3>
+              <h3 className="text-lg font-semibold mb-6">Hızlı Bağlantılar</h3>
               <ul className="space-y-3">
                 {settings.quickLinks.map((link, index) => (
                   <li key={index}>
@@ -164,14 +159,14 @@ const ConditionalFooter: React.FC = () => {
                         href={link.url}
                         target="_blank"
                         rel="noopener noreferrer"
-                        className={`text-slate-400 hover:${settings.theme.accentColor} transition-colors text-sm focus-ring rounded px-1 py-0.5`}
+                        className="text-slate-400 hover:text-teal-400 transition-colors duration-200 text-base"
                       >
                         {link.title}
                       </a>
                     ) : (
                       <Link
                         href={link.url}
-                        className={`text-slate-400 hover:${settings.theme.accentColor} transition-colors text-sm focus-ring rounded px-1 py-0.5`}
+                        className="text-slate-400 hover:text-teal-400 transition-colors duration-200 text-base"
                       >
                         {link.title}
                       </Link>
@@ -182,85 +177,78 @@ const ConditionalFooter: React.FC = () => {
             </div>
           )}
           
-          {/* İletişim Bilgileri */}
+          {/* Contact Info */}
           {settings.visibility.showContactInfo && (
             <div>
-              <h3 className="text-lg font-semibold text-white mb-4">İletişim</h3>
-              <div className="space-y-2">
-                <p className="text-slate-400 text-sm">
+              <h3 className="text-lg font-semibold mb-6">İletişim</h3>
+              <div className="space-y-4">
+                <div className="flex items-center space-x-3">
+                  <EnvelopeIcon className="w-5 h-5 text-teal-400" />
                   <a 
                     href={`mailto:${settings.contactInfo.email}`} 
-                    className={`hover:${settings.theme.accentColor} transition-colors focus-ring rounded px-1 py-0.5`}
+                    className="text-slate-400 hover:text-teal-400 transition-colors duration-200 text-base"
                   >
                     {settings.contactInfo.email}
                   </a>
-                </p>
-                <p className="text-slate-400 text-sm">
+                </div>
+                <div className="flex items-center space-x-3">
+                  <PhoneIcon className="w-5 h-5 text-teal-400" />
                   <a 
                     href={`tel:${settings.contactInfo.phone.replace(/\s/g, '')}`} 
-                    className={`hover:${settings.theme.accentColor} transition-colors focus-ring rounded px-1 py-0.5`}
+                    className="text-slate-400 hover:text-teal-400 transition-colors duration-200 text-base"
                   >
                     {settings.contactInfo.phone}
                   </a>
-                </p>
-                {settings.contactInfo.address && (
-                  <p className="text-slate-400 text-sm">
+                </div>
+                <div className="flex items-start space-x-3">
+                  <MapPinIcon className="w-5 h-5 text-teal-400 mt-1" />
+                  <span className="text-slate-400 text-base">
                     {settings.contactInfo.address}
-                  </p>
-                )}
+                  </span>
+                </div>
               </div>
             </div>
           )}
         </div>
 
-        {/* Sosyal Medya Linkleri */}
-        {settings.visibility.showSocialLinks && activeSocialLinks.length > 0 && (
-          <div className="border-t border-slate-700 pt-6 mb-6">
-            <div className="flex justify-center space-x-6">
-              {activeSocialLinks.map(([platform, url]) => (
-                <a
-                  key={platform}
-                  href={url}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className={`${settings.theme.accentColor} hover:text-white transition-colors capitalize`}
-                >
-                  {platform}
-                </a>
-              ))}
+        {/* Bottom Section */}
+        <div className="pt-8 border-t border-slate-800">
+          <div className="flex flex-col md:flex-row justify-between items-center space-y-4 md:space-y-0">
+            {/* Copyright */}
+            <div className="text-slate-400 text-sm">
+              <p>
+                © {settings.copyrightInfo.year} {settings.copyrightInfo.companyName}. 
+                {settings.copyrightInfo.additionalText}
+              </p>
+            </div>
+
+            {/* Version & Developer Info */}
+            <div className="flex items-center space-x-4">
+              <Version variant="badge" />
+              {settings.visibility.showDeveloperInfo && (
+                <div className="flex items-center space-x-2 text-sm text-slate-400">
+                  <span>Geliştiren:</span>
+                  <a 
+                    href={settings.developerInfo.website}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="text-teal-400 hover:text-teal-300 transition-colors duration-200 font-medium"
+                  >
+                    {settings.developerInfo.name}
+                  </a>
+                </div>
+              )}
             </div>
           </div>
-        )}
-        
-        {/* Copyright ve Geliştirici Bilgileri */}
-        <div className="border-t border-slate-700 pt-8 text-center">
-          <p className="text-sm text-slate-400 mb-2">
-            &copy; {settings.copyrightInfo.year} {settings.copyrightInfo.companyName}. {settings.copyrightInfo.additionalText}
-          </p>
-          
-          {/* Version Bilgisi */}
-          <div className="mb-2">
-            <Version variant="badge" size="sm" />
-          </div>
-          
-          {settings.visibility.showDeveloperInfo && (
-            <p className="text-xs text-slate-500">
-              Geliştirici: <span className={`${settings.theme.accentColor} font-medium`}>{settings.developerInfo.name}</span>
-              {settings.developerInfo.website && (
-                <>
-                  {' • '}
-                  <a 
-                    href={settings.developerInfo.website} 
-                    target="_blank" 
-                    rel="noopener noreferrer"
-                    className={`${settings.theme.accentColor} hover:text-teal-300 transition-colors`}
-                  >
-                    {settings.developerInfo.companyName}
-                  </a>
-                </>
-              )}
+
+          {/* Made with love */}
+          <div className="mt-6 text-center">
+            <p className="text-slate-500 text-sm flex items-center justify-center space-x-2">
+              <span>Made with</span>
+              <HeartIcon className="w-4 h-4 text-red-500" />
+              <span>in Turkey</span>
             </p>
-          )}
+          </div>
         </div>
       </div>
     </footer>
