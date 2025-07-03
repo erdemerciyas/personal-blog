@@ -12,7 +12,9 @@ import {
   FolderOpenIcon,
   PhoneIcon,
   UserIcon,
-  SparklesIcon
+  SparklesIcon,
+  PaperAirplaneIcon,
+  EnvelopeIcon
 } from '@heroicons/react/24/outline';
 
 interface SiteSettings {
@@ -50,6 +52,7 @@ const getIconForPage = (pageId: string) => {
 const Header: React.FC = () => {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isScrolled, setIsScrolled] = useState(false);
+  const [isProjectModalOpen, setIsProjectModalOpen] = useState(false);
   const [navLinks, setNavLinks] = useState<Array<{ href: string; label: string; icon: React.ComponentType<React.SVGProps<SVGSVGElement>> }>>([]);
   const [siteSettings, setSiteSettings] = useState<SiteSettings | null>({
     siteName: '',
@@ -61,6 +64,19 @@ const Header: React.FC = () => {
       height: 60
     }
   });
+
+  // Project form state
+  const [projectForm, setProjectForm] = useState({
+    name: '',
+    email: '',
+    phone: '',
+    projectType: '',
+    description: '',
+    budget: '',
+    timeline: ''
+  });
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [submitStatus, setSubmitStatus] = useState<'idle' | 'success' | 'error'>('idle');
 
   const pathname = usePathname();
 
@@ -147,6 +163,80 @@ const Header: React.FC = () => {
     setIsMobileMenuOpen(false);
   };
 
+  const openProjectModal = () => {
+    setIsProjectModalOpen(true);
+    setIsMobileMenuOpen(false);
+  };
+
+  const closeProjectModal = () => {
+    setIsProjectModalOpen(false);
+    setSubmitStatus('idle');
+  };
+
+  const handleProjectFormChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
+    const { name, value } = e.target;
+    setProjectForm(prev => ({
+      ...prev,
+      [name]: value
+    }));
+  };
+
+  const handleProjectFormSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setIsSubmitting(true);
+    setSubmitStatus('idle');
+
+    try {
+      const response = await fetch('/api/contact', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          name: projectForm.name,
+          email: projectForm.email,
+          phone: projectForm.phone,
+          subject: `Proje Başvurusu: ${projectForm.projectType}`,
+          message: `
+Proje Türü: ${projectForm.projectType}
+Bütçe: ${projectForm.budget}
+Zaman Planı: ${projectForm.timeline}
+
+Proje Detayları:
+${projectForm.description}
+
+İletişim Bilgileri:
+Telefon: ${projectForm.phone}
+E-posta: ${projectForm.email}
+          `.trim()
+        }),
+      });
+
+      if (response.ok) {
+        setSubmitStatus('success');
+        setProjectForm({
+          name: '',
+          email: '',
+          phone: '',
+          projectType: '',
+          description: '',
+          budget: '',
+          timeline: ''
+        });
+        setTimeout(() => {
+          closeProjectModal();
+        }, 2000);
+      } else {
+        setSubmitStatus('error');
+      }
+    } catch (error) {
+      console.error('Form submission error:', error);
+      setSubmitStatus('error');
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
   return (
     <header className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${
       isScrolled 
@@ -216,16 +306,17 @@ const Header: React.FC = () => {
 
           {/* CTA Button */}
           <div className="hidden md:flex items-center space-x-4">
-            <Link
-              href="/contact"
-              className={`px-6 py-3 rounded-xl font-semibold transition-all duration-300 transform hover:scale-105 ${
+            <button
+              onClick={openProjectModal}
+              className={`px-6 py-3 rounded-xl font-semibold transition-all duration-300 transform hover:scale-105 flex items-center space-x-2 ${
                 isScrolled
                   ? 'bg-gradient-primary text-white shadow-lg hover:shadow-xl'
                   : 'bg-white/10 backdrop-blur-sm text-white border border-white/20 hover:bg-white/20'
               }`}
             >
-              İletişim
-            </Link>
+              <PaperAirplaneIcon className="w-5 h-5" />
+              <span>Proje Başvurusu</span>
+            </button>
           </div>
 
           {/* Mobile Menu Button */}
@@ -268,19 +359,214 @@ const Header: React.FC = () => {
                 );
               })}
               <div className="mt-4 pt-4 border-t border-slate-200">
-                <Link
-                  href="/contact"
-                  onClick={closeMobileMenu}
-                  className="flex items-center justify-center space-x-2 py-3 px-6 bg-gradient-primary text-white rounded-xl font-semibold"
+                <button
+                  onClick={openProjectModal}
+                  className="flex items-center justify-center space-x-2 py-3 px-6 bg-gradient-primary text-white rounded-xl font-semibold w-full"
                 >
-                  <PhoneIcon className="w-5 h-5" />
-                  <span>İletişime Geçin</span>
-                </Link>
+                  <PaperAirplaneIcon className="w-5 h-5" />
+                  <span>Proje Başvurusu</span>
+                </button>
               </div>
             </div>
           </div>
         )}
       </div>
+
+      {/* Project Request Modal */}
+      {isProjectModalOpen && (
+        <div className="fixed inset-0 bg-black/50 backdrop-blur-sm z-[9999] flex items-center justify-center p-4">
+          <div className="bg-white rounded-3xl shadow-2xl w-full max-w-2xl max-h-[90vh] overflow-y-auto">
+            <div className="p-6 border-b border-gray-200 flex items-center justify-between">
+              <h2 className="text-2xl font-bold text-gray-900 flex items-center space-x-2">
+                <PaperAirplaneIcon className="w-6 h-6 text-teal-600" />
+                <span>Proje Başvurusu</span>
+              </h2>
+              <button
+                onClick={closeProjectModal}
+                className="p-2 rounded-full hover:bg-gray-100 transition-colors"
+              >
+                <XMarkIcon className="w-6 h-6 text-gray-500" />
+              </button>
+            </div>
+            
+            <form onSubmit={handleProjectFormSubmit} className="p-6 space-y-6">
+              {submitStatus === 'success' && (
+                <div className="bg-green-50 border border-green-200 rounded-xl p-4">
+                  <div className="flex items-center space-x-2">
+                    <div className="w-5 h-5 bg-green-500 rounded-full flex items-center justify-center">
+                      <svg className="w-3 h-3 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                      </svg>
+                    </div>
+                    <p className="text-green-800 font-medium">Proje başvurunuz başarıyla gönderildi!</p>
+                  </div>
+                </div>
+              )}
+
+              {submitStatus === 'error' && (
+                <div className="bg-red-50 border border-red-200 rounded-xl p-4">
+                  <p className="text-red-800">Bir hata oluştu. Lütfen tekrar deneyin.</p>
+                </div>
+              )}
+
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div>
+                  <label htmlFor="name" className="block text-sm font-medium text-gray-700 mb-2">
+                    Ad Soyad *
+                  </label>
+                  <input
+                    type="text"
+                    id="name"
+                    name="name"
+                    value={projectForm.name}
+                    onChange={handleProjectFormChange}
+                    required
+                    className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-teal-500 focus:border-transparent transition-all"
+                    placeholder="Adınız ve soyadınız"
+                  />
+                </div>
+
+                <div>
+                  <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-2">
+                    E-posta *
+                  </label>
+                  <input
+                    type="email"
+                    id="email"
+                    name="email"
+                    value={projectForm.email}
+                    onChange={handleProjectFormChange}
+                    required
+                    className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-teal-500 focus:border-transparent transition-all"
+                    placeholder="ornek@email.com"
+                  />
+                </div>
+
+                <div>
+                  <label htmlFor="phone" className="block text-sm font-medium text-gray-700 mb-2">
+                    Telefon
+                  </label>
+                  <input
+                    type="tel"
+                    id="phone"
+                    name="phone"
+                    value={projectForm.phone}
+                    onChange={handleProjectFormChange}
+                    className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-teal-500 focus:border-transparent transition-all"
+                    placeholder="05XX XXX XX XX"
+                  />
+                </div>
+
+                <div>
+                  <label htmlFor="projectType" className="block text-sm font-medium text-gray-700 mb-2">
+                    Proje Türü *
+                  </label>
+                  <select
+                    id="projectType"
+                    name="projectType"
+                    value={projectForm.projectType}
+                    onChange={handleProjectFormChange}
+                    required
+                    className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-teal-500 focus:border-transparent transition-all"
+                  >
+                    <option value="">Seçiniz</option>
+                    <option value="3d-scanning">3D Tarama</option>
+                    <option value="reverse-engineering">Tersine Mühendislik</option>
+                    <option value="3d-modeling">3D Modelleme</option>
+                    <option value="cad-design">CAD Tasarım</option>
+                    <option value="prototype">Prototip Geliştirme</option>
+                    <option value="consulting">Danışmanlık</option>
+                    <option value="other">Diğer</option>
+                  </select>
+                </div>
+
+                <div>
+                  <label htmlFor="budget" className="block text-sm font-medium text-gray-700 mb-2">
+                    Bütçe Aralığı
+                  </label>
+                  <select
+                    id="budget"
+                    name="budget"
+                    value={projectForm.budget}
+                    onChange={handleProjectFormChange}
+                    className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-teal-500 focus:border-transparent transition-all"
+                  >
+                    <option value="">Seçiniz</option>
+                    <option value="under-5k">5.000 TL altı</option>
+                    <option value="5k-15k">5.000 - 15.000 TL</option>
+                    <option value="15k-50k">15.000 - 50.000 TL</option>
+                    <option value="50k-plus">50.000 TL üzeri</option>
+                    <option value="discuss">Görüşmeli</option>
+                  </select>
+                </div>
+
+                <div>
+                  <label htmlFor="timeline" className="block text-sm font-medium text-gray-700 mb-2">
+                    Zaman Planı
+                  </label>
+                  <select
+                    id="timeline"
+                    name="timeline"
+                    value={projectForm.timeline}
+                    onChange={handleProjectFormChange}
+                    className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-teal-500 focus:border-transparent transition-all"
+                  >
+                    <option value="">Seçiniz</option>
+                    <option value="asap">Mümkün olan en kısa sürede</option>
+                    <option value="1-week">1 hafta içinde</option>
+                    <option value="1-month">1 ay içinde</option>
+                    <option value="3-months">3 ay içinde</option>
+                    <option value="flexible">Esnek</option>
+                  </select>
+                </div>
+              </div>
+
+              <div>
+                <label htmlFor="description" className="block text-sm font-medium text-gray-700 mb-2">
+                  Proje Detayları *
+                </label>
+                <textarea
+                  id="description"
+                  name="description"
+                  value={projectForm.description}
+                  onChange={handleProjectFormChange}
+                  required
+                  rows={4}
+                  className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-teal-500 focus:border-transparent transition-all resize-none"
+                  placeholder="Projenizin detaylarını, hedeflerinizi ve özel gereksinimlerinizi açıklayın..."
+                />
+              </div>
+
+              <div className="flex flex-col sm:flex-row gap-4 pt-4">
+                <button
+                  type="button"
+                  onClick={closeProjectModal}
+                  className="flex-1 px-6 py-3 border border-gray-300 text-gray-700 rounded-xl font-semibold hover:bg-gray-50 transition-colors"
+                >
+                  İptal
+                </button>
+                <button
+                  type="submit"
+                  disabled={isSubmitting}
+                  className="flex-1 px-6 py-3 bg-gradient-primary text-white rounded-xl font-semibold hover:opacity-90 transition-opacity disabled:opacity-50 flex items-center justify-center space-x-2"
+                >
+                  {isSubmitting ? (
+                    <>
+                      <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+                      <span>Gönderiliyor...</span>
+                    </>
+                  ) : (
+                    <>
+                      <EnvelopeIcon className="w-5 h-5" />
+                      <span>Başvuruyu Gönder</span>
+                    </>
+                  )}
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
     </header>
   );
 };
