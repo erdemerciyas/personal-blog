@@ -11,27 +11,9 @@ import {
   WrenchScrewdriverIcon,
   FolderOpenIcon,
   PhoneIcon,
-  ArrowRightIcon,
-  SparklesIcon,
-  CubeTransparentIcon,
-  EnvelopeIcon,
   UserIcon,
-  ChatBubbleLeftIcon,
-  CheckIcon,
-  ExclamationTriangleIcon
+  SparklesIcon
 } from '@heroicons/react/24/outline';
-
-interface FormData {
-  name: string;
-  email: string;
-  phone: string;
-  company: string;
-  subject: string;
-  message: string;
-  projectType: string;
-  budget: string;
-  urgency: string;
-}
 
 interface SiteSettings {
   siteName: string;
@@ -68,10 +50,6 @@ const getIconForPage = (pageId: string) => {
 const Header: React.FC = () => {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isScrolled, setIsScrolled] = useState(false);
-  const [showModal, setShowModal] = useState(false);
-  const [isSubmitting, setIsSubmitting] = useState(false);
-  const [submitSuccess, setSubmitSuccess] = useState(false);
-  const [submitError, setSubmitError] = useState('');
   const [navLinks, setNavLinks] = useState<Array<{ href: string; label: string; icon: React.ComponentType<React.SVGProps<SVGSVGElement>> }>>([]);
   const [siteSettings, setSiteSettings] = useState<SiteSettings | null>({
     siteName: '',
@@ -83,20 +61,8 @@ const Header: React.FC = () => {
       height: 60
     }
   });
-  const [formData, setFormData] = useState<FormData>({
-    name: '',
-    email: '',
-    phone: '',
-    company: '',
-    subject: '',
-    message: '',
-    projectType: 'other',
-    budget: 'not-specified',
-    urgency: 'medium'
-  });
 
   const pathname = usePathname();
-  const isHomePage = pathname === '/';
 
   // Scroll detection
   useEffect(() => {
@@ -117,7 +83,6 @@ const Header: React.FC = () => {
           setSiteSettings(data);
         }
       } catch (error) {
-        // Set fallback values on error
         setSiteSettings({
           siteName: '',
           slogan: '',
@@ -142,7 +107,6 @@ const Header: React.FC = () => {
         if (response.ok) {
           const pageSettings: PageSetting[] = await response.json();
           
-          // Filter active pages that should show in navigation and sort by order
           const activeNavPages = pageSettings
             .filter(page => page.isActive && page.showInNavigation)
             .sort((a, b) => a.order - b.order)
@@ -156,7 +120,7 @@ const Header: React.FC = () => {
         }
       } catch (error) {
         console.error('Page settings fetch error:', error);
-        // Fallback to default navigation if API fails
+        // Fallback navigation
         setNavLinks([
           { href: "/", label: "Anasayfa", icon: HomeIcon },
           { href: "/about", label: "Hakkımda", icon: UserIcon },
@@ -175,454 +139,149 @@ const Header: React.FC = () => {
     return null;
   }
 
-  const handleFormChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
-    setFormData({ ...formData, [e.target.name]: e.target.value });
+  const toggleMobileMenu = () => {
+    setIsMobileMenuOpen(!isMobileMenuOpen);
   };
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setIsSubmitting(true);
-    setSubmitError('');
-
-    try {
-      const response = await fetch('/api/messages', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(formData),
-      });
-
-      const result = await response.json();
-
-      if (!response.ok) {
-        throw new Error(result.error || 'Mesaj gönderilirken hata oluştu');
-      }
-
-      setSubmitSuccess(true);
-      setFormData({
-        name: '',
-        email: '',
-        phone: '',
-        company: '',
-        subject: '',
-        message: '',
-        projectType: 'other',
-        budget: 'not-specified',
-        urgency: 'medium'
-      });
-      
-      setTimeout(() => {
-        setShowModal(false);
-        setSubmitSuccess(false);
-      }, 2000);
-    } catch (error) {
-      setSubmitError(error instanceof Error ? error.message : 'Bir hata oluştu');
-    } finally {
-      setIsSubmitting(false);
-    }
+  const closeMobileMenu = () => {
+    setIsMobileMenuOpen(false);
   };
 
   return (
-    <>
-      {/* Clean Navbar */}
-      <header className={`fixed w-full top-0 z-50 transition-all duration-300 ${
-        isScrolled 
-          ? 'bg-white/95 backdrop-blur-lg shadow-xl border-b border-slate-200' 
-          : isHomePage 
-            ? 'bg-slate-900/70 backdrop-blur-md shadow-lg shadow-black/25' 
-            : 'bg-white/95 backdrop-blur-lg shadow-xl border-b border-slate-200'
-      }`}>
-        <div className="w-full px-4 sm:px-6 lg:px-8">
-          <div className="flex items-center h-16 lg:h-20">
-            
-            {/* Left Section - Logo & Brand */}
-            <div className="flex items-center space-x-3 group">
-              <Link href="/" className="flex items-center space-x-3">
-                <div className="relative w-12 h-12 lg:w-16 lg:h-16">
-                  {siteSettings?.logo?.url ? (
-                    <Image
-                      src={siteSettings.logo.url}
-                      alt={siteSettings.logo.alt}
-                      fill
-                      sizes="(max-width: 768px) 48px, 64px"
-                      className="object-contain rounded-xl group-hover:shadow-md transition-all duration-200"
-                    />
-                  ) : (
-                    <div className="w-full h-full bg-gradient-to-br from-teal-500 to-blue-600 rounded-xl flex items-center justify-center shadow-sm group-hover:shadow-md transition-all duration-200">
-                      <CubeTransparentIcon className="w-6 h-6 lg:w-8 lg:h-8 text-white" />
-                    </div>
-                  )}
-                </div>
-                <div className="hidden sm:block">
-                  {siteSettings?.siteName && (
-                    <div className={`text-xl lg:text-2xl font-bold group-hover:text-teal-400 transition-colors duration-200 ${
-                      isScrolled || !isHomePage ? 'text-slate-800' : 'text-white'
-                    }`}>
-                      {siteSettings.siteName}
-                    </div>
-                  )}
-                  {siteSettings?.slogan && (
-                    <div className={`text-xs lg:text-sm -mt-1 ${
-                      isScrolled || !isHomePage ? 'text-slate-600' : 'text-slate-300'
-                    }`}>
-                      {siteSettings.slogan}
-                    </div>
-                  )}
-                </div>
-              </Link>
+    <header className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${
+      isScrolled 
+        ? 'bg-white/95 backdrop-blur-lg shadow-lg border-b border-slate-200/50' 
+        : 'bg-transparent'
+    }`}>
+      <div className="container-main">
+        <div className="flex items-center justify-between h-20">
+          {/* Logo */}
+          <Link href="/" className="flex items-center space-x-3 group">
+            {siteSettings?.logo?.url ? (
+              <div className="relative w-12 h-12 rounded-2xl overflow-hidden bg-gradient-primary p-1">
+                <Image
+                  src={siteSettings.logo.url}
+                  alt={siteSettings.logo.alt}
+                  fill
+                  className="object-contain group-hover:scale-110 transition-transform duration-300"
+                  sizes="48px"
+                  priority
+                />
+              </div>
+            ) : (
+              <div className="w-12 h-12 bg-gradient-primary rounded-2xl flex items-center justify-center">
+                <SparklesIcon className="w-6 h-6 text-white" />
+              </div>
+            )}
+            <div className="hidden sm:block">
+              <h1 className={`text-xl font-bold transition-colors duration-300 ${
+                isScrolled ? 'text-slate-900' : 'text-white'
+              }`}>
+                {siteSettings?.siteName || 'Erdem Erciyas'}
+              </h1>
+              {siteSettings?.slogan && (
+                <p className={`text-sm transition-colors duration-300 ${
+                  isScrolled ? 'text-slate-600' : 'text-white/80'
+                }`}>
+                  {siteSettings.slogan}
+                </p>
+              )}
             </div>
+          </Link>
 
-            {/* Center Section - Navigation Links */}
-            <div className="flex-1 flex justify-center">
-              <nav className="hidden md:flex items-center space-x-1">
-                {navLinks.map((link) => {
-                  const isActive = pathname === link.href;
-                  return (
-                    <Link 
-                      key={link.href}
-                      href={link.href} 
-                      className={`flex items-center space-x-2 px-4 py-2 rounded-lg font-medium text-sm transition-all duration-200 ${
-                        isActive 
-                          ? 'text-white bg-teal-600 shadow-md' 
-                          : isScrolled || !isHomePage
-                            ? 'text-slate-700 hover:text-teal-600 hover:bg-slate-100'
-                            : 'text-white hover:text-teal-300 hover:bg-white/10'
-                      }`}
-                    >
-                      <link.icon className="h-4 w-4" />
-                      <span className="hidden lg:block">{link.label}</span>
-                    </Link>
-                  );
-                })}
-              </nav>
-            </div>
+          {/* Desktop Navigation */}
+          <nav className="hidden md:flex items-center space-x-2">
+            {navLinks.map((link, index) => {
+              const isActive = pathname === link.href;
+              return (
+                <Link
+                  key={index}
+                  href={link.href}
+                  className={`px-4 py-2 rounded-xl font-medium transition-all duration-200 group flex items-center space-x-2 ${
+                    isActive
+                      ? isScrolled
+                        ? 'bg-teal-100 text-teal-700'
+                        : 'bg-white/20 text-white backdrop-blur-sm'
+                      : isScrolled
+                      ? 'text-slate-700 hover:bg-slate-100 hover:text-teal-600'
+                      : 'text-white/80 hover:text-white hover:bg-white/10'
+                  }`}
+                >
+                  <link.icon className="w-4 h-4" />
+                  <span>{link.label}</span>
+                </Link>
+              );
+            })}
+          </nav>
 
-            {/* Right Section - CTA & Mobile Menu */}
-            <div className="flex items-center space-x-3">
-              {/* CTA Button - Desktop */}
-              <button 
-                onClick={() => setShowModal(true)}
-                className="hidden sm:flex items-center space-x-2 btn-primary text-sm"
-              >
-                <SparklesIcon className="h-4 w-4" />
-                <span>Proje Başlat</span>
-                <ArrowRightIcon className="h-3 w-3" />
-              </button>
-
-              {/* Mobile Menu Button */}
-              <button 
-                onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-                className={`md:hidden p-2 rounded-lg transition-colors duration-200 ${
-                  isScrolled || !isHomePage
-                    ? 'text-slate-700 hover:text-teal-600 hover:bg-slate-100'
-                    : 'text-white hover:text-teal-300 hover:bg-white/10'
-                }`}
-              >
-                {isMobileMenuOpen ? (
-                  <XMarkIcon className="w-6 h-6" />
-                ) : (
-                  <Bars3Icon className="w-6 h-6" />
-                )}
-              </button>
-            </div>
+          {/* CTA Button */}
+          <div className="hidden md:flex items-center space-x-4">
+            <Link
+              href="/contact"
+              className={`px-6 py-3 rounded-xl font-semibold transition-all duration-300 transform hover:scale-105 ${
+                isScrolled
+                  ? 'bg-gradient-primary text-white shadow-lg hover:shadow-xl'
+                  : 'bg-white/10 backdrop-blur-sm text-white border border-white/20 hover:bg-white/20'
+              }`}
+            >
+              İletişim
+            </Link>
           </div>
+
+          {/* Mobile Menu Button */}
+          <button
+            onClick={toggleMobileMenu}
+            className={`md:hidden p-2 rounded-xl transition-all duration-200 ${
+              isScrolled
+                ? 'text-slate-700 hover:bg-slate-100'
+                : 'text-white hover:bg-white/10'
+            }`}
+          >
+            {isMobileMenuOpen ? (
+              <XMarkIcon className="w-6 h-6" />
+            ) : (
+              <Bars3Icon className="w-6 h-6" />
+            )}
+          </button>
         </div>
 
         {/* Mobile Menu */}
         {isMobileMenuOpen && (
-          <div className="md:hidden bg-white/95 backdrop-blur-lg border-t border-slate-200 shadow-lg">
-            <div className="w-full px-4 py-4 space-y-2">
-              {navLinks.map((link) => {
+          <div className="md:hidden absolute top-full left-0 right-0 bg-white/95 backdrop-blur-lg shadow-2xl border-t border-slate-200/50">
+            <div className="py-4 px-6">
+              {navLinks.map((link, index) => {
                 const isActive = pathname === link.href;
                 return (
-                  <Link 
-                    key={link.href}
-                    href={link.href} 
-                    className={`flex items-center space-x-3 p-3 rounded-lg transition-all duration-200 ${
-                      isActive 
-                        ? 'text-white bg-teal-600' 
-                        : 'text-slate-700 hover:text-teal-600 hover:bg-slate-50'
+                  <Link
+                    key={index}
+                    href={link.href}
+                    onClick={closeMobileMenu}
+                    className={`flex items-center space-x-3 py-3 px-4 rounded-xl font-medium transition-all duration-200 ${
+                      isActive
+                        ? 'bg-teal-100 text-teal-700'
+                        : 'text-slate-700 hover:bg-slate-100 hover:text-teal-600'
                     }`}
-                    onClick={() => setIsMobileMenuOpen(false)}
                   >
-                    <link.icon className="h-5 w-5" />
-                    <span className="font-medium">{link.label}</span>
+                    <link.icon className="w-5 h-5" />
+                    <span>{link.label}</span>
                   </Link>
                 );
               })}
-              
-              {/* Mobile CTA */}
-              <button
-                onClick={() => {
-                  setShowModal(true);
-                  setIsMobileMenuOpen(false);
-                }}
-                className="w-full btn-primary flex items-center justify-center space-x-2"
-              >
-                <SparklesIcon className="h-5 w-5" />
-                <span>Proje Başlat</span>
-                <ArrowRightIcon className="h-4 w-4" />
-              </button>
+              <div className="mt-4 pt-4 border-t border-slate-200">
+                <Link
+                  href="/contact"
+                  onClick={closeMobileMenu}
+                  className="flex items-center justify-center space-x-2 py-3 px-6 bg-gradient-primary text-white rounded-xl font-semibold"
+                >
+                  <PhoneIcon className="w-5 h-5" />
+                  <span>İletişime Geçin</span>
+                </Link>
+              </div>
             </div>
           </div>
         )}
-      </header>
-
-      {/* Project Request Modal */}
-      {showModal && (
-        <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-[100] p-4">
-          <div className="bg-white rounded-3xl max-w-4xl w-full max-h-[90vh] overflow-y-auto shadow-2xl">
-            <div className="sticky top-0 bg-white rounded-t-3xl border-b border-slate-200 p-6 z-10">
-              <div className="flex items-center justify-between">
-                <div className="flex items-center space-x-3">
-                  <div className="w-12 h-12 bg-gradient-to-r from-teal-500 to-blue-500 rounded-2xl flex items-center justify-center">
-                    <ChatBubbleLeftIcon className="w-6 h-6 text-white" />
-                  </div>
-                  <div>
-                    <h3 className="text-2xl font-bold text-slate-800">Proje Talebi</h3>
-                    <p className="text-slate-600">Projenizie başlamak için bilgilerinizi paylaşın</p>
-                  </div>
-                </div>
-                <button
-                  onClick={() => setShowModal(false)}
-                  className="p-2 hover:bg-slate-100 rounded-xl transition-colors"
-                >
-                  <XMarkIcon className="w-6 h-6 text-slate-400" />
-                </button>
-              </div>
-            </div>
-
-            <form onSubmit={handleSubmit} className="p-6 space-y-6">
-              {/* Success Message */}
-              {submitSuccess && (
-                <div className="bg-green-50 border border-green-200 rounded-2xl p-6 flex items-center space-x-3">
-                  <CheckIcon className="w-6 h-6 text-green-500" />
-                  <div>
-                    <p className="font-semibold text-green-800">Başarılı!</p>
-                    <p className="text-green-700">Proje talebiniz başarıyla gönderildi! 24 saat içinde geri dönüş yapacağız. Size onay emaili gönderdik.</p>
-                  </div>
-                </div>
-              )}
-
-              {/* Error Message */}
-              {submitError && (
-                <div className="bg-red-50 border border-red-200 rounded-2xl p-6 flex items-center space-x-3">
-                  <ExclamationTriangleIcon className="w-6 h-6 text-red-500" />
-                  <div>
-                    <p className="font-semibold text-red-800">Hata!</p>
-                    <p className="text-red-700">{submitError}</p>
-                  </div>
-                </div>
-              )}
-
-              {/* Personal Information */}
-              <div className="bg-slate-50 rounded-2xl p-6">
-                <h4 className="text-lg font-semibold text-slate-800 mb-4 flex items-center space-x-2">
-                  <UserIcon className="w-5 h-5 text-teal-600" />
-                  <span>İletişim Bilgileri</span>
-                </h4>
-                
-                <div className="grid md:grid-cols-2 gap-4">
-                  <div>
-                    <label className="block text-sm font-medium text-slate-700 mb-2">
-                      Ad Soyad <span className="text-red-500">*</span>
-                    </label>
-                    <input
-                      type="text"
-                      name="name"
-                      required
-                      value={formData.name}
-                      onChange={handleFormChange}
-                      className="w-full px-4 py-3 border border-slate-300 rounded-xl focus:ring-2 focus:ring-teal-500 focus:border-transparent transition-all duration-200"
-                      placeholder="Adınız ve soyadınız"
-                    />
-                  </div>
-
-                  <div>
-                    <label className="block text-sm font-medium text-slate-700 mb-2">
-                      E-posta <span className="text-red-500">*</span>
-                    </label>
-                    <input
-                      type="email"
-                      name="email"
-                      required
-                      value={formData.email}
-                      onChange={handleFormChange}
-                      className="w-full px-4 py-3 border border-slate-300 rounded-xl focus:ring-2 focus:ring-teal-500 focus:border-transparent transition-all duration-200"
-                      placeholder="ornek@email.com"
-                    />
-                  </div>
-
-                  <div>
-                    <label className="block text-sm font-medium text-slate-700 mb-2">
-                      Telefon
-                    </label>
-                    <input
-                      type="tel"
-                      name="phone"
-                      value={formData.phone}
-                      onChange={handleFormChange}
-                      className="w-full px-4 py-3 border border-slate-300 rounded-xl focus:ring-2 focus:ring-teal-500 focus:border-transparent transition-all duration-200"
-                      placeholder="+90 555 123 45 67"
-                    />
-                  </div>
-
-                  <div>
-                    <label className="block text-sm font-medium text-slate-700 mb-2">
-                      Şirket/Kurum
-                    </label>
-                    <input
-                      type="text"
-                      name="company"
-                      value={formData.company}
-                      onChange={handleFormChange}
-                      className="w-full px-4 py-3 border border-slate-300 rounded-xl focus:ring-2 focus:ring-teal-500 focus:border-transparent transition-all duration-200"
-                      placeholder="Şirket adı"
-                    />
-                  </div>
-                </div>
-              </div>
-
-              {/* Project Details */}
-              <div className="bg-slate-50 rounded-2xl p-6">
-                <h4 className="text-lg font-semibold text-slate-800 mb-4 flex items-center space-x-2">
-                  <CubeTransparentIcon className="w-5 h-5 text-teal-600" />
-                  <span>Proje Detayları</span>
-                </h4>
-
-                <div className="space-y-4">
-                  <div>
-                    <label className="block text-sm font-medium text-slate-700 mb-2">
-                      Konu <span className="text-red-500">*</span>
-                    </label>
-                    <input
-                      type="text"
-                      name="subject"
-                      required
-                      value={formData.subject}
-                      onChange={handleFormChange}
-                      className="w-full px-4 py-3 border border-slate-300 rounded-xl focus:ring-2 focus:ring-teal-500 focus:border-transparent transition-all duration-200"
-                      placeholder="Proje konusu"
-                    />
-                  </div>
-
-                  <div className="grid md:grid-cols-3 gap-4">
-                    <div>
-                      <label className="block text-sm font-medium text-slate-700 mb-2">
-                        Proje Türü
-                      </label>
-                      <select
-                        name="projectType"
-                        value={formData.projectType}
-                        onChange={handleFormChange}
-                        className="w-full px-4 py-3 border border-slate-300 rounded-xl focus:ring-2 focus:ring-teal-500 focus:border-transparent transition-all duration-200"
-                      >
-                        <option value="3d-design">3D Tasarım</option>
-                        <option value="reverse-engineering">Tersine Mühendislik</option>
-                        <option value="3d-printing">3D Baskı</option>
-                        <option value="cad-design">CAD Tasarım</option>
-                        <option value="consulting">Danışmanlık</option>
-                        <option value="other">Diğer</option>
-                      </select>
-                    </div>
-
-                    <div>
-                      <label className="block text-sm font-medium text-slate-700 mb-2">
-                        Bütçe Aralığı
-                      </label>
-                      <select
-                        name="budget"
-                        value={formData.budget}
-                        onChange={handleFormChange}
-                        className="w-full px-4 py-3 border border-slate-300 rounded-xl focus:ring-2 focus:ring-teal-500 focus:border-transparent transition-all duration-200"
-                      >
-                        <option value="under-5k">5.000 TL altı</option>
-                        <option value="5k-15k">5.000 - 15.000 TL</option>
-                        <option value="15k-50k">15.000 - 50.000 TL</option>
-                        <option value="50k-100k">50.000 - 100.000 TL</option>
-                        <option value="above-100k">100.000 TL üzeri</option>
-                        <option value="not-specified">Belirtmek istemiyorum</option>
-                      </select>
-                    </div>
-
-                    <div>
-                      <label className="block text-sm font-medium text-slate-700 mb-2">
-                        Öncelik
-                      </label>
-                      <select
-                        name="urgency"
-                        value={formData.urgency}
-                        onChange={handleFormChange}
-                        className="w-full px-4 py-3 border border-slate-300 rounded-xl focus:ring-2 focus:ring-teal-500 focus:border-transparent transition-all duration-200"
-                      >
-                        <option value="low">Düşük</option>
-                        <option value="medium">Orta</option>
-                        <option value="high">Yüksek</option>
-                        <option value="urgent">Acil</option>
-                      </select>
-                    </div>
-                  </div>
-
-                  <div>
-                    <label className="block text-sm font-medium text-slate-700 mb-2">
-                      Proje Açıklaması <span className="text-red-500">*</span>
-                    </label>
-                    <textarea
-                      name="message"
-                      required
-                      rows={4}
-                      value={formData.message}
-                      onChange={handleFormChange}
-                      className="w-full px-4 py-3 border border-slate-300 rounded-xl focus:ring-2 focus:ring-teal-500 focus:border-transparent transition-all duration-200 resize-none"
-                      placeholder="Projenizi detaylı bir şekilde açıklayın..."
-                    />
-                  </div>
-                </div>
-              </div>
-
-              {/* Submit Button */}
-              <div className="flex items-center justify-end space-x-4 pt-6 border-t border-slate-200">
-                <button
-                  type="button"
-                  onClick={() => setShowModal(false)}
-                  className="px-6 py-3 text-slate-600 hover:text-slate-800 font-medium transition-colors"
-                >
-                  İptal
-                </button>
-                
-                <button
-                  type="submit"
-                  disabled={isSubmitting || submitSuccess}
-                  className={`flex items-center space-x-2 transition-all duration-200 ${
-                    isSubmitting || submitSuccess
-                      ? 'bg-slate-300 cursor-not-allowed text-slate-500 px-8 py-3 rounded-xl font-semibold'
-                      : 'btn-primary hover:scale-105 hover:shadow-xl'
-                  }`}
-                >
-                  {isSubmitting ? (
-                    <>
-                      <div className="animate-spin rounded-full h-5 w-5 border-t-2 border-b-2 border-current"></div>
-                      <span>Gönderiliyor...</span>
-                    </>
-                  ) : submitSuccess ? (
-                    <>
-                      <CheckIcon className="w-5 h-5" />
-                      <span>Gönderildi</span>
-                    </>
-                  ) : (
-                    <>
-                      <EnvelopeIcon className="w-5 h-5" />
-                      <span>Talebi Gönder</span>
-                    </>
-                  )}
-                </button>
-              </div>
-            </form>
-          </div>
-        </div>
-      )}
-    </>
+      </div>
+    </header>
   );
 };
 

@@ -66,22 +66,36 @@ body {
   animation: scan 2.5s infinite ease-in-out;
 }
 
-/* Custom component styles */
+/* Modern Design System */
 @layer components {
+  /* Buttons */
   .btn-primary {
-    @apply bg-gradient-to-r from-teal-500 to-blue-600 text-white px-6 py-3 rounded-xl font-medium shadow-lg hover:from-teal-600 hover:to-blue-700 hover:shadow-xl transition-all duration-300 ease-in-out transform hover:-translate-y-0.5 focus:outline-none focus:ring-2 focus:ring-teal-400 focus:ring-opacity-75 active:transform active:scale-95;
+    @apply inline-flex items-center justify-center px-8 py-4 bg-gradient-to-r from-teal-600 via-teal-500 to-blue-600 text-white font-semibold rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105 focus:outline-none focus:ring-4 focus:ring-teal-500/30 active:scale-95 backdrop-blur-sm;
   }
   
   .btn-secondary {
-    @apply bg-gradient-to-r from-indigo-500 to-purple-600 text-white px-6 py-3 rounded-xl font-medium shadow-lg hover:from-indigo-600 hover:to-purple-700 hover:shadow-xl transition-all duration-300 ease-in-out transform hover:-translate-y-0.5 focus:outline-none focus:ring-2 focus:ring-indigo-400 focus:ring-opacity-75 active:transform active:scale-95;
+    @apply inline-flex items-center justify-center px-8 py-4 bg-white/10 backdrop-blur-xl border border-white/20 text-white font-semibold rounded-2xl shadow-lg hover:bg-white/20 hover:shadow-xl transition-all duration-300 transform hover:scale-105 focus:outline-none focus:ring-4 focus:ring-white/30 active:scale-95;
   }
 
   .btn-outline {
-    @apply bg-transparent border-2 border-teal-500 text-teal-600 px-6 py-3 rounded-xl font-medium shadow-sm hover:bg-teal-500 hover:text-white hover:shadow-lg transition-all duration-300 ease-in-out transform hover:-translate-y-0.5 focus:outline-none focus:ring-2 focus:ring-teal-400 focus:ring-opacity-75 active:transform active:scale-95;
+    @apply inline-flex items-center justify-center px-8 py-4 bg-transparent border-2 border-teal-500 text-teal-600 font-semibold rounded-2xl hover:bg-teal-500 hover:text-white transition-all duration-300 transform hover:scale-105 focus:outline-none focus:ring-4 focus:ring-teal-500/30 active:scale-95;
+  }
+
+  .btn-ghost {
+    @apply inline-flex items-center justify-center px-6 py-3 bg-transparent text-slate-600 hover:text-teal-600 hover:bg-slate-100 font-medium rounded-xl transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-slate-400/50;
   }
   
+  /* Cards */
   .card {
-    @apply bg-white rounded-xl shadow-lg hover:shadow-xl p-6 md:p-8 border border-slate-200 transition-shadow duration-300;
+    @apply bg-white/80 backdrop-blur-xl rounded-3xl shadow-lg hover:shadow-2xl border border-white/20 p-8 transition-all duration-500 hover:transform hover:scale-[1.02] hover:bg-white/90;
+  }
+
+  .card-modern {
+    @apply bg-gradient-to-br from-white via-white to-slate-50/50 backdrop-blur-xl rounded-3xl shadow-xl hover:shadow-2xl border border-slate-200/50 p-8 transition-all duration-500 hover:transform hover:scale-[1.02];
+  }
+
+  .card-glass {
+    @apply bg-white/10 backdrop-blur-2xl rounded-3xl border border-white/20 shadow-2xl hover:bg-white/20 transition-all duration-500;
   }
 
   .input-field {
@@ -92,50 +106,76 @@ body {
     @apply block text-sm font-semibold text-slate-700 mb-2;
   }
 
+  /* Typography */
+  .hero-title {
+    @apply text-5xl sm:text-6xl lg:text-7xl xl:text-8xl font-black leading-none tracking-tight;
+  }
+
   .page-title {
-    @apply text-3xl sm:text-4xl lg:text-5xl font-bold text-slate-900 mb-4 text-center leading-tight;
+    @apply text-4xl sm:text-5xl lg:text-6xl font-bold leading-tight tracking-tight;
   }
 
   .section-title {
-    @apply text-2xl sm:text-3xl lg:text-4xl font-bold text-slate-800 mb-6 leading-tight;
+    @apply text-3xl sm:text-4xl lg:text-5xl font-bold leading-tight tracking-tight;
   }
 
   .section-subtitle {
-    @apply text-lg sm:text-xl text-slate-600 leading-relaxed;
+    @apply text-xl sm:text-2xl font-medium leading-relaxed text-slate-600;
   }
 
   .text-body {
-    @apply text-base text-slate-700 leading-relaxed;
+    @apply text-base sm:text-lg leading-relaxed text-slate-700;
   }
 
   .text-small {
-    @apply text-sm text-slate-600;
+    @apply text-sm leading-relaxed text-slate-600;
   }
 
-  .text-xs-muted {
-    @apply text-xs text-slate-500;
+  .text-gradient {
+    @apply bg-gradient-to-r from-teal-600 via-blue-600 to-purple-600 bg-clip-text text-transparent;
   }
 
-  /* Container styles for consistent width and spacing */
+  .text-gradient-hero {
+    @apply bg-gradient-to-r from-white via-teal-100 to-blue-100 bg-clip-text text-transparent drop-shadow-2xl;
+  }
+
+  /* Containers */
   .container-main {
-    @apply max-w-7xl mx-auto px-4 sm:px-6 lg:px-8;
+    @apply max-w-7xl mx-auto px-6 sm:px-8 lg:px-12;
   }
 
   .container-content {
-    @apply max-w-4xl mx-auto px-4 sm:px-6 lg:px-8;
+    @apply max-w-5xl mx-auto px-6 sm:px-8 lg:px-12;
   }
 
   .container-narrow {
-    @apply max-w-2xl mx-auto px-4 sm:px-6 lg:px-8;
+    @apply max-w-3xl mx-auto px-6 sm:px-8 lg:px-12;
   }
 
-  /* Section spacing */
-  .section-padding {
+  /* Modern Sections */
+  .section {
+    @apply py-20 md:py-28 lg:py-32;
+  }
+
+  .section-sm {
     @apply py-16 md:py-20 lg:py-24;
   }
 
-  .section-padding-sm {
-    @apply py-12 md:py-16;
+  .section-hero {
+    @apply min-h-screen flex items-center justify-center py-32 md:py-40 lg:py-48;
+  }
+
+  /* Backgrounds */
+  .bg-gradient-primary {
+    @apply bg-gradient-to-br from-teal-500 via-blue-600 to-purple-600;
+  }
+
+  .bg-gradient-subtle {
+    @apply bg-gradient-to-br from-slate-50 via-white to-blue-50/30;
+  }
+
+  .bg-glass {
+    @apply bg-white/10 backdrop-blur-2xl border border-white/20;
   }
 }
 
