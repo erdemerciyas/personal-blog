@@ -10,6 +10,8 @@ export { default as ProjectGrid } from './ProjectGrid';
 export { default as Version } from './Version';
 export { default as Providers } from './Providers';
 export { default as AdminLayout } from './admin/AdminLayout';
+export { default as RichTextEditor } from './RichTextEditor';
+export { default as HTMLContent } from './HTMLContent';
 
 // UI Component exports
 export * from './ui'; 

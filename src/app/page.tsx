@@ -3,6 +3,7 @@ import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 import ProjectGrid from '../components/ProjectGrid';
+import HTMLContent from '../components/HTMLContent';
 import { 
   ArrowRightIcon,
   CubeTransparentIcon,
@@ -251,9 +252,13 @@ export default function HomePage() {
                   <h3 className="text-2xl font-bold text-slate-800 mb-4 group-hover:text-teal-600 transition-colors duration-300">
                     {service.title}
                   </h3>
-                  <p className="text-body mb-6 flex-1 line-clamp-2">
-                    {service.description}
-                  </p>
+                  <div className="text-body mb-6 flex-1">
+                    <HTMLContent 
+                      content={service.description}
+                      truncate={150}
+                      className="line-clamp-3"
+                    />
+                  </div>
                   <Link
                     href={`/services#${service.title.toLowerCase().replace(/\s+/g, '-').replace(/&/g, '')}`}
                     className="inline-flex items-center text-teal-600 hover:text-teal-700 font-semibold transition-colors duration-200 mt-auto"

@@ -6,6 +6,7 @@ import { useRouter } from 'next/navigation';
 import Image from 'next/image';
 import Link from 'next/link';
 import AdminLayout from '../../../components/admin/AdminLayout';
+import HTMLContent from '../../../components/HTMLContent';
 import { 
   PlusIcon,
   PencilIcon,
@@ -195,7 +196,13 @@ export default function ServicesPage() {
                           <h4 className="text-lg font-semibold text-slate-900 mb-2">
                             {service.title}
                           </h4>
-                          <p className="text-slate-600 mb-3 line-clamp-3">{service.description}</p>
+                          <div className="text-slate-600 mb-3">
+                            <HTMLContent 
+                              content={service.description}
+                              truncate={150}
+                              className="line-clamp-3"
+                            />
+                          </div>
                           <div className="flex items-center space-x-4 text-sm text-slate-500">
                             <div className="flex items-center space-x-1">
                               <ClockIcon className="w-4 h-4" />

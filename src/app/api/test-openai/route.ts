@@ -35,8 +35,8 @@ export async function GET(request: NextRequest) {
     return NextResponse.json({
       success: true,
       message: 'OpenAI API çalışıyor',
-      imageUrl: response.data[0]?.url,
-      organization: response.data.length > 0 ? 'OK' : 'No data'
+      imageUrl: response.data?.[0]?.url,
+      organization: response.data && response.data.length > 0 ? 'OK' : 'No data'
     });
 
   } catch (error) {

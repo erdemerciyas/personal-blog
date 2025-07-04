@@ -25,7 +25,7 @@ const Logo: React.FC<LogoProps> = ({ className = '', width = 40, height = 40, is
         {/* 3D Cube Base */}
         <path
           d="M20 5L35 13V27L20 35L5 27V13L20 5Z"
-          fill="url(#gradient-base)"
+          fill="none"
           stroke={iconColor}
           strokeWidth="1.5"
         />
@@ -36,28 +36,7 @@ const Logo: React.FC<LogoProps> = ({ className = '', width = 40, height = 40, is
           strokeWidth="1.5"
           strokeLinecap="round"
         />
-        {/* Scanning Line Animation */}
-        <path
-          d="M8 15L32 15"
-          stroke={accentColor}
-          strokeWidth="2"
-          strokeLinecap="round"
-          className="animate-scan"
-        />
-        {/* Gradient Definitions */}
-        <defs>
-          <linearGradient
-            id="gradient-base"
-            x1="5"
-            y1="5"
-            x2="35"
-            y2="35"
-            gradientUnits="userSpaceOnUse"
-          >
-            <stop stopColor={isDark ? '#0F766E' : '#14B8A6'} />
-            <stop offset="1" stopColor={isDark ? '#0D9488' : '#0891B2'} />
-          </linearGradient>
-        </defs>
+        
       </svg>
       <div className="flex flex-col">
         <span className={`text-xl font-bold ${textColor} transition-colors duration-300`}>

@@ -248,18 +248,18 @@ E-posta: ${projectForm.email}
           {/* Logo */}
           <Link href="/" className="flex items-center space-x-3 group">
             {siteSettings?.logo?.url ? (
-              <div className="relative w-12 h-12 rounded-2xl overflow-hidden bg-gradient-primary p-1">
+              <div className="relative w-12 h-12 rounded-2xl overflow-hidden bg-white/10 backdrop-blur-sm p-1">
                 <Image
                   src={siteSettings.logo.url}
                   alt={siteSettings.logo.alt}
                   fill
-                  className="object-contain group-hover:scale-110 transition-transform duration-300"
+                  className="object-contain"
                   sizes="48px"
                   priority
                 />
               </div>
             ) : (
-              <div className="w-12 h-12 bg-gradient-primary rounded-2xl flex items-center justify-center">
+              <div className="w-12 h-12 bg-white/10 backdrop-blur-sm rounded-2xl flex items-center justify-center">
                 <SparklesIcon className="w-6 h-6 text-white" />
               </div>
             )}

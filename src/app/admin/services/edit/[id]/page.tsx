@@ -5,6 +5,8 @@ import { useSession } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
 import AdminLayout from '../../../../../components/admin/AdminLayout';
 import ImageUpload from '../../../../../components/ImageUpload';
+import RichTextEditor from '../../../../../components/RichTextEditor';
+import HTMLContent from '../../../../../components/HTMLContent';
 import { 
   WrenchScrewdriverIcon,
   PencilIcon,
@@ -34,6 +36,7 @@ export default function EditServicePage({ params }: { params: { id: string } }) 
   const [features, setFeatures] = useState<string[]>(['']);
   const [serviceImage, setServiceImage] = useState('');
   const [serviceTitle, setServiceTitle] = useState('');
+  const [serviceDescription, setServiceDescription] = useState('');
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -56,6 +59,7 @@ export default function EditServicePage({ params }: { params: { id: string } }) 
         setService(data);
         setServiceImage(data.image || '');
         setServiceTitle(data.title || '');
+        setServiceDescription(data.description || '');
         setFeatures(data.features && data.features.length > 0 ? data.features : ['']);
       } catch {
         setError('Servis bilgileri yüklenirken bir hata oluştu');
@@ -92,7 +96,7 @@ export default function EditServicePage({ params }: { params: { id: string } }) 
     const filteredFeatures = features.filter(feature => feature.trim() !== '');
     const data = {
       title: formData.get('title'),
-      description: formData.get('description'),
+      description: serviceDescription,
       image: serviceImage || undefined,
       features: filteredFeatures
     };
@@ -199,13 +203,12 @@ export default function EditServicePage({ params }: { params: { id: string } }) 
                 <label className="block text-sm font-medium text-slate-700 mb-2">
                   Servis Açıklaması *
                 </label>
-                <textarea
-                  name="description"
-                  defaultValue={service.description}
-                  rows={5}
-                  className="w-full border border-slate-300 rounded-xl px-4 py-3 text-slate-900 focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-transparent"
+                <RichTextEditor
+                  value={serviceDescription}
+                  onChange={setServiceDescription}
                   placeholder="Servis hakkında detaylı açıklama yazınız"
                   required
+                  maxLength={5000}
                 />
               </div>
             </div>
@@ -281,7 +284,12 @@ export default function EditServicePage({ params }: { params: { id: string } }) 
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div>
                   <h4 className="font-semibold text-slate-900 mb-2">{serviceTitle || service.title}</h4>
-                  <p className="text-slate-600 text-sm mb-4">{service.description}</p>
+                  <div className="text-slate-600 text-sm mb-4">
+                    <HTMLContent 
+                      content={serviceDescription || service.description}
+                      truncate={200}
+                    />
+                  </div>
                   
                   {features.filter(f => f.trim()).length > 0 && (
                     <div>
