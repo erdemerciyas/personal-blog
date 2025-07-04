@@ -4,6 +4,7 @@ import { useSession } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import Image from 'next/image';
+import AdminLayout from '../../../components/admin/AdminLayout';
 import {
   ArrowLeftIcon,
   CubeTransparentIcon,
@@ -180,12 +181,14 @@ export default function AdminMediaPage() {
 
   if (status === 'loading') {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 flex items-center justify-center">
-        <div className="flex flex-col items-center space-y-4">
-          <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-teal-500"></div>
-          <p className="text-white text-lg">Yükleniyor...</p>
+      <AdminLayout>
+        <div className="flex items-center justify-center min-h-[400px]">
+          <div className="flex flex-col items-center space-y-4">
+            <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-teal-500"></div>
+            <p className="text-slate-600">Yükleniyor...</p>
+          </div>
         </div>
-      </div>
+      </AdminLayout>
     );
   }
 
@@ -194,60 +197,49 @@ export default function AdminMediaPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900">
-      
-      {/* Header */}
-      <header className="bg-white/10 backdrop-blur-xl border-b border-white/20 sticky top-0 z-50">
-        <div className="max-w-7xl mx-auto px-6 sm:px-8">
-          <div className="flex items-center justify-between h-16">
-            
-            {/* Logo & Title */}
-            <div className="flex items-center space-x-4">
-              <Link 
-                href="/admin/dashboard"
-                className="flex items-center space-x-3 hover:opacity-80 transition-opacity"
-              >
-                <ArrowLeftIcon className="w-5 h-5 text-slate-400" />
-                <div className="w-10 h-10 bg-gradient-to-br from-teal-500 to-blue-600 rounded-xl flex items-center justify-center">
-                  <CubeTransparentIcon className="w-6 h-6 text-white" />
-                </div>
-              </Link>
-              <div>
-                <h1 className="text-xl font-bold text-white">Medya Kütüphanesi</h1>
-                <p className="text-sm text-slate-300">Dosya ve resim yönetimi</p>
-              </div>
+    <AdminLayout 
+      title="Medya Kütüphanesi"
+      breadcrumbs={[
+        { label: 'Dashboard', href: '/admin/dashboard' },
+        { label: 'Medya Kütüphanesi' }
+      ]}
+    >
+      <div className="space-y-6">
+        
+        {/* Header Actions */}
+        <div className="flex items-center justify-between">
+          <div>
+            <p className="text-slate-600">Dosya ve resim yönetimi</p>
+            <div className="flex items-center space-x-4 text-sm text-slate-500 mt-2">
+              <span>Toplam: {mediaItems.length} dosya</span>
+              <span>•</span>
+              <span>Cloudinary: {mediaItems.filter(item => item.source === 'cloudinary').length}</span>
+              <span>•</span>
+              <span>Yerel: {mediaItems.filter(item => item.source === 'local').length}</span>
             </div>
-
-            {/* Upload Button */}
-            <button
-              onClick={() => setShowUploadModal(true)}
-              className="bg-gradient-to-r from-teal-600 to-blue-600 hover:from-teal-700 hover:to-blue-700 text-white px-6 py-2 rounded-xl font-semibold transition-all duration-200 flex items-center space-x-2"
-            >
-              <PlusIcon className="w-5 h-5" />
-              <span>Dosya Yükle</span>
-            </button>
           </div>
+          <button
+            onClick={() => setShowUploadModal(true)}
+            className="bg-teal-600 hover:bg-teal-700 text-white px-6 py-3 rounded-xl font-semibold transition-all duration-200 flex items-center space-x-2 shadow-sm"
+          >
+            <PlusIcon className="w-5 h-5" />
+            <span>Dosya Yükle</span>
+          </button>
         </div>
-      </header>
 
-      {/* Success/Error Messages */}
-      {message && (
-        <div className="max-w-7xl mx-auto px-6 sm:px-8 pt-4">
+        {/* Success/Error Messages */}
+        {message && (
           <div className={`p-4 rounded-xl border ${
             message.type === 'success' 
-              ? 'bg-green-500/10 border-green-500/30 text-green-300' 
-              : 'bg-red-500/10 border-red-500/30 text-red-300'
+              ? 'bg-green-50 border-green-200 text-green-800' 
+              : 'bg-red-50 border-red-200 text-red-800'
           }`}>
             {message.text}
           </div>
-        </div>
-      )}
-
-      {/* Main Content */}
-      <main className="max-w-7xl mx-auto px-6 sm:px-8 py-8">
+        )}
         
         {/* Filters and Search */}
-        <div className="bg-white/10 backdrop-blur-xl rounded-2xl p-6 border border-white/20 mb-8">
+        <div className="bg-white rounded-xl p-6 shadow-sm border border-slate-200">
           <div className="flex flex-col lg:flex-row gap-4">
             
             {/* Search */}
@@ -259,7 +251,7 @@ export default function AdminMediaPage() {
                   placeholder="Dosya ara..."
                   value={mediaSearch}
                   onChange={(e) => setMediaSearch(e.target.value)}
-                  className="w-full bg-white/10 border border-white/20 rounded-xl pl-10 pr-4 py-3 text-white placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-teal-500"
+                  className="w-full bg-slate-50 border border-slate-200 rounded-xl pl-10 pr-4 py-3 text-slate-900 placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-transparent"
                 />
               </div>
             </div>
@@ -267,11 +259,11 @@ export default function AdminMediaPage() {
             {/* Filter */}
             <div className="flex items-center space-x-4">
               <div className="flex items-center space-x-2">
-                <FunnelIcon className="w-5 h-5 text-slate-400" />
+                <FunnelIcon className="w-5 h-5 text-slate-500" />
                 <select
                   value={mediaFilter}
                   onChange={(e) => setMediaFilter(e.target.value)}
-                  className="bg-white/10 border border-white/20 rounded-xl px-4 py-3 text-white focus:outline-none focus:ring-2 focus:ring-teal-500"
+                  className="bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-slate-900 focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-transparent"
                 >
                   <option value="all">Tüm Dosyalar</option>
                   <option value="images">Sadece Resimler</option>
@@ -281,9 +273,7 @@ export default function AdminMediaPage() {
               </div>
 
               {/* Stats */}
-              <div className="hidden lg:flex items-center space-x-4 text-sm text-slate-400">
-                <span>Toplam: {mediaItems.length}</span>
-                <span>•</span>
+              <div className="hidden lg:flex items-center space-x-4 text-sm text-slate-600">
                 <span>Filtrelenen: {getFilteredMediaItems().length}</span>
               </div>
             </div>
@@ -291,18 +281,18 @@ export default function AdminMediaPage() {
 
           {/* Selection Actions */}
           {selectedMedia.length > 0 && (
-            <div className="mt-6 pt-6 border-t border-white/20">
-              <div className="flex items-center justify-between bg-red-500/10 border border-red-500/30 rounded-xl p-4">
+            <div className="mt-6 pt-6 border-t border-slate-200">
+              <div className="flex items-center justify-between bg-red-50 border border-red-200 rounded-xl p-4">
                 <div className="flex items-center space-x-3">
-                  <CheckCircleIcon className="w-5 h-5 text-teal-400" />
-                  <span className="text-white font-semibold">
+                  <CheckCircleIcon className="w-5 h-5 text-teal-600" />
+                  <span className="text-slate-900 font-semibold">
                     {selectedMedia.length} dosya seçildi
                   </span>
                 </div>
                 <div className="flex items-center space-x-3">
                   <button
                     onClick={() => setSelectedMedia([])}
-                    className="text-slate-300 hover:text-white px-3 py-1 rounded-lg text-sm transition-colors"
+                    className="text-slate-600 hover:text-slate-900 px-3 py-1 rounded-lg text-sm transition-colors"
                   >
                     Seçimi Temizle
                   </button>
@@ -324,7 +314,7 @@ export default function AdminMediaPage() {
           <div className="flex items-center justify-center py-16">
             <div className="flex flex-col items-center space-y-4">
               <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-teal-500"></div>
-              <p className="text-white text-lg">Medya dosyaları yükleniyor...</p>
+              <p className="text-slate-600 text-lg">Medya dosyaları yükleniyor...</p>
             </div>
           </div>
         ) : (
@@ -410,10 +400,10 @@ export default function AdminMediaPage() {
             {getFilteredMediaItems().length === 0 && !loadingMedia && (
               <div className="col-span-full text-center py-16">
                 <PhotoIcon className="w-20 h-20 mx-auto text-slate-400 mb-6" />
-                <h3 className="text-2xl font-bold text-white mb-2">
+                <h3 className="text-2xl font-bold text-slate-900 mb-2">
                   {mediaFilter === 'all' ? 'Henüz medya dosyası yok' : 'Filtreye uygun dosya bulunamadı'}
                 </h3>
-                <p className="text-slate-400 mb-6 max-w-md mx-auto">
+                <p className="text-slate-600 mb-6 max-w-md mx-auto">
                   {mediaFilter === 'all' 
                     ? 'İlk dosyanızı yükleyerek medya kütüphanenizi oluşturmaya başlayın.'
                     : 'Farklı bir filtre deneyin veya arama terimini değiştirin.'
@@ -422,7 +412,7 @@ export default function AdminMediaPage() {
                 {mediaFilter === 'all' && (
                   <button
                     onClick={() => setShowUploadModal(true)}
-                    className="bg-gradient-to-r from-teal-600 to-blue-600 hover:from-teal-700 hover:to-blue-700 text-white px-8 py-4 rounded-xl font-semibold transition-all duration-200 flex items-center space-x-2 mx-auto"
+                    className="bg-teal-600 hover:bg-teal-700 text-white px-8 py-4 rounded-xl font-semibold transition-all duration-200 flex items-center space-x-2 mx-auto"
                   >
                     <PlusIcon className="w-5 h-5" />
                     <span>İlk Dosyayı Yükle</span>
@@ -432,25 +422,24 @@ export default function AdminMediaPage() {
             )}
           </div>
         )}
-      </main>
 
-      {/* Media Upload Modal */}
-      {showUploadModal && (
-        <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-[110] p-4">
-          <div className="bg-white/10 backdrop-blur-xl rounded-3xl max-w-2xl w-full border border-white/20 p-6">
-            <div className="flex items-center justify-between mb-6">
-              <h3 className="text-lg font-semibold text-white flex items-center space-x-2">
-                <CloudArrowUpIcon className="w-5 h-5 text-teal-400" />
-                <span>Dosya Yükle</span>
-              </h3>
-              <button
-                onClick={() => setShowUploadModal(false)}
-                className="p-2 hover:bg-white/10 rounded-xl transition-colors"
-                disabled={uploadingMedia}
-              >
-                <XMarkIcon className="w-5 h-5 text-slate-400" />
-              </button>
-            </div>
+        {/* Media Upload Modal */}
+        {showUploadModal && (
+          <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-[110] p-4">
+            <div className="bg-white rounded-3xl max-w-2xl w-full shadow-2xl p-6">
+                          <div className="flex items-center justify-between mb-6">
+                <h3 className="text-lg font-semibold text-slate-900 flex items-center space-x-2">
+                  <CloudArrowUpIcon className="w-5 h-5 text-teal-600" />
+                  <span>Dosya Yükle</span>
+                </h3>
+                <button
+                  onClick={() => setShowUploadModal(false)}
+                  className="p-2 hover:bg-slate-100 rounded-xl transition-colors"
+                  disabled={uploadingMedia}
+                >
+                  <XMarkIcon className="w-5 h-5 text-slate-500" />
+                </button>
+              </div>
 
             <div className="space-y-6">
               {/* Upload Area */}
@@ -545,10 +534,11 @@ export default function AdminMediaPage() {
                   {uploadingMedia ? 'Yükleniyor...' : 'Kapat'}
                 </button>
               </div>
+              </div>
             </div>
           </div>
-        </div>
-      )}
-    </div>
+        )}
+      </div>
+    </AdminLayout>
   );
 }

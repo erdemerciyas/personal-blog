@@ -1,3 +1,4 @@
+'use client';
 import Link from 'next/link';
 import { 
   MagnifyingGlassIcon, 
@@ -8,6 +9,14 @@ import {
 } from '@heroicons/react/24/outline';
 
 export default function NotFound() {
+  const handleGoBack = () => {
+    if (typeof window !== 'undefined' && window.history.length > 1) {
+      window.history.back();
+    } else {
+      window.location.href = '/';
+    }
+  };
+
   return (
     <div className="min-h-screen bg-gradient-subtle flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8">
       <div className="container-narrow text-center">
@@ -74,13 +83,13 @@ export default function NotFound() {
               <span>Ana Sayfaya Dön</span>
             </Link>
             
-            <Link 
-              href="javascript:history.back()" 
+            <button 
+              onClick={handleGoBack}
               className="btn-outline flex items-center space-x-2"
             >
               <ArrowLeftIcon className="w-5 h-5" />
               <span>Geri Dön</span>
-            </Link>
+            </button>
           </div>
 
           {/* Popular Pages */}

@@ -152,7 +152,11 @@ export default function ServicesPage() {
           ) : (
             <div className="space-y-12 md:space-y-16 lg:space-y-20">
               {services.map((service, index) => (
-                <div key={service._id} className="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-12 items-start max-w-6xl mx-auto">
+                <div 
+                  key={service._id} 
+                  id={service.title.toLowerCase().replace(/\s+/g, '-').replace(/&/g, '')}
+                  className="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-12 items-start max-w-6xl mx-auto"
+                >
                   {/* Service Image */}
                   <div className={`${index % 2 === 1 ? 'lg:order-2' : ''}`}>
                     <div className="relative h-64 md:h-72 lg:h-80 rounded-xl overflow-hidden shadow-lg">

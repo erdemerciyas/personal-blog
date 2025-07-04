@@ -1,9 +1,9 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { useSession, signOut } from 'next-auth/react';
+import { useSession } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
-import Link from 'next/link';
+import AdminLayout from '../../../components/admin/AdminLayout';
 import { 
   CogIcon, 
   PlusIcon,
@@ -11,13 +11,18 @@ import {
   CheckIcon,
   ArrowPathIcon,
   ExclamationTriangleIcon,
-  ArrowLeftIcon,
-  CubeTransparentIcon,
-  UserIcon,
   LinkIcon,
   ArrowUpIcon,
   ArrowDownIcon,
-  PencilIcon
+  PencilIcon,
+  EyeIcon,
+  EyeSlashIcon,
+  GlobeAltIcon,
+  UserIcon,
+  PhoneIcon,
+  EnvelopeIcon,
+  MapPinIcon,
+  PaintBrushIcon
 } from '@heroicons/react/24/outline';
 
 interface FooterSettings {
@@ -85,11 +90,6 @@ export default function FooterSettingsPage() {
       fetchSettings();
     }
   }, [session]);
-
-  const handleSignOut = async () => {
-    await signOut({ redirect: false });
-    router.push('/admin/login');
-  };
 
   const fetchSettings = async () => {
     try {
@@ -205,125 +205,138 @@ export default function FooterSettingsPage() {
     });
   };
 
+  const updateSettings = (field: string, value: any) => {
+    if (!settings) return;
+    
+    if (field.includes('.')) {
+      const [parent, child] = field.split('.');
+      setSettings({
+        ...settings,
+        [parent]: {
+          ...settings[parent as keyof FooterSettings],
+          [child]: value
+        }
+      });
+    } else {
+      setSettings({
+        ...settings,
+        [field]: value
+      });
+    }
+  };
+
   if (status === 'loading' || loading) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 flex items-center justify-center">
-        <div className="flex flex-col items-center space-y-4">
-          <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-teal-500"></div>
-          <p className="text-slate-300">Footer ayarları yükleniyor...</p>
+      <AdminLayout>
+        <div className="flex items-center justify-center min-h-[400px]">
+          <div className="flex flex-col items-center space-y-4">
+            <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-teal-500"></div>
+            <p className="text-slate-600">Footer ayarları yükleniyor...</p>
+          </div>
         </div>
-      </div>
+      </AdminLayout>
     );
   }
 
-  if (!session?.user) {
-    return null;
+  if (!settings) {
+    return (
+      <AdminLayout>
+        <div className="text-center py-12">
+          <p className="text-slate-600">Footer ayarları yüklenemedi</p>
+        </div>
+      </AdminLayout>
+    );
   }
 
-  if (!settings) return null;
-
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900">
-      
-      {/* Header */}
-      <header className="bg-white/10 backdrop-blur-xl border-b border-white/20 sticky top-0 z-50">
-        <div className="max-w-7xl mx-auto px-6 sm:px-8">
-          <div className="flex items-center justify-between h-16">
-            
-            {/* Logo & Title */}
-            <div className="flex items-center space-x-4">
-              <Link 
-                href="/admin/dashboard"
-                className="flex items-center space-x-3 hover:opacity-80 transition-opacity"
-              >
-                <ArrowLeftIcon className="w-5 h-5 text-slate-400" />
-                <div className="w-10 h-10 bg-gradient-to-br from-teal-500 to-blue-600 rounded-xl flex items-center justify-center">
-                  <CubeTransparentIcon className="w-6 h-6 text-white" />
-                </div>
-              </Link>
-              <div>
-                <h1 className="text-xl font-bold text-white">Footer Ayarları</h1>
-                <p className="text-sm text-slate-300">Site alt kısmının görünümünü ve içeriğini yönetin</p>
-              </div>
-            </div>
-
-            {/* User Info & Actions */}
-            <div className="flex items-center space-x-4">
-              <div className="hidden sm:flex items-center space-x-3">
-                <div className="text-right">
-                  <p className="text-sm font-medium text-white">{session.user.name}</p>
-                  <p className="text-xs text-slate-400">{session.user.email}</p>
-                </div>
-                <div className="w-10 h-10 bg-gradient-to-r from-teal-500 to-blue-500 rounded-full flex items-center justify-center">
-                  <UserIcon className="w-5 h-5 text-white" />
-                </div>
-              </div>
-              
-              <button
-                onClick={handleSignOut}
-                className="text-slate-300 hover:text-white transition-colors"
-              >
-                Çıkış Yap
-              </button>
-            </div>
+    <AdminLayout 
+      title="Footer Ayarları"
+      breadcrumbs={[
+        { label: 'Dashboard', href: '/admin/dashboard' },
+        { label: 'Footer Ayarları' }
+      ]}
+    >
+      <div className="space-y-6">
+        
+        {/* Header Actions */}
+        <div className="flex items-center justify-between">
+          <div>
+            <p className="text-slate-600">Footer bölümü ayarlarını yönetin</p>
+          </div>
+          <div className="flex space-x-3">
+            <button
+              onClick={handleReset}
+              disabled={resetting}
+              className={`flex items-center space-x-2 px-6 py-3 rounded-xl font-semibold transition-all duration-200 ${
+                resetting
+                  ? 'bg-slate-400 cursor-not-allowed text-white'
+                  : 'bg-slate-600 hover:bg-slate-700 text-white shadow-sm'
+              }`}
+            >
+              {resetting ? (
+                <>
+                  <div className="animate-spin rounded-full h-4 w-4 border-t-2 border-b-2 border-current"></div>
+                  <span>Sıfırlanıyor...</span>
+                </>
+              ) : (
+                <>
+                  <ArrowPathIcon className="w-4 h-4" />
+                  <span>Sıfırla</span>
+                </>
+              )}
+            </button>
+            <button
+              onClick={handleSave}
+              disabled={saving}
+              className={`flex items-center space-x-2 px-6 py-3 rounded-xl font-semibold transition-all duration-200 ${
+                saving
+                  ? 'bg-slate-400 cursor-not-allowed text-white'
+                  : 'bg-teal-600 hover:bg-teal-700 text-white shadow-sm'
+              }`}
+            >
+              {saving ? (
+                <>
+                  <div className="animate-spin rounded-full h-4 w-4 border-t-2 border-b-2 border-current"></div>
+                  <span>Kaydediliyor...</span>
+                </>
+              ) : (
+                <>
+                  <CheckIcon className="w-4 h-4" />
+                  <span>Kaydet</span>
+                </>
+              )}
+            </button>
           </div>
         </div>
-      </header>
 
-      {/* Main Content */}
-      <main className="max-w-7xl mx-auto px-6 sm:px-8 py-8">
-        
-        {/* Success/Error Message */}
+        {/* Success/Error Messages */}
         {message && (
-          <div className={`mb-6 p-4 rounded-xl ${
+          <div className={`p-4 rounded-xl ${
             message.type === 'success' 
-              ? 'bg-green-500/20 text-green-300 border border-green-500/30' 
-              : 'bg-red-500/20 text-red-300 border border-red-500/30'
+              ? 'bg-green-50 border border-green-200 text-green-800' 
+              : 'bg-red-50 border border-red-200 text-red-800'
           }`}>
             {message.text}
           </div>
         )}
 
-        {/* Tabs Navigation */}
-        <div className="mb-8 bg-white/10 backdrop-blur-xl rounded-2xl p-6 border border-white/20">
-          <div className="flex justify-between items-center mb-6">
-            <div>
-              <h2 className="text-2xl font-bold text-white mb-2">Footer Yönetimi</h2>
-              <p className="text-slate-400">Site alt kısmındaki içeriği ve görünümü düzenleyin</p>
-            </div>
-            
-            <div className="flex space-x-3">
-              <button
-                onClick={handleSave}
-                disabled={saving}
-                className="bg-gradient-to-r from-teal-600 to-blue-600 hover:from-teal-700 hover:to-blue-700 text-white px-6 py-3 rounded-xl font-semibold transition-all duration-200 flex items-center space-x-2 disabled:opacity-50"
-              >
-                {saving ? (
-                  <ArrowPathIcon className="h-5 w-5 animate-spin" />
-                ) : (
-                  <CheckIcon className="h-5 w-5" />
-                )}
-                <span>{saving ? 'Kaydediliyor...' : 'Değişiklikleri Kaydet'}</span>
-              </button>
-            </div>
-          </div>
-
-          {/* Tab Navigation */}
-          <div className="border-b border-white/20">
-            <nav className="-mb-px flex space-x-8">
+        {/* Tabs */}
+        <div className="bg-white rounded-xl shadow-sm border border-slate-200">
+          <div className="border-b border-slate-200">
+            <nav className="flex space-x-8 px-6">
               {[
-                { id: 'content', label: 'İçerik & İletişim', icon: CogIcon },
+                { id: 'content', label: 'İçerik', icon: PencilIcon },
                 { id: 'links', label: 'Hızlı Bağlantılar', icon: LinkIcon },
-                { id: 'social', label: 'Sosyal Medya', icon: LinkIcon },
-                { id: 'appearance', label: 'Görünüm', icon: PencilIcon }
+                { id: 'social', label: 'Sosyal Medya', icon: GlobeAltIcon },
+                { id: 'appearance', label: 'Görünüm', icon: PaintBrushIcon }
               ].map((tab) => (
                 <button
                   key={tab.id}
                   onClick={() => setActiveTab(tab.id as any)}
-                  className={`py-2 px-1 border-b-2 font-medium text-sm flex items-center space-x-2 ${
+                  className={`flex items-center space-x-2 py-4 px-1 border-b-2 font-medium text-sm transition-colors ${
                     activeTab === tab.id
-                      ? 'border-teal-400 text-teal-300'
-                      : 'border-transparent text-slate-400 hover:text-slate-300 hover:border-slate-400'
+                      ? 'border-teal-500 text-teal-600'
+                      : 'border-transparent text-slate-500 hover:text-slate-700 hover:border-slate-300'
                   }`}
                 >
                   <tab.icon className="w-4 h-4" />
@@ -332,364 +345,304 @@ export default function FooterSettingsPage() {
               ))}
             </nav>
           </div>
-        </div>
 
-        {/* Tab Content */}
-        <div className="space-y-6">
-          
-          {/* Content Tab */}
-          {activeTab === 'content' && (
-            <>
-              {/* Ana Açıklama */}
-              <div className="bg-white/10 backdrop-blur-xl rounded-2xl p-6 border border-white/20">
-                <h3 className="text-lg font-semibold text-white mb-4 flex items-center">
-                  <CogIcon className="h-5 w-5 mr-2 text-teal-400" />
-                  Ana Açıklama
-                </h3>
-                <textarea
-                  value={settings.mainDescription}
-                  onChange={(e) => setSettings({ ...settings, mainDescription: e.target.value })}
-                  rows={3}
-                  className="w-full px-4 py-3 bg-white/10 border border-white/20 rounded-xl text-white placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-transparent resize-none"
-                  placeholder="Footer'da görünecek ana açıklama metni..."
-                />
-              </div>
+          <div className="p-6">
+            {/* Content Tab */}
+            {activeTab === 'content' && (
+              <div className="space-y-6">
+                {/* Main Description */}
+                <div>
+                  <label className="block text-sm font-medium text-slate-700 mb-2">
+                    Ana Açıklama
+                  </label>
+                  <textarea
+                    value={settings.mainDescription}
+                    onChange={(e) => updateSettings('mainDescription', e.target.value)}
+                    rows={3}
+                    className="w-full border border-slate-300 rounded-xl px-4 py-3 text-slate-900 focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-transparent"
+                    placeholder="Sitenizin ana açıklaması..."
+                  />
+                </div>
 
-              <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                
-                {/* İletişim Bilgileri */}
-                <div className="bg-white/10 backdrop-blur-xl rounded-2xl p-6 border border-white/20">
-                  <h3 className="text-lg font-semibold text-white mb-4 flex items-center">
-                    <CogIcon className="h-5 w-5 mr-2 text-teal-400" />
-                    İletişim Bilgileri
+                {/* Contact Information */}
+                <div>
+                  <h3 className="text-lg font-semibold text-slate-900 mb-4 flex items-center space-x-2">
+                    <EnvelopeIcon className="w-5 h-5 text-teal-600" />
+                    <span>İletişim Bilgileri</span>
                   </h3>
-                  <div className="space-y-4">
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div>
-                      <label className="block text-sm font-medium text-slate-300 mb-2">E-posta</label>
+                      <label className="block text-sm font-medium text-slate-700 mb-2">
+                        E-posta
+                      </label>
                       <input
                         type="email"
                         value={settings.contactInfo.email}
-                        onChange={(e) => setSettings({
-                          ...settings,
-                          contactInfo: { ...settings.contactInfo, email: e.target.value }
-                        })}
-                        className="w-full px-4 py-3 bg-white/10 border border-white/20 rounded-xl text-white placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-transparent"
-                        placeholder="ornek@email.com"
+                        onChange={(e) => updateSettings('contactInfo.email', e.target.value)}
+                        className="w-full border border-slate-300 rounded-xl px-4 py-3 text-slate-900 focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-transparent"
+                        placeholder="info@example.com"
                       />
                     </div>
                     <div>
-                      <label className="block text-sm font-medium text-slate-300 mb-2">Telefon</label>
+                      <label className="block text-sm font-medium text-slate-700 mb-2">
+                        Telefon
+                      </label>
                       <input
-                        type="text"
+                        type="tel"
                         value={settings.contactInfo.phone}
-                        onChange={(e) => setSettings({
-                          ...settings,
-                          contactInfo: { ...settings.contactInfo, phone: e.target.value }
-                        })}
-                        className="w-full px-4 py-3 bg-white/10 border border-white/20 rounded-xl text-white placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-transparent"
-                        placeholder="+90 (500) 123 45 67"
+                        onChange={(e) => updateSettings('contactInfo.phone', e.target.value)}
+                        className="w-full border border-slate-300 rounded-xl px-4 py-3 text-slate-900 focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-transparent"
+                        placeholder="+90 555 000 00 00"
                       />
                     </div>
-                    <div>
-                      <label className="block text-sm font-medium text-slate-300 mb-2">Adres</label>
+                    <div className="md:col-span-2">
+                      <label className="block text-sm font-medium text-slate-700 mb-2">
+                        Adres
+                      </label>
                       <input
                         type="text"
                         value={settings.contactInfo.address}
-                        onChange={(e) => setSettings({
-                          ...settings,
-                          contactInfo: { ...settings.contactInfo, address: e.target.value }
-                        })}
-                        className="w-full px-4 py-3 bg-white/10 border border-white/20 rounded-xl text-white placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-transparent"
-                        placeholder="Şehir, Ülke"
+                        onChange={(e) => updateSettings('contactInfo.address', e.target.value)}
+                        className="w-full border border-slate-300 rounded-xl px-4 py-3 text-slate-900 focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-transparent"
+                        placeholder="Tam adres..."
                       />
                     </div>
                   </div>
                 </div>
 
-                {/* Copyright ve Geliştirici Bilgileri */}
-                <div className="bg-white/10 backdrop-blur-xl rounded-2xl p-6 border border-white/20">
-                  <h3 className="text-lg font-semibold text-white mb-4">Copyright & Geliştirici</h3>
-                  <div className="space-y-4">
+                {/* Copyright Information */}
+                <div>
+                  <h3 className="text-lg font-semibold text-slate-900 mb-4">
+                    Telif Hakkı Bilgileri
+                  </h3>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div>
-                      <label className="block text-sm font-medium text-slate-300 mb-2">Şirket Adı</label>
+                      <label className="block text-sm font-medium text-slate-700 mb-2">
+                        Şirket Adı
+                      </label>
                       <input
                         type="text"
                         value={settings.copyrightInfo.companyName}
-                        onChange={(e) => setSettings({
-                          ...settings,
-                          copyrightInfo: { ...settings.copyrightInfo, companyName: e.target.value }
-                        })}
-                        className="w-full px-4 py-3 bg-white/10 border border-white/20 rounded-xl text-white placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-transparent"
+                        onChange={(e) => updateSettings('copyrightInfo.companyName', e.target.value)}
+                        className="w-full border border-slate-300 rounded-xl px-4 py-3 text-slate-900 focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-transparent"
+                        placeholder="Şirket adı..."
                       />
                     </div>
                     <div>
-                      <label className="block text-sm font-medium text-slate-300 mb-2">Yıl</label>
+                      <label className="block text-sm font-medium text-slate-700 mb-2">
+                        Yıl
+                      </label>
                       <input
                         type="number"
                         value={settings.copyrightInfo.year}
-                        onChange={(e) => setSettings({
-                          ...settings,
-                          copyrightInfo: { ...settings.copyrightInfo, year: parseInt(e.target.value) }
-                        })}
-                        className="w-full px-4 py-3 bg-white/10 border border-white/20 rounded-xl text-white placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-transparent"
+                        onChange={(e) => updateSettings('copyrightInfo.year', parseInt(e.target.value))}
+                        className="w-full border border-slate-300 rounded-xl px-4 py-3 text-slate-900 focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-transparent"
+                        placeholder="2024"
                       />
                     </div>
-                    <div>
-                      <label className="block text-sm font-medium text-slate-300 mb-2">Geliştirici Website</label>
-                      <input
-                        type="url"
-                        value={settings.developerInfo.website}
-                        onChange={(e) => setSettings({
-                          ...settings,
-                          developerInfo: { ...settings.developerInfo, website: e.target.value }
-                        })}
-                        className="w-full px-4 py-3 bg-white/10 border border-white/20 rounded-xl text-white placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-transparent"
-                      />
-                    </div>
-                    <div>
-                      <label className="block text-sm font-medium text-slate-300 mb-2">Şirket Adı</label>
+                    <div className="md:col-span-2">
+                      <label className="block text-sm font-medium text-slate-700 mb-2">
+                        Ek Metin
+                      </label>
                       <input
                         type="text"
-                        value={settings.developerInfo.companyName}
-                        onChange={(e) => setSettings({
-                          ...settings,
-                          developerInfo: { ...settings.developerInfo, companyName: e.target.value }
-                        })}
-                        className="w-full px-4 py-3 bg-white/10 border border-white/20 rounded-xl text-white placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-transparent"
+                        value={settings.copyrightInfo.additionalText}
+                        onChange={(e) => updateSettings('copyrightInfo.additionalText', e.target.value)}
+                        className="w-full border border-slate-300 rounded-xl px-4 py-3 text-slate-900 focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-transparent"
+                        placeholder="Tüm hakları saklıdır."
                       />
                     </div>
                   </div>
                 </div>
-              </div>
-            </>
-          )}
 
-          {/* Quick Links Tab */}
-          {activeTab === 'links' && (
-            <div className="bg-white/10 backdrop-blur-xl rounded-2xl p-6 border border-white/20">
-              <div className="flex justify-between items-center mb-6">
-                <h3 className="text-lg font-semibold text-white flex items-center">
-                  <LinkIcon className="h-5 w-5 mr-2 text-teal-400" />
-                  Hızlı Bağlantılar
-                </h3>
-                <button
-                  onClick={addQuickLink}
-                  className="bg-gradient-to-r from-teal-600 to-blue-600 hover:from-teal-700 hover:to-blue-700 text-white px-4 py-2 rounded-xl font-semibold transition-all duration-200 flex items-center space-x-2 text-sm"
-                >
-                  <PlusIcon className="h-4 w-4" />
-                  <span>Yeni Bağlantı</span>
-                </button>
-              </div>
-              
-              <div className="space-y-4">
-                {settings.quickLinks.map((link, index) => (
-                  <div key={index} className="bg-white/10 rounded-xl p-4 border border-white/20">
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                      <div>
-                        <label className="block text-sm font-medium text-slate-300 mb-2">Bağlantı Adı</label>
+                {/* Visibility Settings */}
+                <div>
+                  <h3 className="text-lg font-semibold text-slate-900 mb-4">
+                    Görünürlük Ayarları
+                  </h3>
+                  <div className="space-y-4">
+                    {[
+                      { key: 'showQuickLinks', label: 'Hızlı Bağlantıları Göster' },
+                      { key: 'showSocialLinks', label: 'Sosyal Medya Bağlantılarını Göster' },
+                      { key: 'showContactInfo', label: 'İletişim Bilgilerini Göster' },
+                      { key: 'showDeveloperInfo', label: 'Geliştirici Bilgilerini Göster' }
+                    ].map((item) => (
+                      <div key={item.key} className="flex items-center space-x-3">
                         <input
-                          type="text"
-                          value={link.title}
-                          onChange={(e) => updateQuickLink(index, 'title', e.target.value)}
-                          placeholder="Örn: Anasayfa"
-                          className="w-full px-4 py-3 bg-white/10 border border-white/20 rounded-xl text-white placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-transparent"
+                          type="checkbox"
+                          id={item.key}
+                          checked={settings.visibility[item.key as keyof typeof settings.visibility]}
+                          onChange={(e) => updateSettings(`visibility.${item.key}`, e.target.checked)}
+                          className="w-5 h-5 text-teal-600 border-slate-300 rounded focus:ring-teal-500"
                         />
-                      </div>
-                      <div>
-                        <label className="block text-sm font-medium text-slate-300 mb-2">URL</label>
-                        <input
-                          type="text"
-                          value={link.url}
-                          onChange={(e) => updateQuickLink(index, 'url', e.target.value)}
-                          placeholder="Örn: /contact veya https://..."
-                          className="w-full px-4 py-3 bg-white/10 border border-white/20 rounded-xl text-white placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-transparent"
-                        />
-                      </div>
-                    </div>
-                    
-                    <div className="flex items-center justify-between mt-4">
-                      <div className="flex items-center space-x-4">
-                        <label className="flex items-center">
-                          <input
-                            type="checkbox"
-                            checked={link.isExternal}
-                            onChange={(e) => updateQuickLink(index, 'isExternal', e.target.checked)}
-                            className="rounded border-slate-400 text-teal-600 focus:ring-teal-500 bg-white/10"
-                          />
-                          <span className="ml-2 text-sm text-slate-300">Harici bağlantı</span>
+                        <label htmlFor={item.key} className="text-sm font-medium text-slate-700">
+                          {item.label}
                         </label>
                       </div>
-                      
-                      <div className="flex items-center space-x-2">
-                        <button
-                          onClick={() => moveQuickLink(index, 'up')}
-                          disabled={index === 0}
-                          className="p-2 text-slate-400 hover:text-white hover:bg-white/10 rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
-                        >
-                          <ArrowUpIcon className="h-4 w-4" />
-                        </button>
-                        <button
-                          onClick={() => moveQuickLink(index, 'down')}
-                          disabled={index === settings.quickLinks.length - 1}
-                          className="p-2 text-slate-400 hover:text-white hover:bg-white/10 rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
-                        >
-                          <ArrowDownIcon className="h-4 w-4" />
-                        </button>
-                        <button
-                          onClick={() => removeQuickLink(index)}
-                          className="p-2 text-red-400 hover:text-red-300 hover:bg-red-500/10 rounded-lg transition-colors"
-                        >
-                          <TrashIcon className="h-4 w-4" />
-                        </button>
+                    ))}
+                  </div>
+                </div>
+              </div>
+            )}
+
+            {/* Quick Links Tab */}
+            {activeTab === 'links' && (
+              <div className="space-y-6">
+                <div className="flex items-center justify-between">
+                  <h3 className="text-lg font-semibold text-slate-900">
+                    Hızlı Bağlantılar
+                  </h3>
+                  <button
+                    onClick={addQuickLink}
+                    className="flex items-center space-x-2 px-4 py-2 bg-teal-600 hover:bg-teal-700 text-white rounded-xl text-sm font-medium transition-colors"
+                  >
+                    <PlusIcon className="w-4 h-4" />
+                    <span>Bağlantı Ekle</span>
+                  </button>
+                </div>
+
+                <div className="space-y-4">
+                  {settings.quickLinks.map((link, index) => (
+                    <div key={index} className="bg-slate-50 rounded-xl p-4 border border-slate-200">
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div>
+                          <label className="block text-sm font-medium text-slate-700 mb-2">
+                            Başlık
+                          </label>
+                          <input
+                            type="text"
+                            value={link.title}
+                            onChange={(e) => updateQuickLink(index, 'title', e.target.value)}
+                            className="w-full border border-slate-300 rounded-xl px-4 py-3 text-slate-900 focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-transparent"
+                            placeholder="Bağlantı başlığı..."
+                          />
+                        </div>
+                        <div>
+                          <label className="block text-sm font-medium text-slate-700 mb-2">
+                            URL
+                          </label>
+                          <input
+                            type="url"
+                            value={link.url}
+                            onChange={(e) => updateQuickLink(index, 'url', e.target.value)}
+                            className="w-full border border-slate-300 rounded-xl px-4 py-3 text-slate-900 focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-transparent"
+                            placeholder="https://example.com"
+                          />
+                        </div>
+                      </div>
+                      <div className="flex items-center justify-between mt-4">
+                        <div className="flex items-center space-x-3">
+                          <input
+                            type="checkbox"
+                            id={`external-${index}`}
+                            checked={link.isExternal}
+                            onChange={(e) => updateQuickLink(index, 'isExternal', e.target.checked)}
+                            className="w-5 h-5 text-teal-600 border-slate-300 rounded focus:ring-teal-500"
+                          />
+                          <label htmlFor={`external-${index}`} className="text-sm font-medium text-slate-700">
+                            Yeni sekmede aç
+                          </label>
+                        </div>
+                        <div className="flex items-center space-x-2">
+                          <button
+                            onClick={() => moveQuickLink(index, 'up')}
+                            disabled={index === 0}
+                            className="p-2 text-slate-500 hover:text-slate-700 disabled:opacity-50"
+                          >
+                            <ArrowUpIcon className="w-4 h-4" />
+                          </button>
+                          <button
+                            onClick={() => moveQuickLink(index, 'down')}
+                            disabled={index === settings.quickLinks.length - 1}
+                            className="p-2 text-slate-500 hover:text-slate-700 disabled:opacity-50"
+                          >
+                            <ArrowDownIcon className="w-4 h-4" />
+                          </button>
+                          <button
+                            onClick={() => removeQuickLink(index)}
+                            className="p-2 text-red-500 hover:text-red-700"
+                          >
+                            <TrashIcon className="w-4 h-4" />
+                          </button>
+                        </div>
                       </div>
                     </div>
-                  </div>
-                ))}
-                
-                {settings.quickLinks.length === 0 && (
-                  <div className="text-center py-8 text-slate-400">
-                    <LinkIcon className="h-12 w-12 mx-auto mb-4 opacity-50" />
-                    <p>Henüz hızlı bağlantı eklenmemiş</p>
-                    <p className="text-sm">Yukarıdaki "Yeni Bağlantı" butonunu kullanarak ekleyebilirsiniz</p>
-                  </div>
-                )}
-              </div>
-            </div>
-          )}
-
-          {/* Social Media Tab */}
-          {activeTab === 'social' && (
-            <div className="bg-white/10 backdrop-blur-xl rounded-2xl p-6 border border-white/20">
-              <h3 className="text-lg font-semibold text-white mb-6 flex items-center">
-                <LinkIcon className="h-5 w-5 mr-2 text-teal-400" />
-                Sosyal Medya Bağlantıları
-              </h3>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                {Object.entries(settings.socialLinks).map(([platform, url]) => (
-                  <div key={platform}>
-                    <label className="block text-sm font-medium text-slate-300 mb-2 capitalize">{platform}</label>
-                    <input
-                      type="url"
-                      value={url}
-                      onChange={(e) => setSettings({
-                        ...settings,
-                        socialLinks: { ...settings.socialLinks, [platform]: e.target.value }
-                      })}
-                      placeholder={`https://${platform}.com/username`}
-                      className="w-full px-4 py-3 bg-white/10 border border-white/20 rounded-xl text-white placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-transparent"
-                    />
-                  </div>
-                ))}
-              </div>
-            </div>
-          )}
-
-          {/* Appearance Tab */}
-          {activeTab === 'appearance' && (
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-              {/* Görünürlük Ayarları */}
-              <div className="bg-white/10 backdrop-blur-xl rounded-2xl p-6 border border-white/20">
-                <h3 className="text-lg font-semibold text-white mb-6">Görünürlük Ayarları</h3>
-                <div className="space-y-4">
-                  {Object.entries(settings.visibility).map(([key, value]) => (
-                    <label key={key} className="flex items-center">
-                      <input
-                        type="checkbox"
-                        checked={value}
-                        onChange={(e) => setSettings({
-                          ...settings,
-                          visibility: { ...settings.visibility, [key]: e.target.checked }
-                        })}
-                        className="rounded border-slate-400 text-teal-600 focus:ring-teal-500 bg-white/10"
-                      />
-                      <span className="ml-3 text-sm text-slate-300">
-                        {key === 'showQuickLinks' && 'Hızlı Bağlantıları Göster'}
-                        {key === 'showSocialLinks' && 'Sosyal Medya Bağlantılarını Göster'}
-                        {key === 'showContactInfo' && 'İletişim Bilgilerini Göster'}
-                        {key === 'showDeveloperInfo' && 'Geliştirici Bilgilerini Göster'}
-                      </span>
-                    </label>
                   ))}
                 </div>
               </div>
+            )}
 
-              {/* Tema Ayarları */}
-              <div className="bg-white/10 backdrop-blur-xl rounded-2xl p-6 border border-white/20">
-                <h3 className="text-lg font-semibold text-white mb-6">Tema Ayarları</h3>
-                <div className="space-y-4">
+            {/* Social Media Tab */}
+            {activeTab === 'social' && (
+              <div className="space-y-6">
+                <h3 className="text-lg font-semibold text-slate-900">
+                  Sosyal Medya Bağlantıları
+                </h3>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  {Object.entries(settings.socialLinks).map(([platform, url]) => (
+                    <div key={platform}>
+                      <label className="block text-sm font-medium text-slate-700 mb-2 capitalize">
+                        {platform}
+                      </label>
+                      <input
+                        type="url"
+                        value={url}
+                        onChange={(e) => updateSettings(`socialLinks.${platform}`, e.target.value)}
+                        className="w-full border border-slate-300 rounded-xl px-4 py-3 text-slate-900 focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-transparent"
+                        placeholder={`https://${platform}.com/...`}
+                      />
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {/* Appearance Tab */}
+            {activeTab === 'appearance' && (
+              <div className="space-y-6">
+                <h3 className="text-lg font-semibold text-slate-900">
+                  Görünüm Ayarları
+                </h3>
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                   <div>
-                    <label className="block text-sm font-medium text-slate-300 mb-2">Arkaplan Rengi</label>
-                    <select
+                    <label className="block text-sm font-medium text-slate-700 mb-2">
+                      Arka Plan Rengi
+                    </label>
+                    <input
+                      type="color"
                       value={settings.theme.backgroundColor}
-                      onChange={(e) => setSettings({
-                        ...settings,
-                        theme: { ...settings.theme, backgroundColor: e.target.value }
-                      })}
-                      className="w-full px-4 py-3 bg-white/10 border border-white/20 rounded-xl text-white focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-transparent"
-                    >
-                      <option value="bg-slate-800">Koyu Gri</option>
-                      <option value="bg-gray-900">Siyah</option>
-                      <option value="bg-slate-900">Koyu Slate</option>
-                      <option value="bg-teal-800">Koyu Teal</option>
-                    </select>
+                      onChange={(e) => updateSettings('theme.backgroundColor', e.target.value)}
+                      className="w-full h-12 border border-slate-300 rounded-xl cursor-pointer"
+                    />
                   </div>
                   <div>
-                    <label className="block text-sm font-medium text-slate-300 mb-2">Metin Rengi</label>
-                    <select
+                    <label className="block text-sm font-medium text-slate-700 mb-2">
+                      Metin Rengi
+                    </label>
+                    <input
+                      type="color"
                       value={settings.theme.textColor}
-                      onChange={(e) => setSettings({
-                        ...settings,
-                        theme: { ...settings.theme, textColor: e.target.value }
-                      })}
-                      className="w-full px-4 py-3 bg-white/10 border border-white/20 rounded-xl text-white focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-transparent"
-                    >
-                      <option value="text-slate-300">Açık Gri</option>
-                      <option value="text-gray-300">Gri</option>
-                      <option value="text-white">Beyaz</option>
-                    </select>
+                      onChange={(e) => updateSettings('theme.textColor', e.target.value)}
+                      className="w-full h-12 border border-slate-300 rounded-xl cursor-pointer"
+                    />
                   </div>
                   <div>
-                    <label className="block text-sm font-medium text-slate-300 mb-2">Vurgu Rengi</label>
-                    <select
+                    <label className="block text-sm font-medium text-slate-700 mb-2">
+                      Vurgu Rengi
+                    </label>
+                    <input
+                      type="color"
                       value={settings.theme.accentColor}
-                      onChange={(e) => setSettings({
-                        ...settings,
-                        theme: { ...settings.theme, accentColor: e.target.value }
-                      })}
-                      className="w-full px-4 py-3 bg-white/10 border border-white/20 rounded-xl text-white focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-transparent"
-                    >
-                      <option value="text-teal-400">Teal</option>
-                      <option value="text-blue-400">Mavi</option>
-                      <option value="text-green-400">Yeşil</option>
-                      <option value="text-purple-400">Mor</option>
-                      <option value="text-orange-400">Turuncu</option>
-                    </select>
+                      onChange={(e) => updateSettings('theme.accentColor', e.target.value)}
+                      className="w-full h-12 border border-slate-300 rounded-xl cursor-pointer"
+                    />
                   </div>
                 </div>
               </div>
-            </div>
-          )}
-        </div>
-
-        {/* Footer Info */}
-        <div className="mt-8 bg-blue-500/10 backdrop-blur-xl rounded-2xl p-6 border border-blue-500/30">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center space-x-3">
-              <div className="w-2 h-2 bg-blue-400 rounded-full animate-pulse"></div>
-              <span className="text-slate-300 text-sm">Footer Yönetimi Aktif</span>
-            </div>
-            <div className="flex items-center space-x-6 text-sm text-slate-400">
-              <Link href="/admin/dashboard" className="hover:text-white transition-colors duration-200 flex items-center space-x-1">
-                <CubeTransparentIcon className="w-4 h-4" />
-                <span>Dashboard</span>
-              </Link>
-              <Link href="/" className="hover:text-white transition-colors duration-200 flex items-center space-x-1">
-                <span>Site Görünümü</span>
-              </Link>
-            </div>
+            )}
           </div>
         </div>
-      </main>
-    </div>
+      </div>
+    </AdminLayout>
   );
 } 

@@ -36,7 +36,7 @@ const ProjectCard: React.FC<ProjectCardProps> = ({ project }) => {
             src={project.coverImage || '/images/projects/default-project.jpg'}
             alt={project.title}
             fill
-            className="object-cover transition-transform duration-500 group-hover:scale-110"
+            className="object-cover transition-transform duration-500"
             onError={handleImageError}
           />
           <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/40 to-transparent opacity-80 group-hover:opacity-60 transition-opacity duration-300"></div>
@@ -47,7 +47,7 @@ const ProjectCard: React.FC<ProjectCardProps> = ({ project }) => {
           </h3>
           <div className="flex items-center justify-end text-sm font-semibold text-teal-500 group-hover:text-teal-600 transition-colors duration-200">
             Detayları Gör
-            <ArrowRightIcon className="ml-2 h-4 w-4 transform transition-transform duration-300 group-hover:translate-x-1" />
+            <ArrowRightIcon className="ml-2 h-4 w-4 transition-transform duration-300" />
           </div>
         </div>
       </a>

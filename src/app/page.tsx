@@ -66,18 +66,18 @@ const defaultServices = [
   },
 ];
 
-const defaultSlider: SliderItem[] = [
-  {
+  const defaultSlider: SliderItem[] = [
+    {
     _id: 'default-hero',
     title: 'Modern Mühendislik Çözümleri',
     subtitle: '3D Tarama, Modelleme ve Prototipleme',
     description: 'Yenilikçi teknolojilerle projelerinizi hayata geçirin. Profesyonel 3D tarama ve tersine mühendislik hizmetleri.',
-    image: 'https://images.unsplash.com/photo-1581091226825-a6a2a5aee158?ixlib=rb-4.0.3&auto=format&fit=crop&w=2070&q=80',
+      image: 'https://images.unsplash.com/photo-1581091226825-a6a2a5aee158?ixlib=rb-4.0.3&auto=format&fit=crop&w=2070&q=80',
     buttonText: 'Projelerimi Görüntüle',
     buttonLink: '/portfolio',
     badge: 'Yenilikçi'
-  }
-];
+    }
+  ];
 
 export default function HomePage() {
   const [sliderItems, setSliderItems] = useState<SliderItem[]>(defaultSlider);
@@ -99,7 +99,7 @@ export default function HomePage() {
         if (sliderRes?.ok) {
           const sliderData = await sliderRes.json();
           const activeSliders = sliderData.filter((item: any) => item.isActive);
-          if (activeSliders.length > 0) {
+            if (activeSliders.length > 0) {
             setSliderItems(activeSliders.map((item: any) => ({
               _id: item._id,
               title: item.title,
@@ -117,7 +117,7 @@ export default function HomePage() {
         if (portfolioRes?.ok) {
           const portfolioData = await portfolioRes.json();
           setPortfolioItems(portfolioData.slice(0, 6));
-        }
+            }
 
         // Handle services data
         if (servicesRes?.ok) {
@@ -164,7 +164,7 @@ export default function HomePage() {
           />
           <div className="absolute inset-0 bg-gradient-to-br from-slate-900/90 via-slate-800/80 to-blue-900/90"></div>
         </div>
-
+        
         {/* Content */}
         <div className="section-hero relative z-10">
           <div className="container-content text-center text-white">
@@ -174,25 +174,25 @@ export default function HomePage() {
                 <SparklesIcon className="w-4 h-4 mr-2" />
                 {currentSlide.badge}
               </span>
-            </div>
-
+          </div>
+          
             {/* Title */}
             <h1 className="hero-title text-gradient-hero mb-6 animate-slide-in-left">
               {currentSlide.title}
-            </h1>
-
-            {/* Subtitle */}
+          </h1>
+          
+          {/* Subtitle */}
             {currentSlide.subtitle && (
               <p className="text-2xl sm:text-3xl font-semibold text-teal-200 mb-8 animate-slide-in-right">
                 {currentSlide.subtitle}
-              </p>
+          </p>
             )}
-
-            {/* Description */}
+          
+          {/* Description */}
             <p className="text-xl leading-relaxed text-slate-200 max-w-4xl mx-auto mb-12 animate-fade-in">
               {currentSlide.description}
-            </p>
-
+          </p>
+          
             {/* CTAs */}
             <div className="flex flex-col sm:flex-row gap-6 justify-center items-center animate-fade-in">
               <Link href={currentSlide.buttonLink || '/portfolio'} className="btn-primary">
@@ -202,7 +202,7 @@ export default function HomePage() {
               </Link>
               <Link href="/contact" className="btn-secondary">
                 İletişime Geçin
-              </Link>
+            </Link>
             </div>
           </div>
         </div>
@@ -234,17 +234,17 @@ export default function HomePage() {
                         src={service.image}
                         alt={service.title}
                         fill
-                        className="object-cover group-hover:scale-105 transition-transform duration-500"
+                        className="object-cover transition-transform duration-500"
                       />
-                    </div>
-                  ) : (
-                    <div className="w-16 h-16 bg-gradient-primary rounded-2xl flex items-center justify-center group-hover:scale-110 transition-transform duration-300">
+            </div>
+          ) : (
+                    <div className="w-16 h-16 bg-gradient-primary rounded-2xl flex items-center justify-center transition-transform duration-300">
                       {service.icon && (
                         <service.icon className="w-8 h-8 text-white" />
                       )}
                     </div>
                   )}
-                </div>
+                  </div>
 
                 {/* Content */}
                 <div className="text-center flex-1 flex flex-col">
@@ -255,24 +255,24 @@ export default function HomePage() {
                     {service.description}
                   </p>
                   <Link
-                    href={`/services#${service.title.toLowerCase().replace(/\s+/g, '-')}`}
-                    className="inline-flex items-center text-teal-600 hover:text-teal-700 font-semibold group-hover:translate-x-1 transition-all duration-200 mt-auto"
+                    href={`/services#${service.title.toLowerCase().replace(/\s+/g, '-').replace(/&/g, '')}`}
+                    className="inline-flex items-center text-teal-600 hover:text-teal-700 font-semibold transition-colors duration-200 mt-auto"
                   >
                     Detayları Gör
                     <ArrowRightIcon className="w-4 h-4 ml-2" />
                   </Link>
                 </div>
-              </div>
-            ))}
-          </div>
+                </div>
+              ))}
+            </div>
 
           {/* View All Link */}
           <div className="text-center">
             <Link href="/services" className="btn-outline">
               Tüm Hizmetlerimizi Görüntüle
               <ArrowRightIcon className="w-5 h-5 ml-2" />
-            </Link>
-          </div>
+              </Link>
+            </div>
         </div>
       </section>
 
@@ -289,17 +289,17 @@ export default function HomePage() {
               çalışmalarımızı keşfedin.
             </p>
           </div>
-
+          
           {/* Projects */}
           {portfolioItems.length > 0 ? (
             <>
               <ProjectGrid 
                 projects={portfolioItems.map(item => ({
-                  id: item._id,
-                  title: item.title,
-                  description: item.description,
-                  coverImage: item.coverImage,
-                  category: item.category.name,
+                id: item._id,
+                title: item.title,
+                description: item.description,
+                coverImage: item.coverImage,
+                  category: item.category?.name || 'Genel',
                 }))} 
                 limit={6} 
               />
@@ -345,8 +345,8 @@ export default function HomePage() {
           <div className="flex flex-col sm:flex-row gap-6 justify-center">
             <Link href="/contact" className="btn-secondary">
               <SparklesIcon className="w-5 h-5 mr-2" />
-              İletişime Geçin
-            </Link>
+            İletişime Geçin
+          </Link>
             <Link href="/portfolio" className="btn-secondary">
               Projelerimizi İnceleyin
               <ArrowRightIcon className="w-5 h-5 ml-2" />

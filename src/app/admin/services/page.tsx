@@ -1,21 +1,18 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { useSession, signOut } from 'next-auth/react';
+import { useSession } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
 import Image from 'next/image';
 import Link from 'next/link';
+import AdminLayout from '../../../components/admin/AdminLayout';
 import { 
   PlusIcon,
   PencilIcon,
   TrashIcon,
   EyeIcon,
-  UserIcon,
-  CubeTransparentIcon,
   WrenchScrewdriverIcon,
   ClockIcon,
-  ArrowLeftIcon,
-  HomeIcon,
   FolderOpenIcon
 } from '@heroicons/react/24/outline';
 
@@ -55,8 +52,10 @@ export default function ServicesPage() {
       }
     };
 
-    fetchServices();
-  }, []);
+    if (status === 'authenticated') {
+      fetchServices();
+    }
+  }, [status]);
 
   const handleDelete = async (id: string) => {
     if (!window.confirm('Bu servisi silmek istediğinizden emin misiniz?')) {
@@ -78,241 +77,166 @@ export default function ServicesPage() {
     }
   };
 
-  const handleSignOut = async () => {
-    await signOut({ redirect: false });
-    router.push('/admin/login');
-  };
-
   if (status === 'loading' || loading) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 flex items-center justify-center">
-        <div className="flex flex-col items-center space-y-4">
-          <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-teal-500"></div>
-          <p className="text-slate-300">Servisler yükleniyor...</p>
+      <AdminLayout>
+        <div className="flex items-center justify-center min-h-[400px]">
+          <div className="flex flex-col items-center space-y-4">
+            <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-teal-500"></div>
+            <p className="text-slate-600">Servisler yükleniyor...</p>
+          </div>
         </div>
-      </div>
+      </AdminLayout>
     );
   }
 
-  if (!session?.user) {
+  if (status === 'unauthenticated') {
     return null;
   }
 
-  const quickActions = [
-    {
-      title: 'Yeni Servis Ekle',
-      icon: PlusIcon,
-      href: '/admin/services/new',
-      color: 'bg-gradient-to-r from-teal-600 to-blue-600'
-    },
-    {
-      title: 'Portfolio Yönetimi',
-      icon: FolderOpenIcon,
-      href: '/admin/portfolio',
-      color: 'bg-gradient-to-r from-blue-600 to-blue-700'
-    },
-    {
-      title: 'Dashboard',
-      icon: HomeIcon,
-      href: '/admin/dashboard',
-      color: 'bg-gradient-to-r from-slate-600 to-slate-700'
-    }
-  ];
-
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900">
-      
-      {/* Header */}
-      <header className="bg-white/10 backdrop-blur-xl border-b border-white/20 sticky top-0 z-50">
-        <div className="max-w-7xl mx-auto px-6 sm:px-8">
-          <div className="flex items-center justify-between h-16">
-            
-            {/* Logo & Title */}
-            <div className="flex items-center space-x-4">
-              <Link 
-                href="/admin/dashboard"
-                className="flex items-center space-x-3 hover:opacity-80 transition-opacity"
-              >
-                <ArrowLeftIcon className="w-5 h-5 text-slate-400" />
-                <div className="w-10 h-10 bg-gradient-to-br from-teal-500 to-blue-600 rounded-xl flex items-center justify-center">
-                  <CubeTransparentIcon className="w-6 h-6 text-white" />
-                </div>
-              </Link>
-              <div>
-                <h1 className="text-xl font-bold text-white">Servis Yönetimi</h1>
-                <p className="text-sm text-slate-300">Hizmetlerinizi yönetin</p>
-              </div>
-            </div>
-
-            {/* User Info & Actions */}
-            <div className="flex items-center space-x-4">
-              <div className="hidden sm:flex items-center space-x-3">
-                <div className="text-right">
-                  <p className="text-sm font-medium text-white">{session.user.name}</p>
-                  <p className="text-xs text-slate-400">{session.user.email}</p>
-                </div>
-                <div className="w-10 h-10 bg-gradient-to-r from-teal-500 to-blue-500 rounded-full flex items-center justify-center">
-                  <UserIcon className="w-5 h-5 text-white" />
-                </div>
-              </div>
-              
-              <button
-                onClick={handleSignOut}
-                className="px-4 py-2 bg-red-500/20 hover:bg-red-500/30 text-red-300 hover:text-red-200 rounded-xl transition-all duration-200 text-sm font-medium border border-red-500/30"
-              >
-                Çıkış
-              </button>
-            </div>
-          </div>
-        </div>
-      </header>
-
-      {/* Main Content */}
-      <main className="max-w-7xl mx-auto px-6 sm:px-8 py-8">
+    <AdminLayout 
+      title="Servis Yönetimi"
+      breadcrumbs={[
+        { label: 'Dashboard', href: '/admin/dashboard' },
+        { label: 'Servis Yönetimi' }
+      ]}
+    >
+      <div className="space-y-6">
         
-        {/* Page Header */}
-        <div className="mb-8">
-          <div className="bg-gradient-to-r from-teal-500/10 to-cyan-500/10 backdrop-blur-xl rounded-3xl p-8 border border-white/20">
-            <div className="flex items-center justify-between">
-              <div>
-                <h2 className="text-3xl font-bold text-white mb-2 flex items-center space-x-3">
-                  <WrenchScrewdriverIcon className="w-8 h-8 text-teal-400" />
-                  <span>Servis Yönetimi</span>
-                </h2>
-                <p className="text-slate-300 text-lg">
-                  Sunduğunuz hizmetleri ekleyin, düzenleyin ve yönetin.
-                </p>
-              </div>
-              <div className="hidden lg:flex items-center space-x-2 text-sm text-slate-400">
-                <ClockIcon className="w-4 h-4" />
-                <span>Toplam {services.length} servis</span>
-              </div>
+        {/* Header Actions */}
+        <div className="flex items-center justify-between">
+          <div>
+            <p className="text-slate-600">Sunduğunuz hizmetleri yönetin</p>
+            <div className="flex items-center space-x-4 text-sm text-slate-500 mt-2">
+              <span>Toplam: {services.length} servis</span>
+              <span>•</span>
+              <span>Aktif servisler</span>
             </div>
           </div>
+          <Link
+            href="/admin/services/new"
+            className="bg-teal-600 hover:bg-teal-700 text-white px-6 py-3 rounded-xl font-semibold transition-all duration-200 flex items-center space-x-2 shadow-sm"
+          >
+            <PlusIcon className="w-5 h-5" />
+            <span>Yeni Servis</span>
+          </Link>
         </div>
 
         {/* Error Message */}
         {error && (
-          <div className="mb-6">
-            <div className="bg-red-500/10 backdrop-blur-xl border border-red-500/30 text-red-300 p-4 rounded-2xl">
-              {error}
-            </div>
+          <div className="bg-red-50 border border-red-200 text-red-800 p-4 rounded-xl">
+            {error}
           </div>
         )}
 
         {/* Quick Actions */}
-        <div className="mb-8">
-          <h3 className="text-xl font-bold text-white mb-4">Hızlı İşlemler</h3>
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-            {quickActions.map((action) => (
-              <Link 
-                key={action.title}
-                href={action.href}
-                className="group"
-              >
-                <div className={`${action.color} rounded-2xl p-6 text-white transition-all duration-300 hover:scale-105 hover:shadow-xl`}>
-                  <div className="flex items-center space-x-3">
-                    <action.icon className="w-6 h-6" />
-                    <span className="font-semibold">{action.title}</span>
-                  </div>
-                </div>
-              </Link>
-            ))}
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+          <Link
+            href="/admin/services/new"
+            className="bg-gradient-to-r from-teal-600 to-blue-600 text-white p-6 rounded-xl hover:shadow-lg transition-all duration-200 group"
+          >
+            <div className="flex items-center space-x-3">
+              <PlusIcon className="w-6 h-6 group-hover:scale-110 transition-transform" />
+              <span className="font-semibold">Yeni Servis Ekle</span>
+            </div>
+          </Link>
+          
+          <Link
+            href="/admin/portfolio"
+            className="bg-gradient-to-r from-blue-600 to-blue-700 text-white p-6 rounded-xl hover:shadow-lg transition-all duration-200 group"
+          >
+            <div className="flex items-center space-x-3">
+              <FolderOpenIcon className="w-6 h-6 group-hover:scale-110 transition-transform" />
+              <span className="font-semibold">Portfolio Yönetimi</span>
+            </div>
+          </Link>
+          
+          <div className="bg-slate-100 p-6 rounded-xl">
+            <div className="flex items-center space-x-3">
+              <WrenchScrewdriverIcon className="w-6 h-6 text-slate-600" />
+              <span className="font-semibold text-slate-900">Servis İstatistikleri</span>
+            </div>
           </div>
         </div>
 
-        {/* Services Grid */}
-        <div className="mb-8">
-          <div className="flex items-center justify-between mb-6">
-            <h3 className="text-xl font-bold text-white">Servisler</h3>
-            <div className="flex items-center space-x-2 text-sm text-slate-400">
-              <span>{services.length} servis bulundu</span>
-            </div>
+        {/* Services List */}
+        <div className="bg-white rounded-xl shadow-sm border border-slate-200">
+          <div className="p-6 border-b border-slate-200">
+            <h3 className="text-lg font-semibold text-slate-900">Servisler</h3>
           </div>
-
-          {services.length === 0 && !loading ? (
-            <div className="bg-white/5 backdrop-blur-xl rounded-2xl p-12 border border-white/10 text-center">
-              <WrenchScrewdriverIcon className="w-16 h-16 text-slate-500 mx-auto mb-4" />
-              <h4 className="text-xl font-semibold text-white mb-2">Henüz servis yok</h4>
-              <p className="text-slate-400 mb-6">İlk servisinizi ekleyerek başlayın</p>
-              <Link 
-                href="/admin/services/new"
-                className="inline-flex items-center space-x-2 bg-gradient-to-r from-teal-600 to-blue-600 text-white px-6 py-3 rounded-xl font-semibold hover:scale-105 transition-transform"
-              >
-                <PlusIcon className="w-5 h-5" />
-                <span>Yeni Servis Ekle</span>
-              </Link>
-            </div>
-          ) : (
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {services.map((service) => (
-                <div
-                  key={service._id}
-                  className="bg-white/10 backdrop-blur-xl rounded-2xl border border-white/20 overflow-hidden hover:bg-white/15 transition-all duration-300 hover:scale-105 group"
-                >
-                  <div className="relative h-48">
-                    <Image
-                      src={service.image}
-                      alt={service.title}
-                      fill
-                      className="object-cover group-hover:scale-110 transition-transform duration-500"
-                    />
-                    <div className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
-                  </div>
-                  
-                  <div className="p-6">
-                    <h4 className="text-lg font-bold text-white group-hover:text-teal-300 transition-colors duration-300 mb-3 line-clamp-1">
-                      {service.title}
-                    </h4>
+          
+          <div className="divide-y divide-slate-200">
+            {services.length === 0 ? (
+              <div className="p-12 text-center">
+                <WrenchScrewdriverIcon className="w-12 h-12 text-slate-400 mx-auto mb-4" />
+                <p className="text-slate-600 text-lg">Henüz servis eklenmemiş</p>
+                <p className="text-slate-500 mt-2">İlk servisinizi eklemek için "Yeni Servis" butonuna tıklayın</p>
+              </div>
+            ) : (
+              services.map((service) => (
+                <div key={service._id} className="p-6 hover:bg-slate-50 transition-colors">
+                  <div className="flex items-start space-x-4">
+                    {/* Image */}
+                    <div className="flex-shrink-0">
+                      <Image
+                        src={service.image}
+                        alt={service.title}
+                        width={80}
+                        height={80}
+                        className="rounded-xl object-cover"
+                      />
+                    </div>
                     
-                    <p className="text-slate-300 text-sm mb-6 line-clamp-3 leading-relaxed">
-                      {service.description}
-                    </p>
-                    
-                    <div className="flex items-center justify-between pt-4 border-t border-white/10">
-                      <Link
-                        href={`/admin/services/edit/${service._id}`}
-                        className="flex items-center space-x-2 text-blue-400 hover:text-blue-300 transition-colors group/btn"
-                      >
-                        <PencilIcon className="w-4 h-4 group-hover/btn:scale-110 transition-transform" />
-                        <span className="text-sm font-medium">Düzenle</span>
-                      </Link>
-                      
-                      <button
-                        onClick={() => handleDelete(service._id)}
-                        className="flex items-center space-x-2 text-red-400 hover:text-red-300 transition-colors group/btn"
-                      >
-                        <TrashIcon className="w-4 h-4 group-hover/btn:scale-110 transition-transform" />
-                        <span className="text-sm font-medium">Sil</span>
-                      </button>
+                    {/* Content */}
+                    <div className="flex-1 min-w-0">
+                      <div className="flex items-start justify-between">
+                        <div className="flex-1">
+                          <h4 className="text-lg font-semibold text-slate-900 mb-2">
+                            {service.title}
+                          </h4>
+                          <p className="text-slate-600 mb-3 line-clamp-3">{service.description}</p>
+                          <div className="flex items-center space-x-4 text-sm text-slate-500">
+                            <div className="flex items-center space-x-1">
+                              <ClockIcon className="w-4 h-4" />
+                              <span>Aktif servis</span>
+                            </div>
+                          </div>
+                        </div>
+                        
+                        {/* Actions */}
+                        <div className="flex items-center space-x-2 ml-4">
+                          <Link
+                            href="/services"
+                            className="p-2 text-slate-600 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-colors"
+                            title="Görüntüle"
+                          >
+                            <EyeIcon className="w-5 h-5" />
+                          </Link>
+                          <Link
+                            href={`/admin/services/edit/${service._id}`}
+                            className="p-2 text-slate-600 hover:text-teal-600 hover:bg-teal-50 rounded-lg transition-colors"
+                            title="Düzenle"
+                          >
+                            <PencilIcon className="w-5 h-5" />
+                          </Link>
+                          <button
+                            onClick={() => handleDelete(service._id)}
+                            className="p-2 text-slate-600 hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors"
+                            title="Sil"
+                          >
+                            <TrashIcon className="w-5 h-5" />
+                          </button>
+                        </div>
+                      </div>
                     </div>
                   </div>
                 </div>
-              ))}
-            </div>
-          )}
-        </div>
-
-        {/* Footer Info */}
-        <div className="bg-white/5 backdrop-blur-xl rounded-2xl p-6 border border-white/10">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center space-x-3">
-              <div className="w-2 h-2 bg-green-400 rounded-full animate-pulse"></div>
-              <span className="text-slate-300 text-sm">Servis Yönetimi Aktif</span>
-            </div>
-            <div className="flex items-center space-x-6 text-sm text-slate-400">
-              <Link href="/admin/dashboard" className="hover:text-white transition-colors duration-200 flex items-center space-x-1">
-                <HomeIcon className="w-4 h-4" />
-                <span>Dashboard</span>
-              </Link>
-              <Link href="/" className="hover:text-white transition-colors duration-200 flex items-center space-x-1">
-                <EyeIcon className="w-4 h-4" />
-                <span>Site Görünümü</span>
-              </Link>
-            </div>
+              ))
+            )}
           </div>
         </div>
-      </main>
-    </div>
+      </div>
+    </AdminLayout>
   );
 } 

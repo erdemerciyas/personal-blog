@@ -8,6 +8,8 @@ export { default as ProjectCard } from './ProjectCard';
 export { default as ClientWrapper } from './ClientWrapper';
 export { default as ProjectGrid } from './ProjectGrid';
 export { default as Version } from './Version';
+export { default as Providers } from './Providers';
+export { default as AdminLayout } from './admin/AdminLayout';
 
 // UI Component exports
 export * from './ui'; 
