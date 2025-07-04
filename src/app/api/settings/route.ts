@@ -155,8 +155,102 @@ export async function PUT(request: NextRequest) {
 // POST Method
 export async function POST(request: NextRequest) {
   console.log('📬 POST /api/settings called');
-  return NextResponse.json(
-    { error: 'POST method not supported. Use PUT.' },
-    { status: 405 }
-  );
+  
+  try {
+    const session = await getServerSession(authOptions);
+    console.log('👤 Session check:', !!session?.user, session?.user?.role);
+    
+    if (!session?.user) {
+      console.log('❌ No session');
+      return NextResponse.json(
+        { error: 'Bu işlem için yetkiniz yok' },
+        { status: 401 }
+      );
+    }
+
+    if (session.user.role !== 'admin') {
+      console.log('❌ Not admin:', session.user.role);
+      return NextResponse.json(
+        { error: 'Bu işlem için admin yetkisi gerekli' },
+        { status: 403 }
+      );
+    }
+
+    const body = await request.json();
+    console.log('📝 Body keys:', Object.keys(body));
+    
+    await connectDB();
+    console.log('🔗 Database connected');
+
+    const settings = await Settings.findOneAndUpdate(
+      { isActive: true },
+      {
+        ...body,
+        updatedAt: new Date(),
+      },
+      { 
+        new: true, 
+        upsert: true,
+        setDefaultsOnInsert: true 
+      }
+    );
+
+    console.log('✅ Settings updated:', !!settings);
+
+    // SiteSettings sync
+    if (settings) {
+      const siteSettingsUpdate: any = {};
+      
+      if (body.logo !== undefined) {
+        siteSettingsUpdate.logo = {
+          url: body.logo,
+          alt: 'Site Logo',
+          width: 200,
+          height: 60
+        };
+      }
+      
+      if (body.siteName !== undefined) {
+        siteSettingsUpdate.siteName = body.siteName;
+      }
+      
+      if (body.siteDescription !== undefined) {
+        siteSettingsUpdate.description = body.siteDescription;
+      }
+
+      if (body.siteTitle || body.siteDescription || body.siteKeywords) {
+        siteSettingsUpdate.seo = {
+          metaTitle: body.siteTitle || settings.siteTitle,
+          metaDescription: body.siteDescription || settings.siteDescription,
+          keywords: body.siteKeywords ? body.siteKeywords.split(',').map((k: string) => k.trim()) : []
+        };
+      }
+
+      if (body.twitterHandle !== undefined) {
+        siteSettingsUpdate.socialMedia = {
+          twitter: body.twitterHandle,
+          linkedin: '',
+          github: '',
+          instagram: ''
+        };
+      }
+
+      if (Object.keys(siteSettingsUpdate).length > 0) {
+        await SiteSettings.updateSiteSettings(siteSettingsUpdate);
+        console.log('✅ SiteSettings synced');
+      }
+    }
+
+    return NextResponse.json({
+      message: 'Site ayarları başarıyla güncellendi',
+      settings
+    });
+    
+  } catch (error) {
+    console.error('❌ POST Error:', error);
+    return NextResponse.json(
+      { error: 'Site ayarları güncellenirken bir hata oluştu' },
+      { status: 500 }
+    );
+  }
 } 

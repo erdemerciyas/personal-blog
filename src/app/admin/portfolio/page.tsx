@@ -1,23 +1,22 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { useSession, signOut } from 'next-auth/react';
+import { useSession } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
 import Image from 'next/image';
 import Link from 'next/link';
+import AdminLayout from '../../../components/admin/AdminLayout';
 import { 
   PlusIcon,
   PencilIcon,
   TrashIcon,
   EyeIcon,
-  UserIcon,
-  CubeTransparentIcon,
-  FolderOpenIcon,
   TagIcon,
   ClockIcon,
   StarIcon,
-  ArrowLeftIcon,
-  HomeIcon
+  FolderOpenIcon,
+  CheckIcon,
+  XMarkIcon
 } from '@heroicons/react/24/outline';
 
 interface Category {
@@ -45,15 +44,33 @@ interface PortfolioItem {
 export default function PortfolioManagement() {
   const { data: session, status } = useSession();
   const router = useRouter();
+  const [activeTab, setActiveTab] = useState<'projects' | 'categories'>('projects');
   const [portfolioItems, setPortfolioItems] = useState<PortfolioItem[]>([]);
+  const [categories, setCategories] = useState<Category[]>([]);
   const [loading, setLoading] = useState(true);
+  const [categoriesLoading, setCategoriesLoading] = useState(false);
   const [error, setError] = useState('');
+  const [newCategoryName, setNewCategoryName] = useState('');
+  const [newCategoryDescription, setNewCategoryDescription] = useState('');
+  const [editingCategory, setEditingCategory] = useState<Category | null>(null);
+
+  // URL parametresini kontrol et
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      const urlParams = new URLSearchParams(window.location.search);
+      const tab = urlParams.get('tab');
+      if (tab === 'categories') {
+        setActiveTab('categories');
+      }
+    }
+  }, []);
 
   useEffect(() => {
     if (status === 'unauthenticated') {
       router.push('/admin/login');
     } else if (status === 'authenticated') {
       fetchPortfolioItems();
+      fetchCategories();
     }
   }, [status, router]);
 
@@ -68,6 +85,96 @@ export default function PortfolioManagement() {
       console.error(err);
     } finally {
       setLoading(false);
+    }
+  };
+
+  const fetchCategories = async () => {
+    setCategoriesLoading(true);
+    try {
+      const response = await fetch('/api/categories');
+      if (!response.ok) throw new Error('Kategoriler getirilemedi');
+      const data = await response.json();
+      setCategories(data);
+    } catch (err) {
+      console.error('Kategoriler yüklenirken hata:', err);
+    } finally {
+      setCategoriesLoading(false);
+    }
+  };
+
+  const handleCreateCategory = async () => {
+    if (!newCategoryName.trim()) return;
+
+    try {
+      const response = await fetch('/api/categories', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          name: newCategoryName,
+          description: newCategoryDescription
+        })
+      });
+
+      if (!response.ok) throw new Error('Kategori oluşturulamadı');
+      
+      await fetchCategories();
+      setNewCategoryName('');
+      setNewCategoryDescription('');
+    } catch (err) {
+      setError('Kategori oluşturulurken hata oluştu');
+      console.error(err);
+    }
+  };
+
+  const handleUpdateCategory = async () => {
+    if (!editingCategory) return;
+
+    try {
+      const response = await fetch(`/api/categories/${editingCategory._id}`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          name: editingCategory.name,
+          description: editingCategory.description
+        })
+      });
+
+      if (!response.ok) throw new Error('Kategori güncellenemedi');
+      
+      await fetchCategories();
+      setEditingCategory(null);
+    } catch (err) {
+      setError('Kategori güncellenirken hata oluştu');
+      console.error(err);
+    }
+  };
+
+  const handleDeleteCategory = async (id: string) => {
+    if (!confirm('Bu kategoriyi silmek istediğinizden emin misiniz?')) {
+      return;
+    }
+
+    try {
+      const response = await fetch(`/api/categories/${id}`, {
+        method: 'DELETE'
+      });
+
+      if (!response.ok) throw new Error('Kategori silinemedi');
+      
+      await fetchCategories();
+    } catch (err) {
+      setError('Kategori silinirken hata oluştu');
+      console.error(err);
+    }
+  };
+
+  const handleTabChange = (tab: 'projects' | 'categories') => {
+    setActiveTab(tab);
+    const newUrl = tab === 'categories' ? '/admin/portfolio?tab=categories' : '/admin/portfolio';
+    
+    // URL'yi güncelle ama sayfayı yeniden yükleme
+    if (typeof window !== 'undefined') {
+      window.history.pushState(null, '', newUrl);
     }
   };
 
@@ -90,269 +197,325 @@ export default function PortfolioManagement() {
     }
   };
 
-  const handleSignOut = async () => {
-    await signOut({ redirect: false });
-    router.push('/admin/login');
-  };
-
   if (status === 'loading' || loading) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 flex items-center justify-center">
-        <div className="flex flex-col items-center space-y-4">
-          <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-teal-500"></div>
-          <p className="text-slate-300">Portfolyo yükleniyor...</p>
+      <AdminLayout>
+        <div className="flex items-center justify-center min-h-[400px]">
+          <div className="flex flex-col items-center space-y-4">
+            <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-teal-500"></div>
+            <p className="text-slate-600">Portfolyo yükleniyor...</p>
+          </div>
         </div>
-      </div>
+      </AdminLayout>
     );
   }
 
-  if (!session?.user) {
+  if (status === 'unauthenticated') {
     return null;
   }
 
-  const quickActions = [
-    {
-      title: 'Yeni Proje Ekle',
-      icon: PlusIcon,
-      href: '/admin/portfolio/new',
-      color: 'bg-gradient-to-r from-teal-600 to-blue-600'
-    },
-    {
-      title: 'Kategorileri Yönet',
-      icon: TagIcon,
-      href: '/admin/categories',
-      color: 'bg-gradient-to-r from-purple-600 to-purple-700'
-    },
-    {
-      title: 'Dashboard',
-      icon: HomeIcon,
-      href: '/admin/dashboard',
-      color: 'bg-gradient-to-r from-slate-600 to-slate-700'
-    }
-  ];
-
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900">
-      
-      {/* Header */}
-      <header className="bg-white/10 backdrop-blur-xl border-b border-white/20 sticky top-0 z-50">
-        <div className="max-w-7xl mx-auto px-6 sm:px-8">
-          <div className="flex items-center justify-between h-16">
-            
-            {/* Logo & Title */}
-            <div className="flex items-center space-x-4">
-              <Link 
-                href="/admin/dashboard"
-                className="flex items-center space-x-3 hover:opacity-80 transition-opacity"
-              >
-                <ArrowLeftIcon className="w-5 h-5 text-slate-400" />
-                <div className="w-10 h-10 bg-gradient-to-br from-teal-500 to-blue-600 rounded-xl flex items-center justify-center">
-                  <CubeTransparentIcon className="w-6 h-6 text-white" />
-                </div>
-              </Link>
-              <div>
-                <h1 className="text-xl font-bold text-white">Portfolyo Yönetimi</h1>
-                <p className="text-sm text-slate-300">Projelerinizi yönetin</p>
-              </div>
-            </div>
-
-            {/* User Info & Actions */}
-            <div className="flex items-center space-x-4">
-              <div className="hidden sm:flex items-center space-x-3">
-                <div className="text-right">
-                  <p className="text-sm font-medium text-white">{session.user.name}</p>
-                  <p className="text-xs text-slate-400">{session.user.email}</p>
-                </div>
-                <div className="w-10 h-10 bg-gradient-to-r from-teal-500 to-blue-500 rounded-full flex items-center justify-center">
-                  <UserIcon className="w-5 h-5 text-white" />
-                </div>
-              </div>
-              
-              <button
-                onClick={handleSignOut}
-                className="px-4 py-2 bg-red-500/20 hover:bg-red-500/30 text-red-300 hover:text-red-200 rounded-xl transition-all duration-200 text-sm font-medium border border-red-500/30"
-              >
-                Çıkış
-              </button>
-            </div>
-          </div>
-        </div>
-      </header>
-
-      {/* Main Content */}
-      <main className="max-w-7xl mx-auto px-6 sm:px-8 py-8">
+    <AdminLayout 
+      title="Portfolyo Yönetimi"
+      breadcrumbs={[
+        { label: 'Dashboard', href: '/admin/dashboard' },
+        { label: 'Portfolyo Yönetimi' }
+      ]}
+    >
+      <div className="space-y-6">
         
-        {/* Page Header */}
-        <div className="mb-8">
-          <div className="bg-gradient-to-r from-blue-500/10 to-teal-500/10 backdrop-blur-xl rounded-3xl p-8 border border-white/20">
-            <div className="flex items-center justify-between">
-              <div>
-                <h2 className="text-3xl font-bold text-white mb-2 flex items-center space-x-3">
-                  <FolderOpenIcon className="w-8 h-8 text-teal-400" />
-                  <span>Portfolyo Yönetimi</span>
-                </h2>
-                <p className="text-slate-300 text-lg">
-                  Projelerinizi düzenleyin, yeni projeler ekleyin ve portfolyonuzu yönetin.
-                </p>
+        {/* Tab Navigation */}
+        <div className="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden">
+          <div className="flex border-b border-slate-200">
+            <button
+              onClick={() => handleTabChange('projects')}
+              className={`flex-1 px-6 py-4 text-sm font-semibold transition-all duration-200 ${
+                activeTab === 'projects'
+                  ? 'bg-teal-50 text-teal-700 border-b-2 border-teal-600'
+                  : 'text-slate-600 hover:text-slate-900 hover:bg-slate-50'
+              }`}
+            >
+              <div className="flex items-center justify-center space-x-2">
+                <FolderOpenIcon className="w-5 h-5" />
+                <span>Projeler ({portfolioItems.length})</span>
               </div>
-              <div className="hidden lg:flex items-center space-x-2 text-sm text-slate-400">
-                <ClockIcon className="w-4 h-4" />
-                <span>Toplam {portfolioItems.length} proje</span>
+            </button>
+            <button
+              onClick={() => handleTabChange('categories')}
+              className={`flex-1 px-6 py-4 text-sm font-semibold transition-all duration-200 ${
+                activeTab === 'categories'
+                  ? 'bg-purple-50 text-purple-700 border-b-2 border-purple-600'
+                  : 'text-slate-600 hover:text-slate-900 hover:bg-slate-50'
+              }`}
+            >
+              <div className="flex items-center justify-center space-x-2">
+                <TagIcon className="w-5 h-5" />
+                <span>Kategoriler ({categories.length})</span>
               </div>
-            </div>
+            </button>
           </div>
         </div>
 
         {/* Error Message */}
         {error && (
-          <div className="mb-6">
-            <div className="bg-red-500/10 backdrop-blur-xl border border-red-500/30 text-red-300 p-4 rounded-2xl">
-              {error}
-            </div>
+          <div className="bg-red-50 border border-red-200 text-red-800 p-4 rounded-xl">
+            {error}
           </div>
         )}
 
-        {/* Quick Actions */}
-        <div className="mb-8">
-          <h3 className="text-xl font-bold text-white mb-4">Hızlı İşlemler</h3>
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-            {quickActions.map((action) => (
-              <Link 
-                key={action.title}
-                href={action.href}
-                className="group"
-              >
-                <div className={`${action.color} rounded-2xl p-6 text-white transition-all duration-300 hover:scale-105 hover:shadow-xl`}>
-                  <div className="flex items-center space-x-3">
-                    <action.icon className="w-6 h-6" />
-                    <span className="font-semibold">{action.title}</span>
-                  </div>
+        {/* Tab Content */}
+        {activeTab === 'projects' && (
+          <div className="space-y-6">
+            {/* Header Actions */}
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-slate-600">Projelerinizi düzenleyin ve yönetin</p>
+                <div className="flex items-center space-x-4 text-sm text-slate-500 mt-2">
+                  <span>Toplam: {portfolioItems.length} proje</span>
+                  <span>•</span>
+                  <span>Öne çıkan: {portfolioItems.filter(item => item.featured).length}</span>
                 </div>
-              </Link>
-            ))}
-          </div>
-        </div>
-
-        {/* Portfolio Grid */}
-        <div className="mb-8">
-          <div className="flex items-center justify-between mb-6">
-            <h3 className="text-xl font-bold text-white">Projeler</h3>
-            <div className="flex items-center space-x-2 text-sm text-slate-400">
-              <span>{portfolioItems.length} proje bulundu</span>
-            </div>
-          </div>
-
-          {portfolioItems.length === 0 && !loading ? (
-            <div className="bg-white/5 backdrop-blur-xl rounded-2xl p-12 border border-white/10 text-center">
-              <FolderOpenIcon className="w-16 h-16 text-slate-500 mx-auto mb-4" />
-              <h4 className="text-xl font-semibold text-white mb-2">Henüz proje yok</h4>
-              <p className="text-slate-400 mb-6">İlk projenizi ekleyerek başlayın</p>
-              <Link 
+              </div>
+              <Link
                 href="/admin/portfolio/new"
-                className="inline-flex items-center space-x-2 bg-gradient-to-r from-teal-600 to-blue-600 text-white px-6 py-3 rounded-xl font-semibold hover:scale-105 transition-transform"
+                className="bg-teal-600 hover:bg-teal-700 text-white px-6 py-3 rounded-xl font-semibold transition-all duration-200 flex items-center space-x-2 shadow-sm"
               >
                 <PlusIcon className="w-5 h-5" />
-                <span>Yeni Proje Ekle</span>
+                <span>Yeni Proje</span>
               </Link>
             </div>
-          ) : (
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {portfolioItems.map((item) => (
-                <div
-                  key={item._id}
-                  className="bg-white/10 backdrop-blur-xl rounded-2xl border border-white/20 overflow-hidden hover:bg-white/15 transition-all duration-300 hover:scale-105 group"
-                >
-                  <div className="relative h-48">
-                    <Image
-                      src={item.coverImage}
-                      alt={item.title}
-                      fill
-                      className="object-cover group-hover:scale-110 transition-transform duration-500"
-                    />
-                    {item.featured && (
-                      <div className="absolute top-3 right-3">
-                        <div className="bg-yellow-500/20 backdrop-blur-sm border border-yellow-500/30 rounded-full p-2">
-                          <StarIcon className="w-4 h-4 text-yellow-400" />
+
+        {/* Portfolio Items */}
+        <div className="bg-white rounded-xl shadow-sm border border-slate-200">
+          <div className="p-6 border-b border-slate-200">
+            <h3 className="text-lg font-semibold text-slate-900">Projeler</h3>
+          </div>
+          
+          <div className="divide-y divide-slate-200">
+            {portfolioItems.length === 0 ? (
+              <div className="p-12 text-center">
+                <FolderOpenIcon className="w-12 h-12 text-slate-400 mx-auto mb-4" />
+                <p className="text-slate-600 text-lg">Henüz proje eklenmemiş</p>
+                <p className="text-slate-500 mt-2">İlk projenizi eklemek için "Yeni Proje" butonuna tıklayın</p>
+              </div>
+            ) : (
+              portfolioItems.map((item) => (
+                <div key={item._id} className="p-6 hover:bg-slate-50 transition-colors">
+                  <div className="flex items-start space-x-4">
+                    {/* Image */}
+                    <div className="flex-shrink-0">
+                      <Image
+                        src={item.coverImage}
+                        alt={item.title}
+                        width={80}
+                        height={80}
+                        className="rounded-xl object-cover"
+                      />
+                    </div>
+                    
+                    {/* Content */}
+                    <div className="flex-1 min-w-0">
+                      <div className="flex items-start justify-between">
+                        <div className="flex-1">
+                          <h4 className="text-lg font-semibold text-slate-900 mb-2 flex items-center space-x-2">
+                            <span>{item.title}</span>
+                            {item.featured && (
+                              <StarIcon className="w-5 h-5 text-yellow-500" />
+                            )}
+                          </h4>
+                          <p className="text-slate-600 mb-3 line-clamp-2">{item.description}</p>
+                          <div className="flex items-center space-x-4 text-sm text-slate-500">
+                            <div className="flex items-center space-x-1">
+                              <ClockIcon className="w-4 h-4" />
+                              <span>{new Date(item.completionDate).toLocaleDateString('tr-TR')}</span>
+                            </div>
+                            {item.category && (
+                              <div className="flex items-center space-x-1">
+                                <TagIcon className="w-4 h-4" />
+                                <span>{item.category.name}</span>
+                              </div>
+                            )}
+                            <span>Müşteri: {item.client}</span>
+                          </div>
+                        </div>
+                        
+                        {/* Actions */}
+                        <div className="flex items-center space-x-2 ml-4">
+                          <Link
+                            href={`/portfolio/${item._id}`}
+                            className="p-2 text-slate-600 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-colors"
+                            title="Görüntüle"
+                          >
+                            <EyeIcon className="w-5 h-5" />
+                          </Link>
+                          <Link
+                            href={`/admin/portfolio/edit/${item._id}`}
+                            className="p-2 text-slate-600 hover:text-teal-600 hover:bg-teal-50 rounded-lg transition-colors"
+                            title="Düzenle"
+                          >
+                            <PencilIcon className="w-5 h-5" />
+                          </Link>
+                          <button
+                            onClick={() => handleDelete(item._id)}
+                            className="p-2 text-slate-600 hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors"
+                            title="Sil"
+                          >
+                            <TrashIcon className="w-5 h-5" />
+                          </button>
                         </div>
                       </div>
-                    )}
-                    <div className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
-                  </div>
-                  
-                  <div className="p-6">
-                    <div className="flex items-start justify-between mb-3">
-                      <h4 className="text-lg font-bold text-white group-hover:text-teal-300 transition-colors duration-300 line-clamp-1">
-                        {item.title}
-                      </h4>
-                      <span className="text-xs bg-teal-500/20 text-teal-300 px-2 py-1 rounded-lg">
-                        {item.category?.name || 'Kategori'}
-                      </span>
-                    </div>
-                    
-                    <p className="text-slate-300 text-sm mb-4 line-clamp-2 leading-relaxed">
-                      {item.description}
-                    </p>
-                    
-                    <div className="flex flex-wrap gap-2 mb-4">
-                      {item.technologies.slice(0, 3).map((tech, index) => (
-                        <span
-                          key={index}
-                          className="bg-blue-500/20 text-blue-300 text-xs px-2 py-1 rounded-lg"
-                        >
-                          {tech}
-                        </span>
-                      ))}
-                      {item.technologies.length > 3 && (
-                        <span className="text-slate-400 text-xs px-2 py-1">
-                          +{item.technologies.length - 3}
-                        </span>
-                      )}
-                    </div>
-                    
-                    <div className="flex items-center justify-between pt-4 border-t border-white/10">
-                      <button
-                        onClick={() => router.push(`/admin/portfolio/edit/${item._id}`)}
-                        className="flex items-center space-x-2 text-blue-400 hover:text-blue-300 transition-colors group/btn"
-                      >
-                        <PencilIcon className="w-4 h-4 group-hover/btn:scale-110 transition-transform" />
-                        <span className="text-sm font-medium">Düzenle</span>
-                      </button>
-                      
-                      <button
-                        onClick={() => handleDelete(item._id)}
-                        className="flex items-center space-x-2 text-red-400 hover:text-red-300 transition-colors group/btn"
-                      >
-                        <TrashIcon className="w-4 h-4 group-hover/btn:scale-110 transition-transform" />
-                        <span className="text-sm font-medium">Sil</span>
-                      </button>
                     </div>
                   </div>
                 </div>
-              ))}
-            </div>
-          )}
-        </div>
-
-        {/* Footer Info */}
-        <div className="bg-white/5 backdrop-blur-xl rounded-2xl p-6 border border-white/10">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center space-x-3">
-              <div className="w-2 h-2 bg-green-400 rounded-full animate-pulse"></div>
-              <span className="text-slate-300 text-sm">Portfolyo Yönetimi Aktif</span>
-            </div>
-            <div className="flex items-center space-x-6 text-sm text-slate-400">
-              <Link href="/admin/dashboard" className="hover:text-white transition-colors duration-200 flex items-center space-x-1">
-                <HomeIcon className="w-4 h-4" />
-                <span>Dashboard</span>
-              </Link>
-              <Link href="/" className="hover:text-white transition-colors duration-200 flex items-center space-x-1">
-                <EyeIcon className="w-4 h-4" />
-                <span>Site Görünümü</span>
-              </Link>
-            </div>
+              ))
+            )}
           </div>
         </div>
-      </main>
-    </div>
+          </div>
+        )}
+
+        {/* Categories Tab */}
+        {activeTab === 'categories' && (
+          <div className="space-y-6">
+            {/* Add New Category */}
+            <div className="bg-white rounded-xl shadow-sm border border-slate-200 p-6">
+              <h3 className="text-lg font-semibold text-slate-900 mb-4">Yeni Kategori Ekle</h3>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-sm font-medium text-slate-700 mb-2">
+                    Kategori Adı
+                  </label>
+                  <input
+                    type="text"
+                    value={newCategoryName}
+                    onChange={(e) => setNewCategoryName(e.target.value)}
+                    className="w-full px-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+                    placeholder="Kategori adını girin"
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-slate-700 mb-2">
+                    Açıklama (İsteğe bağlı)
+                  </label>
+                  <input
+                    type="text"
+                    value={newCategoryDescription}
+                    onChange={(e) => setNewCategoryDescription(e.target.value)}
+                    className="w-full px-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+                    placeholder="Kategori açıklaması"
+                  />
+                </div>
+              </div>
+              <div className="mt-4">
+                <button
+                  onClick={handleCreateCategory}
+                  disabled={!newCategoryName.trim()}
+                  className="bg-purple-600 hover:bg-purple-700 disabled:bg-slate-300 text-white px-6 py-2 rounded-lg font-semibold transition-all duration-200 flex items-center space-x-2"
+                >
+                  <PlusIcon className="w-5 h-5" />
+                  <span>Kategori Ekle</span>
+                </button>
+              </div>
+            </div>
+
+            {/* Categories List */}
+            <div className="bg-white rounded-xl shadow-sm border border-slate-200">
+              <div className="p-6 border-b border-slate-200">
+                <h3 className="text-lg font-semibold text-slate-900">Kategoriler</h3>
+              </div>
+              
+              {categoriesLoading ? (
+                <div className="p-12 text-center">
+                  <div className="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-purple-500 mx-auto"></div>
+                  <p className="text-slate-500 mt-2">Kategoriler yükleniyor...</p>
+                </div>
+              ) : categories.length === 0 ? (
+                <div className="p-12 text-center">
+                  <TagIcon className="w-12 h-12 text-slate-400 mx-auto mb-4" />
+                  <p className="text-slate-600 text-lg">Henüz kategori eklenmemiş</p>
+                  <p className="text-slate-500 mt-2">İlk kategorinizi yukarıdaki formdan ekleyebilirsiniz</p>
+                </div>
+              ) : (
+                <div className="divide-y divide-slate-200">
+                  {categories.map((category) => (
+                    <div key={category._id} className="p-6 hover:bg-slate-50 transition-colors">
+                      {editingCategory?._id === category._id ? (
+                        <div className="space-y-4">
+                          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <input
+                              type="text"
+                              value={editingCategory.name}
+                              onChange={(e) => setEditingCategory({
+                                ...editingCategory,
+                                name: e.target.value
+                              })}
+                              className="px-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+                            />
+                            <input
+                              type="text"
+                              value={editingCategory.description || ''}
+                              onChange={(e) => setEditingCategory({
+                                ...editingCategory,
+                                description: e.target.value
+                              })}
+                              className="px-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+                              placeholder="Açıklama"
+                            />
+                          </div>
+                          <div className="flex space-x-2">
+                            <button
+                              onClick={handleUpdateCategory}
+                              className="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg font-medium transition-colors flex items-center space-x-1"
+                            >
+                              <CheckIcon className="w-4 h-4" />
+                              <span>Kaydet</span>
+                            </button>
+                            <button
+                              onClick={() => setEditingCategory(null)}
+                              className="bg-slate-600 hover:bg-slate-700 text-white px-4 py-2 rounded-lg font-medium transition-colors flex items-center space-x-1"
+                            >
+                              <XMarkIcon className="w-4 h-4" />
+                              <span>İptal</span>
+                            </button>
+                          </div>
+                        </div>
+                      ) : (
+                        <div className="flex items-center justify-between">
+                          <div>
+                            <h4 className="text-lg font-semibold text-slate-900">{category.name}</h4>
+                            {category.description && (
+                              <p className="text-slate-600 mt-1">{category.description}</p>
+                            )}
+                            <p className="text-sm text-slate-500 mt-2">
+                              Slug: {category.slug}
+                            </p>
+                          </div>
+                          <div className="flex space-x-2">
+                            <button
+                              onClick={() => setEditingCategory(category)}
+                              className="bg-blue-600 hover:bg-blue-700 text-white p-2 rounded-lg transition-colors"
+                              title="Düzenle"
+                            >
+                              <PencilIcon className="w-4 h-4" />
+                            </button>
+                            <button
+                              onClick={() => handleDeleteCategory(category._id)}
+                              className="bg-red-600 hover:bg-red-700 text-white p-2 rounded-lg transition-colors"
+                              title="Sil"
+                            >
+                              <TrashIcon className="w-4 h-4" />
+                            </button>
+                          </div>
+                        </div>
+                      )}
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
+          </div>
+        )}
+      </div>
+    </AdminLayout>
   );
 } 

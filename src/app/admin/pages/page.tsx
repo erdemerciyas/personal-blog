@@ -1,8 +1,8 @@
 'use client';
 import { useState, useEffect } from 'react';
-import { useSession, signOut } from 'next-auth/react';
+import { useSession } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
-import Link from 'next/link';
+import AdminLayout from '../../../components/admin/AdminLayout';
 import {
   DocumentTextIcon,
   EyeIcon,
@@ -13,7 +13,8 @@ import {
   CheckCircleIcon,
   XCircleIcon,
   HomeIcon,
-  ArrowLeftIcon,
+  CheckIcon,
+  ExclamationTriangleIcon,
 } from '@heroicons/react/24/outline';
 
 interface PageSetting {
@@ -125,19 +126,16 @@ export default function AdminPagesManagement() {
     }
   };
 
-  const handleSignOut = async () => {
-    await signOut({ redirect: false });
-    router.push('/admin/login');
-  };
-
   if (status === 'loading' || loading) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 flex items-center justify-center">
-        <div className="flex flex-col items-center space-y-4">
-          <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-teal-500"></div>
-          <p className="text-slate-300">Sayfa ayarları yükleniyor...</p>
+      <AdminLayout>
+        <div className="flex items-center justify-center min-h-[400px]">
+          <div className="flex flex-col items-center space-y-4">
+            <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-teal-500"></div>
+            <p className="text-slate-600">Sayfa ayarları yükleniyor...</p>
+          </div>
         </div>
-      </div>
+      </AdminLayout>
     );
   }
 
@@ -146,177 +144,160 @@ export default function AdminPagesManagement() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900">
-      {/* Header */}
-      <header className="bg-slate-800/50 backdrop-blur-xl border-b border-slate-700/50">
-        <div className="max-w-7xl mx-auto px-6 sm:px-8 py-4">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center space-x-4">
-              <Link 
-                href="/admin/dashboard"
-                className="flex items-center space-x-2 text-slate-300 hover:text-white transition-colors"
-              >
-                <ArrowLeftIcon className="w-5 h-5" />
-                <span>Dashboard&apos;a Dön</span>
-              </Link>
-              <div className="w-px h-6 bg-slate-600"></div>
-              <h1 className="text-2xl font-bold text-white">Sayfa Yönetimi</h1>
-            </div>
-            <button
-              onClick={handleSignOut}
-              className="text-slate-300 hover:text-white transition-colors"
-            >
-              Çıkış Yap
-            </button>
-          </div>
-        </div>
-      </header>
-
-      <main className="max-w-7xl mx-auto px-6 sm:px-8 py-8">
+    <AdminLayout 
+      title="Sayfa Yönetimi"
+      breadcrumbs={[
+        { label: 'Dashboard', href: '/admin/dashboard' },
+        { label: 'Sayfa Yönetimi' }
+      ]}
+    >
+      <div className="space-y-6">
         
-        {/* Page Header */}
-        <div className="mb-8">
-          <div className="bg-gradient-to-r from-blue-500/10 to-teal-500/10 backdrop-blur-xl rounded-3xl p-8 border border-white/20">
-            <div className="flex items-center justify-between">
-              <div>
-                <h2 className="text-3xl font-bold text-white mb-2 flex items-center space-x-3">
-                  <DocumentTextIcon className="w-8 h-8 text-teal-400" />
-                  <span>Sayfa Yönetimi</span>
-                </h2>
-                <p className="text-slate-300 text-lg">
-                  Sitenizin sayfalarını aktif/pasif yapın ve menüde gösterilecek sayfaları belirleyin.
-                </p>
-              </div>
-              <div className="hidden lg:flex items-center space-x-2 text-sm text-slate-400">
-                <Cog6ToothIcon className="w-4 h-4" />
-                <span>Toplam {pages.length} sayfa</span>
-              </div>
-            </div>
+        {/* Header Actions */}
+        <div className="flex items-center justify-between">
+          <div>
+            <p className="text-slate-600">Sitenizin sayfalarını aktif/pasif yapın ve menüde gösterilecek sayfaları belirleyin</p>
+          </div>
+          <div className="flex items-center space-x-2 text-sm text-slate-500">
+            <Cog6ToothIcon className="w-4 h-4" />
+            <span>Toplam {pages.length} sayfa</span>
           </div>
         </div>
 
-        {/* Status Messages */}
+        {/* Success/Error Messages */}
         {error && (
-          <div className="mb-6">
-            <div className="bg-red-500/10 backdrop-blur-xl border border-red-500/30 text-red-300 p-4 rounded-2xl flex items-center space-x-2">
-              <XCircleIcon className="w-5 h-5" />
-              <span>{error}</span>
-            </div>
+          <div className="bg-red-50 border border-red-200 text-red-800 p-4 rounded-xl flex items-center space-x-3">
+            <ExclamationTriangleIcon className="w-5 h-5" />
+            <span>{error}</span>
           </div>
         )}
 
         {success && (
-          <div className="mb-6">
-            <div className="bg-green-500/10 backdrop-blur-xl border border-green-500/30 text-green-300 p-4 rounded-2xl flex items-center space-x-2">
-              <CheckCircleIcon className="w-5 h-5" />
-              <span>{success}</span>
-            </div>
+          <div className="bg-green-50 border border-green-200 text-green-800 p-4 rounded-xl flex items-center space-x-3">
+            <CheckIcon className="w-5 h-5" />
+            <span>{success}</span>
           </div>
         )}
 
-        {/* Pages List */}
-        <div className="bg-white/5 backdrop-blur-xl rounded-2xl border border-white/10 overflow-hidden">
-          <div className="p-6">
-            <h3 className="text-xl font-bold text-white mb-6">Sayfalar</h3>
-            
-            <div className="space-y-4">
-              {pages.map((page, index) => (
-                <div
-                  key={page.pageId}
-                  className="bg-white/5 backdrop-blur-xl rounded-xl p-6 border border-white/10 hover:bg-white/10 transition-all duration-200"
-                >
-                  <div className="flex items-center justify-between">
-                    <div className="flex items-center space-x-4">
-                      <div className="flex items-center space-x-2">
-                        <HomeIcon className="w-5 h-5 text-slate-400" />
-                        <div>
-                          <h4 className="text-lg font-semibold text-white">{page.title}</h4>
-                          <p className="text-sm text-slate-400">{page.path}</p>
-                          <p className="text-xs text-slate-500 mt-1">{page.description}</p>
+        {/* Page List */}
+        <div className="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden">
+          <div className="px-6 py-4 border-b border-slate-200">
+            <h3 className="text-lg font-semibold text-slate-900 flex items-center space-x-2">
+              <DocumentTextIcon className="w-5 h-5 text-teal-600" />
+              <span>Sayfa Listesi</span>
+            </h3>
+          </div>
+          
+          <div className="divide-y divide-slate-200">
+            {pages.map((page) => (
+              <div key={page._id} className="p-6 hover:bg-slate-50 transition-colors">
+                <div className="flex items-center justify-between">
+                  <div className="flex-1">
+                    <div className="flex items-center space-x-3">
+                      <div className="flex-shrink-0">
+                        <div className={`w-10 h-10 rounded-xl flex items-center justify-center ${
+                          page.isActive ? 'bg-teal-100 text-teal-600' : 'bg-slate-100 text-slate-400'
+                        }`}>
+                          {page.pageId === 'home' && <HomeIcon className="w-5 h-5" />}
+                          {page.pageId !== 'home' && <DocumentTextIcon className="w-5 h-5" />}
                         </div>
                       </div>
-                    </div>
-
-                    <div className="flex items-center space-x-4">
-                      {/* Page Order Controls */}
-                      <div className="flex items-center space-x-1">
-                        <button
-                          onClick={() => reorderPages(page.pageId, 'up')}
-                          disabled={index === 0 || saving}
-                          className="p-2 text-slate-400 hover:text-white disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
-                          title="Yukarı taşı"
-                        >
-                          <ArrowUpIcon className="w-4 h-4" />
-                        </button>
-                        <button
-                          onClick={() => reorderPages(page.pageId, 'down')}
-                          disabled={index === pages.length - 1 || saving}
-                          className="p-2 text-slate-400 hover:text-white disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
-                          title="Aşağı taşı"
-                        >
-                          <ArrowDownIcon className="w-4 h-4" />
-                        </button>
-                      </div>
-
-                      {/* Navigation Visibility Toggle */}
-                      <div className="flex items-center space-x-2">
-                        <span className="text-sm text-slate-400">Menüde:</span>
-                        <button
-                          onClick={() => updatePage(page.pageId, { showInNavigation: !page.showInNavigation })}
-                          disabled={saving}
-                          className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors ${
-                            page.showInNavigation ? 'bg-teal-600' : 'bg-slate-600'
-                          }`}
-                        >
-                          <span
-                            className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform ${
-                              page.showInNavigation ? 'translate-x-6' : 'translate-x-1'
-                            }`}
-                          />
-                        </button>
-                      </div>
-
-                      {/* Page Active Toggle */}
-                      <div className="flex items-center space-x-2">
-                        <span className="text-sm text-slate-400">Aktif:</span>
-                        <button
-                          onClick={() => updatePage(page.pageId, { isActive: !page.isActive })}
-                          disabled={saving}
-                          className={`p-2 rounded-lg transition-colors ${
-                            page.isActive
-                              ? 'text-green-400 hover:text-green-300 bg-green-500/10'
-                              : 'text-red-400 hover:text-red-300 bg-red-500/10'
-                          }`}
-                          title={page.isActive ? 'Sayfayı gizle' : 'Sayfayı göster'}
-                        >
-                          {page.isActive ? (
-                            <EyeIcon className="w-5 h-5" />
-                          ) : (
-                            <EyeSlashIcon className="w-5 h-5" />
-                          )}
-                        </button>
+                      <div className="min-w-0 flex-1">
+                        <div className="flex items-center space-x-2">
+                          <h4 className="text-lg font-semibold text-slate-900">{page.title}</h4>
+                          <span className="text-sm text-slate-500 bg-slate-100 px-2 py-1 rounded">
+                            {page.path}
+                          </span>
+                        </div>
+                        <p className="text-sm text-slate-600 mt-1">{page.description}</p>
                       </div>
                     </div>
                   </div>
+                  
+                  <div className="flex items-center space-x-4">
+                    {/* Active Toggle */}
+                    <div className="flex items-center space-x-2">
+                      <span className="text-sm text-slate-600">Aktif</span>
+                      <button
+                        onClick={() => updatePage(page.pageId, { isActive: !page.isActive })}
+                        disabled={saving}
+                        className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors ${
+                          page.isActive ? 'bg-teal-600' : 'bg-slate-200'
+                        }`}
+                      >
+                        <span
+                          className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform ${
+                            page.isActive ? 'translate-x-6' : 'translate-x-1'
+                          }`}
+                        />
+                      </button>
+                    </div>
+                    
+                    {/* Navigation Toggle */}
+                    <div className="flex items-center space-x-2">
+                      <span className="text-sm text-slate-600">Menüde</span>
+                      <button
+                        onClick={() => updatePage(page.pageId, { showInNavigation: !page.showInNavigation })}
+                        disabled={saving}
+                        className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors ${
+                          page.showInNavigation ? 'bg-teal-600' : 'bg-slate-200'
+                        }`}
+                      >
+                        <span
+                          className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform ${
+                            page.showInNavigation ? 'translate-x-6' : 'translate-x-1'
+                          }`}
+                        />
+                      </button>
+                    </div>
+                    
+                    {/* Order Controls */}
+                    <div className="flex items-center space-x-1">
+                      <button
+                        onClick={() => reorderPages(page.pageId, 'up')}
+                        disabled={saving || page.order === 0}
+                        className="p-2 text-slate-400 hover:text-slate-600 disabled:opacity-50 transition-colors"
+                      >
+                        <ArrowUpIcon className="w-4 h-4" />
+                      </button>
+                      <button
+                        onClick={() => reorderPages(page.pageId, 'down')}
+                        disabled={saving || page.order === pages.length - 1}
+                        className="p-2 text-slate-400 hover:text-slate-600 disabled:opacity-50 transition-colors"
+                      >
+                        <ArrowDownIcon className="w-4 h-4" />
+                      </button>
+                    </div>
+                  </div>
                 </div>
-              ))}
-            </div>
+              </div>
+            ))}
           </div>
         </div>
 
-        {/* Info Panel */}
-        <div className="mt-8 bg-blue-500/10 backdrop-blur-xl rounded-2xl p-6 border border-blue-500/30">
-          <h4 className="text-lg font-semibold text-white mb-3 flex items-center space-x-2">
-            <Cog6ToothIcon className="w-5 h-5 text-blue-400" />
-            <span>Açıklamalar</span>
-          </h4>
-          <div className="space-y-2 text-sm text-slate-300">
-            <p><strong>Aktif/Pasif:</strong> Pasif yapılan sayfalar siteye erişilemez hale gelir (404 hatası verir)</p>
-            <p><strong>Menüde Göster:</strong> Bu ayar sayfanın navigasyon menüsünde görünüp görünmeyeceğini belirler</p>
-            <p><strong>Sıralama:</strong> Sayfaların menüdeki sırasını yukarı/aşağı okları ile değiştirebilirsiniz</p>
+        {/* Status Legend */}
+        <div className="bg-slate-50 rounded-xl p-6 border border-slate-200">
+          <h4 className="text-sm font-semibold text-slate-900 mb-3">Durum Açıklamaları</h4>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
+            <div className="flex items-center space-x-2">
+              <CheckCircleIcon className="w-4 h-4 text-teal-600" />
+              <span className="text-slate-700">Aktif: Sayfa erişilebilir</span>
+            </div>
+            <div className="flex items-center space-x-2">
+              <XCircleIcon className="w-4 h-4 text-slate-400" />
+              <span className="text-slate-700">Pasif: Sayfa 404 döndürür</span>
+            </div>
+            <div className="flex items-center space-x-2">
+              <EyeIcon className="w-4 h-4 text-teal-600" />
+              <span className="text-slate-700">Menüde: Navigasyon menüsünde gösterilir</span>
+            </div>
+            <div className="flex items-center space-x-2">
+              <EyeSlashIcon className="w-4 h-4 text-slate-400" />
+              <span className="text-slate-700">Menüde değil: Navigasyon menüsünde gizli</span>
+            </div>
           </div>
         </div>
-      </main>
-    </div>
+      </div>
+    </AdminLayout>
   );
 } 

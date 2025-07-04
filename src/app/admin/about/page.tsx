@@ -1,6 +1,9 @@
 'use client';
 
 import { useState, useEffect } from 'react';
+import { useSession } from 'next-auth/react';
+import { useRouter } from 'next/navigation';
+import AdminLayout from '../../../components/admin/AdminLayout';
 import {
   UserIcon,
   PlusIcon,
@@ -42,6 +45,9 @@ interface AboutData {
 }
 
 export default function AdminAboutPage() {
+  const { data: session, status } = useSession();
+  const router = useRouter();
+  
   const [aboutData, setAboutData] = useState<AboutData>({
     heroTitle: '',
     heroSubtitle: '',
@@ -72,10 +78,19 @@ export default function AdminAboutPage() {
   const [message, setMessage] = useState('');
   const [messageType, setMessageType] = useState<'success' | 'error'>('success');
 
+  // Authentication check
+  useEffect(() => {
+    if (status === 'unauthenticated') {
+      router.push('/admin/login');
+    }
+  }, [status, router]);
+
   // Fetch about data
   useEffect(() => {
-    fetchAboutData();
-  }, []);
+    if (status === 'authenticated') {
+      fetchAboutData();
+    }
+  }, [status]);
 
   const fetchAboutData = async () => {
     try {
@@ -144,165 +159,161 @@ export default function AdminAboutPage() {
     }));
   };
 
-  if (loading) {
+  if (status === 'loading' || loading) {
     return (
-      <div className="min-h-screen bg-slate-900 flex items-center justify-center">
-        <div className="animate-spin rounded-full h-32 w-32 border-t-2 border-b-2 border-teal-500"></div>
-      </div>
+      <AdminLayout>
+        <div className="flex items-center justify-center min-h-[400px]">
+          <div className="flex flex-col items-center space-y-4">
+            <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-teal-500"></div>
+            <p className="text-slate-600">Hakkımda verileri yükleniyor...</p>
+          </div>
+        </div>
+      </AdminLayout>
     );
   }
 
+  if (status === 'unauthenticated') {
+    return null;
+  }
+
   return (
-    <div className="min-h-screen bg-slate-900 text-white">
-      {/* Header */}
-      <div className="bg-slate-800 border-b border-slate-700 sticky top-0 z-10">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex items-center justify-between h-16">
-            <div className="flex items-center space-x-3">
-              <UserIcon className="w-8 h-8 text-teal-400" />
-              <h1 className="text-2xl font-bold text-white">Hakkımda Yönetimi</h1>
-            </div>
+    <AdminLayout 
+      title="Hakkımda Yönetimi"
+      breadcrumbs={[
+        { label: 'Dashboard', href: '/admin/dashboard' },
+        { label: 'Hakkımda Yönetimi' }
+      ]}
+    >
+      <div className="space-y-6">
+        
+        {/* Header Actions */}
+        <div className="flex items-center justify-between">
+          <div>
+            <p className="text-slate-600">Hakkımda sayfasının içeriğini düzenleyin</p>
+          </div>
+          <div className="flex items-center space-x-3">
+            <a 
+              href="/about" 
+              target="_blank"
+              rel="noopener noreferrer"
+              className="flex items-center space-x-2 px-4 py-2 bg-slate-600 hover:bg-slate-700 text-white rounded-xl transition-colors"
+            >
+              <EyeIcon className="w-4 h-4" />
+              <span>Önizle</span>
+            </a>
             
-            <div className="flex items-center space-x-4">
-              <a 
-                href="/about" 
-                target="_blank"
-                rel="noopener noreferrer"
-                className="flex items-center space-x-2 px-4 py-2 bg-slate-700 hover:bg-slate-600 rounded-lg transition-colors"
-              >
-                <EyeIcon className="w-4 h-4" />
-                <span>Önizle</span>
-              </a>
-              
-              <button
-                onClick={handleSubmit}
-                disabled={saving}
-                className={`flex items-center space-x-2 px-6 py-2 rounded-lg font-semibold transition-all duration-200 ${
-                  saving
-                    ? 'bg-slate-600 cursor-not-allowed'
-                    : 'bg-gradient-to-r from-teal-600 to-blue-600 hover:from-teal-700 hover:to-blue-700 hover:scale-105'
-                }`}
-              >
-                {saving ? (
-                  <>
-                    <div className="animate-spin rounded-full h-4 w-4 border-t-2 border-b-2 border-current"></div>
-                    <span>Kaydediliyor...</span>
-                  </>
-                ) : (
-                  <>
-                    <CheckIcon className="w-4 h-4" />
-                    <span>Kaydet</span>
-                  </>
-                )}
-              </button>
-            </div>
+            <button
+              onClick={handleSubmit}
+              disabled={saving}
+              className={`flex items-center space-x-2 px-6 py-3 rounded-xl font-semibold transition-all duration-200 ${
+                saving
+                  ? 'bg-slate-400 cursor-not-allowed text-white'
+                  : 'bg-teal-600 hover:bg-teal-700 text-white shadow-sm'
+              }`}
+            >
+              {saving ? (
+                <>
+                  <div className="animate-spin rounded-full h-4 w-4 border-t-2 border-b-2 border-current"></div>
+                  <span>Kaydediliyor...</span>
+                </>
+              ) : (
+                <>
+                  <CheckIcon className="w-4 h-4" />
+                  <span>Kaydet</span>
+                </>
+              )}
+            </button>
           </div>
         </div>
-      </div>
 
-      {/* Content */}
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        {/* Status Message */}
+        {/* Success/Error Messages */}
         {message && (
-          <div className={`mb-8 p-4 rounded-xl border flex items-center space-x-3 ${
+          <div className={`p-4 rounded-xl border ${
             messageType === 'success' 
-              ? 'bg-green-900/20 border-green-500/30 text-green-300' 
-              : 'bg-red-900/20 border-red-500/30 text-red-300'
+              ? 'bg-green-50 border-green-200 text-green-800' 
+              : 'bg-red-50 border-red-200 text-red-800'
           }`}>
-            {messageType === 'success' ? (
-              <CheckIcon className="w-6 h-6 text-green-400" />
-            ) : (
-              <ExclamationTriangleIcon className="w-6 h-6 text-red-400" />
-            )}
-            <span>{message}</span>
+            {message}
           </div>
         )}
 
+        {/* Form */}
         <form onSubmit={handleSubmit} className="space-y-8">
+          
           {/* Hero Section */}
-          <div className="bg-slate-800 rounded-2xl p-6 border border-slate-700">
-            <h2 className="text-xl font-bold text-white mb-6 flex items-center space-x-2">
-              <SparklesIcon className="w-6 h-6 text-teal-400" />
+          <div className="bg-white rounded-xl p-6 shadow-sm border border-slate-200">
+            <h3 className="text-lg font-semibold text-slate-900 mb-4 flex items-center space-x-2">
+              <SparklesIcon className="w-5 h-5 text-teal-600" />
               <span>Hero Bölümü</span>
-            </h2>
+            </h3>
             
             <div className="space-y-4">
               <div>
-                <label className="block text-sm font-medium text-slate-300 mb-2">
-                  Ana Başlık
-                </label>
+                <label className="block text-sm font-medium text-slate-700 mb-2">Başlık</label>
                 <input
                   type="text"
                   value={aboutData.heroTitle}
                   onChange={(e) => setAboutData(prev => ({ ...prev, heroTitle: e.target.value }))}
-                  className="w-full bg-slate-700 border border-slate-600 rounded-xl px-4 py-3 text-white focus:ring-2 focus:ring-teal-500"
-                  placeholder="Örn: Merhaba, Ben Erdem Erciyas"
+                  className="w-full border border-slate-300 rounded-xl px-4 py-3 text-slate-900 focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-transparent"
+                  placeholder="Ana başlık"
                 />
               </div>
               
               <div>
-                <label className="block text-sm font-medium text-slate-300 mb-2">
-                  Alt Başlık
-                </label>
+                <label className="block text-sm font-medium text-slate-700 mb-2">Alt Başlık</label>
                 <input
                   type="text"
                   value={aboutData.heroSubtitle}
                   onChange={(e) => setAboutData(prev => ({ ...prev, heroSubtitle: e.target.value }))}
-                  className="w-full bg-slate-700 border border-slate-600 rounded-xl px-4 py-3 text-white focus:ring-2 focus:ring-teal-500"
-                  placeholder="Örn: Developer & Mühendis"
+                  className="w-full border border-slate-300 rounded-xl px-4 py-3 text-slate-900 focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-transparent"
+                  placeholder="Alt başlık"
                 />
               </div>
               
               <div>
-                <label className="block text-sm font-medium text-slate-300 mb-2">
-                  Açıklama
-                </label>
+                <label className="block text-sm font-medium text-slate-700 mb-2">Açıklama</label>
                 <textarea
                   value={aboutData.heroDescription}
                   onChange={(e) => setAboutData(prev => ({ ...prev, heroDescription: e.target.value }))}
-                  rows={3}
-                  className="w-full bg-slate-700 border border-slate-600 rounded-xl px-4 py-3 text-white focus:ring-2 focus:ring-teal-500 resize-none"
-                  placeholder="Hero bölümü açıklaması..."
+                  rows={4}
+                  className="w-full border border-slate-300 rounded-xl px-4 py-3 text-slate-900 focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-transparent"
+                  placeholder="Kısa açıklama"
                 />
               </div>
             </div>
           </div>
 
-          {/* Personal Story */}
-          <div className="bg-slate-800 rounded-2xl p-6 border border-slate-700">
-            <h2 className="text-xl font-bold text-white mb-6">Kişisel Hikaye</h2>
+          {/* Story Section */}
+          <div className="bg-white rounded-xl p-6 shadow-sm border border-slate-200">
+            <h3 className="text-lg font-semibold text-slate-900 mb-4">Hikaye Bölümü</h3>
             
             <div className="space-y-4">
               <div>
-                <label className="block text-sm font-medium text-slate-300 mb-2">
-                  Bölüm Başlığı
-                </label>
+                <label className="block text-sm font-medium text-slate-700 mb-2">Bölüm Başlığı</label>
                 <input
                   type="text"
                   value={aboutData.storyTitle}
                   onChange={(e) => setAboutData(prev => ({ ...prev, storyTitle: e.target.value }))}
-                  className="w-full bg-slate-700 border border-slate-600 rounded-xl px-4 py-3 text-white focus:ring-2 focus:ring-teal-500"
-                  placeholder="Örn: Hikayem"
+                  className="w-full border border-slate-300 rounded-xl px-4 py-3 text-slate-900 focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-transparent"
+                  placeholder="Hikaye başlığı"
                 />
               </div>
               
               <div>
-                <label className="block text-sm font-medium text-slate-300 mb-2">
-                  Paragraflar
-                </label>
+                <label className="block text-sm font-medium text-slate-700 mb-2">Paragraflar</label>
                 {aboutData.storyParagraphs.map((paragraph, index) => (
-                  <div key={index} className="flex space-x-2 mb-3">
+                  <div key={index} className="flex items-start space-x-2 mb-3">
                     <textarea
                       value={paragraph}
                       onChange={(e) => updateArrayItem('storyParagraphs', index, e.target.value)}
                       rows={3}
-                      className="flex-1 bg-slate-700 border border-slate-600 rounded-xl px-4 py-3 text-white focus:ring-2 focus:ring-teal-500 resize-none"
+                      className="flex-1 border border-slate-300 rounded-xl px-4 py-3 text-slate-900 focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-transparent"
                       placeholder={`Paragraf ${index + 1}`}
                     />
                     <button
                       type="button"
                       onClick={() => removeArrayItem('storyParagraphs', index)}
-                      className="p-3 text-red-400 hover:text-red-300 hover:bg-red-900/20 rounded-xl transition-colors"
+                      className="p-2 text-red-600 hover:bg-red-50 rounded-lg transition-colors"
                     >
                       <TrashIcon className="w-5 h-5" />
                     </button>
@@ -311,7 +322,7 @@ export default function AdminAboutPage() {
                 <button
                   type="button"
                   onClick={() => addArrayItem('storyParagraphs', '')}
-                  className="flex items-center space-x-2 px-4 py-2 text-teal-400 hover:text-teal-300 hover:bg-teal-900/20 rounded-xl transition-colors"
+                  className="flex items-center space-x-2 text-teal-600 hover:text-teal-700 transition-colors"
                 >
                   <PlusIcon className="w-4 h-4" />
                   <span>Paragraf Ekle</span>
@@ -320,312 +331,244 @@ export default function AdminAboutPage() {
             </div>
           </div>
 
-          {/* Skills */}
-          <div className="bg-slate-800 rounded-2xl p-6 border border-slate-700">
-            <h2 className="text-xl font-bold text-white mb-6">Yetenekler</h2>
+          {/* Skills Section */}
+          <div className="bg-white rounded-xl p-6 shadow-sm border border-slate-200">
+            <h3 className="text-lg font-semibold text-slate-900 mb-4">Yetenekler</h3>
             
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
-              {aboutData.skills.map((skill, index) => (
-                <div key={index} className="flex space-x-2">
-                  <input
-                    type="text"
-                    value={skill}
-                    onChange={(e) => updateArrayItem('skills', index, e.target.value)}
-                    className="flex-1 bg-slate-700 border border-slate-600 rounded-xl px-4 py-2 text-white focus:ring-2 focus:ring-teal-500"
-                    placeholder={`Yetenek ${index + 1}`}
-                  />
-                  <button
-                    type="button"
-                    onClick={() => removeArrayItem('skills', index)}
-                    className="p-2 text-red-400 hover:text-red-300 hover:bg-red-900/20 rounded-xl transition-colors"
-                  >
-                    <TrashIcon className="w-4 h-4" />
-                  </button>
-                </div>
-              ))}
-            </div>
-            
+            {aboutData.skills.map((skill, index) => (
+              <div key={index} className="flex items-center space-x-2 mb-3">
+                <input
+                  type="text"
+                  value={skill}
+                  onChange={(e) => updateArrayItem('skills', index, e.target.value)}
+                  className="flex-1 border border-slate-300 rounded-xl px-4 py-3 text-slate-900 focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-transparent"
+                  placeholder={`Yetenek ${index + 1}`}
+                />
+                <button
+                  type="button"
+                  onClick={() => removeArrayItem('skills', index)}
+                  className="p-2 text-red-600 hover:bg-red-50 rounded-lg transition-colors"
+                >
+                  <TrashIcon className="w-5 h-5" />
+                </button>
+              </div>
+            ))}
             <button
               type="button"
               onClick={() => addArrayItem('skills', '')}
-              className="mt-4 flex items-center space-x-2 px-4 py-2 text-teal-400 hover:text-teal-300 hover:bg-teal-900/20 rounded-xl transition-colors"
+              className="flex items-center space-x-2 text-teal-600 hover:text-teal-700 transition-colors"
             >
               <PlusIcon className="w-4 h-4" />
               <span>Yetenek Ekle</span>
             </button>
           </div>
 
-          {/* Experience */}
-          <div className="bg-slate-800 rounded-2xl p-6 border border-slate-700">
-            <h2 className="text-xl font-bold text-white mb-6">Deneyim</h2>
+          {/* Experience Section */}
+          <div className="bg-white rounded-xl p-6 shadow-sm border border-slate-200">
+            <h3 className="text-lg font-semibold text-slate-900 mb-4">Deneyimler</h3>
             
             {aboutData.experience.map((exp, index) => (
-              <div key={index} className="bg-slate-700/50 rounded-xl p-4 mb-4 border border-slate-600">
-                <div className="flex justify-between items-center mb-4">
-                  <h3 className="text-lg font-semibold text-white">Deneyim {index + 1}</h3>
+              <div key={index} className="border border-slate-200 rounded-xl p-4 mb-4">
+                <div className="flex items-start justify-between mb-3">
+                  <h4 className="font-medium text-slate-900">Deneyim {index + 1}</h4>
                   <button
                     type="button"
                     onClick={() => removeArrayItem('experience', index)}
-                    className="p-2 text-red-400 hover:text-red-300 hover:bg-red-900/20 rounded-xl transition-colors"
+                    className="p-1 text-red-600 hover:bg-red-50 rounded transition-colors"
                   >
                     <TrashIcon className="w-4 h-4" />
                   </button>
                 </div>
                 
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  <div>
-                    <label className="block text-sm font-medium text-slate-300 mb-2">Pozisyon</label>
+                <div className="space-y-3">
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
                     <input
                       type="text"
                       value={exp.title}
                       onChange={(e) => updateArrayItem('experience', index, { ...exp, title: e.target.value })}
-                      className="w-full bg-slate-700 border border-slate-600 rounded-xl px-4 py-2 text-white focus:ring-2 focus:ring-teal-500"
-                      placeholder="Pozisyon adı"
+                      className="border border-slate-300 rounded-xl px-4 py-2 text-slate-900 focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-transparent"
+                      placeholder="Pozisyon"
                     />
-                  </div>
-                  
-                  <div>
-                    <label className="block text-sm font-medium text-slate-300 mb-2">Şirket</label>
                     <input
                       type="text"
                       value={exp.company}
                       onChange={(e) => updateArrayItem('experience', index, { ...exp, company: e.target.value })}
-                      className="w-full bg-slate-700 border border-slate-600 rounded-xl px-4 py-2 text-white focus:ring-2 focus:ring-teal-500"
-                      placeholder="Şirket adı"
+                      className="border border-slate-300 rounded-xl px-4 py-2 text-slate-900 focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-transparent"
+                      placeholder="Şirket"
                     />
                   </div>
-                  
-                  <div>
-                    <label className="block text-sm font-medium text-slate-300 mb-2">Dönem</label>
-                    <input
-                      type="text"
-                      value={exp.period}
-                      onChange={(e) => updateArrayItem('experience', index, { ...exp, period: e.target.value })}
-                      className="w-full bg-slate-700 border border-slate-600 rounded-xl px-4 py-2 text-white focus:ring-2 focus:ring-teal-500"
-                      placeholder="Örn: 2020 - Günümüz"
-                    />
-                  </div>
-                  
-                  <div className="md:col-span-2">
-                    <label className="block text-sm font-medium text-slate-300 mb-2">Açıklama</label>
-                    <textarea
-                      value={exp.description}
-                      onChange={(e) => updateArrayItem('experience', index, { ...exp, description: e.target.value })}
-                      rows={2}
-                      className="w-full bg-slate-700 border border-slate-600 rounded-xl px-4 py-2 text-white focus:ring-2 focus:ring-teal-500 resize-none"
-                      placeholder="Deneyim açıklaması"
-                    />
-                  </div>
+                  <input
+                    type="text"
+                    value={exp.period}
+                    onChange={(e) => updateArrayItem('experience', index, { ...exp, period: e.target.value })}
+                    className="w-full border border-slate-300 rounded-xl px-4 py-2 text-slate-900 focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-transparent"
+                    placeholder="Dönem (örn: 2020-2023)"
+                  />
+                  <textarea
+                    value={exp.description}
+                    onChange={(e) => updateArrayItem('experience', index, { ...exp, description: e.target.value })}
+                    rows={3}
+                    className="w-full border border-slate-300 rounded-xl px-4 py-2 text-slate-900 focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-transparent"
+                    placeholder="Açıklama"
+                  />
                 </div>
               </div>
             ))}
-            
             <button
               type="button"
               onClick={() => addArrayItem('experience', { title: '', company: '', period: '', description: '' })}
-              className="flex items-center space-x-2 px-4 py-2 text-teal-400 hover:text-teal-300 hover:bg-teal-900/20 rounded-xl transition-colors"
+              className="flex items-center space-x-2 text-teal-600 hover:text-teal-700 transition-colors"
             >
               <PlusIcon className="w-4 h-4" />
               <span>Deneyim Ekle</span>
             </button>
           </div>
 
-          {/* Achievements */}
-          <div className="bg-slate-800 rounded-2xl p-6 border border-slate-700">
-            <h2 className="text-xl font-bold text-white mb-6">Başarılar</h2>
+          {/* Achievements Section */}
+          <div className="bg-white rounded-xl p-6 shadow-sm border border-slate-200">
+            <h3 className="text-lg font-semibold text-slate-900 mb-4">Başarılar</h3>
             
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-              {aboutData.achievements.map((achievement, index) => (
-                <div key={index} className="flex space-x-2">
-                  <input
-                    type="text"
-                    value={achievement}
-                    onChange={(e) => updateArrayItem('achievements', index, e.target.value)}
-                    className="flex-1 bg-slate-700 border border-slate-600 rounded-xl px-4 py-2 text-white focus:ring-2 focus:ring-teal-500"
-                    placeholder={`Başarı ${index + 1}`}
-                  />
-                  <button
-                    type="button"
-                    onClick={() => removeArrayItem('achievements', index)}
-                    className="p-2 text-red-400 hover:text-red-300 hover:bg-red-900/20 rounded-xl transition-colors"
-                  >
-                    <TrashIcon className="w-4 h-4" />
-                  </button>
-                </div>
-              ))}
-            </div>
-            
+            {aboutData.achievements.map((achievement, index) => (
+              <div key={index} className="flex items-center space-x-2 mb-3">
+                <input
+                  type="text"
+                  value={achievement}
+                  onChange={(e) => updateArrayItem('achievements', index, e.target.value)}
+                  className="flex-1 border border-slate-300 rounded-xl px-4 py-3 text-slate-900 focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-transparent"
+                  placeholder={`Başarı ${index + 1}`}
+                />
+                <button
+                  type="button"
+                  onClick={() => removeArrayItem('achievements', index)}
+                  className="p-2 text-red-600 hover:bg-red-50 rounded-lg transition-colors"
+                >
+                  <TrashIcon className="w-5 h-5" />
+                </button>
+              </div>
+            ))}
             <button
               type="button"
               onClick={() => addArrayItem('achievements', '')}
-              className="mt-4 flex items-center space-x-2 px-4 py-2 text-teal-400 hover:text-teal-300 hover:bg-teal-900/20 rounded-xl transition-colors"
+              className="flex items-center space-x-2 text-teal-600 hover:text-teal-700 transition-colors"
             >
               <PlusIcon className="w-4 h-4" />
               <span>Başarı Ekle</span>
             </button>
           </div>
 
-          {/* Values */}
-          <div className="bg-slate-800 rounded-2xl p-6 border border-slate-700">
-            <h2 className="text-xl font-bold text-white mb-6">Değerler</h2>
+          {/* Values Section */}
+          <div className="bg-white rounded-xl p-6 shadow-sm border border-slate-200">
+            <h3 className="text-lg font-semibold text-slate-900 mb-4">Değerler</h3>
             
             {aboutData.values.map((value, index) => (
-              <div key={index} className="flex space-x-2 mb-3">
-                <input
-                  type="text"
-                  value={value.text}
-                  onChange={(e) => updateArrayItem('values', index, { ...value, text: e.target.value })}
-                  className="flex-1 bg-slate-700 border border-slate-600 rounded-xl px-4 py-2 text-white focus:ring-2 focus:ring-teal-500"
-                  placeholder="Değer metni"
-                />
-                <select
-                  value={value.iconName}
-                  onChange={(e) => updateArrayItem('values', index, { ...value, iconName: e.target.value })}
-                  className="bg-slate-700 border border-slate-600 rounded-xl px-4 py-2 text-white focus:ring-2 focus:ring-teal-500"
-                  style={{
-                    color: 'white',
-                    backgroundColor: '#334155'
-                  }}
-                >
-                  <option value="SparklesIcon" style={{ color: '#1e293b', backgroundColor: '#ffffff' }}>
-                    Yıldız
-                  </option>
-                  <option value="HeartIcon" style={{ color: '#1e293b', backgroundColor: '#ffffff' }}>
-                    Kalp
-                  </option>
-                  <option value="TrophyIcon" style={{ color: '#1e293b', backgroundColor: '#ffffff' }}>
-                    Kupa
-                  </option>
-                  <option value="AcademicCapIcon" style={{ color: '#1e293b', backgroundColor: '#ffffff' }}>
-                    Mezuniyet
-                  </option>
-                  <option value="UserGroupIcon" style={{ color: '#1e293b', backgroundColor: '#ffffff' }}>
-                    Grup
-                  </option>
-                  <option value="CogIcon" style={{ color: '#1e293b', backgroundColor: '#ffffff' }}>
-                    Ayar
-                  </option>
-                </select>
-                <button
-                  type="button"
-                  onClick={() => removeArrayItem('values', index)}
-                  className="p-2 text-red-400 hover:text-red-300 hover:bg-red-900/20 rounded-xl transition-colors"
-                >
-                  <TrashIcon className="w-4 h-4" />
-                </button>
+              <div key={index} className="border border-slate-200 rounded-xl p-4 mb-4">
+                <div className="flex items-start justify-between mb-3">
+                  <h4 className="font-medium text-slate-900">Değer {index + 1}</h4>
+                  <button
+                    type="button"
+                    onClick={() => removeArrayItem('values', index)}
+                    className="p-1 text-red-600 hover:bg-red-50 rounded transition-colors"
+                  >
+                    <TrashIcon className="w-4 h-4" />
+                  </button>
+                </div>
+                
+                <div className="space-y-3">
+                  <input
+                    type="text"
+                    value={value.text}
+                    onChange={(e) => updateArrayItem('values', index, { ...value, text: e.target.value })}
+                    className="w-full border border-slate-300 rounded-xl px-4 py-2 text-slate-900 focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-transparent"
+                    placeholder="Değer metni"
+                  />
+                  <select
+                    value={value.iconName}
+                    onChange={(e) => updateArrayItem('values', index, { ...value, iconName: e.target.value })}
+                    className="w-full border border-slate-300 rounded-xl px-4 py-2 text-slate-900 focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-transparent"
+                  >
+                    <option value="SparklesIcon">Yıldız</option>
+                    <option value="CheckIcon">Onay</option>
+                    <option value="UserIcon">Kullanıcı</option>
+                    <option value="ExclamationTriangleIcon">Ünlem</option>
+                  </select>
+                </div>
               </div>
             ))}
-            
             <button
               type="button"
               onClick={() => addArrayItem('values', { text: '', iconName: 'SparklesIcon' })}
-              className="flex items-center space-x-2 px-4 py-2 text-teal-400 hover:text-teal-300 hover:bg-teal-900/20 rounded-xl transition-colors"
+              className="flex items-center space-x-2 text-teal-600 hover:text-teal-700 transition-colors"
             >
               <PlusIcon className="w-4 h-4" />
               <span>Değer Ekle</span>
             </button>
           </div>
 
-          {/* Contact Information */}
-          <div className="bg-slate-800 rounded-2xl p-6 border border-slate-700">
-            <h2 className="text-xl font-bold text-white mb-6">İletişim Bilgileri</h2>
+          {/* Contact Section */}
+          <div className="bg-white rounded-xl p-6 shadow-sm border border-slate-200">
+            <h3 className="text-lg font-semibold text-slate-900 mb-4">İletişim Bölümü</h3>
             
             <div className="space-y-4">
               <div>
-                <label className="block text-sm font-medium text-slate-300 mb-2">
-                  Bölüm Başlığı
-                </label>
+                <label className="block text-sm font-medium text-slate-700 mb-2">Başlık</label>
                 <input
                   type="text"
                   value={aboutData.contactTitle}
                   onChange={(e) => setAboutData(prev => ({ ...prev, contactTitle: e.target.value }))}
-                  className="w-full bg-slate-700 border border-slate-600 rounded-xl px-4 py-3 text-white focus:ring-2 focus:ring-teal-500"
-                  placeholder="Örn: Birlikte Çalışalım"
+                  className="w-full border border-slate-300 rounded-xl px-4 py-3 text-slate-900 focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-transparent"
+                  placeholder="İletişim başlığı"
                 />
               </div>
               
               <div>
-                <label className="block text-sm font-medium text-slate-300 mb-2">
-                  Açıklama
-                </label>
+                <label className="block text-sm font-medium text-slate-700 mb-2">Açıklama</label>
                 <textarea
                   value={aboutData.contactDescription}
                   onChange={(e) => setAboutData(prev => ({ ...prev, contactDescription: e.target.value }))}
-                  rows={2}
-                  className="w-full bg-slate-700 border border-slate-600 rounded-xl px-4 py-3 text-white focus:ring-2 focus:ring-teal-500 resize-none"
-                  placeholder="İletişim bölümü açıklaması..."
+                  rows={3}
+                  className="w-full border border-slate-300 rounded-xl px-4 py-3 text-slate-900 focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-transparent"
+                  placeholder="İletişim açıklaması"
                 />
               </div>
               
               <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                 <div>
-                  <label className="block text-sm font-medium text-slate-300 mb-2">
-                    E-posta
-                  </label>
+                  <label className="block text-sm font-medium text-slate-700 mb-2">E-posta</label>
                   <input
                     type="email"
                     value={aboutData.contactEmail}
                     onChange={(e) => setAboutData(prev => ({ ...prev, contactEmail: e.target.value }))}
-                    className="w-full bg-slate-700 border border-slate-600 rounded-xl px-4 py-3 text-white focus:ring-2 focus:ring-teal-500"
-                    placeholder="E-posta adresi"
+                    className="w-full border border-slate-300 rounded-xl px-4 py-3 text-slate-900 focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-transparent"
+                    placeholder="email@domain.com"
                   />
                 </div>
                 
                 <div>
-                  <label className="block text-sm font-medium text-slate-300 mb-2">
-                    Telefon
-                  </label>
+                  <label className="block text-sm font-medium text-slate-700 mb-2">Telefon</label>
                   <input
-                    type="tel"
+                    type="text"
                     value={aboutData.contactPhone}
                     onChange={(e) => setAboutData(prev => ({ ...prev, contactPhone: e.target.value }))}
-                    className="w-full bg-slate-700 border border-slate-600 rounded-xl px-4 py-3 text-white focus:ring-2 focus:ring-teal-500"
-                    placeholder="Telefon numarası"
+                    className="w-full border border-slate-300 rounded-xl px-4 py-3 text-slate-900 focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-transparent"
+                    placeholder="+90 555 000 00 00"
                   />
                 </div>
                 
                 <div>
-                  <label className="block text-sm font-medium text-slate-300 mb-2">
-                    Lokasyon
-                  </label>
+                  <label className="block text-sm font-medium text-slate-700 mb-2">Konum</label>
                   <input
                     type="text"
                     value={aboutData.contactLocation}
                     onChange={(e) => setAboutData(prev => ({ ...prev, contactLocation: e.target.value }))}
-                    className="w-full bg-slate-700 border border-slate-600 rounded-xl px-4 py-3 text-white focus:ring-2 focus:ring-teal-500"
+                    className="w-full border border-slate-300 rounded-xl px-4 py-3 text-slate-900 focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-transparent"
                     placeholder="Şehir, Ülke"
                   />
                 </div>
               </div>
             </div>
           </div>
-
-          {/* Save Button */}
-          <div className="flex justify-end pt-6">
-            <button
-              type="submit"
-              disabled={saving}
-              className={`flex items-center space-x-2 px-8 py-3 rounded-xl font-semibold transition-all duration-200 ${
-                saving
-                  ? 'bg-slate-600 cursor-not-allowed'
-                  : 'bg-gradient-to-r from-teal-600 to-blue-600 hover:from-teal-700 hover:to-blue-700 hover:scale-105 shadow-xl'
-              }`}
-            >
-              {saving ? (
-                <>
-                  <div className="animate-spin rounded-full h-5 w-5 border-t-2 border-b-2 border-current"></div>
-                  <span>Kaydediliyor...</span>
-                </>
-              ) : (
-                <>
-                  <CheckIcon className="w-5 h-5" />
-                  <span>Değişiklikleri Kaydet</span>
-                </>
-              )}
-            </button>
-          </div>
         </form>
       </div>
-    </div>
+    </AdminLayout>
   );
 } 

@@ -1,22 +1,22 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { useSession, signOut } from 'next-auth/react';
+import { useSession } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
-import Link from 'next/link';
+import AdminLayout from '../../../../components/admin/AdminLayout';
 import ImageUpload from '../../../../components/ImageUpload';
 import { 
-  ArrowLeftIcon,
-  CubeTransparentIcon,
-  UserIcon,
-  WrenchScrewdriverIcon,
   PlusIcon,
-  PhotoIcon,
-  DocumentTextIcon,
   CheckIcon,
+  ExclamationTriangleIcon,
+  DocumentTextIcon,
+  PhotoIcon,
+  ListBulletIcon,
+  WrenchScrewdriverIcon,
   TrashIcon,
-  ListBulletIcon
+  ArrowLeftIcon
 } from '@heroicons/react/24/outline';
+import Link from 'next/link';
 
 export default function NewServicePage() {
   const { data: session, status } = useSession();
@@ -71,11 +71,6 @@ export default function NewServicePage() {
     }
   };
 
-  const handleSignOut = async () => {
-    await signOut({ redirect: false });
-    router.push('/admin/login');
-  };
-
   const addFeature = () => {
     setFeatures([...features, '']);
   };
@@ -94,12 +89,14 @@ export default function NewServicePage() {
 
   if (status === 'loading') {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 flex items-center justify-center">
-        <div className="flex flex-col items-center space-y-4">
-          <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-teal-500"></div>
-          <p className="text-slate-300">Yükleniyor...</p>
+      <AdminLayout>
+        <div className="flex items-center justify-center min-h-[400px]">
+          <div className="flex flex-col items-center space-y-4">
+            <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-teal-500"></div>
+            <p className="text-slate-600">Yükleniyor...</p>
+          </div>
         </div>
-      </div>
+      </AdminLayout>
     );
   }
 
@@ -108,245 +105,211 @@ export default function NewServicePage() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900">
-      
-      {/* Header */}
-      <header className="bg-white/10 backdrop-blur-xl border-b border-white/20 sticky top-0 z-50">
-        <div className="max-w-7xl mx-auto px-6 sm:px-8">
-          <div className="flex items-center justify-between h-16">
-            
-            {/* Logo & Title */}
-            <div className="flex items-center space-x-4">
-              <Link 
-                href="/admin/services"
-                className="flex items-center space-x-3 hover:opacity-80 transition-opacity"
-              >
-                <ArrowLeftIcon className="w-5 h-5 text-slate-400" />
-                <div className="w-10 h-10 bg-gradient-to-br from-teal-500 to-blue-600 rounded-xl flex items-center justify-center">
-                  <CubeTransparentIcon className="w-6 h-6 text-white" />
-                </div>
-              </Link>
-              <div>
-                <h1 className="text-xl font-bold text-white">Yeni Servis Ekle</h1>
-                <p className="text-sm text-slate-300">Yeni hizmet oluşturun</p>
-              </div>
-            </div>
-
-            {/* User Info & Actions */}
-            <div className="flex items-center space-x-4">
-              <div className="hidden sm:flex items-center space-x-3">
-                <div className="text-right">
-                  <p className="text-sm font-medium text-white">{session.user.name}</p>
-                  <p className="text-xs text-slate-400">{session.user.email}</p>
-                </div>
-                <div className="w-10 h-10 bg-gradient-to-r from-teal-500 to-blue-500 rounded-full flex items-center justify-center">
-                  <UserIcon className="w-5 h-5 text-white" />
-                </div>
-              </div>
-              
-              <button
-                onClick={handleSignOut}
-                className="px-4 py-2 bg-red-500/20 hover:bg-red-500/30 text-red-300 hover:text-red-200 rounded-xl transition-all duration-200 text-sm font-medium border border-red-500/30"
-              >
-                Çıkış
-              </button>
-            </div>
-          </div>
-        </div>
-      </header>
-
-      {/* Main Content */}
-      <main className="max-w-4xl mx-auto px-6 sm:px-8 py-8">
+    <AdminLayout 
+      title="Yeni Servis Ekle"
+      breadcrumbs={[
+        { label: 'Dashboard', href: '/admin/dashboard' },
+        { label: 'Servisler', href: '/admin/services' },
+        { label: 'Yeni Servis' }
+      ]}
+    >
+      <div className="space-y-6">
         
-        {/* Page Header */}
-        <div className="mb-8">
-          <div className="bg-gradient-to-r from-teal-500/10 to-cyan-500/10 backdrop-blur-xl rounded-3xl p-8 border border-white/20">
-            <div className="flex items-center justify-between">
-              <div>
-                <h2 className="text-3xl font-bold text-white mb-2 flex items-center space-x-3">
-                  <PlusIcon className="w-8 h-8 text-teal-400" />
-                  <span>Yeni Servis Ekle</span>
-                </h2>
-                <p className="text-slate-300 text-lg">
-                  Sunduğunuz yeni hizmeti sisteme ekleyin.
-                </p>
-              </div>
-              <div className="hidden lg:flex items-center space-x-3">
-                <WrenchScrewdriverIcon className="w-8 h-8 text-teal-400" />
-              </div>
-            </div>
-          </div>
+        {/* Header Info */}
+        <div className="mb-6">
+          <p className="text-slate-600">Yeni servis ekleyin</p>
         </div>
 
-        {/* Success Message */}
+        {/* Success/Error Messages */}
         {success && (
-          <div className="mb-6">
-            <div className="bg-green-500/10 backdrop-blur-xl border border-green-500/30 text-green-300 p-6 rounded-2xl flex items-center space-x-3">
-              <CheckIcon className="w-6 h-6 text-green-400" />
-              <div>
-                <p className="font-semibold">Servis başarıyla eklendi!</p>
-                <p className="text-sm text-green-200">Servis listesine yönlendiriliyorsunuz...</p>
-              </div>
-            </div>
+          <div className="bg-green-50 border border-green-200 text-green-800 p-4 rounded-xl flex items-center space-x-3">
+            <CheckIcon className="w-5 h-5" />
+            <span>Servis başarıyla eklendi! Yönlendiriliyorsunuz...</span>
           </div>
         )}
 
-        {/* Error Message */}
         {error && (
-          <div className="mb-6">
-            <div className="bg-red-500/10 backdrop-blur-xl border border-red-500/30 text-red-300 p-4 rounded-2xl">
-              {error}
-            </div>
+          <div className="bg-red-50 border border-red-200 text-red-800 p-4 rounded-xl flex items-center space-x-3">
+            <ExclamationTriangleIcon className="w-5 h-5" />
+            <span>{error}</span>
           </div>
         )}
 
         {/* Form */}
-        <div className="bg-white/10 backdrop-blur-xl rounded-3xl p-8 border border-white/20">
-          <form onSubmit={handleSubmit} className="space-y-8">
+        <form onSubmit={handleSubmit} className="space-y-6">
+          
+          {/* Basic Information */}
+          <div className="bg-white rounded-xl p-6 shadow-sm border border-slate-200">
+            <h3 className="text-lg font-semibold text-slate-900 mb-4 flex items-center space-x-2">
+              <DocumentTextIcon className="w-5 h-5 text-teal-600" />
+              <span>Temel Bilgiler</span>
+            </h3>
             
-            {/* Title Field */}
-            <div className="space-y-3">
-              <label htmlFor="title" className="flex items-center space-x-2 text-sm font-semibold text-slate-200">
-                <DocumentTextIcon className="w-5 h-5 text-teal-400" />
-                <span>Servis Başlığı</span>
-                <span className="text-red-400">*</span>
-              </label>
-              <input
-                type="text"
-                id="title"
-                name="title"
-                required
-                value={serviceTitle}
-                onChange={(e) => setServiceTitle(e.target.value)}
-                className="w-full bg-white/5 border border-white/20 rounded-xl px-4 py-3 text-white placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-transparent transition-all duration-200"
-                placeholder="Örn: Web Tasarım Hizmeti"
-              />
-              <p className="text-xs text-slate-400">Hizmetinizin ana başlığını girin</p>
-            </div>
-
-            {/* Description Field */}
-            <div className="space-y-3">
-              <label htmlFor="description" className="flex items-center space-x-2 text-sm font-semibold text-slate-200">
-                <DocumentTextIcon className="w-5 h-5 text-teal-400" />
-                <span>Servis Açıklaması</span>
-                <span className="text-red-400">*</span>
-              </label>
-              <textarea
-                id="description"
-                name="description"
-                required
-                rows={6}
-                className="w-full bg-white/5 border border-white/20 rounded-xl px-4 py-3 text-white placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-transparent transition-all duration-200 resize-none"
-                placeholder="Hizmetinizin detaylı açıklamasını yazın..."
-              />
-              <p className="text-xs text-slate-400">Hizmetinizi detaylı bir şekilde açıklayın</p>
-            </div>
-
-            {/* Image Field */}
-            <div className="space-y-3">
-              <label className="flex items-center space-x-2 text-sm font-semibold text-slate-200">
-                <PhotoIcon className="w-5 h-5 text-teal-400" />
-                <span>Servis Görseli</span>
-                <span className="text-slate-400 text-xs font-normal">(İsteğe bağlı)</span>
-              </label>
-              
-              <ImageUpload
-                value={serviceImage}
-                onChange={setServiceImage}
-                onRemove={() => setServiceImage('')}
-                label="Servis Görseli"
-                className="w-full"
-                showAIGeneration={true}
-                showUrlInput={true}
-                projectTitle={serviceTitle}
-              />
-              
-              <p className="text-xs text-slate-400">Boş bırakılırsa servis başlığına uygun otomatik görsel atanır</p>
-            </div>
-
-            {/* Features Field */}
-            <div className="space-y-3">
-              <label className="flex items-center space-x-2 text-sm font-semibold text-slate-200">
-                <ListBulletIcon className="w-5 h-5 text-teal-400" />
-                <span>Öne Çıkan Özellikler</span>
-                <span className="text-slate-400 text-xs font-normal">(En az 1 özellik)</span>
-              </label>
-              
-              <div className="space-y-3">
-                {features.map((feature, index) => (
-                  <div key={index} className="flex items-center space-x-3">
-                    <div className="flex-1">
-                      <input
-                        type="text"
-                        value={feature}
-                        onChange={(e) => updateFeature(index, e.target.value)}
-                        className="w-full bg-white/5 border border-white/20 rounded-xl px-4 py-3 text-white placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-transparent transition-all duration-200"
-                        placeholder={`Özellik ${index + 1}`}
-                      />
-                    </div>
-                    {features.length > 1 && (
-                      <button
-                        type="button"
-                        onClick={() => removeFeature(index)}
-                        className="p-3 bg-red-500/20 hover:bg-red-500/30 text-red-300 hover:text-red-200 rounded-xl transition-all duration-200 border border-red-500/30"
-                      >
-                        <TrashIcon className="w-5 h-5" />
-                      </button>
-                    )}
-                  </div>
-                ))}
-                
-                <button
-                  type="button"
-                  onClick={addFeature}
-                  className="w-full p-3 bg-white/5 hover:bg-white/10 border border-white/20 hover:border-white/30 rounded-xl transition-all duration-200 text-slate-300 hover:text-white font-medium flex items-center justify-center space-x-2"
-                >
-                  <PlusIcon className="w-5 h-5" />
-                  <span>Yeni Özellik Ekle</span>
-                </button>
+            <div className="space-y-6">
+              <div>
+                <label className="block text-sm font-medium text-slate-700 mb-2">
+                  Servis Başlığı *
+                </label>
+                <input
+                  type="text"
+                  name="title"
+                  value={serviceTitle}
+                  onChange={(e) => setServiceTitle(e.target.value)}
+                  className="w-full border border-slate-300 rounded-xl px-4 py-3 text-slate-900 focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-transparent"
+                  placeholder="Servis başlığı giriniz"
+                  required
+                />
               </div>
               
-              <p className="text-xs text-slate-400">Hizmetinizin öne çıkan özelliklerini madde madde ekleyin</p>
+              <div>
+                <label className="block text-sm font-medium text-slate-700 mb-2">
+                  Servis Açıklaması *
+                </label>
+                <textarea
+                  name="description"
+                  rows={5}
+                  className="w-full border border-slate-300 rounded-xl px-4 py-3 text-slate-900 focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-transparent"
+                  placeholder="Servis hakkında detaylı açıklama yazınız"
+                  required
+                />
+              </div>
             </div>
+          </div>
 
-            {/* Action Buttons */}
-            <div className="flex items-center justify-end space-x-4 pt-6 border-t border-white/10">
-              <Link
-                href="/admin/services"
-                className="px-6 py-3 bg-white/10 hover:bg-white/20 text-slate-300 hover:text-white rounded-xl transition-all duration-200 font-medium border border-white/20"
-              >
-                İptal
-              </Link>
+          {/* Service Image */}
+          <div className="bg-white rounded-xl p-6 shadow-sm border border-slate-200">
+            <h3 className="text-lg font-semibold text-slate-900 mb-4 flex items-center space-x-2">
+              <PhotoIcon className="w-5 h-5 text-teal-600" />
+              <span>Servis Görseli</span>
+            </h3>
+            
+            <ImageUpload
+              onImageUpload={(url) => setServiceImage(url)}
+              onImageRemove={() => setServiceImage('')}
+              currentImage={serviceImage}
+            />
+          </div>
+
+          {/* Features */}
+          <div className="bg-white rounded-xl p-6 shadow-sm border border-slate-200">
+            <div className="flex items-center justify-between mb-4">
+              <h3 className="text-lg font-semibold text-slate-900 flex items-center space-x-2">
+                <ListBulletIcon className="w-5 h-5 text-teal-600" />
+                <span>Servis Özellikleri</span>
+              </h3>
               <button
-                type="submit"
-                disabled={loading || success}
-                className={`px-8 py-3 rounded-xl font-semibold transition-all duration-200 flex items-center space-x-2 ${
-                  loading || success
-                    ? 'bg-teal-600/50 cursor-not-allowed text-teal-200'
-                    : 'bg-gradient-to-r from-teal-600 to-blue-600 hover:from-teal-700 hover:to-blue-700 text-white hover:scale-105 hover:shadow-xl'
-                }`}
+                type="button"
+                onClick={addFeature}
+                className="flex items-center space-x-2 bg-teal-50 text-teal-600 px-3 py-2 rounded-lg hover:bg-teal-100 transition-colors"
               >
-                {loading ? (
-                  <>
-                    <div className="animate-spin rounded-full h-5 w-5 border-t-2 border-b-2 border-current"></div>
-                    <span>Ekleniyor...</span>
-                  </>
-                ) : success ? (
-                  <>
-                    <CheckIcon className="w-5 h-5" />
-                    <span>Başarılı!</span>
-                  </>
-                ) : (
-                  <>
-                    <PlusIcon className="w-5 h-5" />
-                    <span>Servis Ekle</span>
-                  </>
-                )}
+                <PlusIcon className="w-4 h-4" />
+                <span>Özellik Ekle</span>
               </button>
             </div>
-          </form>
-        </div>
-      </main>
-    </div>
+            
+            <div className="space-y-3">
+              {features.length === 0 ? (
+                <p className="text-slate-500 text-sm py-4 text-center">
+                  Henüz özellik eklenmedi. Yukarıdaki butonu kullanarak özellik ekleyebilirsiniz.
+                </p>
+              ) : (
+                features.map((feature, index) => (
+                  <div key={index} className="flex items-center space-x-3">
+                    <input
+                      type="text"
+                      value={feature}
+                      onChange={(e) => updateFeature(index, e.target.value)}
+                      className="flex-1 border border-slate-300 rounded-xl px-4 py-3 text-slate-900 focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-transparent"
+                      placeholder="Özellik açıklaması"
+                    />
+                    <button
+                      type="button"
+                      onClick={() => removeFeature(index)}
+                      className="p-2 text-red-500 hover:text-red-700 hover:bg-red-50 rounded-lg transition-colors"
+                    >
+                      <TrashIcon className="w-5 h-5" />
+                    </button>
+                  </div>
+                ))
+              )}
+            </div>
+          </div>
+
+          {/* Preview */}
+          <div className="bg-white rounded-xl p-6 shadow-sm border border-slate-200">
+            <h3 className="text-lg font-semibold text-slate-900 mb-4 flex items-center space-x-2">
+              <WrenchScrewdriverIcon className="w-5 h-5 text-teal-600" />
+              <span>Önizleme</span>
+            </h3>
+            
+            <div className="bg-slate-50 rounded-xl p-6">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div>
+                  <h4 className="font-semibold text-slate-900 mb-2">{serviceTitle || 'Servis Başlığı'}</h4>
+                  <p className="text-slate-600 text-sm mb-4">Buraya servis açıklaması gelecek...</p>
+                  
+                  {features.filter(f => f.trim()).length > 0 && (
+                    <div>
+                      <h5 className="font-medium text-slate-800 mb-2">Özellikler:</h5>
+                      <ul className="list-disc list-inside text-sm text-slate-600 space-y-1">
+                        {features.filter(f => f.trim()).map((feature, index) => (
+                          <li key={index}>{feature}</li>
+                        ))}
+                      </ul>
+                    </div>
+                  )}
+                </div>
+                
+                <div>
+                  <div className="w-full h-40 bg-slate-200 rounded-xl overflow-hidden flex items-center justify-center">
+                    {serviceImage ? (
+                      <img
+                        src={serviceImage}
+                        alt="Service preview"
+                        className="w-full h-full object-cover"
+                      />
+                    ) : (
+                      <div className="text-center">
+                        <PhotoIcon className="w-12 h-12 text-slate-400 mx-auto mb-2" />
+                        <p className="text-sm text-slate-500">Görsel yüklenmemiş</p>
+                      </div>
+                    )}
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* Submit Buttons */}
+          <div className="flex flex-col sm:flex-row gap-4 pt-6 border-t border-slate-200">
+            <button
+              type="submit"
+              disabled={loading}
+              className="flex-1 bg-teal-600 text-white px-6 py-3 rounded-xl font-medium hover:bg-teal-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors flex items-center justify-center space-x-2"
+            >
+              {loading ? (
+                <>
+                  <div className="animate-spin rounded-full h-5 w-5 border-2 border-white border-t-transparent"></div>
+                  <span>Ekleniyor...</span>
+                </>
+              ) : (
+                <>
+                  <CheckIcon className="w-5 h-5" />
+                  <span>Servis Ekle</span>
+                </>
+              )}
+            </button>
+            
+            <Link
+              href="/admin/services"
+              className="flex-1 bg-slate-100 text-slate-700 px-6 py-3 rounded-xl font-medium hover:bg-slate-200 transition-colors flex items-center justify-center space-x-2"
+            >
+              <ArrowLeftIcon className="w-5 h-5" />
+              <span>Geri Dön</span>
+            </Link>
+          </div>
+        </form>
+      </div>
+    </AdminLayout>
   );
 } 

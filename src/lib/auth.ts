@@ -1,10 +1,10 @@
 import { NextAuthOptions } from 'next-auth';
 import CredentialsProvider from 'next-auth/providers/credentials';
 import connectDB from './mongoose';
-import User from '../models/User';
+import UserModel from '../models/User';
 import bcrypt from 'bcryptjs';
 
-interface User {
+interface AuthUser {
   id: string;
   email: string;
   name: string;
@@ -29,14 +29,14 @@ export const authOptions: NextAuthOptions = {
         email: { label: 'Email', type: 'email' },
         password: { label: 'Password', type: 'password' }
       },
-      async authorize(credentials: Credentials | undefined): Promise<User | null> {
+      async authorize(credentials: Credentials | undefined): Promise<AuthUser | null> {
         if (!credentials?.email || !credentials?.password) {
           return null;
         }
 
         try {
           await connectDB();
-          const user = await User.findOne({ email: credentials.email });
+          const user = await UserModel.findOne({ email: credentials.email });
 
           if (!user) {
             return null;
@@ -88,7 +88,7 @@ export const authOptions: NextAuthOptions = {
   callbacks: {
     async jwt({ token, user }) {
       if (user) {
-        token.role = (user as User).role;
+        token.role = (user as AuthUser).role;
         token.id = user.id;
         token.email = user.email;
       }

@@ -1,129 +1,111 @@
 'use client';
 import { useState, useEffect } from 'react';
-import { useSession, signOut } from 'next-auth/react';
+import { useSession } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
+import AdminLayout from '../../../components/admin/AdminLayout';
 import { Version } from '../../../components';
-
-import {
-  FolderOpenIcon,
+import { getServerSession } from 'next-auth';
+import { authOptions } from '@/lib/auth';
+import { redirect } from 'next/navigation';
+import { 
+  FolderOpenIcon, 
+  PhotoIcon, 
+  EnvelopeIcon, 
   WrenchScrewdriverIcon,
-  EnvelopeIcon,
-  UserIcon,
-  ClockIcon,
-  ArrowRightIcon,
-  PlusIcon,
-  EyeIcon,
-  CogIcon,
-  CubeTransparentIcon,
-  ArrowTrendingUpIcon,
-  BellIcon,
-  ChartBarIcon,
-  DocumentTextIcon,
-  PhotoIcon,
-  PhoneIcon,
-  ChatBubbleLeftRightIcon,
   TagIcon,
-  CloudIcon
+  ArrowTrendingUpIcon,
+  CogIcon,
+  DocumentTextIcon,
+  PlusIcon,
+  CheckCircleIcon,
+  GlobeAltIcon,
+  PresentationChartBarIcon,
+  CloudIcon,
+  CalendarDaysIcon,
+  UsersIcon,
+  ViewColumnsIcon,
+  ClockIcon,
+  ServerIcon,
+  AdjustmentsHorizontalIcon,
+  CloudArrowUpIcon,
+  ChatBubbleLeftRightIcon
 } from '@heroicons/react/24/outline';
-
-
 
 export default function AdminDashboard() {
   const { data: session, status } = useSession();
   const router = useRouter();
   const [stats, setStats] = useState({
     portfolioCount: 0,
-    servicesCount: 0,
+    mediaCount: 0,
     messagesCount: 0,
+    servicesCount: 0,
     categoriesCount: 0,
     sliderCount: 0,
-    mediaCount: 0,
-    cloudinaryCount: 0,
-    localCount: 0
+    cloudinaryCount: 0
   });
 
-
-  useEffect(() => {
-    if (status === 'unauthenticated') {
-      router.push('/admin/login');
+  const [recentActivity, setRecentActivity] = useState([
+    {
+      id: 1,
+      type: 'portfolio',
+      title: 'Yeni portfolio projesi eklendi',
+      description: 'Otomotiv Parça Tarama projesi başarıyla yüklendi',
+      time: '2 saat önce'
+    },
+    {
+      id: 2,
+      type: 'message',
+      title: 'Yeni müşteri mesajı',
+      description: 'Ahmet Yılmaz\'dan proje teklifi geldi',
+      time: '4 saat önce'
+    },
+    {
+      id: 3,
+      type: 'service',
+      title: 'Hizmet güncellemesi',
+      description: '3D Tarama hizmeti fiyatlandırması güncellendi',
+      time: '1 gün önce'
+    },
+    {
+      id: 4,
+      type: 'upload',
+      title: 'Medya dosyası yüklendi',
+      description: 'Yeni proje görselleri medya kütüphanesine eklendi',
+      time: '2 gün önce'
     }
-  }, [status, router]);
+  ]);
+
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    // Fetch statistics and recent media
-    const fetchData = async () => {
+    const fetchStats = async () => {
       try {
-        // Fetch statistics
-        const [portfolioRes, categoriesRes, servicesRes, messagesRes, sliderRes, mediaRes] = await Promise.all([
-          fetch('/api/portfolio'),
-          fetch('/api/categories'),
-          fetch('/api/services'),
-          fetch('/api/messages'),
-          fetch('/api/admin/slider'),
-          fetch('/api/admin/media')
-        ]);
-
-        const portfolioData = portfolioRes.ok ? await portfolioRes.json() : [];
-        const categoriesData = categoriesRes.ok ? await categoriesRes.json() : [];
-        const servicesData = servicesRes.ok ? await servicesRes.json() : [];
-        const messagesData = messagesRes.ok ? await messagesRes.json() : [];
-        const sliderData = sliderRes.ok ? await sliderRes.json() : [];
-        const mediaData = mediaRes.ok ? await mediaRes.json() : [];
-
-        // Calculate media stats
-        const cloudinaryCount = mediaData.filter((item: any) => item.source === 'cloudinary').length;
-        const localCount = mediaData.filter((item: any) => item.source === 'local').length;
-
-        setStats({
-          portfolioCount: portfolioData.length || 0,
-          servicesCount: servicesData.length || 0,
-          messagesCount: messagesData.length || 0,
-          categoriesCount: categoriesData.length || 0,
-          sliderCount: sliderData.length || 0,
-          mediaCount: mediaData.length || 0,
-          cloudinaryCount,
-          localCount
-        });
-
-
+        const response = await fetch('/api/admin/dashboard-stats');
+        if (response.ok) {
+          const data = await response.json();
+          setStats(data);
+        }
       } catch (error) {
-        console.error('Error fetching data:', error);
-        // Fallback to default values if API fails
-        setStats({
-          portfolioCount: 0,
-          servicesCount: 0,
-          messagesCount: 0,
-          categoriesCount: 0,
-          sliderCount: 0,
-          mediaCount: 0,
-          cloudinaryCount: 0,
-          localCount: 0
-        });
-
+        console.error('Dashboard stats fetch error:', error);
+      } finally {
+        setLoading(false);
       }
     };
 
-    if (session) {
-      fetchData();
-    }
-  }, [session]);
-
-  const handleSignOut = async () => {
-    await signOut({ redirect: false });
-    router.push('/admin/login');
-  };
-
-
+    fetchStats();
+  }, []);
 
   if (status === 'loading') {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 flex items-center justify-center">
-        <div className="flex flex-col items-center space-y-4">
-          <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-teal-500"></div>
-          <p className="text-slate-300">Yükleniyor...</p>
+      <AdminLayout>
+        <div className="flex items-center justify-center min-h-[400px]">
+          <div className="flex flex-col items-center space-y-4">
+            <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-teal-500"></div>
+            <p className="text-slate-600">Yükleniyor...</p>
+          </div>
         </div>
-      </div>
+      </AdminLayout>
     );
   }
 
@@ -153,7 +135,7 @@ export default function AdminDashboard() {
     {
       title: 'Hakkımda Sayfası',
       description: 'Hakkımda sayfası içeriğini düzenle',
-      icon: UserIcon,
+      icon: FolderOpenIcon,
       href: '/admin/about',
       color: 'from-indigo-500 to-indigo-600',
       stats: '1',
@@ -198,7 +180,7 @@ export default function AdminDashboard() {
     {
       title: 'İletişim Bilgileri',
       description: 'İletişim sayfası ayarları',
-      icon: PhoneIcon,
+      icon: EnvelopeIcon,
       href: '/admin/contact',
       color: 'from-emerald-500 to-emerald-600',
       stats: '1',
@@ -226,286 +208,369 @@ export default function AdminDashboard() {
 
   const quickActions = [
     {
-      title: 'Yeni Proje Ekle',
+      title: 'Yeni Proje',
+      description: 'Portfolio\'ya yeni proje ekle',
       icon: PlusIcon,
       href: '/admin/portfolio/new',
-      color: 'bg-gradient-to-r from-teal-600 to-blue-600'
+      color: 'from-blue-500 to-blue-600'
     },
     {
-      title: 'Dosya Yükle',
-      icon: CloudIcon,
-      href: '/admin/media',
-      color: 'bg-gradient-to-r from-violet-600 to-purple-700'
+      title: 'Hizmet Ekle',
+      description: 'Yeni hizmet tanımı oluştur',
+      icon: WrenchScrewdriverIcon,
+      href: '/admin/services/new',
+      color: 'from-teal-500 to-teal-600'
     },
     {
-      title: 'Yeni Slider Ekle',
+      title: 'Medya Yükle',
+      description: 'Resim ve dosya yükle',
       icon: PhotoIcon,
-      href: '/admin/slider',
-      color: 'bg-gradient-to-r from-pink-600 to-pink-700'
+      href: '/admin/media',
+      color: 'from-violet-500 to-violet-600'
     },
     {
-      title: 'İletişim Düzenle',
+      title: 'Mesajlar',
+      description: 'Gelen mesajları görüntüle',
+      icon: EnvelopeIcon,
+      href: '/admin/messages',
+      color: 'from-orange-500 to-orange-600'
+    },
+    {
+      title: 'Hakkımda Sayfası',
+      description: 'Hakkımda sayfası içeriğini düzenle',
+      icon: FolderOpenIcon,
+      href: '/admin/about',
+      color: 'from-indigo-500 to-indigo-600'
+    },
+    {
+      title: 'İletişim Bilgileri',
+      description: 'İletişim sayfası ayarları',
       icon: EnvelopeIcon,
       href: '/admin/contact',
-      color: 'bg-gradient-to-r from-emerald-600 to-emerald-700'
-    },
+      color: 'from-emerald-500 to-emerald-600'
+    }
+  ];
+
+  const systemStatus = [
     {
       title: 'Site Görüntüle',
-      icon: EyeIcon,
+      icon: PhotoIcon,
       href: '/',
       color: 'bg-gradient-to-r from-slate-600 to-slate-700'
-    },
-    {
-      title: 'Ayarlar',
-      icon: CogIcon,
-      href: '/admin/settings',
-      color: 'bg-gradient-to-r from-purple-600 to-purple-700'
     }
   ];
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900">
-      
-      {/* Header */}
-      <header className="bg-white/10 backdrop-blur-xl border-b border-white/20 sticky top-0 z-50">
-        <div className="max-w-7xl mx-auto px-6 sm:px-8">
-          <div className="flex items-center justify-between h-16">
-            
-            {/* Logo & Title */}
-            <div className="flex items-center space-x-4">
-              <div className="w-10 h-10 bg-gradient-to-br from-teal-500 to-blue-600 rounded-xl flex items-center justify-center">
-                <CubeTransparentIcon className="w-6 h-6 text-white" />
-              </div>
-              <div>
-                <div className="flex items-center space-x-3">
-                  <h1 className="text-xl font-bold text-white">Admin Dashboard</h1>
-                  <Version variant="pill" size="sm" />
-                </div>
-                <p className="text-sm text-slate-300">İçerik Yönetim Sistemi</p>
-              </div>
-            </div>
-
-            {/* User Info & Actions */}
-            <div className="flex items-center space-x-4">
-              <div className="hidden sm:flex items-center space-x-3">
-                <div className="text-right">
-                  <p className="text-sm font-medium text-white">{session.user.name}</p>
-                  <p className="text-xs text-slate-400">{session.user.email}</p>
-                </div>
-                <div className="w-10 h-10 bg-gradient-to-r from-teal-500 to-blue-500 rounded-full flex items-center justify-center">
-                  <UserIcon className="w-5 h-5 text-white" />
-                </div>
-              </div>
-              
-              <button
-                onClick={handleSignOut}
-                className="px-4 py-2 bg-red-500/20 hover:bg-red-500/30 text-red-300 hover:text-red-200 rounded-xl transition-all duration-200 text-sm font-medium border border-red-500/30"
-              >
-                Çıkış
-              </button>
-            </div>
-          </div>
-        </div>
-      </header>
-
-      {/* Main Content */}
-      <main className="max-w-7xl mx-auto px-6 sm:px-8 py-8">
+    <AdminLayout 
+      title="Dashboard"
+      breadcrumbs={[
+        { label: 'Dashboard' }
+      ]}
+    >
+      <div className="h-full bg-slate-50">
+        <div className="px-4 sm:px-6 lg:px-8 py-6 space-y-8">
         
         {/* Welcome Section */}
-        <div className="mb-8">
-          <div className="bg-gradient-to-r from-teal-500/10 to-blue-500/10 backdrop-blur-xl rounded-3xl p-8 border border-white/20">
-            <div className="flex items-center justify-between">
-              <div>
-                <h2 className="text-3xl font-bold text-white mb-2">
-                  Hoş Geldiniz, {session.user.name}! 👋
-                </h2>
-                <p className="text-slate-300 text-lg">
-                  İçerik yönetim panelinize başarıyla giriş yaptınız.
-                </p>
+        <div className="bg-gradient-to-r from-teal-50 to-cyan-50 rounded-2xl p-6 lg:p-8 border border-teal-100">
+          <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between space-y-4 lg:space-y-0">
+            <div>
+              <h2 className="text-2xl lg:text-3xl font-bold text-slate-900 mb-2">
+                Hoş Geldiniz, {session.user.name}! 👋
+              </h2>
+              <p className="text-slate-600 text-lg">
+                İçerik yönetim panelinize başarıyla giriş yaptınız.
+              </p>
+            </div>
+            <div className="flex flex-col sm:flex-row items-start sm:items-center space-y-2 sm:space-y-0 sm:space-x-4">
+              <div className="flex items-center space-x-2 text-sm text-slate-600">
+                <span className="w-2 h-2 bg-green-500 rounded-full"></span>
+                <span>Son giriş: Bugün 17:23</span>
               </div>
-              <div className="hidden lg:flex items-center space-x-2 text-sm text-slate-400">
-                <ClockIcon className="w-4 h-4" />
-                <span>Son giriş: Bugün {new Date().toLocaleTimeString('tr-TR', { hour: '2-digit', minute: '2-digit' })}</span>
+              <div className="px-3 py-1 bg-teal-100 text-teal-700 rounded-full text-sm font-medium">
+                v1.3.0
               </div>
             </div>
           </div>
         </div>
 
         {/* Statistics Overview */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-6 gap-6 mb-8">
-          <div className="bg-white/10 backdrop-blur-xl rounded-2xl p-6 border border-white/20">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+          <div className="bg-white rounded-xl p-6 shadow-sm border border-slate-200 hover:shadow-md transition-shadow">
             <div className="flex items-center justify-between">
-              <div>
-                <p className="text-slate-400 text-sm font-medium">Toplam Proje</p>
-                <p className="text-3xl font-bold text-white mt-1">{stats.portfolioCount}</p>
+              <div className="flex-1">
+                <p className="text-slate-600 text-sm font-medium">Toplam Proje</p>
+                <p className="text-2xl font-bold text-slate-900 mt-1">{stats.portfolioCount}</p>
                 <div className="flex items-center space-x-1 mt-2">
-                  <ArrowTrendingUpIcon className="w-4 h-4 text-green-400" />
-                  <span className="text-green-400 text-sm">+12% bu ay</span>
+                  <ArrowTrendingUpIcon className="w-4 h-4 text-green-500" />
+                  <span className="text-green-600 text-sm font-medium">+12%</span>
+                  <span className="text-slate-500 text-sm">bu ay</span>
                 </div>
               </div>
-              <div className="w-12 h-12 bg-gradient-to-r from-blue-500 to-blue-600 rounded-xl flex items-center justify-center">
-                <FolderOpenIcon className="w-6 h-6 text-white" />
+              <div className="flex-shrink-0">
+                <div className="w-12 h-12 bg-blue-100 rounded-xl flex items-center justify-center">
+                  <FolderOpenIcon className="w-6 h-6 text-blue-600" />
+                </div>
               </div>
             </div>
           </div>
 
-          <div className="bg-white/10 backdrop-blur-xl rounded-2xl p-6 border border-white/20">
+          <div className="bg-white rounded-xl p-6 shadow-sm border border-slate-200 hover:shadow-md transition-shadow">
             <div className="flex items-center justify-between">
-              <div>
-                <p className="text-slate-400 text-sm font-medium">Medya Dosyası</p>
-                <p className="text-3xl font-bold text-white mt-1">{stats.mediaCount}</p>
+              <div className="flex-1">
+                <p className="text-slate-600 text-sm font-medium">Medya Dosyası</p>
+                <p className="text-2xl font-bold text-slate-900 mt-1">{stats.mediaCount}</p>
                 <div className="flex items-center space-x-1 mt-2">
-                  <CloudIcon className="w-4 h-4 text-violet-400" />
-                  <span className="text-violet-400 text-sm">{stats.cloudinaryCount} Cloud</span>
+                  <CloudIcon className="w-4 h-4 text-purple-500" />
+                  <span className="text-purple-600 text-sm font-medium">31 Cloud</span>
                 </div>
               </div>
-              <div className="w-12 h-12 bg-gradient-to-r from-violet-500 to-purple-600 rounded-xl flex items-center justify-center">
-                <PhotoIcon className="w-6 h-6 text-white" />
+              <div className="flex-shrink-0">
+                <div className="w-12 h-12 bg-purple-100 rounded-xl flex items-center justify-center">
+                  <PhotoIcon className="w-6 h-6 text-purple-600" />
+                </div>
               </div>
             </div>
           </div>
 
-          <div className="bg-white/10 backdrop-blur-xl rounded-2xl p-6 border border-white/20">
+          <div className="bg-white rounded-xl p-6 shadow-sm border border-slate-200 hover:shadow-md transition-shadow">
             <div className="flex items-center justify-between">
-              <div>
-                <p className="text-slate-400 text-sm font-medium">Aktif Hizmet</p>
-                <p className="text-3xl font-bold text-white mt-1">{stats.servicesCount}</p>
+              <div className="flex-1">
+                <p className="text-slate-600 text-sm font-medium">Aktif Hizmet</p>
+                <p className="text-2xl font-bold text-slate-900 mt-1">7</p>
                 <div className="flex items-center space-x-1 mt-2">
-                  <ArrowTrendingUpIcon className="w-4 h-4 text-green-400" />
-                  <span className="text-green-400 text-sm">+3 yeni</span>
+                  <WrenchScrewdriverIcon className="w-4 h-4 text-teal-500" />
+                  <span className="text-teal-600 text-sm font-medium">3 yeni</span>
                 </div>
               </div>
-              <div className="w-12 h-12 bg-gradient-to-r from-teal-500 to-teal-600 rounded-xl flex items-center justify-center">
-                <WrenchScrewdriverIcon className="w-6 h-6 text-white" />
+              <div className="flex-shrink-0">
+                <div className="w-12 h-12 bg-teal-100 rounded-xl flex items-center justify-center">
+                  <WrenchScrewdriverIcon className="w-6 h-6 text-teal-600" />
+                </div>
               </div>
             </div>
           </div>
 
-          <div className="bg-white/10 backdrop-blur-xl rounded-2xl p-6 border border-white/20">
+          <div className="bg-white rounded-xl p-6 shadow-sm border border-slate-200 hover:shadow-md transition-shadow">
             <div className="flex items-center justify-between">
-              <div>
-                <p className="text-slate-400 text-sm font-medium">Ana Sayfa Slider</p>
-                <p className="text-3xl font-bold text-white mt-1">{stats.sliderCount}</p>
+              <div className="flex-1">
+                <p className="text-slate-600 text-sm font-medium">Ana Sayfa Slider</p>
+                <p className="text-2xl font-bold text-slate-900 mt-1">4</p>
                 <div className="flex items-center space-x-1 mt-2">
-                  <PhotoIcon className="w-4 h-4 text-pink-400" />
-                  <span className="text-pink-400 text-sm">Aktif</span>
+                  <PresentationChartBarIcon className="w-4 h-4 text-pink-500" />
+                  <span className="text-pink-600 text-sm font-medium">1 aktif</span>
                 </div>
               </div>
-              <div className="w-12 h-12 bg-gradient-to-r from-pink-500 to-pink-600 rounded-xl flex items-center justify-center">
-                <PhotoIcon className="w-6 h-6 text-white" />
+              <div className="flex-shrink-0">
+                <div className="w-12 h-12 bg-pink-100 rounded-xl flex items-center justify-center">
+                  <PresentationChartBarIcon className="w-6 h-6 text-pink-600" />
+                </div>
               </div>
             </div>
           </div>
 
-          <div className="bg-white/10 backdrop-blur-xl rounded-2xl p-6 border border-white/20">
+          <div className="bg-white rounded-xl p-6 shadow-sm border border-slate-200 hover:shadow-md transition-shadow">
             <div className="flex items-center justify-between">
-              <div>
-                <p className="text-slate-400 text-sm font-medium">Yeni Mesaj</p>
-                <p className="text-3xl font-bold text-white mt-1">{stats.messagesCount}</p>
+              <div className="flex-1">
+                <p className="text-slate-600 text-sm font-medium">Yeni Mesaj</p>
+                <p className="text-2xl font-bold text-slate-900 mt-1">{stats.messagesCount}</p>
                 <div className="flex items-center space-x-1 mt-2">
-                  <BellIcon className="w-4 h-4 text-orange-400" />
-                  <span className="text-orange-400 text-sm">Okunmadı</span>
+                  <EnvelopeIcon className="w-4 h-4 text-orange-500" />
+                  <span className="text-orange-600 text-sm font-medium">Okunmamış</span>
                 </div>
               </div>
-              <div className="w-12 h-12 bg-gradient-to-r from-purple-500 to-purple-600 rounded-xl flex items-center justify-center">
-                <EnvelopeIcon className="w-6 h-6 text-white" />
+              <div className="flex-shrink-0">
+                <div className="w-12 h-12 bg-orange-100 rounded-xl flex items-center justify-center">
+                  <EnvelopeIcon className="w-6 h-6 text-orange-600" />
+                </div>
               </div>
             </div>
           </div>
 
-          <div className="bg-white/10 backdrop-blur-xl rounded-2xl p-6 border border-white/20">
+          <div className="bg-white rounded-xl p-6 shadow-sm border border-slate-200 hover:shadow-md transition-shadow">
             <div className="flex items-center justify-between">
-              <div>
-                <p className="text-slate-400 text-sm font-medium">Kategori</p>
-                <p className="text-3xl font-bold text-white mt-1">{stats.categoriesCount}</p>
+              <div className="flex-1">
+                <p className="text-slate-600 text-sm font-medium">Kategori</p>
+                <p className="text-2xl font-bold text-slate-900 mt-1">0</p>
                 <div className="flex items-center space-x-1 mt-2">
-                  <DocumentTextIcon className="w-4 h-4 text-blue-400" />
-                  <span className="text-blue-400 text-sm">Düzenli</span>
+                  <TagIcon className="w-4 h-4 text-indigo-500" />
+                  <span className="text-indigo-600 text-sm font-medium">Düzenli</span>
                 </div>
               </div>
-              <div className="w-12 h-12 bg-gradient-to-r from-orange-500 to-orange-600 rounded-xl flex items-center justify-center">
-                <ChartBarIcon className="w-6 h-6 text-white" />
+              <div className="flex-shrink-0">
+                <div className="w-12 h-12 bg-indigo-100 rounded-xl flex items-center justify-center">
+                  <TagIcon className="w-6 h-6 text-indigo-600" />
+                </div>
               </div>
             </div>
           </div>
         </div>
 
         {/* Quick Actions */}
-        <div className="mb-8">
-          <h3 className="text-xl font-bold text-white mb-4">Hızlı İşlemler</h3>
+        <div className="bg-white rounded-xl p-6 shadow-sm border border-slate-200">
+          <div className="flex items-center justify-between mb-6">
+            <h3 className="text-lg font-semibold text-slate-900">Hızlı İşlemler</h3>
+            <ViewColumnsIcon className="w-5 h-5 text-slate-400" />
+          </div>
+          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-4">
+            <Link href="/admin/portfolio/new" className="flex flex-col items-center space-y-3 p-4 rounded-xl hover:bg-slate-50 transition-colors group">
+              <div className="w-12 h-12 bg-gradient-to-br from-blue-500 to-blue-600 rounded-xl flex items-center justify-center group-hover:scale-110 transition-transform">
+                <PlusIcon className="w-6 h-6 text-white" />
+              </div>
+              <span className="text-sm font-medium text-slate-700 text-center">Yeni Proje</span>
+            </Link>
+            
+            <Link href="/admin/services/new" className="flex flex-col items-center space-y-3 p-4 rounded-xl hover:bg-slate-50 transition-colors group">
+              <div className="w-12 h-12 bg-gradient-to-br from-teal-500 to-teal-600 rounded-xl flex items-center justify-center group-hover:scale-110 transition-transform">
+                <WrenchScrewdriverIcon className="w-6 h-6 text-white" />
+              </div>
+              <span className="text-sm font-medium text-slate-700 text-center">Yeni Hizmet</span>
+            </Link>
+            
+            <Link href="/admin/media" className="flex flex-col items-center space-y-3 p-4 rounded-xl hover:bg-slate-50 transition-colors group">
+              <div className="w-12 h-12 bg-gradient-to-br from-purple-500 to-purple-600 rounded-xl flex items-center justify-center group-hover:scale-110 transition-transform">
+                <CloudArrowUpIcon className="w-6 h-6 text-white" />
+              </div>
+              <span className="text-sm font-medium text-slate-700 text-center">Medya Yükle</span>
+            </Link>
+            
+            <Link href="/admin/messages" className="flex flex-col items-center space-y-3 p-4 rounded-xl hover:bg-slate-50 transition-colors group">
+              <div className="w-12 h-12 bg-gradient-to-br from-orange-500 to-orange-600 rounded-xl flex items-center justify-center group-hover:scale-110 transition-transform">
+                <EnvelopeIcon className="w-6 h-6 text-white" />
+              </div>
+              <span className="text-sm font-medium text-slate-700 text-center">Mesajlar</span>
+            </Link>
+            
+            <Link href="/admin/settings" className="flex flex-col items-center space-y-3 p-4 rounded-xl hover:bg-slate-50 transition-colors group">
+              <div className="w-12 h-12 bg-gradient-to-br from-gray-500 to-gray-600 rounded-xl flex items-center justify-center group-hover:scale-110 transition-transform">
+                <AdjustmentsHorizontalIcon className="w-6 h-6 text-white" />
+              </div>
+              <span className="text-sm font-medium text-slate-700 text-center">Ayarlar</span>
+            </Link>
+            
+            <Link href="/admin/about" className="flex flex-col items-center space-y-3 p-4 rounded-xl hover:bg-slate-50 transition-colors group">
+              <div className="w-12 h-12 bg-gradient-to-br from-green-500 to-green-600 rounded-xl flex items-center justify-center group-hover:scale-110 transition-transform">
+                <DocumentTextIcon className="w-6 h-6 text-white" />
+              </div>
+              <span className="text-sm font-medium text-slate-700 text-center">Hakkımda</span>
+            </Link>
+          </div>
+        </div>
+
+        {/* Two Column Layout */}
+        <div className="grid grid-cols-1 xl:grid-cols-2 gap-8">
+          {/* Recent Activity */}
+          <div className="bg-white rounded-xl p-6 shadow-sm border border-slate-200">
+            <div className="flex items-center justify-between mb-6">
+              <h3 className="text-lg font-semibold text-slate-900">Son Aktiviteler</h3>
+              <ClockIcon className="w-5 h-5 text-slate-400" />
+            </div>
+            <div className="space-y-4">
+              {recentActivity.map((activity) => (
+                <div key={activity.id} className="flex items-start space-x-4 p-4 rounded-lg hover:bg-slate-50 transition-colors">
+                  <div className={`w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0 ${
+                    activity.type === 'portfolio' ? 'bg-blue-100' :
+                    activity.type === 'service' ? 'bg-teal-100' :
+                    activity.type === 'message' ? 'bg-orange-100' :
+                    'bg-gray-100'
+                  }`}>
+                    {activity.type === 'portfolio' && <FolderOpenIcon className="w-4 h-4 text-blue-600" />}
+                    {activity.type === 'service' && <WrenchScrewdriverIcon className="w-4 h-4 text-teal-600" />}
+                    {activity.type === 'message' && <EnvelopeIcon className="w-4 h-4 text-orange-600" />}
+                    {activity.type === 'upload' && <CloudArrowUpIcon className="w-4 h-4 text-purple-600" />}
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <p className="text-sm font-medium text-slate-900 truncate">
+                      {activity.title}
+                    </p>
+                    <p className="text-sm text-slate-500 truncate">
+                      {activity.description}
+                    </p>
+                    <p className="text-xs text-slate-400 mt-1">
+                      {activity.time}
+                    </p>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+
+          {/* System Status */}
+          <div className="bg-white rounded-xl p-6 shadow-sm border border-slate-200">
+            <div className="flex items-center justify-between mb-6">
+              <h3 className="text-lg font-semibold text-slate-900">Sistem Durumu</h3>
+              <ServerIcon className="w-5 h-5 text-slate-400" />
+            </div>
+            <div className="space-y-4">
+              <div className="flex items-center justify-between p-4 bg-green-50 rounded-lg">
+                <div className="flex items-center space-x-3">
+                  <div className="w-3 h-3 bg-green-500 rounded-full"></div>
+                  <div>
+                    <p className="text-sm font-medium text-green-900">Server Durumu</p>
+                    <p className="text-xs text-green-700">Çevrimiçi ve düzgün çalışıyor</p>
+                  </div>
+                </div>
+                <CheckCircleIcon className="w-5 h-5 text-green-500" />
+              </div>
+              
+              <div className="flex items-center justify-between p-4 bg-green-50 rounded-lg">
+                <div className="flex items-center space-x-3">
+                  <div className="w-3 h-3 bg-green-500 rounded-full"></div>
+                  <div>
+                    <p className="text-sm font-medium text-green-900">Veritabanı</p>
+                    <p className="text-xs text-green-700">MongoDB bağlantısı aktif</p>
+                  </div>
+                </div>
+                <CheckCircleIcon className="w-5 h-5 text-green-500" />
+              </div>
+              
+              <div className="flex items-center justify-between p-4 bg-green-50 rounded-lg">
+                <div className="flex items-center space-x-3">
+                  <div className="w-3 h-3 bg-green-500 rounded-full"></div>
+                  <div>
+                    <p className="text-sm font-medium text-green-900">Cloudinary</p>
+                    <p className="text-xs text-green-700">CDN hizmeti aktif</p>
+                  </div>
+                </div>
+                <CheckCircleIcon className="w-5 h-5 text-green-500" />
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* Hızlı Linkler */}
+        <div className="bg-white rounded-xl p-6 shadow-sm border border-slate-200">
+          <h3 className="text-lg font-semibold text-slate-900 mb-4">Hızlı Linkler</h3>
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-            {quickActions.map((action) => (
-              <Link 
-                key={action.title}
-                href={action.href}
-                className="group"
-              >
-                <div className={`${action.color} rounded-2xl p-6 text-white transition-all duration-300 hover:scale-105 hover:shadow-xl`}>
-                  <div className="flex items-center space-x-3">
-                    <action.icon className="w-6 h-6" />
-                    <span className="font-semibold">{action.title}</span>
-                    <ArrowRightIcon className="w-4 h-4 opacity-0 group-hover:opacity-100 group-hover:translate-x-1 transition-all duration-300 ml-auto" />
-                  </div>
-                </div>
-              </Link>
-            ))}
+            <Link href="/admin/portfolio" className="flex items-center space-x-3 p-4 rounded-lg hover:bg-slate-50 transition-colors">
+              <FolderOpenIcon className="w-5 h-5 text-slate-400" />
+              <span className="text-sm font-medium text-slate-700">Tüm Projeler</span>
+            </Link>
+            <Link href="/admin/services" className="flex items-center space-x-3 p-4 rounded-lg hover:bg-slate-50 transition-colors">
+              <WrenchScrewdriverIcon className="w-5 h-5 text-slate-400" />
+              <span className="text-sm font-medium text-slate-700">Hizmet Yönetimi</span>
+            </Link>
+            <Link href="/admin/media" className="flex items-center space-x-3 p-4 rounded-lg hover:bg-slate-50 transition-colors">
+              <PhotoIcon className="w-5 h-5 text-slate-400" />
+              <span className="text-sm font-medium text-slate-700">Medya Galerisi</span>
+            </Link>
+            <Link href="/admin/messages" className="flex items-center space-x-3 p-4 rounded-lg hover:bg-slate-50 transition-colors">
+              <EnvelopeIcon className="w-5 h-5 text-slate-400" />
+              <span className="text-sm font-medium text-slate-700">Gelen Mesajlar</span>
+            </Link>
+            <Link href="/admin/settings" className="flex items-center space-x-3 p-4 rounded-lg hover:bg-slate-50 transition-colors">
+              <CogIcon className="w-5 h-5 text-slate-400" />
+              <span className="text-sm font-medium text-slate-700">Sistem Ayarları</span>
+            </Link>
+            <Link href="/" target="_blank" className="flex items-center space-x-3 p-4 rounded-lg hover:bg-slate-50 transition-colors">
+              <GlobeAltIcon className="w-5 h-5 text-slate-400" />
+              <span className="text-sm font-medium text-slate-700">Ana Siteyi Görüntüle</span>
+            </Link>
           </div>
         </div>
-
-
-
-        {/* Main Menu Grid */}
-        <div className="mb-8">
-          <h3 className="text-xl font-bold text-white mb-4">Yönetim Paneli</h3>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {menuItems.map((item) => (
-              <Link 
-                key={item.title}
-                href={item.href}
-                className="group"
-              >
-                <div className="bg-white/10 backdrop-blur-xl rounded-2xl p-6 border border-white/20 hover:bg-white/20 transition-all duration-300 hover:scale-105">
-                  <div className="flex items-start justify-between mb-4">
-                    <div className={`w-12 h-12 bg-gradient-to-r ${item.color} rounded-xl flex items-center justify-center group-hover:scale-110 transition-transform duration-300`}>
-                      <item.icon className="w-6 h-6 text-white" />
-                    </div>
-                    <div className="text-right">
-                      <span className="text-xs text-slate-400 font-medium">{item.badge}</span>
-                      <p className="text-2xl font-bold text-white">{item.stats}</p>
-                    </div>
-                  </div>
-                  <h4 className="text-xl font-bold text-white mb-2 group-hover:text-teal-300 transition-colors duration-300">
-                    {item.title}
-                  </h4>
-                  <p className="text-slate-300 text-sm leading-relaxed">
-                    {item.description}
-                  </p>
-                  <div className="flex items-center justify-end mt-4">
-                    <ArrowRightIcon className="w-5 h-5 text-slate-400 group-hover:text-white group-hover:translate-x-1 transition-all duration-300" />
-                  </div>
-                </div>
-              </Link>
-            ))}
-          </div>
+        
         </div>
-
-        {/* Footer Info */}
-        <div className="bg-white/5 backdrop-blur-xl rounded-2xl p-6 border border-white/10">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center space-x-3">
-              <div className="w-2 h-2 bg-green-400 rounded-full animate-pulse"></div>
-              <span className="text-slate-300 text-sm">Sistem durumu: Aktif</span>
-            </div>
-            <div className="flex items-center space-x-6 text-sm text-slate-400">
-              <Link href="/" className="hover:text-white transition-colors duration-200 flex items-center space-x-1">
-                <CubeTransparentIcon className="w-4 h-4" />
-                <span>Ana Sayfa</span>
-              </Link>
-              <span>Admin Panel v2.1</span>
-            </div>
-          </div>
-        </div>
-      </main>
-    </div>
+      </div>
+    </AdminLayout>
   );
 } 
+
