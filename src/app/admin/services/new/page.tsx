@@ -5,6 +5,7 @@ import { useSession } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
 import AdminLayout from '../../../../components/admin/AdminLayout';
 import ImageUpload from '../../../../components/ImageUpload';
+import RichTextEditor from '../../../../components/RichTextEditor';
 import { 
   PlusIcon,
   CheckIcon,
@@ -27,6 +28,7 @@ export default function NewServicePage() {
   const [features, setFeatures] = useState<string[]>(['']);
   const [serviceImage, setServiceImage] = useState('');
   const [serviceTitle, setServiceTitle] = useState('');
+  const [serviceDescription, setServiceDescription] = useState('');
 
   useEffect(() => {
     if (status === 'unauthenticated') {
@@ -50,7 +52,7 @@ export default function NewServicePage() {
         },
         body: JSON.stringify({
           title: formData.get('title'),
-          description: formData.get('description'),
+          description: serviceDescription,
           image: serviceImage || undefined,
           features: filteredFeatures
         }),
@@ -165,12 +167,12 @@ export default function NewServicePage() {
                 <label className="block text-sm font-medium text-slate-700 mb-2">
                   Servis Açıklaması *
                 </label>
-                <textarea
-                  name="description"
-                  rows={5}
-                  className="w-full border border-slate-300 rounded-xl px-4 py-3 text-slate-900 focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-transparent"
+                <RichTextEditor
+                  value={serviceDescription}
+                  onChange={setServiceDescription}
                   placeholder="Servis hakkında detaylı açıklama yazınız"
                   required
+                  maxLength={5000}
                 />
               </div>
             </div>

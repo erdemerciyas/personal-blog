@@ -210,13 +210,17 @@ export default function FooterSettingsPage() {
     
     if (field.includes('.')) {
       const [parent, child] = field.split('.');
-      setSettings({
-        ...settings,
-        [parent]: {
-          ...settings[parent as keyof FooterSettings],
-          [child]: value
-        }
-      });
+      const parentValue = settings[parent as keyof FooterSettings];
+      
+      if (parentValue && typeof parentValue === 'object' && !Array.isArray(parentValue)) {
+        setSettings({
+          ...settings,
+          [parent]: {
+            ...parentValue,
+            [child]: value
+          }
+        });
+      }
     } else {
       setSettings({
         ...settings,

@@ -1,4 +1,51 @@
-import mongoose from 'mongoose';
+import mongoose, { Model } from 'mongoose';
+
+interface IFooterSettings {
+  mainDescription: string;
+  contactInfo: {
+    email: string;
+    phone: string;
+    address: string;
+  };
+  quickLinks: {
+    title: string;
+    url: string;
+    isExternal: boolean;
+  }[];
+  socialLinks: {
+    linkedin: string;
+    twitter: string;
+    instagram: string;
+    facebook: string;
+    github: string;
+    youtube: string;
+  };
+  copyrightInfo: {
+    companyName: string;
+    year: number;
+    additionalText: string;
+  };
+  developerInfo: {
+    name: string;
+    website: string;
+    companyName: string;
+  };
+  visibility: {
+    showQuickLinks: boolean;
+    showSocialLinks: boolean;
+    showContactInfo: boolean;
+    showDeveloperInfo: boolean;
+  };
+  theme: {
+    backgroundColor: string;
+    textColor: string;
+    accentColor: string;
+  };
+}
+
+interface IFooterSettingsModel extends Model<IFooterSettings> {
+  getSingleton(): Promise<IFooterSettings>;
+}
 
 const FooterSettingsSchema = new mongoose.Schema({
   // Ana Açıklama
@@ -147,6 +194,6 @@ FooterSettingsSchema.statics.getSingleton = async function() {
   return settings;
 };
 
-const FooterSettings = mongoose.models.FooterSettings || mongoose.model('FooterSettings', FooterSettingsSchema);
+const FooterSettings = (mongoose.models.FooterSettings as IFooterSettingsModel) || mongoose.model<IFooterSettings, IFooterSettingsModel>('FooterSettings', FooterSettingsSchema);
 
 export default FooterSettings; 

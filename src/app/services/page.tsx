@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
+import HTMLContent from '../../components/HTMLContent';
 import { 
   ArrowRightIcon, 
   CheckBadgeIcon,
@@ -66,10 +67,7 @@ export default function ServicesPage() {
     setExpandedServices(newExpanded);
   };
 
-  const getDescriptionPreview = (description: string, maxLength: number = 180) => {
-    if (description.length <= maxLength) return description;
-    return description.substring(0, maxLength).trim() + '...';
-  };
+
 
   if (loading) {
     return (
@@ -194,31 +192,14 @@ export default function ServicesPage() {
                       
                       {/* Description with Collapse */}
                       <div className="mb-6">
-                        <p className="text-gray-600 leading-relaxed text-sm md:text-base">
-                          {expandedServices.has(service._id) 
-                            ? service.description 
-                            : getDescriptionPreview(service.description)
-                          }
-                        </p>
-                        
-                        {service.description.length > 180 && (
-                          <button
-                            onClick={() => toggleExpand(service._id)}
-                            className="mt-3 inline-flex items-center text-teal-600 hover:text-teal-700 font-medium text-sm transition-colors group"
-                          >
-                            {expandedServices.has(service._id) ? (
-                              <>
-                                <span>Daha Az Göster</span>
-                                <ChevronUpIcon className="w-4 h-4 ml-1 group-hover:-translate-y-0.5 transition-transform" />
-                              </>
-                            ) : (
-                              <>
-                                <span>Daha Fazla Göster</span>
-                                <ChevronDownIcon className="w-4 h-4 ml-1 group-hover:translate-y-0.5 transition-transform" />
-                              </>
-                            )}
-                          </button>
-                        )}
+                        <div className="text-gray-600 leading-relaxed text-sm md:text-base">
+                          <HTMLContent 
+                            content={service.description}
+                            truncate={expandedServices.has(service._id) ? undefined : 180}
+                            showMore={expandedServices.has(service._id)}
+                            onToggle={() => toggleExpand(service._id)}
+                          />
+                        </div>
                       </div>
 
                       {/* Features Section */}

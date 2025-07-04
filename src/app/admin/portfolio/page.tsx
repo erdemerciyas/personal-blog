@@ -6,6 +6,7 @@ import { useRouter } from 'next/navigation';
 import Image from 'next/image';
 import Link from 'next/link';
 import AdminLayout from '../../../components/admin/AdminLayout';
+import HTMLContent from '../../../components/HTMLContent';
 import { 
   PlusIcon,
   PencilIcon,
@@ -323,7 +324,13 @@ export default function PortfolioManagement() {
                               <StarIcon className="w-5 h-5 text-yellow-500" />
                             )}
                           </h4>
-                          <p className="text-slate-600 mb-3 line-clamp-2">{item.description}</p>
+                          <div className="text-slate-600 mb-3">
+                            <HTMLContent 
+                              content={item.description}
+                              truncate={150}
+                              className="line-clamp-2"
+                            />
+                          </div>
                           <div className="flex items-center space-x-4 text-sm text-slate-500">
                             <div className="flex items-center space-x-1">
                               <ClockIcon className="w-4 h-4" />

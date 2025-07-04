@@ -25,6 +25,9 @@ if (!MONGODB_URI) {
   throw new Error('Please define the MONGODB_URI environment variable in .env.local');
 }
 
+// Type assertion after the check
+const mongoUri = MONGODB_URI as string;
+
 // Mongoose connection
 let cached = global.mongooseConnection;
 
@@ -50,7 +53,7 @@ async function connectDB() {
       maxStalenessSeconds: 90,
     };
 
-    cached!.promise = mongoose.connect(MONGODB_URI, opts);
+    cached!.promise = mongoose.connect(mongoUri, opts);
   }
 
   try {
@@ -84,7 +87,7 @@ export async function connectToDatabase() {
       serverSelectionTimeoutMS: 5000,
       socketTimeoutMS: 30000,
     };
-    const client = new MongoClient(MONGODB_URI, options);
+    const client = new MongoClient(mongoUri, options);
     clientCached!.promise = client.connect();
   }
 

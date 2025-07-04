@@ -331,7 +331,7 @@ export default function AdminLayout({ children, title, breadcrumbs }: AdminLayou
             {!sidebarCollapsed && (
               <Link href="/admin/dashboard" className="flex items-center space-x-3">
                 {siteSettings?.logo?.url ? (
-                  <div className="relative w-10 h-10 rounded-xl overflow-hidden bg-gradient-to-br from-teal-500 to-cyan-600 p-1">
+                  <div className="relative w-10 h-10 rounded-xl overflow-hidden bg-slate-200 dark:bg-slate-600 p-1">
                     <Image
                       src={siteSettings.logo.url}
                       alt={siteSettings.logo.alt}
@@ -341,8 +341,8 @@ export default function AdminLayout({ children, title, breadcrumbs }: AdminLayou
                     />
                   </div>
                 ) : (
-                  <div className="w-10 h-10 bg-gradient-to-br from-teal-500 to-cyan-600 rounded-xl flex items-center justify-center">
-                    <SparklesIcon className="w-5 h-5 text-white" />
+                  <div className="w-10 h-10 bg-slate-200 dark:bg-slate-600 rounded-xl flex items-center justify-center">
+                    <SparklesIcon className="w-5 h-5 text-slate-500 dark:text-slate-400" />
                   </div>
                 )}
                 <div>

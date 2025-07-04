@@ -17,8 +17,11 @@ import {
 
 interface ImageUploadProps {
   value?: string;
-  onChange: (url: string) => void;
+  onChange?: (url: string) => void;
   onRemove?: () => void;
+  onImageUpload?: (url: string) => void;
+  onImageRemove?: () => void;
+  currentImage?: string;
   disabled?: boolean;
   className?: string;
   label?: string;
@@ -33,6 +36,9 @@ const ImageUpload: React.FC<ImageUploadProps> = ({
   value,
   onChange,
   onRemove,
+  onImageUpload,
+  onImageRemove,
+  currentImage,
   disabled = false,
   className = '',
   label = 'Resim Yükle',
@@ -57,16 +63,17 @@ const ImageUpload: React.FC<ImageUploadProps> = ({
 
   // onChange function güvenlik kontrolü
   const handleOnChange = (url: string) => {
-    if (typeof onChange === 'function') {
+    const changeHandler = onChange || onImageUpload;
+    if (typeof changeHandler === 'function') {
       // URL validation
       if (url && (url.startsWith('/') || url.startsWith('http://') || url.startsWith('https://'))) {
-        onChange(url);
+        changeHandler(url);
       } else {
         console.error('ImageUpload: Invalid URL provided:', url);
-        setError('Geçersiz görsel URL&apos;i');
+        setError('Geçersiz görsel URL\'i');
       }
     } else {
-      console.error('ImageUpload: onChange prop is not a function');
+      console.error('ImageUpload: onChange/onImageUpload prop is not a function');
     }
   };
 
@@ -162,13 +169,16 @@ const ImageUpload: React.FC<ImageUploadProps> = ({
   };
 
   const removeImage = async () => {
-    if (!value || !onRemove) return;
+    const currentImageValue = value || currentImage;
+    const removeHandler = onRemove || onImageRemove;
+    
+    if (!currentImageValue || !removeHandler) return;
 
     try {
       // Only Cloudinary deletion is supported
-      if (value.includes('cloudinary.com')) {
+      if (currentImageValue.includes('cloudinary.com')) {
         // Cloudinary URL - extract public_id
-        const matches = value.match(/\/v\d+\/(.+)\./);
+        const matches = currentImageValue.match(/\/v\d+\/(.+)\./);
         if (matches) {
           const publicId = matches[1];
           await fetch('/api/admin/media', {
@@ -179,8 +189,8 @@ const ImageUpload: React.FC<ImageUploadProps> = ({
         }
       }
       
-      if (typeof onRemove === 'function') {
-        onRemove();
+      if (typeof removeHandler === 'function') {
+        removeHandler();
       }
       setSuccess('Resim başarıyla silindi!');
       setTimeout(() => setSuccess(''), 2000);
@@ -274,9 +284,10 @@ const ImageUpload: React.FC<ImageUploadProps> = ({
   };
 
   // value kontrolü - boş string, undefined veya geçersiz URL ise resim yok kabul et
-  const hasImage = value && 
-                   value.trim() !== '' && 
-                   (value.startsWith('/') || value.startsWith('http://') || value.startsWith('https://'));
+  const currentImageValue = value || currentImage;
+  const hasImage = currentImageValue && 
+                   currentImageValue.trim() !== '' && 
+                   (currentImageValue.startsWith('/') || currentImageValue.startsWith('http://') || currentImageValue.startsWith('https://'));
 
   return (
     <div className={`space-y-4 ${className}`}>
@@ -306,9 +317,9 @@ const ImageUpload: React.FC<ImageUploadProps> = ({
           {/* Image Preview - Sol taraf */}
           <div className="lg:col-span-3">
             <div className="relative aspect-video bg-black/20 rounded-xl overflow-hidden">
-              {value && (value.startsWith('/') || value.startsWith('http://') || value.startsWith('https://')) ? (
+              {currentImageValue && (currentImageValue.startsWith('/') || currentImageValue.startsWith('http://') || currentImageValue.startsWith('https://')) ? (
                 <Image
-                  src={value}
+                  src={currentImageValue}
                   alt="Uploaded image"
                   fill
                   className="object-cover"
@@ -344,17 +355,17 @@ const ImageUpload: React.FC<ImageUploadProps> = ({
                 <div className="flex items-center justify-between py-2 border-b border-slate-600/30">
                   <span className="text-slate-400">Format:</span>
                   <span className="text-slate-200 font-medium">
-                    {value && value.includes('.webp') ? 'WebP' : 
-                     value && value.includes('.jpg') ? 'JPEG' : 
-                     value && value.includes('.jpeg') ? 'JPEG' : 
-                     value && value.includes('.png') ? 'PNG' : 'Görsel'}
+                    {currentImageValue && currentImageValue.includes('.webp') ? 'WebP' : 
+                     currentImageValue && currentImageValue.includes('.jpg') ? 'JPEG' : 
+                     currentImageValue && currentImageValue.includes('.jpeg') ? 'JPEG' : 
+                     currentImageValue && currentImageValue.includes('.png') ? 'PNG' : 'Görsel'}
                   </span>
                 </div>
                 <div className="flex items-center justify-between py-2">
                   <span className="text-slate-400">Kaynak:</span>
                   <span className="text-slate-200 font-medium">
-                    {value && value.includes('cloudinary.com') ? 'Cloudinary' : 
-                     value && value.includes('pexels.com') ? 'Pexels' : 'Harici'}
+                    {currentImageValue && currentImageValue.includes('cloudinary.com') ? 'Cloudinary' : 
+                     currentImageValue && currentImageValue.includes('pexels.com') ? 'Pexels' : 'Harici'}
                   </span>
                 </div>
               </div>
@@ -427,7 +438,7 @@ const ImageUpload: React.FC<ImageUploadProps> = ({
                   </button>
                 )}
 
-                {onRemove && (
+                {(onRemove || onImageRemove) && (
                   <button
                     type="button"
                     onClick={removeImage}

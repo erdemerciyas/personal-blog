@@ -16,6 +16,7 @@ import {
 } from '@heroicons/react/24/outline';
 import { PortfolioItem } from '../../../types/portfolio'; // Assuming PortfolioItem type is correctly defined
 import ProjectGrid from '../../../components/ProjectGrid'; // Ensuring this import is correct
+import HTMLContent from '../../../components/HTMLContent';
 
 // Helper component to handle client-side logic dependent on Suspense
 function PortfolioDetailPageContent({ params }: { params: { id: string } }) {
@@ -281,9 +282,10 @@ function PortfolioDetailPageContent({ params }: { params: { id: string } }) {
               <div className="bg-white/80 backdrop-blur-sm rounded-xl shadow-lg border border-white/60 p-6 md:p-8 max-w-4xl mx-auto">
                 <h2 className="text-3xl font-bold text-slate-800 mb-6 text-center">Proje Açıklaması</h2>
                 <div className="prose prose-lg prose-slate max-w-none">
-                  <p className="text-lg leading-relaxed text-slate-700">
-                    {portfolioItem.description}
-                  </p>
+                  <HTMLContent 
+                    content={portfolioItem.description}
+                    className="text-lg leading-relaxed text-slate-700"
+                  />
                 </div>
               </div>
             </div>

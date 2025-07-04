@@ -36,7 +36,7 @@ export default function Loading() {
         {/* Logo */}
         <div className="mb-8">
           {siteSettings?.logo?.url ? (
-            <div className="relative w-20 h-20 mx-auto rounded-3xl overflow-hidden bg-gradient-primary p-2">
+            <div className="relative w-20 h-20 mx-auto rounded-3xl overflow-hidden bg-slate-200 p-2">
               <Image
                 src={siteSettings.logo.url}
                 alt={siteSettings.logo.alt || 'Logo'}
@@ -47,8 +47,8 @@ export default function Loading() {
               />
             </div>
           ) : (
-            <div className="w-20 h-20 mx-auto bg-gradient-primary rounded-3xl flex items-center justify-center">
-              <SparklesIcon className="w-10 h-10 text-white" />
+            <div className="w-20 h-20 mx-auto bg-slate-200 rounded-3xl flex items-center justify-center">
+              <SparklesIcon className="w-10 h-10 text-slate-500" />
             </div>
           )}
         </div>

@@ -5,6 +5,7 @@ import { useSession } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
 import AdminLayout from '../../../../../components/admin/AdminLayout';
 import ImageUpload from '../../../../../components/ImageUpload';
+import RichTextEditor from '../../../../../components/RichTextEditor';
 import { 
   PencilIcon,
   FolderOpenIcon,
@@ -343,12 +344,11 @@ export default function EditPortfolioItem({ params }: { params: { id: string } }
                 <label className="block text-sm font-medium text-slate-700 mb-2">
                   Proje Açıklaması *
                 </label>
-                <textarea
+                <RichTextEditor
                   value={formData.description}
-                  onChange={(e) => setFormData(prev => ({ ...prev, description: e.target.value }))}
-                  rows={4}
-                  className="w-full border border-slate-300 rounded-xl px-4 py-3 text-slate-900 focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-transparent"
+                  onChange={(content) => setFormData(prev => ({ ...prev, description: content }))}
                   placeholder="Proje hakkında detaylı açıklama yazınız"
+                  maxLength={5000}
                   required
                 />
               </div>

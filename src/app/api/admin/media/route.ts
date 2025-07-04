@@ -3,6 +3,16 @@ import { getServerSession } from 'next-auth';
 import { authOptions } from '../../../../lib/auth';
 import { v2 as cloudinary } from 'cloudinary';
 
+interface CloudinaryResource {
+  public_id: string;
+  display_name?: string;
+  secure_url: string;
+  bytes: number;
+  format: string;
+  resource_type: string;
+  created_at: string;
+}
+
 // Cloudinary config
 cloudinary.config({
   cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
@@ -86,7 +96,7 @@ export async function GET() {
       console.log('📊 Cloudinary response:', JSON.stringify(cloudinaryResult, null, 2));
 
       if (cloudinaryResult.resources) {
-        for (const resource of cloudinaryResult.resources) {
+        for (const resource of cloudinaryResult.resources as CloudinaryResource[]) {
           const fileName = resource.display_name || resource.public_id.split('/').pop() || resource.public_id;
           
           mediaItems.push({

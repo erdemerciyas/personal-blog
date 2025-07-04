@@ -41,9 +41,9 @@ export async function PUT(request: Request) {
     } else {
       // Nested objeleri doğru şekilde güncelle
       Object.keys(updateData).forEach(key => {
-        if (typeof updateData[key] === 'object' && updateData[key] !== null && !Array.isArray(updateData[key])) {
+        if (settings && typeof updateData[key] === 'object' && updateData[key] !== null && !Array.isArray(updateData[key])) {
           settings[key] = { ...settings[key], ...updateData[key] };
-        } else {
+        } else if (settings) {
           settings[key] = updateData[key];
         }
       });
