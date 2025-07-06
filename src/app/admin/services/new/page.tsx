@@ -186,7 +186,7 @@ export default function NewServicePage() {
             </h3>
             
             <ImageUpload
-              onImageUpload={(url) => setServiceImage(url)}
+              onImageUpload={(url) => setServiceImage(Array.isArray(url) ? url[0] : url)}
               onImageRemove={() => setServiceImage('')}
               currentImage={serviceImage}
             />

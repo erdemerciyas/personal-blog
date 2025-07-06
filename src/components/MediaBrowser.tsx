@@ -81,8 +81,8 @@ const MediaBrowser: React.FC<MediaBrowserProps> = ({
   }, []);
 
   // URL validation helper
-  const isValidUrl = (url: string) => {
-    return url && (url.startsWith('/') || url.startsWith('http://') || url.startsWith('https://'));
+  const isValidUrl = (url: string): boolean => {
+    return Boolean(url && (url.startsWith('/') || url.startsWith('http://') || url.startsWith('https://')));
   };
 
   // Fetch media items
@@ -154,7 +154,7 @@ const MediaBrowser: React.FC<MediaBrowserProps> = ({
       const urls = selectedItems.map(id => {
         const item = mediaItems.find(item => item._id === id);
         return item?.url;
-      }).filter(url => url && isValidUrl(url));
+      }).filter((url): url is string => url !== undefined && isValidUrl(url));
       
       if (urls.length > 0) {
         onSelect(urls);
