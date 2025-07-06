@@ -256,16 +256,16 @@ const ImageUpload: React.FC<ImageUploadProps> = ({
   };
 
   const removeImage = async () => {
-    const currentImageValue = value || currentImage;
     const removeHandler = onRemove || onImageRemove;
+    const currentImageString = Array.isArray(currentImageValue) ? currentImageValue[0] : currentImageValue;
     
-    if (!currentImageValue || !removeHandler) return;
+    if (!currentImageString || !removeHandler) return;
 
     try {
       // Only Cloudinary deletion is supported
-      if (currentImageValue.includes('cloudinary.com')) {
+      if (currentImageString.includes('cloudinary.com')) {
         // Cloudinary URL - extract public_id
-        const matches = currentImageValue.match(/\/v\d+\/(.+)\./);
+        const matches = currentImageString.match(/\/v\d+\/(.+)\./);
         if (matches) {
           const publicId = matches[1];
           await fetch('/api/admin/media', {
@@ -377,9 +377,10 @@ const ImageUpload: React.FC<ImageUploadProps> = ({
 
   // value kontrolü - boş string, undefined veya geçersiz URL ise resim yok kabul et
   const currentImageValue = value || currentImage;
-  const hasImage = currentImageValue && 
-                   currentImageValue.trim() !== '' && 
-                   (currentImageValue.startsWith('/') || currentImageValue.startsWith('http://') || currentImageValue.startsWith('https://'));
+  const currentImageString = Array.isArray(currentImageValue) ? currentImageValue[0] : currentImageValue;
+  const hasImage = currentImageString && 
+                   currentImageString.trim() !== '' && 
+                   (currentImageString.startsWith('/') || currentImageString.startsWith('http://') || currentImageString.startsWith('https://'));
 
   return (
     <div className={`space-y-4 ${className}`}>
@@ -409,9 +410,9 @@ const ImageUpload: React.FC<ImageUploadProps> = ({
           {/* Image Preview - Sol taraf */}
           <div className="lg:col-span-3">
             <div className="relative aspect-video bg-black/20 rounded-xl overflow-hidden">
-              {currentImageValue && (currentImageValue.startsWith('/') || currentImageValue.startsWith('http://') || currentImageValue.startsWith('https://')) ? (
+              {currentImageString && (currentImageString.startsWith('/') || currentImageString.startsWith('http://') || currentImageString.startsWith('https://')) ? (
                 <Image
-                  src={currentImageValue}
+                  src={currentImageString}
                   alt="Uploaded image"
                   fill
                   className="object-cover"
@@ -447,17 +448,17 @@ const ImageUpload: React.FC<ImageUploadProps> = ({
                 <div className="flex items-center justify-between py-2 border-b border-slate-600/30">
                   <span className="text-slate-400">Format:</span>
                   <span className="text-slate-200 font-medium">
-                    {currentImageValue && currentImageValue.includes('.webp') ? 'WebP' : 
-                     currentImageValue && currentImageValue.includes('.jpg') ? 'JPEG' : 
-                     currentImageValue && currentImageValue.includes('.jpeg') ? 'JPEG' : 
-                     currentImageValue && currentImageValue.includes('.png') ? 'PNG' : 'Görsel'}
+                    {currentImageString && currentImageString.includes('.webp') ? 'WebP' : 
+                     currentImageString && currentImageString.includes('.jpg') ? 'JPEG' : 
+                     currentImageString && currentImageString.includes('.jpeg') ? 'JPEG' : 
+                     currentImageString && currentImageString.includes('.png') ? 'PNG' : 'Görsel'}
                   </span>
                 </div>
                 <div className="flex items-center justify-between py-2">
                   <span className="text-slate-400">Kaynak:</span>
                   <span className="text-slate-200 font-medium">
-                    {currentImageValue && currentImageValue.includes('cloudinary.com') ? 'Cloudinary' : 
-                     currentImageValue && currentImageValue.includes('pexels.com') ? 'Pexels' : 'Harici'}
+                    {currentImageString && currentImageString.includes('cloudinary.com') ? 'Cloudinary' : 
+                     currentImageString && currentImageString.includes('pexels.com') ? 'Pexels' : 'Harici'}
                   </span>
                 </div>
               </div>
