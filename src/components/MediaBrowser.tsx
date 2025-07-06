@@ -26,11 +26,13 @@ interface MediaItem {
 interface MediaBrowserProps {
   isOpen: boolean;
   onClose: () => void;
-  onSelect: (url: string) => void;
+  onSelect: (url: string | string[]) => void;
   onUploadNew: () => void;
   title?: string;
   allowedTypes?: string[];
   theme?: 'dark' | 'light';
+  pageContext?: string;
+  allowMultipleSelect?: boolean;
 }
 
 const MediaBrowser: React.FC<MediaBrowserProps> = ({
@@ -40,13 +42,17 @@ const MediaBrowser: React.FC<MediaBrowserProps> = ({
   onUploadNew,
   title = 'Medya Seç',
   allowedTypes = ['image/'],
-  theme = 'dark'
+  theme = 'dark',
+  pageContext = 'general',
+  allowMultipleSelect = false
 }) => {
   const [mediaItems, setMediaItems] = useState<MediaItem[]>([]);
   const [loading, setLoading] = useState(false);
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedItem, setSelectedItem] = useState<string | null>(null);
+  const [selectedItems, setSelectedItems] = useState<string[]>([]);
   const [filter, setFilter] = useState('all');
+  const [pageFilter, setPageFilter] = useState('all');
   const [windowSize, setWindowSize] = useState({
     width: 1024,
     height: 768
@@ -84,12 +90,17 @@ const MediaBrowser: React.FC<MediaBrowserProps> = ({
     if (isOpen) {
       fetchMediaItems();
     }
-  }, [isOpen]);
+  }, [isOpen, pageFilter]);
 
   const fetchMediaItems = async () => {
     setLoading(true);
     try {
-      const response = await fetch('/api/admin/media');
+      const params = new URLSearchParams();
+      if (pageFilter !== 'all') {
+        params.append('pageContext', pageFilter);
+      }
+      
+      const response = await fetch(`/api/admin/media?${params.toString()}`);
       if (response.ok) {
         const data = await response.json();
         setMediaItems(data);
@@ -139,7 +150,18 @@ const MediaBrowser: React.FC<MediaBrowserProps> = ({
   };
 
   const handleSelect = () => {
-    if (selectedItem) {
+    if (allowMultipleSelect && selectedItems.length > 0) {
+      const urls = selectedItems.map(id => {
+        const item = mediaItems.find(item => item._id === id);
+        return item?.url;
+      }).filter(url => url && isValidUrl(url));
+      
+      if (urls.length > 0) {
+        onSelect(urls);
+        onClose();
+        setSelectedItems([]);
+      }
+    } else if (selectedItem) {
       const item = mediaItems.find(item => item._id === selectedItem);
       if (item && isValidUrl(item.url)) {
         onSelect(item.url);
@@ -148,6 +170,18 @@ const MediaBrowser: React.FC<MediaBrowserProps> = ({
       } else {
         console.error('Invalid URL selected:', item?.url);
       }
+    }
+  };
+
+  const handleItemClick = (itemId: string) => {
+    if (allowMultipleSelect) {
+      setSelectedItems(prev => 
+        prev.includes(itemId) 
+          ? prev.filter(id => id !== itemId)
+          : [...prev, itemId]
+      );
+    } else {
+      setSelectedItem(itemId);
     }
   };
 
@@ -230,7 +264,7 @@ const MediaBrowser: React.FC<MediaBrowserProps> = ({
               />
             </div>
 
-            {/* Filter */}
+            {/* Type Filter */}
             <select
               value={filter}
               onChange={(e) => setFilter(e.target.value)}
@@ -241,6 +275,32 @@ const MediaBrowser: React.FC<MediaBrowserProps> = ({
               </option>
               <option value="images" style={{ color: '#1e293b', backgroundColor: '#ffffff' }}>
                 Sadece Görseller
+              </option>
+            </select>
+
+            {/* Page Filter */}
+            <select
+              value={pageFilter}
+              onChange={(e) => setPageFilter(e.target.value)}
+              className={`${themeStyles.select} rounded-xl px-4 py-2 focus:outline-none focus:ring-2 focus:ring-teal-500`}
+            >
+              <option value="all" style={{ color: '#1e293b', backgroundColor: '#ffffff' }}>
+                Tüm Sayfalar
+              </option>
+              <option value="portfolio" style={{ color: '#1e293b', backgroundColor: '#ffffff' }}>
+                Portfolio
+              </option>
+              <option value="service" style={{ color: '#1e293b', backgroundColor: '#ffffff' }}>
+                Hizmetler
+              </option>
+              <option value="about" style={{ color: '#1e293b', backgroundColor: '#ffffff' }}>
+                Hakkımda
+              </option>
+              <option value="slider" style={{ color: '#1e293b', backgroundColor: '#ffffff' }}>
+                Slider
+              </option>
+              <option value="general" style={{ color: '#1e293b', backgroundColor: '#ffffff' }}>
+                Genel
               </option>
             </select>
 
@@ -277,67 +337,80 @@ const MediaBrowser: React.FC<MediaBrowserProps> = ({
             </div>
           ) : (
             <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-4">
-              {filteredItems.map((item) => (
-                <div
-                  key={item._id}
-                  onClick={() => setSelectedItem(item._id)}
-                  className={`${themeStyles.card} rounded-xl p-3 cursor-pointer transition-all duration-200 hover:scale-105 ${
-                    selectedItem === item._id
-                      ? themeStyles.cardSelected
-                      : 'border-slate-600 hover:border-slate-500'
-                  }`}
-                >
-                  {/* Selection Indicator */}
-                  {selectedItem === item._id && (
-                    <div className="absolute -top-2 -right-2 w-6 h-6 bg-teal-500 rounded-full flex items-center justify-center z-10">
-                      <CheckIcon className="w-4 h-4 text-white" />
-                    </div>
-                  )}
-
-                  {/* Image Preview */}
-                  <div className="aspect-square mb-2 bg-slate-700 rounded-lg overflow-hidden relative">
-                    {item.mimeType.startsWith('image/') && item.url && isValidUrl(item.url) ? (
-                      <Image
-                        src={item.url}
-                        alt={item.originalName}
-                        fill
-                        className="object-cover"
-                        loading="lazy"
-                        onError={(e) => {
-                          console.error('Image load error for:', item.url);
-                          e.currentTarget.style.display = 'none';
-                        }}
-                      />
-                    ) : (
-                      <div className="w-full h-full flex items-center justify-center text-2xl">
-                        {item.mimeType.startsWith('image/') ? '🖼️' : '📄'}
+              {filteredItems.map((item) => {
+                const isSelected = allowMultipleSelect 
+                  ? selectedItems.includes(item._id)
+                  : selectedItem === item._id;
+                
+                return (
+                  <div
+                    key={item._id}
+                    onClick={() => handleItemClick(item._id)}
+                    className={`${themeStyles.card} rounded-xl p-3 cursor-pointer transition-all duration-200 hover:scale-105 relative ${
+                      isSelected
+                        ? themeStyles.cardSelected
+                        : 'border-slate-600 hover:border-slate-500'
+                    }`}
+                  >
+                    {/* Selection Indicator */}
+                    {isSelected && (
+                      <div className="absolute -top-2 -right-2 w-6 h-6 bg-teal-500 rounded-full flex items-center justify-center z-10">
+                        <CheckIcon className="w-4 h-4 text-white" />
                       </div>
                     )}
-                  </div>
+                    
+                    {/* Multiple Selection Counter */}
+                    {allowMultipleSelect && selectedItems.includes(item._id) && (
+                      <div className="absolute -top-2 -left-2 w-6 h-6 bg-blue-500 rounded-full flex items-center justify-center z-10 text-white text-xs font-bold">
+                        {selectedItems.indexOf(item._id) + 1}
+                      </div>
+                    )}
 
-                  {/* File Info */}
-                  <div className="space-y-1">
-                    <h5 className={`${themeStyles.text} text-xs font-medium truncate`} title={item.originalName}>
-                      {item.originalName}
-                    </h5>
-                    <div className="flex items-center justify-between text-xs text-slate-400">
-                      <span>{formatFileSize(item.size)}</span>
-                      <div className="flex items-center space-x-1">
-                        {item.source === 'cloudinary' && (
-                          <span className="bg-gradient-to-r from-blue-500 to-purple-500 text-white px-1.5 py-0.5 rounded text-xs font-semibold">
-                            ☁️ Cloud
-                          </span>
-                        )}
-                        {item.source === 'local' && (
-                          <span className="bg-slate-600 text-slate-300 px-1.5 py-0.5 rounded text-xs">
-                            💾 Local
-                          </span>
-                        )}
+                    {/* Image Preview */}
+                    <div className="aspect-square mb-2 bg-slate-700 rounded-lg overflow-hidden relative">
+                      {item.mimeType.startsWith('image/') && item.url && isValidUrl(item.url) ? (
+                        <Image
+                          src={item.url}
+                          alt={item.originalName}
+                          fill
+                          className="object-cover"
+                          loading="lazy"
+                          onError={(e) => {
+                            console.error('Image load error for:', item.url);
+                            e.currentTarget.style.display = 'none';
+                          }}
+                        />
+                      ) : (
+                        <div className="w-full h-full flex items-center justify-center text-2xl">
+                          {item.mimeType.startsWith('image/') ? '🖼️' : '📄'}
+                        </div>
+                      )}
+                    </div>
+
+                    {/* File Info */}
+                    <div className="space-y-1">
+                      <h5 className={`${themeStyles.text} text-xs font-medium truncate`} title={item.originalName}>
+                        {item.originalName}
+                      </h5>
+                      <div className="flex items-center justify-between text-xs text-slate-400">
+                        <span>{formatFileSize(item.size)}</span>
+                        <div className="flex items-center space-x-1">
+                          {item.source === 'cloudinary' && (
+                            <span className="bg-gradient-to-r from-blue-500 to-purple-500 text-white px-1.5 py-0.5 rounded text-xs font-semibold">
+                              ☁️ Cloud
+                            </span>
+                          )}
+                          {item.source === 'local' && (
+                            <span className="bg-slate-600 text-slate-300 px-1.5 py-0.5 rounded text-xs">
+                              💾 Local
+                            </span>
+                          )}
+                        </div>
                       </div>
                     </div>
                   </div>
-                </div>
-              ))}
+                );
+              })}
             </div>
           )}
         </div>
@@ -346,16 +419,30 @@ const MediaBrowser: React.FC<MediaBrowserProps> = ({
         {filteredItems.length > 0 && (
           <div className={`${themeStyles.footer} p-6 flex-shrink-0`}>
             <div className="flex items-center justify-between">
-              <p className={`${themeStyles.textSecondary} text-slate-400`}>
-                {filteredItems.length} dosya bulundu
-                {selectedItem && (
-                  <span className={`${themeStyles.text} font-medium`}>
-                    {' • '}{mediaItems.find(item => item._id === selectedItem)?.originalName} seçildi
-                  </span>
-                )}
-              </p>
+              <div className="flex flex-col space-y-1">
+                <p className={`${themeStyles.textSecondary} text-slate-400`}>
+                  {filteredItems.length} dosya bulundu
+                </p>
+                {allowMultipleSelect && selectedItems.length > 0 ? (
+                  <p className={`${themeStyles.text} font-medium text-teal-400`}>
+                    {selectedItems.length} görsel seçildi
+                  </p>
+                ) : selectedItem ? (
+                  <p className={`${themeStyles.text} font-medium`}>
+                    {mediaItems.find(item => item._id === selectedItem)?.originalName} seçildi
+                  </p>
+                ) : null}
+              </div>
               
               <div className="flex items-center space-x-3">
+                {allowMultipleSelect && selectedItems.length > 0 && (
+                  <button
+                    onClick={() => setSelectedItems([])}
+                    className="px-4 py-2 text-slate-400 hover:text-white transition-colors"
+                  >
+                    Seçimi Temizle
+                  </button>
+                )}
                 <button
                   onClick={onClose}
                   className="px-6 py-2 text-slate-400 hover:text-white transition-colors"
@@ -364,14 +451,16 @@ const MediaBrowser: React.FC<MediaBrowserProps> = ({
                 </button>
                 <button
                   onClick={handleSelect}
-                  disabled={!selectedItem}
+                  disabled={allowMultipleSelect ? selectedItems.length === 0 : !selectedItem}
                   className={`px-6 py-2 rounded-xl font-medium transition-all duration-200 ${
-                    selectedItem
+                    (allowMultipleSelect ? selectedItems.length > 0 : selectedItem)
                       ? 'bg-gradient-to-r from-teal-600 to-blue-600 hover:from-teal-700 hover:to-blue-700 text-white'
                       : 'bg-slate-700 text-slate-400 cursor-not-allowed'
                   }`}
                 >
-                  Seç
+                  {allowMultipleSelect && selectedItems.length > 1 
+                    ? `${selectedItems.length} Görsel Seç` 
+                    : 'Seç'}
                 </button>
               </div>
             </div>
