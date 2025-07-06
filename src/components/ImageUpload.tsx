@@ -16,10 +16,10 @@ import {
 } from '@heroicons/react/24/outline';
 
 interface ImageUploadProps {
-  value?: string;
-  onChange?: (url: string) => void;
+  value?: string | string[];
+  onChange?: (url: string | string[]) => void;
   onRemove?: () => void;
-  onImageUpload?: (url: string) => void;
+  onImageUpload?: (url: string | string[]) => void;
   onImageRemove?: () => void;
   currentImage?: string;
   disabled?: boolean;
@@ -30,6 +30,8 @@ interface ImageUploadProps {
   showAIGeneration?: boolean; // AI görsel oluşturma seçeneği
   showUrlInput?: boolean; // URL ile görsel ekleme seçeneği
   projectTitle?: string; // AI için proje başlığı
+  pageContext?: string; // Sayfa bağlamı (portfolio, service, etc.)
+  allowMultipleSelect?: boolean; // Çoklu seçim izni
 }
 
 const ImageUpload: React.FC<ImageUploadProps> = ({
@@ -46,7 +48,9 @@ const ImageUpload: React.FC<ImageUploadProps> = ({
   maxSize = 10,
   showAIGeneration = false,
   showUrlInput = false,
-  projectTitle = ''
+  projectTitle = '',
+  pageContext = 'general',
+  allowMultipleSelect = false
 }) => {
   const [uploading, setUploading] = useState(false);
   const [dragOver, setDragOver] = useState(false);
@@ -62,11 +66,19 @@ const ImageUpload: React.FC<ImageUploadProps> = ({
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   // onChange function güvenlik kontrolü
-  const handleOnChange = (url: string) => {
+  const handleOnChange = (url: string | string[]) => {
     const changeHandler = onChange || onImageUpload;
     if (typeof changeHandler === 'function') {
       // URL validation
-      if (url && (url.startsWith('/') || url.startsWith('http://') || url.startsWith('https://'))) {
+      if (Array.isArray(url)) {
+        const validUrls = url.filter(u => u && (u.startsWith('/') || u.startsWith('http://') || u.startsWith('https://')));
+        if (validUrls.length > 0) {
+          changeHandler(validUrls);
+        } else {
+          console.error('ImageUpload: No valid URLs provided:', url);
+          setError('Geçersiz görsel URL\'leri');
+        }
+      } else if (url && (url.startsWith('/') || url.startsWith('http://') || url.startsWith('https://'))) {
         changeHandler(url);
       } else {
         console.error('ImageUpload: Invalid URL provided:', url);
@@ -80,8 +92,13 @@ const ImageUpload: React.FC<ImageUploadProps> = ({
   const handleFileSelect = async (files: FileList | null) => {
     if (!files || files.length === 0) return;
 
-    const file = files[0];
-    await uploadFile(file);
+    if (allowMultipleSelect) {
+      const fileArray = Array.from(files);
+      await uploadMultipleFiles(fileArray);
+    } else {
+      const file = files[0];
+      await uploadFile(file);
+    }
   };
 
   const uploadFile = async (file: File) => {
@@ -93,7 +110,7 @@ const ImageUpload: React.FC<ImageUploadProps> = ({
     try {
       // Dosya boyutu kontrolü
       if (file.size > maxSize * 1024 * 1024) {
-        throw new Error(`Dosya boyutu ${maxSize}MB&apos;dan büyük olamaz`);
+        throw new Error(`Dosya boyutu ${maxSize}MB'dan büyük olamaz`);
       }
 
       // Dosya tipi kontrolü
@@ -104,6 +121,7 @@ const ImageUpload: React.FC<ImageUploadProps> = ({
 
       const formData = new FormData();
       formData.append('file', file);
+      formData.append('pageContext', pageContext);
 
       // Upload progress simulation
       const progressInterval = setInterval(() => {
@@ -139,6 +157,75 @@ const ImageUpload: React.FC<ImageUploadProps> = ({
       }, 2000);
     } catch (error) {
       console.error('Upload error:', error);
+      setError(error instanceof Error ? error.message : 'Upload sırasında hata oluştu');
+      setUploadProgress(0);
+    } finally {
+      setUploading(false);
+    }
+  };
+
+  const uploadMultipleFiles = async (files: File[]) => {
+    setError('');
+    setSuccess('');
+    setUploading(true);
+    setUploadProgress(0);
+
+    try {
+      const uploadPromises = files.map(async (file) => {
+        // Dosya boyutu kontrolü
+        if (file.size > maxSize * 1024 * 1024) {
+          throw new Error(`${file.name} dosya boyutu ${maxSize}MB'dan büyük olamaz`);
+        }
+
+        // Dosya tipi kontrolü
+        const allowedTypes = ['image/jpeg', 'image/jpg', 'image/png', 'image/gif', 'image/webp'];
+        if (!allowedTypes.includes(file.type)) {
+          throw new Error(`${file.name} sadece JPEG, PNG, GIF ve WebP formatları desteklenir`);
+        }
+
+        const formData = new FormData();
+        formData.append('file', file);
+        formData.append('pageContext', pageContext);
+
+        const response = await fetch('/api/admin/upload', {
+          method: 'POST',
+          body: formData,
+        });
+
+        if (!response.ok) {
+          const errorData = await response.json();
+          throw new Error(errorData.error || `${file.name} upload başarısız`);
+        }
+
+        const data = await response.json();
+        return data.url;
+      });
+
+      // Upload progress simulation
+      const progressInterval = setInterval(() => {
+        setUploadProgress(prev => {
+          if (prev >= 90) {
+            clearInterval(progressInterval);
+            return 90;
+          }
+          return prev + 10;
+        });
+      }, 200);
+
+      const urls = await Promise.all(uploadPromises);
+      
+      clearInterval(progressInterval);
+      setUploadProgress(100);
+
+      handleOnChange(urls);
+      setSuccess(`${files.length} resim başarıyla yüklendi!`);
+      
+      setTimeout(() => {
+        setSuccess('');
+        setUploadProgress(0);
+      }, 2000);
+    } catch (error) {
+      console.error('Multiple upload error:', error);
       setError(error instanceof Error ? error.message : 'Upload sırasında hata oluştu');
       setUploadProgress(0);
     } finally {
@@ -212,9 +299,14 @@ const ImageUpload: React.FC<ImageUploadProps> = ({
     }, 100);
   };
 
-  const handleMediaSelect = (url: string) => {
-    handleOnChange(url);
-    setSuccess('Görsel başarıyla seçildi!');
+  const handleMediaSelect = (url: string | string[]) => {
+    if (typeof onChange === 'function') {
+      onChange(url);
+    } else if (typeof onImageUpload === 'function') {
+      onImageUpload(url);
+    }
+    const count = Array.isArray(url) ? url.length : 1;
+    setSuccess(`${count} görsel başarıyla seçildi!`);
     setTimeout(() => setSuccess(''), 2000);
   };
 
@@ -644,7 +736,7 @@ const ImageUpload: React.FC<ImageUploadProps> = ({
         ref={fileInputRef}
         type="file"
         accept="image/*"
-        multiple={acceptMultiple}
+        multiple={allowMultipleSelect || acceptMultiple}
         onChange={(e) => handleFileSelect(e.target.files)}
         className="hidden"
         disabled={disabled || uploading}
@@ -658,6 +750,8 @@ const ImageUpload: React.FC<ImageUploadProps> = ({
         onUploadNew={handleUploadNew}
         title={`${label || 'Görsel'} Seç`}
         allowedTypes={['image/']}
+        pageContext={pageContext}
+        allowMultipleSelect={allowMultipleSelect}
       />
 
       {/* AI Generation Modal */}

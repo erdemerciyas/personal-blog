@@ -34,13 +34,17 @@ interface MediaItem {
 }
 
 // GET - List all media files from both Cloudinary and local storage
-export async function GET() {
+export async function GET(request: NextRequest) {
   try {
     const session = await getServerSession(authOptions);
     
     if (!session?.user) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
+
+    // Get pageContext filter from query params
+    const { searchParams } = new URL(request.url);
+    const pageContextFilter = searchParams.get('pageContext');
 
     const mediaItems: MediaItem[] = [];
 
@@ -59,12 +63,19 @@ export async function GET() {
       console.log('🔄 Using Admin API directly...');
       
       try {
-        // Admin API ile tüm görselleri çek
-        const adminResult = await cloudinary.api.resources({
+        // Admin API ile görselleri çek
+        let resourceOptions: any = {
           resource_type: 'image',
           max_results: 100,
           type: 'upload'
-        });
+        };
+
+        // PageContext filtresi varsa prefix ekle
+        if (pageContextFilter && pageContextFilter !== 'all') {
+          resourceOptions.prefix = `personal-blog/${pageContextFilter}/`;
+        }
+
+        const adminResult = await cloudinary.api.resources(resourceOptions);
         
         console.log('📋 Admin API raw response:', JSON.stringify(adminResult, null, 2));
         

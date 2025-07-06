@@ -23,6 +23,7 @@ export async function POST(request: NextRequest) {
 
     const formData = await request.formData();
     const file = formData.get('file') as File;
+    const pageContext = formData.get('pageContext') as string || 'general';
 
     if (!file) {
       return NextResponse.json(
@@ -53,13 +54,15 @@ export async function POST(request: NextRequest) {
     const buffer = Buffer.from(bytes);
 
     // Cloudinary'e yükle
+    const folder = `personal-blog/${pageContext}`;
     const uploadResult = await new Promise<any>((resolve, reject) => {
       cloudinary.uploader.upload_stream(
         {
           resource_type: 'auto',
-          folder: 'personal-blog/uploads',
+          folder: folder,
           use_filename: true,
           unique_filename: true,
+          tags: [pageContext, 'personal-blog'],
         },
         (error, result) => {
           if (error) {
@@ -79,7 +82,8 @@ export async function POST(request: NextRequest) {
       originalName: file.name,
       size: file.size,
       type: file.type,
-      publicId: uploadResult.public_id
+      publicId: uploadResult.public_id,
+      pageContext: pageContext
     });
 
   } catch (error) {

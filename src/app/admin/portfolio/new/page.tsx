@@ -273,7 +273,7 @@ export default function NewPortfolioItem() {
               
               <div>
                 <label className="block text-sm font-medium text-slate-700 mb-2">
-                  Müşteri/Şirket
+                  Müşteri/Şirket *
                 </label>
                 <input
                   type="text"
@@ -281,18 +281,20 @@ export default function NewPortfolioItem() {
                   onChange={(e) => setFormData(prev => ({ ...prev, client: e.target.value }))}
                   className="w-full border border-slate-300 rounded-xl px-4 py-3 text-slate-900 focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-transparent"
                   placeholder="Müşteri veya şirket adı"
+                  required
                 />
               </div>
               
               <div>
                 <label className="block text-sm font-medium text-slate-700 mb-2">
-                  Tamamlanma Tarihi
+                  Tamamlanma Tarihi *
                 </label>
                 <input
                   type="date"
                   value={formData.completionDate}
                   onChange={(e) => setFormData(prev => ({ ...prev, completionDate: e.target.value }))}
                   className="w-full border border-slate-300 rounded-xl px-4 py-3 text-slate-900 focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-transparent"
+                  required
                 />
               </div>
               
@@ -387,28 +389,50 @@ export default function NewPortfolioItem() {
               </button>
             </div>
             
-            <div className="space-y-3">
+            <div className="space-y-4">
               {formData.images.length === 0 ? (
                 <p className="text-slate-500 text-sm py-4 text-center">
                   Henüz proje görseli eklenmedi. Yukarıdaki butonu kullanarak görsel ekleyebilirsiniz.
                 </p>
               ) : (
                 formData.images.map((image, index) => (
-                  <div key={index} className="flex items-center space-x-3">
-                    <input
-                      type="url"
+                  <div key={index} className="border border-slate-200 rounded-xl p-4">
+                    <div className="flex items-center justify-between mb-3">
+                      <label className="text-sm font-medium text-slate-700">
+                        Görsel {index + 1}
+                      </label>
+                      <button
+                        type="button"
+                        onClick={() => removeImage(index)}
+                        className="p-1 text-red-500 hover:text-red-700 hover:bg-red-50 rounded-lg transition-colors"
+                      >
+                        <TrashIcon className="w-4 h-4" />
+                      </button>
+                    </div>
+                    <ImageUpload
                       value={image}
-                      onChange={(e) => handleImageChange(index, e.target.value)}
-                      className="flex-1 border border-slate-300 rounded-xl px-4 py-3 text-slate-900 focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-transparent"
-                      placeholder="Görsel URL'si"
+                      onChange={(url) => {
+                        if (Array.isArray(url)) {
+                          // Çoklu seçim durumunda tüm URL'leri ekle
+                          const newImages = [...formData.images];
+                          newImages.splice(index, 1, ...url);
+                          // Boş stringleri temizle ve son boş string ekle
+                          const cleanedImages = newImages.filter(img => img.trim() !== '');
+                          cleanedImages.push('');
+                          setFormData(prev => ({ ...prev, images: cleanedImages }));
+                        } else {
+                          handleImageChange(index, url);
+                        }
+                      }}
+                      onRemove={() => handleImageChange(index, '')}
+                      label={`Görsel ${index + 1}`}
+                      className="w-full"
+                      showUrlInput={true}
+                      showAIGeneration={true}
+                      projectTitle={formData.title}
+                      pageContext="portfolio"
+                      allowMultipleSelect={true}
                     />
-                    <button
-                      type="button"
-                      onClick={() => removeImage(index)}
-                      className="p-2 text-red-500 hover:text-red-700 hover:bg-red-50 rounded-lg transition-colors"
-                    >
-                      <TrashIcon className="w-5 h-5" />
-                    </button>
                   </div>
                 ))
               )}
@@ -456,10 +480,10 @@ export default function NewPortfolioItem() {
           <div className="flex flex-col sm:flex-row gap-4 pt-6 border-t border-slate-200">
             <button
               type="submit"
-              disabled={loading}
+              disabled={submitting}
               className="flex-1 bg-teal-600 text-white px-6 py-3 rounded-xl font-medium hover:bg-teal-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors flex items-center justify-center space-x-2"
             >
-              {loading ? (
+              {submitting ? (
                 <>
                   <div className="animate-spin rounded-full h-5 w-5 border-2 border-white border-t-transparent"></div>
                   <span>Ekleniyor...</span>
