@@ -10,7 +10,6 @@ import {
   CheckIcon,
   TrashIcon,
   FolderOpenIcon,
-  SparklesIcon,
   LinkIcon,
   XMarkIcon
 } from '@heroicons/react/24/outline';
@@ -27,9 +26,7 @@ interface ImageUploadProps {
   label?: string;
   acceptMultiple?: boolean;
   maxSize?: number; // MB cinsinden
-  showAIGeneration?: boolean; // AI görsel oluşturma seçeneği
   showUrlInput?: boolean; // URL ile görsel ekleme seçeneği
-  projectTitle?: string; // AI için proje başlığı
   pageContext?: string; // Sayfa bağlamı (portfolio, service, etc.)
   allowMultipleSelect?: boolean; // Çoklu seçim izni
 }
@@ -46,9 +43,7 @@ const ImageUpload: React.FC<ImageUploadProps> = ({
   label = 'Resim Yükle',
   acceptMultiple = false,
   maxSize = 10,
-  showAIGeneration = false,
   showUrlInput = false,
-  projectTitle = '',
   pageContext = 'general',
   allowMultipleSelect = false
 }) => {
@@ -58,11 +53,8 @@ const ImageUpload: React.FC<ImageUploadProps> = ({
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
   const [showMediaBrowser, setShowMediaBrowser] = useState(false);
-  const [showAIModal, setShowAIModal] = useState(false);
   const [showUrlModal, setShowUrlModal] = useState(false);
-  const [aiPrompt, setAiPrompt] = useState('');
   const [urlInput, setUrlInput] = useState('');
-  const [generatingAI, setGeneratingAI] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   // onChange function güvenlik kontrolü
@@ -314,47 +306,7 @@ const ImageUpload: React.FC<ImageUploadProps> = ({
     setShowMediaBrowser(false);
   };
 
-  // AI Image Generation handlers
-  const handleAIGenerate = async () => {
-    if (!aiPrompt && !projectTitle) {
-      setError('Görsel oluşturmak için prompt yazın veya proje başlığı belirtin');
-      return;
-    }
 
-    setGeneratingAI(true);
-    setError('');
-    setSuccess('');
-
-    try {
-      const response = await fetch('/api/generate-image', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          prompt: aiPrompt || null,
-          title: projectTitle || null,
-        }),
-      });
-
-      const data = await response.json();
-
-      if (!response.ok) {
-        throw new Error(data.error || 'AI görsel oluşturulamadı');
-      }
-
-      handleOnChange(data.imageUrl);
-      setSuccess('AI ile görsel başarıyla oluşturuldu!');
-      setShowAIModal(false);
-      setAiPrompt('');
-      setTimeout(() => setSuccess(''), 3000);
-    } catch (error) {
-      console.error('AI generate error:', error);
-      setError(error instanceof Error ? error.message : 'AI görsel oluşturulurken hata oluştu');
-    } finally {
-      setGeneratingAI(false);
-    }
-  };
 
   // URL Input handlers
   const handleUrlSubmit = () => {
@@ -499,22 +451,6 @@ const ImageUpload: React.FC<ImageUploadProps> = ({
                   <span>Yeni Yükle</span>
                 </button>
 
-                {showAIGeneration && (
-                  <button
-                    type="button"
-                    onClick={() => setShowAIModal(true)}
-                    disabled={disabled}
-                    className={`flex items-center justify-center space-x-2 px-4 py-2.5 rounded-xl font-medium transition-all duration-200 text-sm ${
-                      disabled
-                        ? 'bg-gray-600 text-gray-400 cursor-not-allowed'
-                        : 'bg-purple-600/80 hover:bg-purple-600 text-white'
-                    }`}
-                  >
-                    <SparklesIcon className="w-4 h-4" />
-                    <span>Otomatik Bul</span>
-                  </button>
-                )}
-
                 {showUrlInput && (
                   <button
                     type="button"
@@ -551,7 +487,7 @@ const ImageUpload: React.FC<ImageUploadProps> = ({
       {!hasImage && (
         <div className="space-y-4">
           {/* Upload Options */}
-          <div className={`grid gap-4 ${showAIGeneration || showUrlInput ? 'grid-cols-1 sm:grid-cols-2 lg:grid-cols-4' : 'grid-cols-1 md:grid-cols-2'}`}>
+          <div className={`grid gap-4 ${showUrlInput ? 'grid-cols-1 sm:grid-cols-2 lg:grid-cols-3' : 'grid-cols-1 md:grid-cols-2'}`}>
             {/* Browse Media Button */}
             <button
               type="button"
@@ -581,24 +517,6 @@ const ImageUpload: React.FC<ImageUploadProps> = ({
                 Bilgisayardan görsel seçin
               </p>
             </button>
-
-            {/* AI Generation Button */}
-            {showAIGeneration && (
-              <button
-                type="button"
-                onClick={() => setShowAIModal(true)}
-                disabled={disabled}
-                className="flex flex-col items-center justify-center p-6 border-2 border-dashed border-slate-300 rounded-2xl hover:border-purple-500 hover:bg-purple-50/50 transition-all duration-200 group disabled:opacity-50 disabled:cursor-not-allowed"
-              >
-                <SparklesIcon className="w-10 h-10 text-slate-400 group-hover:text-purple-500 mb-3 transition-colors" />
-                <h3 className="text-base font-semibold text-slate-700 group-hover:text-purple-600 mb-1 transition-colors">
-                  Otomatik Görsel Bul
-                </h3>
-                <p className="text-xs text-slate-500 text-center">
-                  Pexels&apos;tan uygun görsel bulun
-                </p>
-              </button>
-            )}
 
             {/* URL Input Button */}
             {showUrlInput && (
@@ -669,7 +587,7 @@ const ImageUpload: React.FC<ImageUploadProps> = ({
 
       {/* Replace Image Button */}
       {hasImage && !uploading && (
-        <div className={`grid gap-2 ${showAIGeneration || showUrlInput ? 'grid-cols-2 lg:grid-cols-4' : 'grid-cols-2'}`}>
+        <div className={`grid gap-2 ${showUrlInput ? 'grid-cols-1 lg:grid-cols-3' : 'grid-cols-2'}`}>
           <button
             type="button"
             onClick={handleBrowseMedia}
@@ -697,22 +615,6 @@ const ImageUpload: React.FC<ImageUploadProps> = ({
             <ArrowUpTrayIcon className="w-4 h-4" />
             <span className="hidden sm:inline">Yükle</span>
           </button>
-
-          {showAIGeneration && (
-            <button
-              type="button"
-              onClick={() => setShowAIModal(true)}
-              disabled={disabled}
-              className={`flex items-center justify-center space-x-2 px-3 py-2 rounded-xl font-medium transition-all duration-200 ${
-                disabled
-                  ? 'bg-gray-600 text-gray-400 cursor-not-allowed'
-                  : 'bg-purple-600 hover:bg-purple-700 text-white'
-              }`}
-            >
-              <SparklesIcon className="w-4 h-4" />
-              <span className="hidden sm:inline">AI</span>
-            </button>
-          )}
 
           {showUrlInput && (
             <button
@@ -754,98 +656,6 @@ const ImageUpload: React.FC<ImageUploadProps> = ({
         pageContext={pageContext}
         allowMultipleSelect={allowMultipleSelect}
       />
-
-      {/* AI Generation Modal */}
-      {showAIModal && (
-        <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-[110] p-4">
-          <div className="bg-white/10 backdrop-blur-xl rounded-3xl max-w-lg w-full border border-white/20 p-6">
-            <div className="flex items-center justify-between mb-6">
-              <h3 className="text-lg font-semibold text-white flex items-center space-x-2">
-                <SparklesIcon className="w-5 h-5 text-purple-400" />
-                <span>Otomatik Görsel Bul</span>
-              </h3>
-              <button
-                onClick={() => setShowAIModal(false)}
-                className="p-2 hover:bg-white/10 rounded-xl transition-colors"
-                disabled={generatingAI}
-              >
-                <XMarkIcon className="w-5 h-5 text-slate-400" />
-              </button>
-            </div>
-
-            <div className="space-y-4">
-              {projectTitle && (
-                <div className="bg-blue-500/10 border border-blue-500/30 rounded-xl p-4">
-                  <p className="text-blue-300 text-sm font-medium mb-1">Proje Başlığı:</p>
-                  <p className="text-blue-100">{projectTitle}</p>
-                  <p className="text-blue-200 text-xs mt-2">
-                    Bu başlık otomatik olarak kullanılacak. İsterseniz aşağıya özel bir prompt yazabilirsiniz.
-                  </p>
-                </div>
-              )}
-
-              <div>
-                <label className="block text-sm font-medium text-slate-300 mb-2">
-                  Özel Prompt (Opsiyonel)
-                </label>
-                <textarea
-                  value={aiPrompt}
-                  onChange={(e) => setAiPrompt(e.target.value)}
-                  placeholder={projectTitle ? "Özel bir açıklama eklemek isterseniz buraya yazın..." : "Oluşturmak istediğiniz görseli tanımlayın..."}
-                  className="w-full bg-white/5 border border-white/20 rounded-xl px-4 py-3 text-white placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-purple-500 resize-none"
-                  rows={4}
-                  disabled={generatingAI}
-                />
-              </div>
-
-              <div className="bg-yellow-500/10 border border-yellow-500/30 rounded-xl p-4">
-                <p className="text-yellow-200 text-sm">
-                  <strong>💡 İpucu:</strong> Daha iyi sonuçlar için "modern", "professional", "minimalist" gibi kelimeler kullanın.
-                </p>
-              </div>
-
-              {generatingAI && (
-                <div className="bg-purple-500/10 border border-purple-500/30 rounded-xl p-4">
-                  <div className="flex items-center space-x-3">
-                    <SparklesIcon className="w-6 h-6 text-purple-400 animate-pulse" />
-                    <div>
-                      <p className="text-purple-300 font-medium">AI görsel oluşturuyor...</p>
-                      <p className="text-purple-200 text-sm">Bu işlem 10-30 saniye sürebilir</p>
-                    </div>
-                  </div>
-                </div>
-              )}
-
-              <div className="flex items-center justify-end space-x-3 pt-4">
-                <button
-                  onClick={() => setShowAIModal(false)}
-                  disabled={generatingAI}
-                  className="px-4 py-2 text-slate-400 hover:text-white transition-colors disabled:opacity-50"
-                >
-                  İptal
-                </button>
-                <button
-                  onClick={handleAIGenerate}
-                  disabled={generatingAI || (!aiPrompt && !projectTitle)}
-                  className="px-6 py-2 bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white rounded-xl font-medium transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed flex items-center space-x-2"
-                >
-                  {generatingAI ? (
-                    <>
-                      <SparklesIcon className="w-4 h-4 animate-spin" />
-                      <span>Oluşturuluyor...</span>
-                    </>
-                  ) : (
-                    <>
-                      <SparklesIcon className="w-4 h-4" />
-                      <span>Görsel Oluştur</span>
-                    </>
-                  )}
-                </button>
-              </div>
-            </div>
-          </div>
-        </div>
-      )}
 
       {/* URL Input Modal */}
       {showUrlModal && (

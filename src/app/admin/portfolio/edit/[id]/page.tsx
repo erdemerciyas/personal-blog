@@ -471,10 +471,8 @@ export default function EditPortfolioItem({ params }: { params: { id: string } }
                       onRemove={() => handleImageChange(index, '')}
                       label={`Görsel ${index + 1}`}
                       className="w-full"
-                      showUrlInput={true}
-                      showAIGeneration={true}
-                      projectTitle={formData.title}
-                      pageContext="portfolio"
+                                              showUrlInput={true}
+                        pageContext="portfolio"
                       allowMultipleSelect={true}
                     />
                   </div>

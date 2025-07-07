@@ -2,7 +2,7 @@ import { NextResponse } from 'next/server';
 import { getServerSession } from 'next-auth';
 import { connectToDatabase } from '../../../lib/mongoose';
 import { authOptions } from '../../../lib/auth';
-import { generateAIImage } from '../../../lib/aiImageGenerator';
+
 import { logger } from '../../../lib/logger';
 import { createError, asyncHandler } from '../../../lib/errorHandler';
 import { cache, CacheKeys, CacheTTL, cacheHelpers } from '../../../lib/cache';
@@ -68,19 +68,7 @@ export const POST = asyncHandler(async (request: Request) => {
 
   const { db } = await connectToDatabase();
 
-  let imageUrl = body.image;
-  
-  // If no image provided, generate one with AI
-  if (!imageUrl || imageUrl.trim() === '') {
-    logger.debug('Generating AI image for service', 'API', { title: body.title });
-    try {
-      imageUrl = await generateAIImage(body.title);
-      logger.info('AI image generated successfully', 'API', { title: body.title, imageUrl });
-    } catch (error) {
-      logger.warn('AI image generation failed, using fallback', 'API', { title: body.title, error: (error as Error).message });
-      // AI generation failed, will use fallback image from generateAIImage function
-    }
-  }
+  const imageUrl = body.image || '';
 
   const serviceData = {
     title: body.title.trim(),
