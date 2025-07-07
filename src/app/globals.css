@@ -91,7 +91,19 @@ body {
 
   /* Typography */
   .hero-title {
-    @apply text-5xl sm:text-6xl lg:text-7xl xl:text-8xl font-black leading-none tracking-tight;
+    @apply text-4xl sm:text-5xl md:text-6xl lg:text-7xl xl:text-8xl 2xl:text-9xl font-black leading-none tracking-tight;
+  }
+
+  /* Responsive hero title that stays single line on large screens */
+  .hero-title-responsive {
+    @apply text-3xl sm:text-4xl md:text-5xl lg:text-6xl xl:text-7xl 2xl:text-8xl font-black leading-none tracking-tight;
+    word-spacing: -0.1em;
+    hyphens: none;
+  }
+
+  /* For very long titles, use smaller sizes */
+  .hero-title-compact {
+    @apply text-3xl sm:text-4xl md:text-5xl lg:text-6xl xl:text-6xl 2xl:text-7xl font-black leading-none tracking-tight;
   }
 
   .page-title {
