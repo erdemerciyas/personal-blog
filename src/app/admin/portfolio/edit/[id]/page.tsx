@@ -21,7 +21,8 @@ import {
   ExclamationTriangleIcon,
   TrashIcon,
   PlusIcon,
-  ArrowLeftIcon
+  ArrowLeftIcon,
+  Bars3Icon
 } from '@heroicons/react/24/outline';
 import Link from 'next/link';
 
@@ -62,6 +63,7 @@ export default function EditPortfolioItem({ params }: { params: { id: string } }
   const [error, setError] = useState('');
   const [success, setSuccess] = useState(false);
   const [categories, setCategories] = useState<Category[]>([]);
+  const [draggedIndex, setDraggedIndex] = useState<number | null>(null);
 
   const [formData, setFormData] = useState<PortfolioItem>({
     _id: '',
@@ -221,6 +223,42 @@ export default function EditPortfolioItem({ params }: { params: { id: string } }
 
   const handleCoverImageRemove = () => {
     setFormData(prev => ({ ...prev, coverImage: '' }));
+  };
+
+  // Drag & Drop functions for image reordering
+  const handleDragStart = (e: React.DragEvent, index: number) => {
+    setDraggedIndex(index);
+    e.dataTransfer.effectAllowed = 'move';
+  };
+
+  const handleDragOver = (e: React.DragEvent) => {
+    e.preventDefault();
+    e.dataTransfer.dropEffect = 'move';
+  };
+
+  const handleDrop = (e: React.DragEvent, dropIndex: number) => {
+    e.preventDefault();
+    
+    if (draggedIndex === null || draggedIndex === dropIndex) {
+      setDraggedIndex(null);
+      return;
+    }
+
+    const newImages = [...formData.images];
+    const draggedImage = newImages[draggedIndex];
+    
+    // Remove the dragged item
+    newImages.splice(draggedIndex, 1);
+    
+    // Insert at the new position
+    newImages.splice(dropIndex, 0, draggedImage);
+    
+    setFormData(prev => ({ ...prev, images: newImages }));
+    setDraggedIndex(null);
+  };
+
+  const handleDragEnd = () => {
+    setDraggedIndex(null);
   };
 
   if (status === 'loading' || loading) {
@@ -416,7 +454,7 @@ export default function EditPortfolioItem({ params }: { params: { id: string } }
             </div>
           </div>
 
-          {/* Project Images */}
+                    {/* Project Images */}
           <div className="bg-white rounded-xl p-6 shadow-sm border border-slate-200">
             <div className="flex items-center justify-between mb-4">
               <h3 className="text-lg font-semibold text-slate-900 flex items-center space-x-2">
@@ -432,6 +470,13 @@ export default function EditPortfolioItem({ params }: { params: { id: string } }
                 <span>Görsel Ekle</span>
               </button>
             </div>
+
+            {/* Info Message */}
+            <div className="bg-blue-50 border border-blue-200 rounded-lg p-3 mb-4">
+              <p className="text-sm text-blue-700">
+                <strong>💡 İpucu:</strong> Görselleri sürükleyip bırakarak slider sırasını değiştirebilirsiniz.
+              </p>
+            </div>
             
             <div className="space-y-4">
               {formData.images.length === 0 ? (
@@ -440,11 +485,54 @@ export default function EditPortfolioItem({ params }: { params: { id: string } }
                 </p>
               ) : (
                 formData.images.map((image, index) => (
-                  <div key={index} className="border border-slate-200 rounded-xl p-4">
-                    <div className="flex items-center justify-between mb-3">
-                      <label className="text-sm font-medium text-slate-700">
-                        Görsel {index + 1}
-                      </label>
+                  <div 
+                    key={index}
+                    draggable={image.trim() !== ''}
+                    onDragStart={(e) => handleDragStart(e, index)}
+                    onDragOver={handleDragOver}
+                    onDrop={(e) => handleDrop(e, index)}
+                    onDragEnd={handleDragEnd}
+                    className={`border border-slate-200 rounded-xl p-4 transition-all ${
+                      draggedIndex === index ? 'opacity-50 scale-95' : 'hover:shadow-sm'
+                    } ${image.trim() !== '' ? 'cursor-move' : ''}`}
+                  >
+                    <div className="flex items-center space-x-3 mb-3">
+                      {/* Drag Handle */}
+                      {image.trim() !== '' && (
+                        <div className="flex items-center justify-center w-6 h-6 text-slate-400 hover:text-slate-600">
+                          <Bars3Icon className="w-4 h-4" />
+                        </div>
+                      )}
+                      
+                      {/* Image Preview */}
+                      {image.trim() !== '' && (
+                        <div className="w-12 h-12 bg-slate-100 rounded-lg overflow-hidden flex-shrink-0">
+                          <img 
+                            src={image} 
+                            alt={`Preview ${index + 1}`}
+                            className="w-full h-full object-cover"
+                            onError={(e) => {
+                              (e.target as HTMLImageElement).style.display = 'none';
+                            }}
+                          />
+                        </div>
+                      )}
+                      
+                      {/* Label and Position */}
+                      <div className="flex-1">
+                        <div className="flex items-center space-x-2">
+                          <label className="text-sm font-medium text-slate-700">
+                            Görsel {index + 1}
+                          </label>
+                          {image.trim() !== '' && (
+                            <span className="px-2 py-1 text-xs bg-slate-100 text-slate-600 rounded-md">
+                              Sıra: {index + 1}
+                            </span>
+                          )}
+                        </div>
+                      </div>
+                      
+                      {/* Remove Button */}
                       <button
                         type="button"
                         onClick={() => removeImage(index)}
@@ -453,6 +541,7 @@ export default function EditPortfolioItem({ params }: { params: { id: string } }
                         <TrashIcon className="w-4 h-4" />
                       </button>
                     </div>
+                    
                     <ImageUpload
                       value={image}
                       onChange={(url) => {
@@ -469,10 +558,10 @@ export default function EditPortfolioItem({ params }: { params: { id: string } }
                         }
                       }}
                       onRemove={() => handleImageChange(index, '')}
-                      label={`Görsel ${index + 1}`}
+                      label=""
                       className="w-full"
-                                              showUrlInput={true}
-                        pageContext="portfolio"
+                      showUrlInput={true}
+                      pageContext="portfolio"
                       allowMultipleSelect={true}
                     />
                   </div>
