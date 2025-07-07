@@ -10,7 +10,11 @@ import {
   WrenchScrewdriverIcon,
   CheckBadgeIcon,
   SparklesIcon,
-  RocketLaunchIcon
+  RocketLaunchIcon,
+  ChevronLeftIcon,
+  ChevronRightIcon,
+  PlayIcon,
+  PauseIcon
 } from '@heroicons/react/24/outline';
 
 // Interfaces
@@ -23,6 +27,7 @@ interface SliderItem {
   buttonText?: string;
   buttonLink?: string;
   badge?: string;
+  duration?: number;
 }
 
 interface PortfolioItem {
@@ -85,6 +90,11 @@ export default function HomePage() {
   const [portfolioItems, setPortfolioItems] = useState<PortfolioItem[]>([]);
   const [services, setServices] = useState<ServiceItem[]>(defaultServices);
   const [loading, setLoading] = useState(true);
+  
+  // Slider states
+  const [currentSlideIndex, setCurrentSlideIndex] = useState(0);
+  const [isPlaying, setIsPlaying] = useState(true);
+  const [isTransitioning, setIsTransitioning] = useState(false);
 
   // Fetch all data
   useEffect(() => {
@@ -109,7 +119,8 @@ export default function HomePage() {
               image: item.imageUrl,
               buttonText: item.buttonText || 'Keşfet',
               buttonLink: item.buttonLink || '/portfolio',
-              badge: item.badge || 'Yenilik'
+              badge: item.badge || 'Yenilik',
+              duration: item.duration || 5000
             })));
           }
         }
@@ -137,7 +148,42 @@ export default function HomePage() {
     fetchData();
   }, []);
 
-  const currentSlide = sliderItems[0] || defaultSlider[0];
+  // Auto-play functionality
+  useEffect(() => {
+    if (!isPlaying || sliderItems.length <= 1) return;
+    
+    const currentSlideDuration = sliderItems[currentSlideIndex]?.duration || 5000;
+    
+    const timer = setInterval(() => {
+      setCurrentSlideIndex((prev) => (prev + 1) % sliderItems.length);
+    }, currentSlideDuration);
+    
+    return () => clearInterval(timer);
+  }, [currentSlideIndex, isPlaying, sliderItems]);
+
+  // Navigation functions
+  const nextSlide = () => {
+    if (isTransitioning || sliderItems.length <= 1) return;
+    setIsTransitioning(true);
+    setCurrentSlideIndex((prev) => (prev + 1) % sliderItems.length);
+    setTimeout(() => setIsTransitioning(false), 500);
+  };
+
+  const prevSlide = () => {
+    if (isTransitioning || sliderItems.length <= 1) return;
+    setIsTransitioning(true);
+    setCurrentSlideIndex((prev) => (prev - 1 + sliderItems.length) % sliderItems.length);
+    setTimeout(() => setIsTransitioning(false), 500);
+  };
+
+  const goToSlide = (index: number) => {
+    if (isTransitioning || index === currentSlideIndex) return;
+    setIsTransitioning(true);
+    setCurrentSlideIndex(index);
+    setTimeout(() => setIsTransitioning(false), 500);
+  };
+
+  const currentSlide = sliderItems[currentSlideIndex] || defaultSlider[0];
 
   if (loading) {
     return (
@@ -152,19 +198,79 @@ export default function HomePage() {
 
   return (
     <div className="min-h-screen">
-      {/* Hero Section */}
-      <section className="relative overflow-hidden">
-        {/* Background */}
+      {/* Hero Slider Section */}
+      <section className="relative overflow-hidden min-h-screen flex items-center justify-center">
+        {/* Background Images */}
         <div className="absolute inset-0">
-          <Image
-            src={currentSlide.image}
-            alt={currentSlide.title}
-            fill
-            className="object-cover"
-            priority
-          />
-          <div className="absolute inset-0 bg-gradient-to-br from-slate-900/90 via-slate-800/80 to-blue-900/90"></div>
+          {sliderItems.map((slide, index) => (
+            <div
+              key={slide._id}
+              className={`absolute inset-0 transition-all duration-1000 ease-out ${
+                index === currentSlideIndex 
+                  ? 'opacity-100 scale-100' 
+                  : 'opacity-0 scale-110'
+              }`}
+            >
+              <Image
+                src={slide.image}
+                alt={slide.title}
+                fill
+                className="object-cover"
+                priority={index === 0}
+              />
+              <div className="absolute inset-0 bg-gradient-to-br from-slate-900/90 via-slate-800/80 to-blue-900/90"></div>
+            </div>
+          ))}
         </div>
+        
+        {/* Slider Controls */}
+        {sliderItems.length > 1 && (
+          <>
+            {/* Navigation Arrows */}
+            <button
+              onClick={prevSlide}
+              className="absolute left-4 top-1/2 -translate-y-1/2 z-20 p-3 bg-white/10 hover:bg-white/20 backdrop-blur-sm rounded-full transition-all duration-200"
+              disabled={isTransitioning}
+            >
+              <ChevronLeftIcon className="w-6 h-6 text-white" />
+            </button>
+            
+            <button
+              onClick={nextSlide}
+              className="absolute right-4 top-1/2 -translate-y-1/2 z-20 p-3 bg-white/10 hover:bg-white/20 backdrop-blur-sm rounded-full transition-all duration-200"
+              disabled={isTransitioning}
+            >
+              <ChevronRightIcon className="w-6 h-6 text-white" />
+            </button>
+            
+            {/* Play/Pause Button */}
+            <button
+              onClick={() => setIsPlaying(!isPlaying)}
+              className="absolute bottom-20 right-4 z-20 p-3 bg-white/10 hover:bg-white/20 backdrop-blur-sm rounded-full transition-all duration-200"
+            >
+              {isPlaying ? (
+                <PauseIcon className="w-5 h-5 text-white" />
+              ) : (
+                <PlayIcon className="w-5 h-5 text-white" />
+              )}
+            </button>
+            
+            {/* Dots Indicator */}
+            <div className="absolute bottom-8 left-1/2 -translate-x-1/2 z-20 flex space-x-2">
+              {sliderItems.map((_, index) => (
+                <button
+                  key={index}
+                  onClick={() => goToSlide(index)}
+                  className={`w-3 h-3 rounded-full transition-all duration-300 ${
+                    index === currentSlideIndex 
+                      ? 'bg-white scale-125' 
+                      : 'bg-white/50 hover:bg-white/75'
+                  }`}
+                />
+              ))}
+            </div>
+          </>
+        )}
         
         {/* Content */}
         <div className="section-hero relative z-10">
@@ -178,7 +284,11 @@ export default function HomePage() {
           </div>
           
             {/* Title */}
-            <h1 className="hero-title text-gradient-hero mb-6 animate-slide-in-left">
+            <h1 className={`${
+              currentSlide.title.length > 30 ? 'hero-title-compact' : 
+              currentSlide.title.length > 20 ? 'hero-title-responsive' : 
+              'hero-title'
+            } text-gradient-hero mb-6 animate-slide-in-left max-w-6xl mx-auto`}>
               {currentSlide.title}
           </h1>
           
