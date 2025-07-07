@@ -3,7 +3,7 @@ import { getServerSession } from 'next-auth';
 import { connectToDatabase } from '../../../../lib/mongoose';
 import { authOptions } from '../../../../lib/auth';
 import { ObjectId } from 'mongodb';
-import { generateAIImage } from '../../../../lib/aiImageGenerator';
+
 
 // GET /api/services/[id] - Belirli bir servisi getir
 export async function GET(
@@ -65,19 +65,7 @@ export async function PUT(
     const body = await request.json();
     const { db } = await connectToDatabase();
 
-    let imageUrl = body.image;
-    
-    // If no image provided or image is empty, generate one with AI
-    if (!imageUrl || imageUrl.trim() === '') {
-      console.log(`Generating AI image for updated service: ${body.title}`);
-      try {
-        imageUrl = await generateAIImage(body.title);
-        console.log(`AI image generated successfully for update: ${imageUrl}`);
-      } catch (error) {
-        console.error('AI image generation failed during update, using fallback:', error);
-        // AI generation failed, will use fallback image from generateAIImage function
-      }
-    }
+    const imageUrl = body.image || '';
 
     const updateData = {
       ...body,

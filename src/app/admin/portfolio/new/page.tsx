@@ -428,8 +428,6 @@ export default function NewPortfolioItem() {
                       label={`Görsel ${index + 1}`}
                       className="w-full"
                       showUrlInput={true}
-                      showAIGeneration={true}
-                      projectTitle={formData.title}
                       pageContext="portfolio"
                       allowMultipleSelect={true}
                     />

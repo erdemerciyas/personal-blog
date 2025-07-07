@@ -15,7 +15,7 @@ import {
   PlayIcon,
   PauseIcon,
   XMarkIcon,
-  SparklesIcon,
+
   EyeIcon,
   ClockIcon,
   LinkIcon,
@@ -31,10 +31,8 @@ interface Slider {
   buttonText: string;
   buttonLink: string;
   badge: string;
-  imageType: 'upload' | 'url' | 'ai-generated';
+  imageType: 'upload' | 'url';
   imageUrl: string;
-  aiPrompt?: string;
-  aiProvider?: string;
   isActive: boolean;
   order: number;
   duration: number;
@@ -63,10 +61,8 @@ export default function AdminSliderPage() {
     buttonText: 'Daha Fazla',
     buttonLink: '/contact',
     badge: 'Yenilik',
-    imageType: 'upload' as 'upload' | 'url' | 'ai-generated',
+    imageType: 'upload' as 'upload' | 'url',
     imageUrl: '',
-    aiPrompt: '',
-    aiProvider: 'unsplash',
     order: 0,
     duration: 5000,
     isActive: true
@@ -115,10 +111,8 @@ export default function AdminSliderPage() {
       buttonText: 'Daha Fazla',
       buttonLink: '/contact',
       badge: 'Yenilik',
-      imageType: 'upload' as 'upload' | 'url' | 'ai-generated',
+      imageType: 'upload' as 'upload' | 'url',
       imageUrl: '',
-      aiPrompt: '',
-      aiProvider: 'unsplash',
       order: sliders.length,
       duration: 5000,
       isActive: true
@@ -142,8 +136,6 @@ export default function AdminSliderPage() {
       badge: slider.badge,
       imageType: slider.imageType,
       imageUrl: slider.imageUrl,
-      aiPrompt: slider.aiPrompt || '',
-      aiProvider: slider.aiProvider || 'unsplash',
       order: slider.order,
       duration: slider.duration,
       isActive: slider.isActive
