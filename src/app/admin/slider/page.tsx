@@ -307,14 +307,14 @@ export default function AdminSliderPage() {
 
         {/* Success/Error Messages */}
         {success && (
-          <div className="bg-green-50 border border-green-200 text-green-800 p-4 rounded-xl flex items-center space-x-3">
+          <div key="success-message" className="bg-green-50 border border-green-200 text-green-800 p-4 rounded-xl flex items-center space-x-3">
             <CheckIcon className="w-5 h-5" />
             <span>{success}</span>
           </div>
         )}
 
         {error && (
-          <div className="bg-red-50 border border-red-200 text-red-800 p-4 rounded-xl flex items-center space-x-3">
+          <div key="error-message" className="bg-red-50 border border-red-200 text-red-800 p-4 rounded-xl flex items-center space-x-3">
             <ExclamationTriangleIcon className="w-5 h-5" />
             <span>{error}</span>
           </div>
@@ -322,7 +322,7 @@ export default function AdminSliderPage() {
 
         {/* Slider Stats */}
         <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
-          <div className="bg-white rounded-xl p-6 shadow-sm border border-slate-200">
+          <div key="total-sliders" className="bg-white rounded-xl p-6 shadow-sm border border-slate-200">
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-sm font-medium text-slate-600">Toplam Slider</p>
@@ -332,7 +332,7 @@ export default function AdminSliderPage() {
             </div>
           </div>
           
-          <div className="bg-white rounded-xl p-6 shadow-sm border border-slate-200">
+          <div key="active-sliders" className="bg-white rounded-xl p-6 shadow-sm border border-slate-200">
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-sm font-medium text-slate-600">Aktif Slider</p>
@@ -342,7 +342,7 @@ export default function AdminSliderPage() {
             </div>
           </div>
           
-          <div className="bg-white rounded-xl p-6 shadow-sm border border-slate-200">
+          <div key="inactive-sliders" className="bg-white rounded-xl p-6 shadow-sm border border-slate-200">
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-sm font-medium text-slate-600">Pasif Slider</p>
@@ -352,7 +352,7 @@ export default function AdminSliderPage() {
             </div>
           </div>
           
-          <div className="bg-white rounded-xl p-6 shadow-sm border border-slate-200">
+          <div key="average-duration" className="bg-white rounded-xl p-6 shadow-sm border border-slate-200">
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-sm font-medium text-slate-600">Ortalama Süre</p>
@@ -410,7 +410,7 @@ export default function AdminSliderPage() {
                           <div className="flex items-center space-x-2 mb-1">
                             <h4 className="text-lg font-semibold text-slate-900">{slider.title}</h4>
                             {slider.badge && (
-                              <span className="bg-teal-100 text-teal-800 px-2 py-1 rounded-full text-xs font-medium">
+                              <span key={`badge-${slider._id}`} className="bg-teal-100 text-teal-800 px-2 py-1 rounded-full text-xs font-medium">
                                 {slider.badge}
                               </span>
                             )}
@@ -419,16 +419,16 @@ export default function AdminSliderPage() {
                           <p className="text-sm text-slate-500 line-clamp-2">{slider.description}</p>
                           
                           <div className="flex items-center space-x-4 mt-3 text-sm text-slate-500">
-                            <div className="flex items-center space-x-1">
+                            <div key={`duration-${slider._id}`} className="flex items-center space-x-1">
                               <ClockIcon className="w-4 h-4" />
                               <span>{slider.duration / 1000}s</span>
                             </div>
-                            <div className="flex items-center space-x-1">
+                            <div key={`order-${slider._id}`} className="flex items-center space-x-1">
                               <ArrowsUpDownIcon className="w-4 h-4" />
                               <span>Sıra: {slider.order + 1}</span>
                             </div>
                             {slider.buttonLink && (
-                              <div className="flex items-center space-x-1">
+                              <div key={`button-info-${slider._id}`} className="flex items-center space-x-1">
                                 <LinkIcon className="w-4 h-4" />
                                 <span>{slider.buttonText}</span>
                               </div>
@@ -440,6 +440,7 @@ export default function AdminSliderPage() {
                         <div className="flex items-center space-x-3">
                           {/* Status Toggle */}
                           <button
+                            key={`toggle-${slider._id}`}
                             onClick={() => toggleActive(slider)}
                             className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors ${
                               slider.isActive ? 'bg-teal-600' : 'bg-slate-200'
@@ -454,6 +455,7 @@ export default function AdminSliderPage() {
                           
                           {/* Edit Button */}
                           <button
+                            key={`edit-${slider._id}`}
                             onClick={() => openEditModal(slider)}
                             className="p-2 text-slate-500 hover:text-slate-700 transition-colors"
                           >
@@ -462,6 +464,7 @@ export default function AdminSliderPage() {
                           
                           {/* Delete Button */}
                           <button
+                            key={`delete-${slider._id}`}
                             onClick={() => handleDelete(slider._id)}
                             className="p-2 text-red-500 hover:text-red-700 transition-colors"
                           >
@@ -498,7 +501,7 @@ export default function AdminSliderPage() {
               <form onSubmit={handleSubmit} className="p-6 space-y-6">
                 {/* Basic Information */}
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                  <div>
+                  <div key="title-field">
                     <label className="block text-sm font-medium text-slate-700 mb-2">
                       Başlık *
                     </label>
@@ -513,7 +516,7 @@ export default function AdminSliderPage() {
                     />
                   </div>
                   
-                  <div>
+                  <div key="subtitle-field">
                     <label className="block text-sm font-medium text-slate-700 mb-2">
                       Alt Başlık
                     </label>
@@ -527,7 +530,7 @@ export default function AdminSliderPage() {
                     />
                   </div>
                   
-                  <div>
+                  <div key="badge-field">
                     <label className="block text-sm font-medium text-slate-700 mb-2">
                       Rozet
                     </label>
@@ -541,7 +544,7 @@ export default function AdminSliderPage() {
                     />
                   </div>
                   
-                  <div>
+                  <div key="duration-field">
                     <label className="block text-sm font-medium text-slate-700 mb-2">
                       Süre (saniye)
                     </label>
@@ -572,7 +575,7 @@ export default function AdminSliderPage() {
                 
                 {/* Button Settings */}
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                  <div>
+                  <div key="button-text-field">
                     <label className="block text-sm font-medium text-slate-700 mb-2">
                       Buton Metni
                     </label>
@@ -586,7 +589,7 @@ export default function AdminSliderPage() {
                     />
                   </div>
                   
-                  <div>
+                  <div key="button-link-field">
                     <label className="block text-sm font-medium text-slate-700 mb-2">
                       Buton Linki
                     </label>
@@ -631,6 +634,7 @@ export default function AdminSliderPage() {
                 {/* Submit Buttons */}
                 <div className="flex items-center justify-end space-x-3 pt-6 border-t border-slate-200">
                   <button
+                    key="cancel-button"
                     type="button"
                     onClick={() => setShowModal(false)}
                     className="px-6 py-3 border border-slate-300 text-slate-700 rounded-xl hover:bg-slate-50 transition-colors"
@@ -638,6 +642,7 @@ export default function AdminSliderPage() {
                     İptal
                   </button>
                   <button
+                    key="submit-button"
                     type="submit"
                     disabled={submitting}
                     className={`flex items-center space-x-2 px-6 py-3 rounded-xl font-semibold transition-all duration-200 ${
@@ -648,13 +653,13 @@ export default function AdminSliderPage() {
                   >
                     {submitting ? (
                       <>
-                        <div className="animate-spin rounded-full h-4 w-4 border-t-2 border-b-2 border-current"></div>
-                        <span>Kaydediliyor...</span>
+                        <div key="loading-spinner" className="animate-spin rounded-full h-4 w-4 border-t-2 border-b-2 border-current"></div>
+                        <span key="loading-text">Kaydediliyor...</span>
                       </>
                     ) : (
                       <>
-                        <CheckIcon className="w-4 h-4" />
-                        <span>{modalMode === 'create' ? 'Oluştur' : 'Güncelle'}</span>
+                        <CheckIcon key="submit-icon" className="w-4 h-4" />
+                        <span key="submit-text">{modalMode === 'create' ? 'Oluştur' : 'Güncelle'}</span>
                       </>
                     )}
                   </button>

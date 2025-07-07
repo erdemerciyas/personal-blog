@@ -128,10 +128,7 @@ export async function PUT(
       );
     }
     
-    return NextResponse.json({
-      message: 'Slider başarıyla güncellendi',
-      data: slider
-    });
+    return NextResponse.json(slider);
   } catch (error) {
     console.error('Slider güncellenirken hata:', error);
     return NextResponse.json(

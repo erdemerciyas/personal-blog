@@ -506,8 +506,8 @@ export default function AdminLayout({ children, title, breadcrumbs }: AdminLayou
                 {breadcrumbs && breadcrumbs.length > 0 && (
                   <nav className="flex items-center space-x-2 bg-white/30 dark:bg-slate-800/30 backdrop-blur-sm rounded-lg px-3 py-2">
                     {breadcrumbs.map((crumb, index) => (
-                      <div key={index} className="flex items-center space-x-2">
-                        {index > 0 && <span className="text-slate-400 dark:text-slate-500 mx-1">•</span>}
+                      <div key={`${crumb.label}-${crumb.href || index}`} className="flex items-center space-x-2">
+                        {index > 0 && <span key={`separator-${index}`} className="text-slate-400 dark:text-slate-500 mx-1">•</span>}
                         {crumb.href ? (
                           <Link
                             href={crumb.href}
