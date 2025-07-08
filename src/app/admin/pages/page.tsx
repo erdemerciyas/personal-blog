@@ -15,6 +15,8 @@ import {
   HomeIcon,
   CheckIcon,
   ExclamationTriangleIcon,
+  PencilIcon,
+  XMarkIcon,
 } from '@heroicons/react/24/outline';
 
 interface PageSetting {
@@ -36,6 +38,8 @@ export default function AdminPagesManagement() {
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
+  const [editingPage, setEditingPage] = useState<string | null>(null);
+  const [editForm, setEditForm] = useState<{ title: string; description: string }>({ title: '', description: '' });
 
   useEffect(() => {
     if (status === 'unauthenticated') {
@@ -126,6 +130,52 @@ export default function AdminPagesManagement() {
     }
   };
 
+  const startEditing = (page: PageSetting) => {
+    setEditingPage(page.pageId);
+    setEditForm({ title: page.title, description: page.description });
+  };
+
+  const cancelEditing = () => {
+    setEditingPage(null);
+    setEditForm({ title: '', description: '' });
+  };
+
+  const saveEditing = async () => {
+    if (!editingPage) return;
+    
+    try {
+      setSaving(true);
+      const response = await fetch('/api/admin/page-settings', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ 
+          pageId: editingPage, 
+          title: editForm.title,
+          description: editForm.description
+        }),
+      });
+
+      if (!response.ok) throw new Error('Güncelleme başarısız oldu');
+      
+      const updatedPage = await response.json();
+      setPages(prev => prev.map(page => 
+        page.pageId === editingPage ? { ...page, ...updatedPage } : page
+      ));
+      
+      setSuccess('Hero alanı başarıyla güncellendi!');
+      setTimeout(() => setSuccess(''), 3000);
+      cancelEditing();
+    } catch (err) {
+      setError('Güncelleme sırasında bir hata oluştu');
+      setTimeout(() => setError(''), 3000);
+      console.error(err);
+    } finally {
+      setSaving(false);
+    }
+  };
+
   if (status === 'loading' || loading) {
     return (
       <AdminLayout>
@@ -191,8 +241,9 @@ export default function AdminPagesManagement() {
           <div className="divide-y divide-slate-200">
             {pages.map((page) => (
               <div key={page._id} className="p-6 hover:bg-slate-50 transition-colors">
-                <div className="flex items-center justify-between">
-                  <div className="flex-1">
+                {editingPage === page.pageId ? (
+                  // Düzenleme Modu
+                  <div className="space-y-4">
                     <div className="flex items-center space-x-3">
                       <div className="flex-shrink-0">
                         <div className={`w-10 h-10 rounded-xl flex items-center justify-center ${
@@ -202,74 +253,151 @@ export default function AdminPagesManagement() {
                           {page.pageId !== 'home' && <DocumentTextIcon className="w-5 h-5" />}
                         </div>
                       </div>
-                      <div className="min-w-0 flex-1">
-                        <div className="flex items-center space-x-2">
-                          <h4 className="text-lg font-semibold text-slate-900">{page.title}</h4>
+                      <div className="flex-1">
+                        <div className="flex items-center space-x-2 mb-2">
                           <span className="text-sm text-slate-500 bg-slate-100 px-2 py-1 rounded">
                             {page.path}
                           </span>
+                          <span className="text-sm text-slate-500">- Hero Alanı Düzenleme</span>
                         </div>
-                        <p className="text-sm text-slate-600 mt-1">{page.description}</p>
+                      </div>
+                    </div>
+                    
+                    <div className="grid grid-cols-1 gap-4">
+                      <div>
+                        <label className="block text-sm font-medium text-slate-700 mb-1">
+                          Hero Başlığı
+                        </label>
+                        <input
+                          type="text"
+                          value={editForm.title}
+                          onChange={(e) => setEditForm(prev => ({ ...prev, title: e.target.value }))}
+                          className="w-full px-3 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-transparent"
+                          placeholder="Sayfa hero başlığı"
+                        />
+                      </div>
+                      <div>
+                        <label className="block text-sm font-medium text-slate-700 mb-1">
+                          Hero Açıklaması
+                        </label>
+                        <textarea
+                          value={editForm.description}
+                          onChange={(e) => setEditForm(prev => ({ ...prev, description: e.target.value }))}
+                          rows={3}
+                          className="w-full px-3 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-transparent resize-none"
+                          placeholder="Sayfa hero açıklaması"
+                        />
+                      </div>
+                    </div>
+                    
+                    <div className="flex items-center space-x-3">
+                      <button
+                        onClick={saveEditing}
+                        disabled={saving}
+                        className="px-4 py-2 bg-teal-600 text-white rounded-lg hover:bg-teal-700 disabled:opacity-50 transition-colors flex items-center space-x-2"
+                      >
+                        <CheckIcon className="w-4 h-4" />
+                        <span>Kaydet</span>
+                      </button>
+                      <button
+                        onClick={cancelEditing}
+                        disabled={saving}
+                        className="px-4 py-2 bg-slate-200 text-slate-700 rounded-lg hover:bg-slate-300 disabled:opacity-50 transition-colors flex items-center space-x-2"
+                      >
+                        <XMarkIcon className="w-4 h-4" />
+                        <span>İptal</span>
+                      </button>
+                    </div>
+                  </div>
+                ) : (
+                  // Normal Görünüm
+                  <div className="flex items-center justify-between">
+                    <div className="flex-1">
+                      <div className="flex items-center space-x-3">
+                        <div className="flex-shrink-0">
+                          <div className={`w-10 h-10 rounded-xl flex items-center justify-center ${
+                            page.isActive ? 'bg-teal-100 text-teal-600' : 'bg-slate-100 text-slate-400'
+                          }`}>
+                            {page.pageId === 'home' && <HomeIcon className="w-5 h-5" />}
+                            {page.pageId !== 'home' && <DocumentTextIcon className="w-5 h-5" />}
+                          </div>
+                        </div>
+                        <div className="min-w-0 flex-1">
+                          <div className="flex items-center space-x-2">
+                            <h4 className="text-lg font-semibold text-slate-900">{page.title}</h4>
+                            <span className="text-sm text-slate-500 bg-slate-100 px-2 py-1 rounded">
+                              {page.path}
+                            </span>
+                            <button
+                              onClick={() => startEditing(page)}
+                              className="p-1 text-slate-400 hover:text-teal-600 transition-colors"
+                              title="Hero alanını düzenle"
+                            >
+                              <PencilIcon className="w-4 h-4" />
+                            </button>
+                          </div>
+                          <p className="text-sm text-slate-600 mt-1">{page.description}</p>
+                        </div>
+                      </div>
+                    </div>
+                  
+                    <div className="flex items-center space-x-4">
+                      {/* Active Toggle */}
+                      <div className="flex items-center space-x-2">
+                        <span className="text-sm text-slate-600">Aktif</span>
+                        <button
+                          onClick={() => updatePage(page.pageId, { isActive: !page.isActive })}
+                          disabled={saving}
+                          className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors ${
+                            page.isActive ? 'bg-teal-600' : 'bg-slate-200'
+                          }`}
+                        >
+                          <span
+                            className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform ${
+                              page.isActive ? 'translate-x-6' : 'translate-x-1'
+                            }`}
+                          />
+                        </button>
+                      </div>
+                      
+                      {/* Navigation Toggle */}
+                      <div className="flex items-center space-x-2">
+                        <span className="text-sm text-slate-600">Menüde</span>
+                        <button
+                          onClick={() => updatePage(page.pageId, { showInNavigation: !page.showInNavigation })}
+                          disabled={saving}
+                          className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors ${
+                            page.showInNavigation ? 'bg-teal-600' : 'bg-slate-200'
+                          }`}
+                        >
+                          <span
+                            className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform ${
+                              page.showInNavigation ? 'translate-x-6' : 'translate-x-1'
+                            }`}
+                          />
+                        </button>
+                      </div>
+                      
+                      {/* Order Controls */}
+                      <div className="flex items-center space-x-1">
+                        <button
+                          onClick={() => reorderPages(page.pageId, 'up')}
+                          disabled={saving || page.order === 0}
+                          className="p-2 text-slate-400 hover:text-slate-600 disabled:opacity-50 transition-colors"
+                        >
+                          <ArrowUpIcon className="w-4 h-4" />
+                        </button>
+                        <button
+                          onClick={() => reorderPages(page.pageId, 'down')}
+                          disabled={saving || page.order === pages.length - 1}
+                          className="p-2 text-slate-400 hover:text-slate-600 disabled:opacity-50 transition-colors"
+                        >
+                          <ArrowDownIcon className="w-4 h-4" />
+                        </button>
                       </div>
                     </div>
                   </div>
-                  
-                  <div className="flex items-center space-x-4">
-                    {/* Active Toggle */}
-                    <div className="flex items-center space-x-2">
-                      <span className="text-sm text-slate-600">Aktif</span>
-                      <button
-                        onClick={() => updatePage(page.pageId, { isActive: !page.isActive })}
-                        disabled={saving}
-                        className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors ${
-                          page.isActive ? 'bg-teal-600' : 'bg-slate-200'
-                        }`}
-                      >
-                        <span
-                          className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform ${
-                            page.isActive ? 'translate-x-6' : 'translate-x-1'
-                          }`}
-                        />
-                      </button>
-                    </div>
-                    
-                    {/* Navigation Toggle */}
-                    <div className="flex items-center space-x-2">
-                      <span className="text-sm text-slate-600">Menüde</span>
-                      <button
-                        onClick={() => updatePage(page.pageId, { showInNavigation: !page.showInNavigation })}
-                        disabled={saving}
-                        className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors ${
-                          page.showInNavigation ? 'bg-teal-600' : 'bg-slate-200'
-                        }`}
-                      >
-                        <span
-                          className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform ${
-                            page.showInNavigation ? 'translate-x-6' : 'translate-x-1'
-                          }`}
-                        />
-                      </button>
-                    </div>
-                    
-                    {/* Order Controls */}
-                    <div className="flex items-center space-x-1">
-                      <button
-                        onClick={() => reorderPages(page.pageId, 'up')}
-                        disabled={saving || page.order === 0}
-                        className="p-2 text-slate-400 hover:text-slate-600 disabled:opacity-50 transition-colors"
-                      >
-                        <ArrowUpIcon className="w-4 h-4" />
-                      </button>
-                      <button
-                        onClick={() => reorderPages(page.pageId, 'down')}
-                        disabled={saving || page.order === pages.length - 1}
-                        className="p-2 text-slate-400 hover:text-slate-600 disabled:opacity-50 transition-colors"
-                      >
-                        <ArrowDownIcon className="w-4 h-4" />
-                      </button>
-                    </div>
-                  </div>
-                </div>
+                )}
               </div>
             ))}
           </div>

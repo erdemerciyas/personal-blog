@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import Image from 'next/image';
 import {
   XMarkIcon,
@@ -58,6 +58,8 @@ const MediaBrowser: React.FC<MediaBrowserProps> = ({
     height: 768
   });
   const [isMounted, setIsMounted] = useState(false);
+  const [previewItem, setPreviewItem] = useState<MediaItem | null>(null);
+  const modalRef = useRef<HTMLDivElement>(null);
 
   // Mount and window size setup
   useEffect(() => {
@@ -79,6 +81,19 @@ const MediaBrowser: React.FC<MediaBrowserProps> = ({
       return () => window.removeEventListener('resize', handleResize);
     }
   }, []);
+
+  // Modal dışı tıklama ile kapatma
+  useEffect(() => {
+    if (!isOpen) return;
+    if (previewItem) return; // Önizleme modalı açıkken ana modal dışı tıklama kapatmasın
+    const handleClickOutside = (event: MouseEvent) => {
+      if (modalRef.current && !modalRef.current.contains(event.target as Node)) {
+        onClose();
+      }
+    };
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, [isOpen, onClose, previewItem]);
 
   // URL validation helper
   const isValidUrl = (url: string): boolean => {
@@ -187,7 +202,24 @@ const MediaBrowser: React.FC<MediaBrowserProps> = ({
 
   const handleUploadNew = () => {
     onUploadNew();
-    onClose();
+  };
+
+  // Resim silme
+  const handleDelete = async (itemId: string) => {
+    if (!confirm('Bu görseli silmek istediğinize emin misiniz?')) return;
+    try {
+      setLoading(true);
+      const response = await fetch(`/api/admin/media/${itemId}`, { method: 'DELETE' });
+      if (response.ok) {
+        setMediaItems(items => items.filter(item => item._id !== itemId));
+        setSelectedItem(null);
+        setSelectedItems(items => items.filter(id => id !== itemId));
+      } else {
+        alert('Silme işlemi başarısız oldu.');
+      }
+    } finally {
+      setLoading(false);
+    }
   };
 
   if (!isOpen || !isMounted) return null;
@@ -223,11 +255,11 @@ const MediaBrowser: React.FC<MediaBrowserProps> = ({
 
   return (
     <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-[100] p-4">
+      {/* Modal dışı tıklama için ref */}
       <div 
+        ref={modalRef}
         className={`${themeStyles.modal} rounded-3xl overflow-hidden shadow-2xl w-[90vw] max-w-6xl h-[85vh] max-h-[800px] min-h-[600px] relative flex flex-col`}
-        style={{
-          minWidth: windowSize.width < 768 ? '320px' : '800px'
-        }}
+        style={{ minWidth: windowSize.width < 768 ? '320px' : '800px' }}
       >
         
         {/* Header */}
@@ -345,29 +377,25 @@ const MediaBrowser: React.FC<MediaBrowserProps> = ({
                 return (
                   <div
                     key={item._id}
-                    onClick={() => handleItemClick(item._id)}
-                    className={`${themeStyles.card} rounded-xl p-3 cursor-pointer transition-all duration-200 hover:scale-105 relative ${
-                      isSelected
-                        ? themeStyles.cardSelected
-                        : 'border-slate-600 hover:border-slate-500'
-                    }`}
+                    className={`${themeStyles.card} rounded-xl p-3 transition-all duration-200 hover:scale-105 relative border`}
                   >
-                    {/* Selection Indicator */}
-                    {isSelected && (
-                      <div className="absolute -top-2 -right-2 w-6 h-6 bg-teal-500 rounded-full flex items-center justify-center z-10">
-                        <CheckIcon className="w-4 h-4 text-white" />
-                      </div>
-                    )}
-                    
-                    {/* Multiple Selection Counter */}
-                    {allowMultipleSelect && selectedItems.includes(item._id) && (
-                      <div className="absolute -top-2 -left-2 w-6 h-6 bg-blue-500 rounded-full flex items-center justify-center z-10 text-white text-xs font-bold">
-                        {selectedItems.indexOf(item._id) + 1}
-                      </div>
-                    )}
-
-                    {/* Image Preview */}
-                    <div className="aspect-square mb-2 bg-slate-700 rounded-lg overflow-hidden relative">
+                    {/* Sil butonu */}
+                    <button
+                      onClick={(e) => { e.stopPropagation(); handleDelete(item._id); }}
+                      className="absolute top-2 right-2 z-20 p-1 bg-red-600 hover:bg-red-700 text-white rounded-full shadow"
+                      title="Sil"
+                      tabIndex={0}
+                    >
+                      <XMarkIcon className="w-4 h-4" />
+                    </button>
+                    {/* Önizleme için tıklama */}
+                    <div
+                      onClick={() => setPreviewItem(item)}
+                      className="aspect-square mb-2 bg-slate-700 rounded-lg overflow-hidden relative cursor-zoom-in"
+                      tabIndex={0}
+                      role="button"
+                      aria-label="Önizle"
+                    >
                       {item.mimeType.startsWith('image/') && item.url && isValidUrl(item.url) ? (
                         <Image
                           src={item.url}
@@ -386,9 +414,16 @@ const MediaBrowser: React.FC<MediaBrowserProps> = ({
                         </div>
                       )}
                     </div>
-
+                    {/* Seçim butonu */}
+                    <button
+                      onClick={(e) => { e.stopPropagation(); handleItemClick(item._id); }}
+                      className={`w-full mt-1 py-1 rounded bg-teal-600 hover:bg-teal-700 text-white text-xs font-semibold transition-colors ${isSelected ? 'ring-2 ring-teal-400' : ''}`}
+                      tabIndex={0}
+                    >
+                      {isSelected ? 'Seçili' : 'Seç'}
+                    </button>
                     {/* File Info */}
-                    <div className="space-y-1">
+                    <div className="space-y-1 mt-2">
                       <h5 className={`${themeStyles.text} text-xs font-medium truncate`} title={item.originalName}>
                         {item.originalName}
                       </h5>
@@ -467,6 +502,35 @@ const MediaBrowser: React.FC<MediaBrowserProps> = ({
           </div>
         )}
       </div>
+      {/* Önizleme Modalı */}
+      {previewItem && (
+        <div className="fixed inset-0 z-[110] bg-black/70 flex items-center justify-center" onClick={() => setPreviewItem(null)}>
+          <div className="bg-white rounded-2xl shadow-2xl p-6 max-w-2xl w-full relative" onClick={e => e.stopPropagation()}>
+            <button className="absolute top-2 right-2 p-2 bg-slate-200 hover:bg-slate-300 rounded-full" onClick={() => setPreviewItem(null)}>
+              <XMarkIcon className="w-5 h-5 text-slate-600" />
+            </button>
+            <div className="flex flex-col items-center">
+              {previewItem.mimeType.startsWith('image/') && previewItem.url && isValidUrl(previewItem.url) ? (
+                <Image
+                  src={previewItem.url}
+                  alt={previewItem.originalName}
+                  width={600}
+                  height={600}
+                  className="object-contain rounded-xl max-h-[60vh]"
+                />
+              ) : (
+                <div className="w-full h-64 flex items-center justify-center text-2xl">
+                  {previewItem.mimeType.startsWith('image/') ? '🖼️' : '📄'}
+                </div>
+              )}
+              <div className="mt-4 text-center">
+                <div className="font-semibold text-slate-800">{previewItem.originalName}</div>
+                <div className="text-xs text-slate-500">{formatFileSize(previewItem.size)}</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };

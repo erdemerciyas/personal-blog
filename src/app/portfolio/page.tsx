@@ -12,6 +12,7 @@ function PortfolioPageContent() {
   const [categories, setCategories] = useState<Category[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [hero, setHero] = useState<{ title: string; description: string }>({ title: '', description: '' });
   
   const searchParams = useSearchParams();
   const router = useRouter();
@@ -36,6 +37,17 @@ function PortfolioPageContent() {
       setLoading(true);
       setError(null);
       try {
+        // Hero başlık ve açıklama fetch
+        const heroRes = await fetch('/api/admin/page-settings/portfolio');
+        if (heroRes.ok) {
+          const heroData = await heroRes.json();
+          setHero({
+            title: heroData.title || 'Portfolyo',
+            description: heroData.description || ''
+          });
+        } else {
+          setHero({ title: 'Portfolyo', description: '' });
+        }
         // Categories fetch
         const catResponse = await fetch('/api/categories');
         if (!catResponse.ok) {
@@ -133,14 +145,16 @@ function PortfolioPageContent() {
   return (
     <div className="min-h-screen bg-gray-50">
       {/* Hero Section */}
-      <section className="bg-gradient-to-br from-slate-900 via-slate-800 to-teal-900 text-white py-20">
-        <div className="container mx-auto px-4 text-center">
-          <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold mb-6">
-            Portfolyo
+      <section className="bg-gradient-to-br from-teal-500 to-cyan-600 text-white py-28 md:py-32">
+        <div className="max-w-3xl mx-auto px-4 text-center">
+          <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold mb-10">
+            {hero.title}
           </h1>
-          <p className="text-xl md:text-2xl text-slate-300 max-w-3xl mx-auto">
-            Tamamladığımız projeleri keşfedin. Kalite ve yenilik odaklı çalışmalarımızı inceleyin.
-          </p>
+          {hero.description && (
+            <p className="text-lg md:text-xl lg:text-2xl text-teal-100 max-w-2xl mx-auto mt-0 mb-2 md:mb-0">
+              {hero.description}
+            </p>
+          )}
         </div>
       </section>
 

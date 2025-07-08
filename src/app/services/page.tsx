@@ -29,6 +29,7 @@ export default function ServicesPage() {
   const [services, setServices] = useState<Service[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [hero, setHero] = useState<{ title: string; description: string }>({ title: '', description: '' });
   const [expandedServices, setExpandedServices] = useState<Set<string>>(new Set());
 
   useEffect(() => {
@@ -38,6 +39,14 @@ export default function ServicesPage() {
     if (metaDescription) {
       metaDescription.setAttribute('content', 'Modern teknoloji çözümleri ve profesyonel hizmetlerimizi keşfedin. Web geliştirme, mobil uygulama ve daha fazlası.');
     }
+
+    // Hero başlık ve açıklama fetch
+    fetch('/api/admin/page-settings/services')
+      .then(res => res.ok ? res.json() : null)
+      .then(data => {
+        if (data) setHero({ title: data.title || 'Sunduğumuz Hizmetler', description: data.description || '' });
+        else setHero({ title: 'Sunduğumuz Hizmetler', description: '' });
+      });
 
     const fetchServices = async () => {
       try {
@@ -107,18 +116,16 @@ export default function ServicesPage() {
   return (
     <div className="min-h-screen bg-white">
       {/* Hero Section */}
-      <section className="bg-gradient-to-br from-teal-500 to-cyan-600 text-white pt-32 pb-20 md:pt-40 md:pb-32 shadow-xl relative">
-        {/* Beautiful spacing for nav overlay */}
-        <div className="absolute top-0 left-0 right-0 h-32 md:h-40 bg-gradient-to-b from-black/10 to-transparent pointer-events-none"></div>
-        
-        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center relative z-10">
-          <h1 className="text-4xl sm:text-5xl md:text-6xl font-bold mb-8 tracking-tight leading-tight">
-            Sunduğumuz Hizmetler
+      <section className="bg-gradient-to-br from-teal-500 to-cyan-600 text-white py-28 md:py-32">
+        <div className="max-w-3xl mx-auto px-4 text-center">
+          <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold mb-10">
+            {hero.title}
           </h1>
-          <p className="text-lg sm:text-xl text-teal-100 max-w-3xl mx-auto leading-relaxed">
-            Modern teknoloji ve uzman kadromuzla, projelerinizi hayata geçirmek ve 
-            işletmenizi bir adım öne taşımak için kapsamlı mühendislik çözümleri sunuyoruz.
-          </p>
+          {hero.description && (
+            <p className="text-lg md:text-xl lg:text-2xl text-teal-100 max-w-2xl mx-auto mt-0 mb-2 md:mb-0">
+              {hero.description}
+            </p>
+          )}
         </div>
       </section>
 
