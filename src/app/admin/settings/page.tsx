@@ -1,10 +1,10 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useSession } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
 import AdminLayout from '../../../components/admin/AdminLayout';
-import { CheckIcon, ShieldCheckIcon } from '@heroicons/react/24/outline';
+import { CheckIcon, ShieldCheckIcon, CloudArrowUpIcon, XMarkIcon, PhotoIcon } from '@heroicons/react/24/outline';
 
 interface Settings {
   _id?: string;
@@ -28,6 +28,12 @@ export default function AdminSettingsPage() {
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [message, setMessage] = useState<{ type: 'success' | 'error'; text: string } | null>(null);
+  
+  // Logo upload states
+  const [logoFile, setLogoFile] = useState<File | null>(null);
+  const [logoPreview, setLogoPreview] = useState<string | null>(null);
+  const [uploadingLogo, setUploadingLogo] = useState(false);
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   const [settings, setSettings] = useState<Settings>({
     siteName: '',
@@ -104,6 +110,77 @@ export default function AdminSettingsPage() {
       setMessage({ type: 'error', text: 'Ayarlar kaydedilirken hata oluştu.' });
     } finally {
       setSaving(false);
+    }
+  };
+
+  // Logo upload functions
+  const handleLogoFileSelect = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (file) {
+      // Dosya türü kontrolü
+      const validTypes = ['image/jpeg', 'image/jpg', 'image/png', 'image/webp', 'image/svg+xml'];
+      if (!validTypes.includes(file.type)) {
+        setMessage({ type: 'error', text: 'Geçersiz dosya türü. PNG, JPG, WebP veya SVG dosyası seçin.' });
+        return;
+      }
+
+      // Dosya boyutu kontrolü (5MB)
+      if (file.size > 5 * 1024 * 1024) {
+        setMessage({ type: 'error', text: 'Dosya boyutu 5MB\'dan büyük olamaz.' });
+        return;
+      }
+
+      setLogoFile(file);
+      
+      // Önizleme oluştur
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        setLogoPreview(e.target?.result as string);
+      };
+      reader.readAsDataURL(file);
+    }
+  };
+
+  const handleLogoUpload = async () => {
+    if (!logoFile) return;
+
+    setUploadingLogo(true);
+    setMessage(null);
+
+    try {
+      const formData = new FormData();
+      formData.append('logo', logoFile);
+
+      const response = await fetch('/api/admin/logo-upload', {
+        method: 'POST',
+        body: formData,
+      });
+
+      if (response.ok) {
+        const data = await response.json();
+        setSettings(prev => ({
+          ...prev,
+          logo: data.logoUrl
+        }));
+        setLogoFile(null);
+        setLogoPreview(null);
+        setMessage({ type: 'success', text: 'Logo başarıyla yüklendi!' });
+      } else {
+        throw new Error('Logo yükleme başarısız');
+      }
+    } catch (error) {
+      console.error('Logo upload error:', error);
+      setMessage({ type: 'error', text: 'Logo yüklenirken hata oluştu.' });
+    } finally {
+      setUploadingLogo(false);
+    }
+  };
+
+  const clearLogoPreview = () => {
+    setLogoFile(null);
+    setLogoPreview(null);
+    if (fileInputRef.current) {
+      fileInputRef.current.value = '';
     }
   };
 
@@ -220,44 +297,170 @@ export default function AdminSettingsPage() {
         <div className="bg-white rounded-xl shadow-sm border border-slate-200 p-6">
           <h2 className="text-2xl font-bold text-slate-900 mb-6">Logo ve Görsel Ayarları</h2>
           
-          <div className="space-y-6">
-            <div>
-              <label className="block text-sm font-medium text-slate-700 mb-2">
-                Logo URL
-              </label>
-              <input
-                type="url"
-                value={settings.logo}
-                onChange={(e) => handleInputChange('logo', e.target.value)}
-                className="w-full border border-slate-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-teal-500"
-                placeholder="https://example.com/logo.png"
-              />
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+            
+            {/* Sol Sütun: Logo Yükleme */}
+            <div className="space-y-6">
+              <h3 className="text-lg font-semibold text-slate-800">Logo Yükleme</h3>
+              
+              {/* Mevcut Logo Görüntüleme */}
+              <div className="bg-slate-50 rounded-xl p-6 border-2 border-dashed border-slate-200">
+                <h4 className="text-sm font-medium text-slate-700 mb-3">Mevcut Logo</h4>
+                <div className="flex items-center justify-center h-24 bg-white rounded-lg border">
+                  {settings.logo ? (
+                    <img 
+                      src={settings.logo} 
+                      alt="Mevcut Logo" 
+                      className="max-h-20 max-w-full object-contain"
+                    />
+                  ) : (
+                    <div className="flex flex-col items-center space-y-2 text-slate-400">
+                      <PhotoIcon className="w-8 h-8" />
+                      <span className="text-sm">Henüz logo yüklenmedi</span>
+                    </div>
+                  )}
+                </div>
+              </div>
+
+              {/* Logo Upload Alanı */}
+              <div className="space-y-4">
+                <h4 className="text-sm font-medium text-slate-700">Yeni Logo Yükle</h4>
+                
+                <div 
+                  onClick={() => fileInputRef.current?.click()}
+                  className="border-2 border-dashed border-slate-300 rounded-xl p-8 text-center hover:border-teal-400 hover:bg-teal-50/50 transition-colors cursor-pointer"
+                >
+                  <CloudArrowUpIcon className="w-12 h-12 text-slate-400 mx-auto mb-4" />
+                  <p className="text-sm font-medium text-slate-600 mb-2">
+                    Dosya seçmek için tıklayın
+                  </p>
+                  <p className="text-xs text-slate-500">
+                    PNG, JPG, WebP, SVG • Max 5MB
+                  </p>
+                </div>
+
+                <input
+                  ref={fileInputRef}
+                  type="file"
+                  accept="image/*"
+                  onChange={handleLogoFileSelect}
+                  className="hidden"
+                />
+
+                {/* Dosya Önizleme */}
+                {logoPreview && (
+                  <div className="bg-slate-50 rounded-xl p-4 border">
+                    <div className="flex items-center justify-between mb-3">
+                      <h5 className="text-sm font-medium text-slate-700">Önizleme</h5>
+                      <button
+                        onClick={clearLogoPreview}
+                        className="text-slate-400 hover:text-red-500 transition-colors"
+                      >
+                        <XMarkIcon className="w-5 h-5" />
+                      </button>
+                    </div>
+                    
+                    <div className="flex items-center space-x-4">
+                      <img 
+                        src={logoPreview} 
+                        alt="Logo Önizleme" 
+                        className="w-16 h-16 object-contain bg-white rounded-lg border"
+                      />
+                      <div className="flex-1">
+                        <p className="text-sm font-medium text-slate-700">{logoFile?.name}</p>
+                        <p className="text-xs text-slate-500">
+                          {logoFile ? `${(logoFile.size / 1024).toFixed(1)} KB` : ''}
+                        </p>
+                      </div>
+                    </div>
+
+                    <button
+                      onClick={handleLogoUpload}
+                      disabled={uploadingLogo}
+                      className="w-full mt-4 bg-gradient-to-r from-teal-500 to-teal-600 hover:from-teal-600 hover:to-teal-700 text-white px-4 py-2 rounded-lg font-medium transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center space-x-2"
+                    >
+                      {uploadingLogo ? (
+                        <>
+                          <div className="animate-spin rounded-full h-4 w-4 border-t-2 border-b-2 border-white"></div>
+                          <span>Yükleniyor...</span>
+                        </>
+                      ) : (
+                        <>
+                          <CloudArrowUpIcon className="w-4 h-4" />
+                          <span>Logo Yükle</span>
+                        </>
+                      )}
+                    </button>
+                  </div>
+                )}
+              </div>
+
+              {/* Manuel URL Girişi */}
+              <div className="space-y-2">
+                <label className="block text-sm font-medium text-slate-700">
+                  Logo URL (manuel)
+                </label>
+                <input
+                  type="url"
+                  value={settings.logo}
+                  onChange={(e) => handleInputChange('logo', e.target.value)}
+                  className="w-full border border-slate-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-teal-500"
+                  placeholder="https://example.com/logo.png"
+                />
+              </div>
             </div>
 
-            <div>
-              <label className="block text-sm font-medium text-slate-700 mb-2">
-                Favicon URL
-              </label>
-              <input
-                type="url"
-                value={settings.favicon}
-                onChange={(e) => handleInputChange('favicon', e.target.value)}
-                className="w-full border border-slate-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-teal-500"
-                placeholder="/favicon.ico"
-              />
-            </div>
+            {/* Sağ Sütun: Diğer Ayarlar */}
+            <div className="space-y-6">
+              <h3 className="text-lg font-semibold text-slate-800">Diğer Ayarlar</h3>
+              
+              <div>
+                <label className="block text-sm font-medium text-slate-700 mb-2">
+                  Favicon URL
+                </label>
+                <input
+                  type="url"
+                  value={settings.favicon}
+                  onChange={(e) => handleInputChange('favicon', e.target.value)}
+                  className="w-full border border-slate-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-teal-500"
+                  placeholder="/favicon.ico"
+                />
+              </div>
 
-            <div>
-              <label className="block text-sm font-medium text-slate-700 mb-2">
-                Twitter Handle
-              </label>
-              <input
-                type="text"
-                value={settings.twitterHandle}
-                onChange={(e) => handleInputChange('twitterHandle', e.target.value)}
-                className="w-full border border-slate-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-teal-500"
-                placeholder="@username"
-              />
+              <div>
+                <label className="block text-sm font-medium text-slate-700 mb-2">
+                  Twitter Handle
+                </label>
+                <input
+                  type="text"
+                  value={settings.twitterHandle}
+                  onChange={(e) => handleInputChange('twitterHandle', e.target.value)}
+                  className="w-full border border-slate-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-teal-500"
+                  placeholder="@username"
+                />
+              </div>
+
+              {/* Marka Önizleme */}
+              <div className="bg-gradient-to-r from-indigo-500/10 to-purple-500/10 rounded-xl p-6 border border-indigo-200">
+                <h4 className="text-sm font-medium text-slate-700 mb-3">Marka Önizleme</h4>
+                <div className="flex items-center space-x-4">
+                  {settings.logo && (
+                    <img 
+                      src={settings.logo} 
+                      alt="Logo" 
+                      className="w-12 h-12 object-contain"
+                    />
+                  )}
+                  <div>
+                    <h6 className="font-semibold text-slate-800">
+                      {settings.siteName || 'Site Adınız'}
+                    </h6>
+                    <p className="text-sm text-slate-600">
+                      {settings.siteDescription || 'Site açıklamanız'}
+                    </p>
+                  </div>
+                </div>
+              </div>
             </div>
           </div>
         </div>

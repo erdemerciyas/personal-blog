@@ -143,6 +143,9 @@ const ImageUpload: React.FC<ImageUploadProps> = ({
       handleOnChange(data.url);
       setSuccess('Resim başarıyla yüklendi!');
       
+      // Modal'ı kapat
+      setShowMediaBrowser(false);
+      
       setTimeout(() => {
         setSuccess('');
         setUploadProgress(0);
@@ -211,6 +214,9 @@ const ImageUpload: React.FC<ImageUploadProps> = ({
 
       handleOnChange(urls);
       setSuccess(`${files.length} resim başarıyla yüklendi!`);
+      
+      // Modal'ı kapat
+      setShowMediaBrowser(false);
       
       setTimeout(() => {
         setSuccess('');
@@ -285,10 +291,8 @@ const ImageUpload: React.FC<ImageUploadProps> = ({
   };
 
   const handleUploadNew = () => {
-    setShowMediaBrowser(false);
-    setTimeout(() => {
-      fileInputRef.current?.click();
-    }, 100);
+    // File input'u tetikle ama modal'ı kapatma
+    fileInputRef.current?.click();
   };
 
   const handleMediaSelect = (url: string | string[]) => {
