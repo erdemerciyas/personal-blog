@@ -200,7 +200,8 @@ const MediaBrowser: React.FC<MediaBrowserProps> = ({
     }
   };
 
-  const handleUploadNew = () => {
+  const handleUploadNew = (e?: React.MouseEvent) => {
+    e?.stopPropagation();
     onUploadNew();
   };
 
