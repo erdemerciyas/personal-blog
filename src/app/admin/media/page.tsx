@@ -219,7 +219,11 @@ export default function AdminMediaPage() {
             </div>
           </div>
           <button
-            onClick={() => setShowUploadModal(true)}
+            onClick={() => {
+              console.log('Yeni Yükle butonuna tıklandı');
+              setShowUploadModal(true);
+              console.log('showUploadModal true olarak ayarlandı');
+            }}
             className="bg-teal-600 hover:bg-teal-700 text-white px-6 py-3 rounded-xl font-semibold transition-all duration-200 flex items-center space-x-2 shadow-sm"
           >
             <PlusIcon className="w-5 h-5" />
@@ -425,7 +429,7 @@ export default function AdminMediaPage() {
 
         {/* Media Upload Modal */}
         {showUploadModal && (
-          <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-[110] p-4">
+          <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-[9999] p-4">
             <div className="bg-white rounded-3xl max-w-2xl w-full shadow-2xl p-6">
                           <div className="flex items-center justify-between mb-6">
                 <h3 className="text-lg font-semibold text-slate-900 flex items-center space-x-2">
@@ -502,7 +506,12 @@ export default function AdminMediaPage() {
                     <button
                       type="button"
                       className="bg-gradient-to-r from-teal-600 to-blue-600 hover:from-teal-700 hover:to-blue-700 text-white px-6 py-3 rounded-xl font-semibold transition-all duration-200"
-                      onClick={() => document.getElementById('media-upload')?.click()}
+                      onClick={() => {
+                        console.log('Dosya Seç butonuna tıklandı');
+                        const fileInput = document.getElementById('media-upload');
+                        console.log('File input element:', fileInput);
+                        fileInput?.click();
+                      }}
                     >
                       Dosya Seç
                     </button>
