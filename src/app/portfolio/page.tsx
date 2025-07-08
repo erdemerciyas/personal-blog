@@ -3,8 +3,8 @@
 import { useState, useEffect, Suspense } from 'react';
 import { useSearchParams, useRouter } from 'next/navigation';
 import ProjectGrid from '../../components/ProjectGrid';
-import { PortfolioItem, Category } from '../../types/portfolio'; // Assuming types are defined here
-import { TagIcon, Squares2X2Icon } from '@heroicons/react/24/outline';
+import { PortfolioItem, Category } from '../../types/portfolio';
+import { TagIcon, Squares2X2Icon, XMarkIcon } from '@heroicons/react/24/outline';
 
 // Helper component to handle client-side logic dependent on Suspense
 function PortfolioPageContent() {
@@ -15,7 +15,21 @@ function PortfolioPageContent() {
   
   const searchParams = useSearchParams();
   const router = useRouter();
-  const currentCategorySlug = searchParams?.get('category');
+  
+  // Çoklu kategori desteği
+  const getSelectedCategories = (): string[] => {
+    const categoriesParam = searchParams?.get('categories');
+    const categoryParam = searchParams?.get('category'); // Geriye uyumluluk
+    
+    if (categoriesParam) {
+      return categoriesParam.split(',').map(slug => slug.trim()).filter(Boolean);
+    } else if (categoryParam) {
+      return [categoryParam];
+    }
+    return [];
+  };
+
+  const selectedCategories = getSelectedCategories();
 
   useEffect(() => {
     const fetchInitialData = async () => {
@@ -31,9 +45,10 @@ function PortfolioPageContent() {
         setCategories(catData);
 
         // Portfolio fetch
-        const portfolioUrl = currentCategorySlug 
-          ? `/api/portfolio?category=${currentCategorySlug}`
-          : '/api/portfolio';
+        let portfolioUrl = '/api/portfolio';
+        if (selectedCategories.length > 0) {
+          portfolioUrl = `/api/portfolio?categories=${selectedCategories.join(',')}`;
+        }
           
         const portfolioResponse = await fetch(portfolioUrl);
         if (!portfolioResponse.ok) {
@@ -42,104 +57,172 @@ function PortfolioPageContent() {
         const portfolioData = await portfolioResponse.json();
         setPortfolioItems(portfolioData);
       
-    } catch (err) {
+      } catch (err) {
         console.error('Portfolio fetch error:', err);
         setError(err instanceof Error ? err.message : 'Beklenmeyen bir hata oluştu.');
-    } finally {
-      setLoading(false);
-    }
-  };
+      } finally {
+        setLoading(false);
+      }
+    };
     fetchInitialData();
-  }, [currentCategorySlug]);
+  }, [selectedCategories.join(',')]);
 
-  const handleCategoryFilter = (slug: string | null) => {
+  const handleCategoryFilter = (slug: string) => {
     const params = new URLSearchParams(window.location.search);
-    if (slug) {
-      params.set('category', slug);
+    const currentCategories = getSelectedCategories();
+    
+    let newCategories: string[];
+    
+    if (currentCategories.includes(slug)) {
+      // Kategori zaten seçili, kaldır
+      newCategories = currentCategories.filter(cat => cat !== slug);
     } else {
-      params.delete('category');
+      // Kategori seçili değil, ekle
+      newCategories = [...currentCategories, slug];
     }
+    
+    // URL parametrelerini güncelle
+    params.delete('category'); // Eski tekli kategori parametresini kaldır
+    if (newCategories.length > 0) {
+      params.set('categories', newCategories.join(','));
+    } else {
+      params.delete('categories');
+    }
+    
     router.push(`/portfolio?${params.toString()}`);
   };
 
+  const clearAllFilters = () => {
+    router.push('/portfolio');
+  };
+
+  const getSelectedCategoryNames = (): string[] => {
+    return selectedCategories.map(slug => {
+      const category = categories.find(cat => cat.slug === slug);
+      return category ? category.name : slug;
+    });
+  };
+
+  if (loading) {
     return (
-    <div className="min-h-screen">
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-teal-500 mx-auto mb-4"></div>
+          <p className="text-slate-600">Portfolyo yükleniyor...</p>
+        </div>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+        <div className="text-center">
+          <div className="text-red-500 text-xl mb-4">{error}</div>
+          <button 
+            onClick={() => window.location.reload()} 
+            className="btn-primary"
+          >
+            Tekrar Dene
+          </button>
+        </div>
+      </div>
+    );
+  }
+
+  return (
+    <div className="min-h-screen bg-gray-50">
       {/* Hero Section */}
-      <section className="bg-gradient-to-br from-teal-500 to-cyan-600 text-white pt-32 pb-20 md:pt-40 md:pb-32 shadow-xl relative">
-        {/* Beautiful spacing for nav overlay */}
-        <div className="absolute top-0 left-0 right-0 h-32 md:h-40 bg-gradient-to-b from-black/10 to-transparent pointer-events-none"></div>
-        
-        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center relative z-10">
-          <h1 className="text-4xl sm:text-5xl md:text-6xl font-bold mb-8 tracking-tight leading-tight">
-            Portfolyo Projelerimiz
+      <section className="bg-gradient-to-br from-slate-900 via-slate-800 to-teal-900 text-white py-20">
+        <div className="container mx-auto px-4 text-center">
+          <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold mb-6">
+            Portfolyo
           </h1>
-          <p className="text-lg sm:text-xl text-teal-100 max-w-3xl mx-auto leading-relaxed">
-            Tamamladığımız çeşitli projeleri ve mühendislik çözümlerimizi inceleyin. Her proje, uzman ekibimizin deneyimi ve modern teknolojilerimizin bir yansımasıdır.
+          <p className="text-xl md:text-2xl text-slate-300 max-w-3xl mx-auto">
+            Tamamladığımız projeleri keşfedin. Kalite ve yenilik odaklı çalışmalarımızı inceleyin.
           </p>
         </div>
       </section>
 
-      {/* Main Content */}
+      {/* Portfolio Content */}
       <section className="py-12 md:py-16 lg:py-20 bg-gray-50">
         <div className="container mx-auto px-4">
           
           {/* Category Filters */}
           {categories.length > 0 && (
-            <div className="flex flex-wrap justify-center gap-3 mb-12">
-              <button
-                onClick={() => handleCategoryFilter(null)}
-                className={`px-6 py-3 rounded-lg text-sm font-medium transition-all duration-200 ease-in-out
-                            ${
-                              !currentCategorySlug
-                                ? 'bg-teal-500 text-white shadow-md'
-                                : 'bg-white text-slate-600 hover:bg-teal-50 hover:text-teal-600 border border-slate-300'
-                            }`}
-              >
-                <Squares2X2Icon className="h-5 w-5 inline-block mr-2 -mt-0.5" />
-                Tüm Projeler
-              </button>
-              {categories.map((category) => (
+            <div className="mb-12">
+              {/* Seçili Kategoriler */}
+              {selectedCategories.length > 0 && (
+                <div className="mb-6">
+                  <div className="flex flex-wrap items-center gap-2 mb-4">
+                    <span className="text-sm font-medium text-slate-600">Seçili Kategoriler:</span>
+                    {getSelectedCategoryNames().map((categoryName, index) => (
+                      <span
+                        key={selectedCategories[index]}
+                        className="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-teal-100 text-teal-800"
+                      >
+                        {categoryName}
+                        <button
+                          onClick={() => handleCategoryFilter(selectedCategories[index])}
+                          className="ml-2 hover:text-teal-600"
+                        >
+                          <XMarkIcon className="h-4 w-4" />
+                        </button>
+                      </span>
+                    ))}
+                    <button
+                      onClick={clearAllFilters}
+                      className="text-sm text-slate-500 hover:text-slate-700 underline"
+                    >
+                      Tümünü Temizle
+                    </button>
+                  </div>
+                </div>
+              )}
+              
+              {/* Kategori Butonları */}
+              <div className="flex flex-wrap justify-center gap-3">
                 <button
-                  key={category._id}
-                  onClick={() => handleCategoryFilter(category.slug)}
+                  onClick={clearAllFilters}
                   className={`px-6 py-3 rounded-lg text-sm font-medium transition-all duration-200 ease-in-out
                               ${
-                                currentCategorySlug === category.slug
+                                selectedCategories.length === 0
                                   ? 'bg-teal-500 text-white shadow-md'
                                   : 'bg-white text-slate-600 hover:bg-teal-50 hover:text-teal-600 border border-slate-300'
                               }`}
                 >
-                  <TagIcon className="h-5 w-5 inline-block mr-2 -mt-0.5" />
-                  {category.name}
+                  <Squares2X2Icon className="h-5 w-5 inline-block mr-2 -mt-0.5" />
+                  Tüm Projeler
                 </button>
-              ))}
+                {categories.map((category) => (
+                  <button
+                    key={category._id}
+                    onClick={() => handleCategoryFilter(category.slug)}
+                    className={`px-6 py-3 rounded-lg text-sm font-medium transition-all duration-200 ease-in-out
+                                ${
+                                  selectedCategories.includes(category.slug)
+                                    ? 'bg-teal-500 text-white shadow-md'
+                                    : 'bg-white text-slate-600 hover:bg-teal-50 hover:text-teal-600 border border-slate-300'
+                                }`}
+                  >
+                    <TagIcon className="h-5 w-5 inline-block mr-2 -mt-0.5" />
+                    {category.name}
+                  </button>
+                ))}
+              </div>
             </div>
           )}
 
           {/* Portfolio Grid or Loading/Error State */}
-          {loading ? (
-            <div className="flex flex-col items-center justify-center min-h-[40vh]">
-              <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-teal-500 mb-4"></div>
-              <p className="text-slate-500">Projeler yükleniyor...</p>
-            </div>
-          ) : error ? (
-            <div className="bg-red-50 text-red-700 p-8 rounded-xl shadow border border-red-200 text-center min-h-[40vh] flex flex-col justify-center items-center">
-              <h3 className="text-xl font-semibold mb-2">Bir Hata Oluştu</h3>
-              <p>{error}</p>
-              <button 
-                onClick={() => { router.refresh(); }}
-                className="btn-primary mt-6"
-              >
-                Tekrar Dene
-              </button>
-            </div>
-          ) : portfolioItems.length > 0 ? (
+          {portfolioItems.length > 0 ? (
             <ProjectGrid projects={portfolioItems.map(p => ({
               id: p._id,
               title: p.title,
               description: p.description,
               coverImage: p.coverImage,
-              category: p.category?.name || ''
+              category: p.categories && p.categories.length > 0 
+                ? p.categories.map(cat => cat.name).join(', ')
+                : p.category?.name || ''
             }))} />
           ) : (
             <div className="text-center py-16 min-h-[40vh] flex flex-col justify-center items-center">
@@ -148,13 +231,13 @@ function PortfolioPageContent() {
                 Proje Bulunamadı
               </h3>
               <p className="text-slate-500">
-                {currentCategorySlug 
-                  ? `"${categories.find(c=>c.slug === currentCategorySlug)?.name || currentCategorySlug}" kategorisinde henüz proje bulunmuyor.` 
+                {selectedCategories.length > 0 
+                  ? `Seçili kategorilerde henüz proje bulunmuyor.` 
                   : "Görüntülenecek proje bulunmuyor."}
               </p>
-              {currentCategorySlug && (
+              {selectedCategories.length > 0 && (
                  <button
-                  onClick={() => handleCategoryFilter(null)}
+                  onClick={clearAllFilters}
                   className="btn-outline mt-6"
                 >
                   Tüm Projeleri Göster
@@ -168,13 +251,14 @@ function PortfolioPageContent() {
   );
 }
 
-// Wrap with Suspense for useSearchParams
 export default function PortfolioPage() {
   return (
     <Suspense fallback={
-      <div className="flex flex-col items-center justify-center min-h-[calc(100vh-10rem)]">
-        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-teal-500 mb-4"></div>
-        <p className="text-slate-500">Sayfa yükleniyor...</p>
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-teal-500 mx-auto mb-4"></div>
+          <p className="text-slate-600">Sayfa yükleniyor...</p>
+        </div>
       </div>
     }>
       <PortfolioPageContent />

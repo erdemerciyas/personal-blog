@@ -33,8 +33,12 @@ export interface PortfolioItem {
   _id: string;
   title: string;
   description: string;
-  categoryId: string;
+  // Geriye uyumluluk için eski alanları koruyoruz
+  categoryId?: string;
   category?: Category;
+  // Yeni çoklu kategori desteği
+  categoryIds?: string[];
+  categories?: Category[];
   client: string;
   completionDate: string;
   technologies: string[];
