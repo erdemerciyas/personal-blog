@@ -40,6 +40,7 @@ function ContactPageContent() {
   const [submitStatus, setSubmitStatus] = useState<'success' | 'error' | null>(null);
   const [submitMessage, setSubmitMessage] = useState<string | null>(null);
   const [contactLoading, setContactLoading] = useState(true);
+  const [hero, setHero] = useState<{ title: string; description: string }>({ title: '', description: '' });
 
   // Fetch contact information
   useEffect(() => {
@@ -59,6 +60,15 @@ function ContactPageContent() {
     };
 
     fetchContactInfo();
+  }, []);
+
+  useEffect(() => {
+    fetch('/api/admin/page-settings/contact')
+      .then(res => res.ok ? res.json() : null)
+      .then(data => {
+        if (data) setHero({ title: data.title || 'Bizimle İletişime Geçin', description: data.description || '' });
+        else setHero({ title: 'Bizimle İletişime Geçin', description: '' });
+      });
   }, []);
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
@@ -101,17 +111,16 @@ function ContactPageContent() {
   return (
     <div className="min-h-screen">
       {/* Hero Section */}
-      <section className="bg-gradient-to-br from-teal-500 to-cyan-600 text-white pt-32 pb-20 md:pt-40 md:pb-32 shadow-xl relative">
-        {/* Beautiful spacing for nav overlay */}
-        <div className="absolute top-0 left-0 right-0 h-32 md:h-40 bg-gradient-to-b from-black/10 to-transparent pointer-events-none"></div>
-        
-        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center relative z-10">
-          <h1 className="text-4xl sm:text-5xl md:text-6xl font-bold mb-8 tracking-tight leading-tight">
-            Bizimle İletişime Geçin
+      <section className="bg-gradient-to-br from-teal-500 to-cyan-600 text-white py-28 md:py-32">
+        <div className="max-w-3xl mx-auto px-4 text-center">
+          <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold mb-10">
+            {hero.title}
           </h1>
-          <p className="text-lg sm:text-xl text-teal-100 max-w-3xl mx-auto leading-relaxed">
-            Sorularınız, proje talepleriniz veya işbirliği önerileriniz için bize ulaşmaktan çekinmeyin. Uzman ekibimiz size en kısa sürede yanıt verecektir.
-          </p>
+          {hero.description && (
+            <p className="text-lg md:text-xl lg:text-2xl text-teal-100 max-w-2xl mx-auto mt-0 mb-2 md:mb-0">
+              {hero.description}
+            </p>
+          )}
         </div>
       </section>
 
