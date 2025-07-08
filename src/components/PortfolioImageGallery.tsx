@@ -415,7 +415,14 @@ const PortfolioImageGallery: React.FC<PortfolioImageGalleryProps> = ({
         isOpen={mediaModalOpen}
         onClose={() => setMediaModalOpen(false)}
         onSelect={handleMediaSelect}
-        onUploadNew={() => setMediaModalOpen(false)}
+        onUploadNew={() => {
+          console.log('onUploadNew çağrıldı - PortfolioImageGallery');
+          // Modal'ı kapatıp dosya seçim input'unu tetikle
+          setMediaModalOpen(false);
+          setTimeout(() => {
+            fileInputRef.current?.click();
+          }, 100);
+        }}
         allowedTypes={["image/"]}
         allowMultipleSelect={true}
         theme="light"
