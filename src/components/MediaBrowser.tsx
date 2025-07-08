@@ -86,11 +86,23 @@ const MediaBrowser: React.FC<MediaBrowserProps> = ({
   useEffect(() => {
     if (!isOpen) return;
     if (previewItem) return; // Önizleme modalı açıkken ana modal dışı tıklama kapatmasın
+    
     const handleClickOutside = (event: MouseEvent) => {
+      const target = event.target as HTMLElement;
+      
+      // Eğer tıklanan element bir button ise ve "Yeni Yükle" metni içeriyorsa, modal kapatma
+      if (target.tagName === 'BUTTON' || target.closest('button')) {
+        const buttonElement = target.tagName === 'BUTTON' ? target : target.closest('button');
+        if (buttonElement?.textContent?.includes('Yeni Yükle')) {
+          return; // Modal kapatma
+        }
+      }
+      
       if (modalRef.current && !modalRef.current.contains(event.target as Node)) {
         onClose();
       }
     };
+    
     document.addEventListener('mousedown', handleClickOutside);
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, [isOpen, onClose, previewItem]);
@@ -201,7 +213,9 @@ const MediaBrowser: React.FC<MediaBrowserProps> = ({
   };
 
   const handleUploadNew = (e?: React.MouseEvent) => {
+    e?.preventDefault();
     e?.stopPropagation();
+    console.log('Yeni Yükle butonuna tıklandı - MediaBrowser');
     onUploadNew();
   };
 
@@ -339,7 +353,11 @@ const MediaBrowser: React.FC<MediaBrowserProps> = ({
 
             {/* Upload New Button */}
             <button
-              onClick={handleUploadNew}
+              onClick={(e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                handleUploadNew(e);
+              }}
               className="flex items-center space-x-2 px-4 py-2 bg-gradient-to-r from-teal-600 to-blue-600 hover:from-teal-700 hover:to-blue-700 text-white rounded-xl font-medium transition-all duration-200"
             >
               <ArrowUpTrayIcon className="w-4 h-4" />
@@ -362,7 +380,11 @@ const MediaBrowser: React.FC<MediaBrowserProps> = ({
                 {searchTerm ? 'Arama kriterlerinize uygun dosya bulunamadı' : 'Henüz yüklenmiş medya dosyası bulunmuyor'}
               </p>
               <button
-                onClick={handleUploadNew}
+                onClick={(e) => {
+                  e.preventDefault();
+                  e.stopPropagation();
+                  handleUploadNew(e);
+                }}
                 className="px-6 py-3 bg-gradient-to-r from-teal-600 to-blue-600 hover:from-teal-700 hover:to-blue-700 text-white rounded-xl font-medium transition-all duration-200"
               >
                 İlk Görselinizi Yükleyin
