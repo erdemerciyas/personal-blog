@@ -1,6 +1,6 @@
 {
   "name": "personal-blog",
-  "version": "1.7.1",
+  "version": "1.9.0",
   "private": true,
   "author": {
     "name": "Erdem Erciyas",
@@ -45,7 +45,9 @@
     "version:major": "npm version major --no-git-tag-version",
     "version:release": "standard-version",
     "version:auto": "node scripts/auto-version.js",
-    "prepare": "husky"
+    "prepare": "husky",
+    "migrate:portfolio-categories": "node scripts/migrate-portfolio-categories.js",
+    "migrate:portfolio-categories:dry-run": "node scripts/migrate-portfolio-categories.js --dry-run"
   },
   "dependencies": {
     "@heroicons/react": "^2.2.0",
@@ -61,6 +63,7 @@
     "@types/react-dom": "^18.2.18",
     "autoprefixer": "^10.4.16",
     "bcryptjs": "^3.0.2",
+    "class-variance-authority": "^0.7.1",
     "cloudinary": "^2.6.1",
     "clsx": "^2.1.1",
     "critters": "^0.0.23",

@@ -3,6 +3,7 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { ProjectSummary } from '@/types/portfolio';
 import { ArrowRightIcon } from '@heroicons/react/24/outline';
+import HTMLContent from './HTMLContent';
 
 interface ProjectCardProps {
   project: ProjectSummary;
@@ -42,9 +43,16 @@ const ProjectCard: React.FC<ProjectCardProps> = ({ project }) => {
           <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/40 to-transparent opacity-80 group-hover:opacity-60 transition-opacity duration-300"></div>
         </div>
         <div className="p-6">
-          <h3 className="text-xl font-bold text-slate-800 mb-4 group-hover:text-teal-600 transition-colors duration-200 line-clamp-2">
+          <h3 className="text-xl font-bold text-slate-800 mb-2 group-hover:text-teal-600 transition-colors duration-200 line-clamp-2">
             {project.title}
           </h3>
+          {project.description && (
+            <HTMLContent 
+              content={project.description} 
+              className="text-sm text-slate-600 mb-4 line-clamp-2"
+              truncate={140} // yaklaşık 2 satır için karakter limiti
+            />
+          )}
           <div className="flex items-center justify-end text-sm font-semibold text-teal-500 group-hover:text-teal-600 transition-colors duration-200">
             Detayları Gör
             <ArrowRightIcon className="ml-2 h-4 w-4 transition-transform duration-300" />

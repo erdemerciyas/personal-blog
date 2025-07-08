@@ -4,8 +4,8 @@ import { useState, useEffect } from 'react';
 import { useSession } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
 import AdminLayout from '../../../../components/admin/AdminLayout';
-import ImageUpload from '../../../../components/ImageUpload';
 import RichTextEditor from '../../../../components/RichTextEditor';
+import PortfolioImageGallery from '../../../../components/PortfolioImageGallery';
 import {
   PlusIcon,
   FolderOpenIcon,
@@ -25,21 +25,7 @@ import {
   Bars3Icon
 } from '@heroicons/react/24/outline';
 import Link from 'next/link';
-
-interface Category {
-  _id: string;
-  name: string;
-  slug: string;
-}
-
-// Random placeholder images for fallback
-const RANDOM_IMAGES = [
-  'https://images.unsplash.com/photo-1460925895917-afdab827c52f?w=800&h=600&fit=crop&crop=center',
-  'https://images.unsplash.com/photo-1551650975-87deedd944c3?w=800&h=600&fit=crop&crop=center',
-  'https://images.unsplash.com/photo-1518709268805-4e9042af2176?w=800&h=600&fit=crop&crop=center',
-  'https://images.unsplash.com/photo-1432888622747-4eb9a8efeb07?w=800&h=600&fit=crop&crop=center',
-  'https://images.unsplash.com/photo-1504639725590-34d0984388bd?w=800&h=600&fit=crop&crop=center'
-];
+import { Category } from '../../../../types/portfolio';
 
 export default function NewPortfolioItem() {
   const { data: session, status } = useSession();
@@ -48,17 +34,17 @@ export default function NewPortfolioItem() {
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState('');
   const [categories, setCategories] = useState<Category[]>([]);
-  const [draggedIndex, setDraggedIndex] = useState<number | null>(null);
 
   const [formData, setFormData] = useState({
     title: '',
     description: '',
-    categoryId: '',
+    // Çoklu kategori desteği için categoryIds kullanıyoruz
+    categoryIds: [] as string[],
     client: '',
     completionDate: '',
     technologies: [''],
     coverImage: '',
-    images: [''],
+    images: [] as string[],
     featured: false,
     order: 0,
     projectUrl: '',
@@ -90,23 +76,32 @@ export default function NewPortfolioItem() {
     }
   };
 
-  const getRandomImage = () => {
-    return RANDOM_IMAGES[Math.floor(Math.random() * RANDOM_IMAGES.length)];
-  };
-
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setSubmitting(true);
     setError('');
 
     try {
+      // Validate that at least one category is selected
+      if (formData.categoryIds.length === 0) {
+        throw new Error('En az bir kategori seçmelisiniz');
+      }
+
+      // Validate that at least one image is uploaded
+      if (formData.images.length === 0) {
+        throw new Error('En az bir proje görseli yüklemelisiniz');
+      }
+
+      // Validate that cover image is set
+      if (!formData.coverImage) {
+        throw new Error('Kapak görseli seçmelisiniz');
+      }
+
       // Prepare cleaned data
       const cleanedData = {
         ...formData,
         technologies: formData.technologies.filter(tech => tech.trim() !== ''),
         images: formData.images.filter(img => img.trim() !== ''),
-        // Use random image if no cover image is provided
-        coverImage: formData.coverImage || getRandomImage(),
       };
 
       const response = await fetch('/api/portfolio', {
@@ -130,6 +125,16 @@ export default function NewPortfolioItem() {
     }
   };
 
+  // Çoklu kategori seçimi için yardımcı fonksiyonlar
+  const handleCategoryToggle = (categoryId: string) => {
+    setFormData(prev => ({
+      ...prev,
+      categoryIds: prev.categoryIds.includes(categoryId)
+        ? prev.categoryIds.filter(id => id !== categoryId)
+        : [...prev.categoryIds, categoryId]
+    }));
+  };
+
   const handleTechnologyChange = (index: number, value: string) => {
     const newTechnologies = [...formData.technologies];
     newTechnologies[index] = value;
@@ -144,20 +149,6 @@ export default function NewPortfolioItem() {
     }));
   };
 
-  const handleImageChange = (index: number, value: string) => {
-    const newImages = [...formData.images];
-    newImages[index] = value;
-    
-    if (index === newImages.length - 1 && value.trim() !== '') {
-      newImages.push('');
-    }
-    
-    setFormData(prev => ({
-      ...prev,
-      images: newImages,
-    }));
-  };
-
   const removeTechnology = (index: number) => {
     const newTechnologies = formData.technologies.filter((_, i) => i !== index);
     if (newTechnologies.length === 0) {
@@ -169,59 +160,13 @@ export default function NewPortfolioItem() {
     }));
   };
 
-  const removeImage = (index: number) => {
-    const newImages = formData.images.filter((_, i) => i !== index);
-    if (newImages.length === 0) {
-      newImages.push('');
-    }
-    setFormData(prev => ({
-      ...prev,
-      images: newImages,
-    }));
+  // Portfolio Image Gallery handlers
+  const handleImagesChange = (images: string[]) => {
+    setFormData(prev => ({ ...prev, images }));
   };
 
-  const handleCoverImageUpload = (url: string) => {
-    setFormData(prev => ({ ...prev, coverImage: url }));
-  };
-
-  const handleCoverImageRemove = () => {
-    setFormData(prev => ({ ...prev, coverImage: '' }));
-  };
-
-  // Drag & Drop functions for image reordering
-  const handleDragStart = (e: React.DragEvent, index: number) => {
-    setDraggedIndex(index);
-    e.dataTransfer.effectAllowed = 'move';
-  };
-
-  const handleDragOver = (e: React.DragEvent) => {
-    e.preventDefault();
-    e.dataTransfer.dropEffect = 'move';
-  };
-
-  const handleDrop = (e: React.DragEvent, dropIndex: number) => {
-    e.preventDefault();
-    
-    if (draggedIndex === null || draggedIndex === dropIndex) {
-      setDraggedIndex(null);
-      return;
-    }
-
-    const newImages = [...formData.images];
-    const draggedImage = newImages[draggedIndex];
-    
-    // Remove the dragged item
-    newImages.splice(draggedIndex, 1);
-    
-    // Insert at the new position
-    newImages.splice(dropIndex, 0, draggedImage);
-    
-    setFormData(prev => ({ ...prev, images: newImages }));
-    setDraggedIndex(null);
-  };
-
-  const handleDragEnd = () => {
-    setDraggedIndex(null);
+  const handleCoverImageChange = (coverImage: string) => {
+    setFormData(prev => ({ ...prev, coverImage }));
   };
 
   if (status === 'loading' || loading) {
@@ -292,25 +237,6 @@ export default function NewPortfolioItem() {
               
               <div>
                 <label className="block text-sm font-medium text-slate-700 mb-2">
-                  Kategori *
-                </label>
-                <select
-                  value={formData.categoryId}
-                  onChange={(e) => setFormData(prev => ({ ...prev, categoryId: e.target.value }))}
-                  className="w-full border border-slate-300 rounded-xl px-4 py-3 text-slate-900 focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-transparent"
-                  required
-                >
-                  <option value="">Kategori seçiniz</option>
-                  {categories.map((cat) => (
-                    <option key={cat._id} value={cat._id}>
-                      {cat.name}
-                    </option>
-                  ))}
-                </select>
-              </div>
-              
-              <div>
-                <label className="block text-sm font-medium text-slate-700 mb-2">
                   Müşteri/Şirket *
                 </label>
                 <input
@@ -351,17 +277,133 @@ export default function NewPortfolioItem() {
             </div>
           </div>
 
-          {/* Cover Image */}
+          {/* Categories Selection */}
+          <div className="bg-white rounded-xl p-6 shadow-sm border border-slate-200">
+            <h3 className="text-lg font-semibold text-slate-900 mb-4 flex items-center space-x-2">
+              <TagIcon className="w-5 h-5 text-teal-600" />
+              <span>Kategoriler *</span>
+            </h3>
+            
+            <div className="mb-4">
+              <p className="text-sm text-slate-600 mb-3">
+                Projeniz için uygun kategorileri seçin. Birden fazla kategori seçebilirsiniz.
+              </p>
+              
+              {/* Selected Categories Display */}
+              {formData.categoryIds.length > 0 && (
+                <div className="mb-4">
+                  <p className="text-sm font-medium text-slate-700 mb-2">
+                    Seçili Kategoriler ({formData.categoryIds.length}):
+                  </p>
+                  <div className="flex flex-wrap gap-2">
+                    {formData.categoryIds.map(categoryId => {
+                      const category = categories.find(cat => cat._id === categoryId);
+                      return category ? (
+                        <span
+                          key={categoryId}
+                          className="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-teal-100 text-teal-800"
+                        >
+                          {category.name}
+                          <button
+                            type="button"
+                            onClick={() => handleCategoryToggle(categoryId)}
+                            className="ml-2 hover:text-teal-600"
+                          >
+                            <XMarkIcon className="h-4 w-4" />
+                          </button>
+                        </span>
+                      ) : null;
+                    })}
+                  </div>
+                </div>
+              )}
+            </div>
+            
+            {/* Category Selection Grid */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
+              {categories.map((category) => (
+                <div
+                  key={category._id}
+                  className={`relative rounded-lg border-2 transition-all cursor-pointer ${
+                    formData.categoryIds.includes(category._id)
+                      ? 'border-teal-500 bg-teal-50'
+                      : 'border-slate-200 hover:border-slate-300 bg-white'
+                  }`}
+                  onClick={() => handleCategoryToggle(category._id)}
+                >
+                  <div className="p-4">
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center space-x-3">
+                        <div className={`w-4 h-4 rounded border-2 transition-all ${
+                          formData.categoryIds.includes(category._id)
+                            ? 'border-teal-500 bg-teal-500'
+                            : 'border-slate-300'
+                        }`}>
+                          {formData.categoryIds.includes(category._id) && (
+                            <CheckIcon className="w-3 h-3 text-white" />
+                          )}
+                        </div>
+                        <span className={`font-medium ${
+                          formData.categoryIds.includes(category._id)
+                            ? 'text-teal-800'
+                            : 'text-slate-700'
+                        }`}>
+                          {category.name}
+                        </span>
+                      </div>
+                    </div>
+                    {category.description && (
+                      <p className={`mt-2 text-sm ${
+                        formData.categoryIds.includes(category._id)
+                          ? 'text-teal-600'
+                          : 'text-slate-500'
+                      }`}>
+                        {category.description}
+                      </p>
+                    )}
+                  </div>
+                </div>
+              ))}
+            </div>
+            
+            {categories.length === 0 && (
+              <div className="text-center py-8">
+                <TagIcon className="w-12 h-12 text-slate-300 mx-auto mb-3" />
+                <p className="text-slate-500">
+                  Henüz kategori bulunmuyor. Önce kategori oluşturun.
+                </p>
+                <Link 
+                  href="/admin/portfolio?tab=categories"
+                  className="inline-flex items-center mt-3 text-teal-600 hover:text-teal-700"
+                >
+                  <PlusIcon className="w-4 h-4 mr-1" />
+                  Kategori Oluştur
+                </Link>
+              </div>
+            )}
+          </div>
+
+          {/* Project Images Gallery */}
           <div className="bg-white rounded-xl p-6 shadow-sm border border-slate-200">
             <h3 className="text-lg font-semibold text-slate-900 mb-4 flex items-center space-x-2">
               <PhotoIcon className="w-5 h-5 text-teal-600" />
-              <span>Kapak Görseli</span>
+              <span>Proje Görselleri *</span>
             </h3>
             
-            <ImageUpload
-              onImageUpload={handleCoverImageUpload}
-              onImageRemove={handleCoverImageRemove}
-              currentImage={formData.coverImage}
+            <div className="mb-4">
+              <p className="text-sm text-slate-600">
+                Projeniz için görselleri toplu olarak yükleyin ve kapak görseli seçin. 
+                İlk yüklenen görsel otomatik olarak kapak görseli olarak seçilir.
+              </p>
+            </div>
+
+            <PortfolioImageGallery
+              images={formData.images}
+              coverImage={formData.coverImage}
+              onImagesChange={handleImagesChange}
+              onCoverImageChange={handleCoverImageChange}
+              disabled={submitting}
+              pageContext="portfolio"
             />
           </div>
 
@@ -410,130 +452,29 @@ export default function NewPortfolioItem() {
             </div>
           </div>
 
-          {/* Project Images */}
-          <div className="bg-white rounded-xl p-6 shadow-sm border border-slate-200">
-            <div className="flex items-center justify-between mb-4">
-              <h3 className="text-lg font-semibold text-slate-900 flex items-center space-x-2">
-                <PhotoIcon className="w-5 h-5 text-teal-600" />
-                <span>Proje Görselleri</span>
-              </h3>
-              <button
-                type="button"
-                onClick={() => setFormData(prev => ({ ...prev, images: [...prev.images, ''] }))}
-                className="flex items-center space-x-2 bg-teal-50 text-teal-600 px-3 py-2 rounded-lg hover:bg-teal-100 transition-colors"
-              >
-                <PlusIcon className="w-4 h-4" />
-                <span>Görsel Ekle</span>
-              </button>
-            </div>
-
-            {/* Info Message */}
-            <div className="bg-blue-50 border border-blue-200 rounded-lg p-3 mb-4">
-              <p className="text-sm text-blue-700">
-                <strong>💡 İpucu:</strong> Görselleri sürükleyip bırakarak slider sırasını değiştirebilirsiniz.
-              </p>
-            </div>
-            
-            <div className="space-y-4">
-              {formData.images.length === 0 ? (
-                <p className="text-slate-500 text-sm py-4 text-center">
-                  Henüz proje görseli eklenmedi. Yukarıdaki butonu kullanarak görsel ekleyebilirsiniz.
-                </p>
-              ) : (
-                formData.images.map((image, index) => (
-                  <div 
-                    key={index}
-                    draggable={image.trim() !== ''}
-                    onDragStart={(e) => handleDragStart(e, index)}
-                    onDragOver={handleDragOver}
-                    onDrop={(e) => handleDrop(e, index)}
-                    onDragEnd={handleDragEnd}
-                    className={`border border-slate-200 rounded-xl p-4 transition-all ${
-                      draggedIndex === index ? 'opacity-50 scale-95' : 'hover:shadow-sm'
-                    } ${image.trim() !== '' ? 'cursor-move' : ''}`}
-                  >
-                    <div className="flex items-center space-x-3 mb-3">
-                      {/* Drag Handle */}
-                      {image.trim() !== '' && (
-                        <div className="flex items-center justify-center w-6 h-6 text-slate-400 hover:text-slate-600">
-                          <Bars3Icon className="w-4 h-4" />
-                        </div>
-                      )}
-                      
-                      {/* Image Preview */}
-                      {image.trim() !== '' && (
-                        <div className="w-12 h-12 bg-slate-100 rounded-lg overflow-hidden flex-shrink-0">
-                          <img 
-                            src={image} 
-                            alt={`Preview ${index + 1}`}
-                            className="w-full h-full object-cover"
-                            onError={(e) => {
-                              (e.target as HTMLImageElement).style.display = 'none';
-                            }}
-                          />
-                        </div>
-                      )}
-                      
-                      {/* Label and Position */}
-                      <div className="flex-1">
-                        <div className="flex items-center space-x-2">
-                          <label className="text-sm font-medium text-slate-700">
-                            Görsel {index + 1}
-                          </label>
-                          {image.trim() !== '' && (
-                            <span className="px-2 py-1 text-xs bg-slate-100 text-slate-600 rounded-md">
-                              Sıra: {index + 1}
-                            </span>
-                          )}
-                        </div>
-                      </div>
-                      
-                      {/* Remove Button */}
-                      <button
-                        type="button"
-                        onClick={() => removeImage(index)}
-                        className="p-1 text-red-500 hover:text-red-700 hover:bg-red-50 rounded-lg transition-colors"
-                      >
-                        <TrashIcon className="w-4 h-4" />
-                      </button>
-                    </div>
-                    
-                    <ImageUpload
-                      value={image}
-                      onChange={(url) => {
-                        if (Array.isArray(url)) {
-                          // Çoklu seçim durumunda tüm URL'leri ekle
-                          const newImages = [...formData.images];
-                          newImages.splice(index, 1, ...url);
-                          // Boş stringleri temizle ve son boş string ekle
-                          const cleanedImages = newImages.filter(img => img.trim() !== '');
-                          cleanedImages.push('');
-                          setFormData(prev => ({ ...prev, images: cleanedImages }));
-                        } else {
-                          handleImageChange(index, url);
-                        }
-                      }}
-                      onRemove={() => handleImageChange(index, '')}
-                      label=""
-                      className="w-full"
-                      showUrlInput={true}
-                      pageContext="portfolio"
-                      allowMultipleSelect={true}
-                    />
-                  </div>
-                ))
-              )}
-            </div>
-          </div>
-
-          {/* Additional Settings */}
+          {/* Additional Options */}
           <div className="bg-white rounded-xl p-6 shadow-sm border border-slate-200">
             <h3 className="text-lg font-semibold text-slate-900 mb-4 flex items-center space-x-2">
-              <TagIcon className="w-5 h-5 text-teal-600" />
-              <span>Ek Ayarlar</span>
+              <StarIcon className="w-5 h-5 text-teal-600" />
+              <span>Ek Seçenekler</span>
             </h3>
             
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <div>
+                <label className="flex items-center space-x-3 cursor-pointer">
+                  <input
+                    type="checkbox"
+                    checked={formData.featured}
+                    onChange={(e) => setFormData(prev => ({ ...prev, featured: e.target.checked }))}
+                    className="w-4 h-4 text-teal-600 border-slate-300 rounded focus:ring-teal-500"
+                  />
+                  <span className="text-sm font-medium text-slate-700">Öne Çıkan Proje</span>
+                </label>
+                <p className="text-sm text-slate-500 mt-1 ml-7">
+                  Ana sayfada öne çıkan projeler bölümünde gösterilir
+                </p>
+              </div>
+              
               <div>
                 <label className="block text-sm font-medium text-slate-700 mb-2">
                   Sıralama
@@ -543,53 +484,43 @@ export default function NewPortfolioItem() {
                   value={formData.order}
                   onChange={(e) => setFormData(prev => ({ ...prev, order: parseInt(e.target.value) || 0 }))}
                   className="w-full border border-slate-300 rounded-xl px-4 py-3 text-slate-900 focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-transparent"
+                  placeholder="0"
                   min="0"
                 />
-              </div>
-              
-              <div className="flex items-center space-x-3">
-                <input
-                  type="checkbox"
-                  id="featured"
-                  checked={formData.featured}
-                  onChange={(e) => setFormData(prev => ({ ...prev, featured: e.target.checked }))}
-                  className="w-5 h-5 text-teal-600 border-slate-300 rounded focus:ring-teal-500"
-                />
-                <label htmlFor="featured" className="text-sm font-medium text-slate-700 flex items-center space-x-2">
-                  <StarIcon className="w-4 h-4 text-yellow-500" />
-                  <span>Öne çıkan proje</span>
-                </label>
+                <p className="text-sm text-slate-500 mt-1">
+                  Düşük sayılar önce gösterilir
+                </p>
               </div>
             </div>
           </div>
 
           {/* Submit Buttons */}
-          <div className="flex flex-col sm:flex-row gap-4 pt-6 border-t border-slate-200">
-            <button
-              type="submit"
-              disabled={submitting}
-              className="flex-1 bg-teal-600 text-white px-6 py-3 rounded-xl font-medium hover:bg-teal-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors flex items-center justify-center space-x-2"
-            >
-              {submitting ? (
-                <>
-                  <div className="animate-spin rounded-full h-5 w-5 border-2 border-white border-t-transparent"></div>
-                  <span>Ekleniyor...</span>
-                </>
-              ) : (
-                <>
-                  <CheckIcon className="w-5 h-5" />
-                  <span>Proje Ekle</span>
-                </>
-              )}
-            </button>
-            
+          <div className="flex items-center justify-between pt-6">
             <Link
               href="/admin/portfolio"
-              className="flex-1 bg-slate-100 text-slate-700 px-6 py-3 rounded-xl font-medium hover:bg-slate-200 transition-colors flex items-center justify-center space-x-2"
+              className="flex items-center space-x-2 px-6 py-3 border border-slate-300 rounded-xl text-slate-700 hover:bg-slate-50 transition-colors"
             >
               <ArrowLeftIcon className="w-5 h-5" />
               <span>Geri Dön</span>
             </Link>
+            
+            <button
+              type="submit"
+              disabled={submitting}
+              className="flex items-center space-x-2 bg-teal-600 text-white px-8 py-3 rounded-xl hover:bg-teal-700 focus:outline-none focus:ring-2 focus:ring-teal-500 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+            >
+              {submitting ? (
+                <>
+                  <div className="animate-spin rounded-full h-5 w-5 border-t-2 border-b-2 border-white"></div>
+                  <span>Kaydediliyor...</span>
+                </>
+              ) : (
+                <>
+                  <CheckIcon className="w-5 h-5" />
+                  <span>Kaydet</span>
+                </>
+              )}
+            </button>
           </div>
         </form>
       </div>

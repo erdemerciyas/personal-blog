@@ -42,6 +42,14 @@ export async function GET(
           }
         },
         {
+          $lookup: {
+            from: 'categories',
+            localField: 'categoryIds',
+            foreignField: '_id',
+            as: 'categories'
+          }
+        },
+        {
           $unwind: {
             path: '$category',
             preserveNullAndEmptyArrays: true
@@ -86,42 +94,74 @@ export async function PUT(
     const data = await request.json();
     
     // Zorunlu alanları kontrol et
-    if (!data.title || !data.description || !data.categoryId || !data.client || !data.completionDate) {
+    if (!data.title || !data.description || !data.client || !data.completionDate) {
       return NextResponse.json(
         { error: 'Tüm zorunlu alanları doldurun' },
         { status: 400 }
       );
     }
 
-    // Kategori ID'sinin geçerli olduğunu kontrol et
-    const category = await db
-      .collection('categories')
-      .findOne({ _id: new ObjectId(data.categoryId) });
+    // Çoklu kategori desteği için validation
+    if (data.categoryIds && Array.isArray(data.categoryIds) && data.categoryIds.length > 0) {
+      // Kategorilerin geçerli olduğunu kontrol et
+      const categories = await db
+        .collection('categories')
+        .find({ _id: { $in: data.categoryIds.map((id: string) => new ObjectId(id)) } })
+        .toArray();
+      
+      if (categories.length !== data.categoryIds.length) {
+        return NextResponse.json(
+          { error: 'Geçersiz kategori ID\'si bulundu' },
+          { status: 400 }
+        );
+      }
+    } else if (data.categoryId) {
+      // Eski tekli kategori desteği (geriye uyumluluk)
+      const category = await db
+        .collection('categories')
+        .findOne({ _id: new ObjectId(data.categoryId) });
 
-    if (!category) {
+      if (!category) {
+        return NextResponse.json(
+          { error: 'Geçersiz kategori ID\'si' },
+          { status: 400 }
+        );
+      }
+    } else {
       return NextResponse.json(
-        { error: 'Geçersiz kategori' },
+        { error: 'En az bir kategori seçmelisiniz' },
         { status: 400 }
       );
     }
 
+    // Update object'ini hazırla
+    const updateData: any = {
+      title: data.title,
+      description: data.description,
+      client: data.client,
+      completionDate: new Date(data.completionDate),
+      technologies: data.technologies,
+      coverImage: data.coverImage || DEFAULT_IMAGE,
+      images: data.images && data.images.length > 0 && data.images[0] ? data.images : DEFAULT_DETAIL_IMAGES,
+      featured: data.featured,
+      order: data.order,
+      updatedAt: new Date(),
+    };
+
+    // Çoklu kategori desteği
+    if (data.categoryIds && Array.isArray(data.categoryIds) && data.categoryIds.length > 0) {
+      updateData.categoryIds = data.categoryIds.map((id: string) => new ObjectId(id));
+      // Geriye uyumluluk için ilk kategoriyi categoryId olarak da kaydet
+      updateData.categoryId = new ObjectId(data.categoryIds[0]);
+    } else if (data.categoryId) {
+      // Eski tekli kategori desteği
+      updateData.categoryId = new ObjectId(data.categoryId);
+      updateData.categoryIds = [new ObjectId(data.categoryId)];
+    }
+
     const result = await db.collection('portfolios').updateOne(
       { _id: new ObjectId(params.id) },
-      {
-        $set: {
-          title: data.title,
-          description: data.description,
-          categoryId: new ObjectId(data.categoryId),
-          client: data.client,
-          completionDate: new Date(data.completionDate),
-          technologies: data.technologies,
-          coverImage: data.coverImage || DEFAULT_IMAGE,
-          images: data.images && data.images.length > 0 && data.images[0] ? data.images : DEFAULT_DETAIL_IMAGES,
-          featured: data.featured,
-          order: data.order,
-          updatedAt: new Date(),
-        },
-      }
+      { $set: updateData }
     );
 
     if (result.matchedCount === 0) {

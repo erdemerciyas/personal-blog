@@ -9,11 +9,18 @@ const portfolioSchema = new mongoose.Schema({
     type: String,
     required: true,
   },
+  // Geriye uyumluluk için eski categoryId alanını koruyoruz
   categoryId: {
     type: mongoose.Schema.Types.ObjectId,
     ref: 'Category',
-    required: true,
+    required: false, // Artık zorunlu değil
   },
+  // Yeni çoklu kategori desteği
+  categoryIds: [{
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'Category',
+    required: false,
+  }],
   client: {
     type: String,
     required: true,

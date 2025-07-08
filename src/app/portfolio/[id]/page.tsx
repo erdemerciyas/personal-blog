@@ -67,7 +67,13 @@ function PortfolioDetailPageContent({ params }: { params: { id: string } }) {
   }, [params.id]);
 
   // Calculate allImages after portfolioItem is loaded
-  const allImages = portfolioItem ? [portfolioItem.coverImage, ...(portfolioItem.images || [])].filter(Boolean) as string[] : [];
+  const allImages = portfolioItem
+    ? [
+        ...(portfolioItem.coverImage
+          ? [portfolioItem.coverImage, ...((portfolioItem.images || []).filter(img => img !== portfolioItem.coverImage))]
+          : (portfolioItem.images || []))
+      ].filter(Boolean) as string[]
+    : [];
 
   // Keyboard navigation for lightbox
   useEffect(() => {
@@ -132,35 +138,32 @@ function PortfolioDetailPageContent({ params }: { params: { id: string } }) {
   return (
     <div className="min-h-screen">
       {/* Hero Section */}
-      <section className="bg-gradient-to-br from-teal-500 to-cyan-600 text-white pt-32 pb-20 md:pt-40 md:pb-32 shadow-xl relative">
-        {/* Beautiful spacing for nav overlay */}
-        <div className="absolute top-0 left-0 right-0 h-32 md:h-40 bg-gradient-to-b from-black/10 to-transparent pointer-events-none"></div>
-        
-        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center relative z-10">
-          {/* Back Button */}
-          <div className="mb-8">
-            <Link href="/portfolio" className="inline-flex items-center text-teal-100 hover:text-white mb-6 group transition-colors">
-              <ArrowLeftIcon className="h-5 w-5 mr-2 transition-transform duration-200 group-hover:-translate-x-1" />
-              Tüm Projelere Dön
+      <section className="bg-gradient-to-br from-teal-500 to-cyan-600 text-white pt-20 pb-10 md:pt-28 md:pb-16 shadow-xl relative">
+        <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 text-center relative z-10">
+          <div className="flex items-center justify-between mb-4">
+            <Link href="/portfolio" className="inline-flex items-center text-teal-100 hover:text-white text-sm group transition-colors">
+              <ArrowLeftIcon className="h-5 w-5 mr-1 transition-transform duration-200 group-hover:-translate-x-1" />
+              Tüm Projeler
             </Link>
-          </div>
-          
-          <h1 className="text-4xl sm:text-5xl md:text-6xl font-bold mb-6 tracking-tight leading-tight">
-            {portfolioItem.title}
-          </h1>
-          
-          <div className="flex justify-center mb-8">
             {portfolioItem.category && (
-              <span className="inline-flex items-center px-6 py-3 rounded-full text-sm font-medium bg-white/20 text-white border border-white/30 backdrop-blur-sm">
-                <TagIcon className="h-4 w-4 mr-2" />
+              <span className="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-white/20 text-white border border-white/30 backdrop-blur-sm">
+                <TagIcon className="h-4 w-4 mr-1" />
                 {portfolioItem.category.name}
               </span>
             )}
           </div>
-          
-          <p className="text-lg sm:text-xl text-teal-100 max-w-3xl mx-auto leading-relaxed">
-            Proje detaylarını inceleyin ve gerçekleştirdiğimiz çalışmanın tüm aşamalarını keşfedin.
-          </p>
+          <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold mb-4 tracking-tight leading-tight">
+            {portfolioItem.title}
+          </h1>
+          {portfolioItem.description && (
+            <div className="flex justify-center">
+              <HTMLContent 
+                content={portfolioItem.description}
+                className="text-base sm:text-lg text-teal-100 max-w-2xl mx-auto leading-relaxed mt-2"
+                truncate={220}
+              />
+            </div>
+          )}
         </div>
       </section>
 
