@@ -17,7 +17,9 @@ import {
   MagnifyingGlassIcon,
   FunnelIcon,
   TrashIcon,
-  PlusIcon
+  PlusIcon,
+  LinkIcon,
+  ArrowDownTrayIcon
 } from '@heroicons/react/24/outline';
 
 interface MediaItem {
@@ -46,6 +48,8 @@ export default function AdminMediaPage() {
   const [uploadingMedia, setUploadingMedia] = useState(false);
   const [showUploadModal, setShowUploadModal] = useState(false);
   const [message, setMessage] = useState<{ type: 'success' | 'error'; text: string } | null>(null);
+  const [previewItem, setPreviewItem] = useState<MediaItem | null>(null);
+  const [showPreviewModal, setShowPreviewModal] = useState(false);
 
   // Authentication check
   useEffect(() => {
@@ -170,6 +174,47 @@ export default function AdminMediaPage() {
     const sizes = ['Bytes', 'KB', 'MB', 'GB'];
     const i = Math.floor(Math.log(bytes) / Math.log(k));
     return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
+  };
+
+  // Önizleme modalı açma
+  const openPreview = (item: MediaItem) => {
+    setPreviewItem(item);
+    setShowPreviewModal(true);
+  };
+
+  // Önizleme modalı kapatma
+  const closePreview = () => {
+    setPreviewItem(null);
+    setShowPreviewModal(false);
+  };
+
+  // Tek dosya silme
+  const deleteSingleMedia = async (mediaId: string) => {
+    if (!window.confirm('Bu dosyayı silmek istediğinizden emin misiniz?')) {
+      return;
+    }
+
+    try {
+      const response = await fetch('/api/admin/media', {
+        method: 'DELETE',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ mediaIds: [mediaId] })
+      });
+
+      if (response.ok) {
+        const data = await response.json();
+        setMessage({ type: 'success', text: 'Dosya başarıyla silindi!' });
+        setSelectedMedia(prev => prev.filter(id => id !== mediaId));
+        loadMedia(); // Refresh media list
+        closePreview(); // Önizleme modalını kapat
+        setTimeout(() => setMessage(null), 3000);
+      } else {
+        throw new Error('Dosya silme işlemi başarısız');
+      }
+    } catch (error) {
+      console.error('Delete media error:', error);
+      setMessage({ type: 'error', text: 'Dosya silinirken hata oluştu.' });
+    }
   };
 
   // Load media on component mount
@@ -344,7 +389,7 @@ export default function AdminMediaPage() {
                     ? 'border-teal-500 bg-teal-500/10 shadow-lg shadow-teal-500/20' 
                     : 'border-white/20 hover:border-teal-500/50'
                 }`}
-                onClick={() => toggleMediaSelection(item._id)}
+                onClick={() => openPreview(item)}
               >
                 {/* Source Badge */}
                 <div className="absolute top-2 left-2 z-10">
@@ -357,12 +402,24 @@ export default function AdminMediaPage() {
                   </span>
                 </div>
 
-                {/* Selection Indicator */}
-                {selectedMedia.includes(item._id) && (
-                  <div className="absolute top-2 right-2 z-10">
-                    <CheckCircleIcon className="w-6 h-6 text-teal-400 drop-shadow-lg" />
+                {/* Selection Checkbox */}
+                <div className="absolute top-2 right-2 z-10">
+                  <div 
+                    className={`w-6 h-6 rounded border-2 flex items-center justify-center cursor-pointer transition-all duration-200 ${
+                      selectedMedia.includes(item._id)
+                        ? 'bg-teal-500 border-teal-500'
+                        : 'bg-black/30 border-white/50 hover:border-teal-400'
+                    }`}
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      toggleMediaSelection(item._id);
+                    }}
+                  >
+                    {selectedMedia.includes(item._id) && (
+                      <CheckCircleIcon className="w-4 h-4 text-white" />
+                    )}
                   </div>
-                )}
+                </div>
 
                 {/* Image Preview */}
                 <div className="aspect-square bg-slate-800 flex items-center justify-center">
@@ -461,6 +518,7 @@ export default function AdminMediaPage() {
                   }
                 }}
               >
+                {/* Hidden file input - sadece programatik olarak tetiklenecek */}
                 <input
                   type="file"
                   id="media-upload"
@@ -471,7 +529,7 @@ export default function AdminMediaPage() {
                       handleMediaUpload(e.target.files);
                     }
                   }}
-                  className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
+                  className="hidden"
                   disabled={uploadingMedia}
                 />
                 
@@ -488,13 +546,24 @@ export default function AdminMediaPage() {
                   </div>
                 ) : (
                   <div className="space-y-4">
-                    <CloudArrowUpIcon className="w-16 h-16 mx-auto text-slate-400" />
-                    <div>
-                      <p className="text-white font-semibold text-lg">Dosya Yükle</p>
-                      <p className="text-slate-400 text-sm mt-1">
-                        Dosyaları buraya sürükleyin veya tıklayın
-                      </p>
+                    {/* Tıklanabilir upload alanı */}
+                    <div 
+                      className="cursor-pointer hover:scale-105 transition-transform"
+                      onClick={() => {
+                        const fileInput = document.getElementById('media-upload');
+                        fileInput?.click();
+                      }}
+                    >
+                      <CloudArrowUpIcon className="w-16 h-16 mx-auto text-slate-400" />
+                      <div className="mt-4">
+                        <p className="text-white font-semibold text-lg">Dosya Yükle</p>
+                        <p className="text-slate-400 text-sm mt-1">
+                          Dosyaları buraya sürükleyin veya tıklayın
+                        </p>
+                      </div>
                     </div>
+                    
+                    {/* Dosya formatı bilgileri - tıklanamaz */}
                     <div className="space-y-2">
                       <p className="text-xs text-slate-500">
                         Desteklenen formatlar: JPG, PNG, GIF, WebP, MP4, MOV
@@ -503,6 +572,8 @@ export default function AdminMediaPage() {
                         Maksimum dosya boyutu: 10MB
                       </p>
                     </div>
+                    
+                    {/* Dosya Seç butonu */}
                     <button
                       type="button"
                       className="bg-gradient-to-r from-teal-600 to-blue-600 hover:from-teal-700 hover:to-blue-700 text-white px-6 py-3 rounded-xl font-semibold transition-all duration-200"
@@ -543,6 +614,154 @@ export default function AdminMediaPage() {
                   {uploadingMedia ? 'Yükleniyor...' : 'Kapat'}
                 </button>
               </div>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* Media Preview Modal */}
+        {showPreviewModal && previewItem && (
+          <div className="fixed inset-0 bg-black/80 backdrop-blur-sm flex items-center justify-center z-[9999] p-4">
+            <div className="bg-white rounded-3xl max-w-4xl w-full max-h-[90vh] shadow-2xl overflow-hidden">
+              
+              {/* Modal Header */}
+              <div className="flex items-center justify-between p-6 border-b border-slate-200">
+                <div className="flex items-center space-x-3">
+                  <div className="w-10 h-10 bg-gradient-to-r from-teal-500 to-blue-500 rounded-xl flex items-center justify-center">
+                    <PhotoIcon className="w-6 h-6 text-white" />
+                  </div>
+                  <div>
+                    <h3 className="text-xl font-bold text-slate-900">Medya Önizleme</h3>
+                    <p className="text-slate-600 text-sm">{previewItem.originalName}</p>
+                  </div>
+                </div>
+                <button
+                  onClick={closePreview}
+                  className="p-2 hover:bg-slate-100 rounded-xl transition-colors"
+                >
+                  <XMarkIcon className="w-6 h-6 text-slate-500" />
+                </button>
+              </div>
+
+              {/* Modal Content */}
+              <div className="flex flex-col lg:flex-row max-h-[calc(90vh-80px)]">
+                
+                {/* Image Preview */}
+                <div className="flex-1 flex items-center justify-center bg-slate-50 p-8">
+                  {previewItem.mimeType.startsWith('image/') ? (
+                    <div className="relative max-w-full max-h-full">
+                      <Image
+                        src={previewItem.url}
+                        alt={previewItem.originalName}
+                        width={800}
+                        height={600}
+                        className="max-w-full max-h-full object-contain rounded-lg shadow-lg"
+                        onError={(e) => {
+                          const target = e.target as HTMLImageElement;
+                          target.style.display = 'none';
+                        }}
+                      />
+                    </div>
+                  ) : (
+                    <div className="flex flex-col items-center justify-center text-slate-400">
+                      <DocumentIcon className="w-20 h-20 mb-4" />
+                      <p className="text-lg font-medium">Önizleme Mevcut Değil</p>
+                      <p className="text-sm">Bu dosya türü için önizleme desteklenmiyor</p>
+                    </div>
+                  )}
+                </div>
+
+                {/* File Details */}
+                <div className="lg:w-80 bg-slate-50 border-l border-slate-200 p-6 overflow-y-auto">
+                  <div className="space-y-6">
+                    
+                    {/* File Info */}
+                    <div>
+                      <h4 className="text-lg font-semibold text-slate-900 mb-4">Dosya Bilgileri</h4>
+                      <div className="space-y-3">
+                        <div>
+                          <label className="text-sm font-medium text-slate-600">Dosya Adı</label>
+                          <p className="text-sm text-slate-900 break-all">{previewItem.originalName}</p>
+                        </div>
+                        <div>
+                          <label className="text-sm font-medium text-slate-600">Dosya Boyutu</label>
+                          <p className="text-sm text-slate-900">{formatFileSize(previewItem.size)}</p>
+                        </div>
+                        <div>
+                          <label className="text-sm font-medium text-slate-600">Dosya Türü</label>
+                          <p className="text-sm text-slate-900">{previewItem.mimeType}</p>
+                        </div>
+                        <div>
+                          <label className="text-sm font-medium text-slate-600">Yükleme Tarihi</label>
+                          <p className="text-sm text-slate-900">
+                            {new Date(previewItem.uploadedAt).toLocaleDateString('tr-TR', {
+                              year: 'numeric',
+                              month: 'long',
+                              day: 'numeric',
+                              hour: '2-digit',
+                              minute: '2-digit'
+                            })}
+                          </p>
+                        </div>
+                        <div>
+                          <label className="text-sm font-medium text-slate-600">Kaynak</label>
+                          <div className="flex items-center space-x-2">
+                            <span className={`text-xs px-2 py-1 rounded-full text-white font-semibold ${
+                              previewItem.source === 'cloudinary' ? 'bg-blue-600' : 'bg-green-600'
+                            }`}>
+                              {previewItem.source === 'cloudinary' ? '☁️ Cloudinary' : '💾 Yerel'}
+                            </span>
+                          </div>
+                        </div>
+                        <div>
+                          <label className="text-sm font-medium text-slate-600">URL</label>
+                          <p className="text-xs text-slate-700 break-all bg-slate-100 p-2 rounded">
+                            {previewItem.url}
+                          </p>
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* Actions */}
+                    <div className="border-t border-slate-200 pt-6">
+                      <h4 className="text-lg font-semibold text-slate-900 mb-4">İşlemler</h4>
+                      <div className="space-y-3">
+                        
+                        {/* Copy URL */}
+                        <button
+                          onClick={() => {
+                            navigator.clipboard.writeText(previewItem.url);
+                            setMessage({ type: 'success', text: 'URL panoya kopyalandı!' });
+                            setTimeout(() => setMessage(null), 2000);
+                          }}
+                          className="w-full bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg font-medium transition-colors flex items-center justify-center space-x-2"
+                        >
+                          <LinkIcon className="w-4 h-4" />
+                          <span>URL'yi Kopyala</span>
+                        </button>
+
+                        {/* Download */}
+                        <a
+                          href={previewItem.url}
+                          download={previewItem.originalName}
+                          className="w-full bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg font-medium transition-colors flex items-center justify-center space-x-2"
+                        >
+                          <ArrowDownTrayIcon className="w-4 h-4" />
+                          <span>İndir</span>
+                        </a>
+
+                        {/* Delete */}
+                        <button
+                          onClick={() => deleteSingleMedia(previewItem._id)}
+                          className="w-full bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-lg font-medium transition-colors flex items-center justify-center space-x-2"
+                        >
+                          <TrashIcon className="w-4 h-4" />
+                          <span>Sil</span>
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+                </div>
               </div>
             </div>
           </div>

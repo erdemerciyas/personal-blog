@@ -9,7 +9,9 @@ import {
   LockClosedIcon,
   CubeTransparentIcon,
   ExclamationTriangleIcon,
-  ArrowRightIcon
+  ArrowRightIcon,
+  EnvelopeIcon,
+  CheckCircleIcon
 } from '@heroicons/react/24/outline';
 
 export default function LoginPage() {
@@ -21,9 +23,13 @@ export default function LoginPage() {
   const [showPassword, setShowPassword] = useState(false);
   
   const [formData, setFormData] = useState({
-    email: 'erdem.erciyas@gmail.com', // Test için default
-    password: '6026341' // Test için default
+    email: '',
+    password: ''
   });
+  const [showForgotPassword, setShowForgotPassword] = useState(false);
+  const [forgotPasswordEmail, setForgotPasswordEmail] = useState('');
+  const [forgotPasswordLoading, setForgotPasswordLoading] = useState(false);
+  const [forgotPasswordMessage, setForgotPasswordMessage] = useState<string | null>(null);
 
   useEffect(() => {
     if (!searchParams) return;
@@ -39,16 +45,7 @@ export default function LoginPage() {
       }
     }
 
-    // URL'den email ve password parametrelerini oku (geliştirme için)
-    const urlEmail = searchParams.get('email');
-    const urlPassword = searchParams.get('password');
-    
-    if (urlEmail && urlPassword) {
-      setFormData({
-        email: urlEmail,
-        password: urlPassword
-      });
-    }
+
   }, [searchParams]);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -93,10 +90,8 @@ export default function LoginPage() {
         setError(`Giriş hatası: ${result.error}`);
       } else if (result?.ok) {
         console.log('✅ Login successful, redirecting...');
-        // Session yenilemesi için kısa bir bekleme ekleyelim
-        setTimeout(() => {
-          window.location.href = '/admin/dashboard';
-        }, 100);
+        // Next.js router ile yönlendirme
+        router.push('/admin/dashboard');
       } else {
         console.error('❌ Unexpected login result:', result);
         setError('Beklenmeyen bir hata oluştu.');
@@ -106,6 +101,45 @@ export default function LoginPage() {
       setError('Giriş yaparken bir hata oluştu.');
     } finally {
       setLoading(false);
+    }
+  };
+
+  const handleForgotPassword = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+
+    if (!forgotPasswordEmail) {
+      setError('Lütfen email adresinizi girin');
+      return;
+    }
+
+    setError(null);
+    setForgotPasswordMessage(null);
+    setForgotPasswordLoading(true);
+
+    try {
+      const response = await fetch('/api/auth/forgot-password', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          email: forgotPasswordEmail,
+        }),
+      });
+
+      const data = await response.json();
+
+      if (response.ok) {
+        setForgotPasswordMessage(data.message);
+        setForgotPasswordEmail('');
+      } else {
+        setError(data.error || 'Şifre sıfırlama talebinde bir hata oluştu');
+      }
+    } catch (error) {
+      console.error('Forgot password error:', error);
+      setError('Bir hata oluştu. Lütfen tekrar deneyin.');
+    } finally {
+      setForgotPasswordLoading(false);
     }
   };
 
@@ -218,7 +252,109 @@ export default function LoginPage() {
               )}
             </button>
           </form>
+
+          {/* Forgot Password Link */}
+          <div className="mt-6 text-center">
+            <button
+              onClick={() => setShowForgotPassword(true)}
+              className="text-slate-400 hover:text-white transition-colors text-sm"
+            >
+              Şifremi unuttum
+            </button>
+          </div>
         </div>
+
+        {/* Forgot Password Modal */}
+        {showForgotPassword && (
+          <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 p-4">
+            <div className="bg-white/10 backdrop-blur-xl rounded-3xl p-8 border border-white/20 max-w-md w-full">
+              <div className="text-center mb-6">
+                <div className="inline-flex items-center justify-center w-12 h-12 bg-gradient-to-br from-teal-500 to-blue-600 rounded-xl mb-4">
+                  <EnvelopeIcon className="w-6 h-6 text-white" />
+                </div>
+                <h2 className="text-2xl font-bold text-white mb-2">Şifremi Unuttum</h2>
+                <p className="text-slate-400 text-sm">Email adresinizi girin, şifre sıfırlama bağlantısı göndereceğiz</p>
+              </div>
+
+              {/* Success Message */}
+              {forgotPasswordMessage && (
+                <div className="mb-6">
+                  <div className="bg-green-500/10 border border-green-500/30 text-green-300 p-4 rounded-2xl flex items-center space-x-3">
+                    <CheckCircleIcon className="w-5 h-5 text-green-400 flex-shrink-0" />
+                    <span className="text-sm">{forgotPasswordMessage}</span>
+                  </div>
+                </div>
+              )}
+
+              {/* Error Message */}
+              {error && (
+                <div className="mb-6">
+                  <div className="bg-red-500/10 border border-red-500/30 text-red-300 p-4 rounded-2xl flex items-center space-x-3">
+                    <ExclamationTriangleIcon className="w-5 h-5 text-red-400 flex-shrink-0" />
+                    <span className="text-sm">{error}</span>
+                  </div>
+                </div>
+              )}
+
+              <form onSubmit={handleForgotPassword} className="space-y-6">
+                <div className="space-y-2">
+                  <label htmlFor="forgotEmail" className="block text-sm font-semibold text-slate-200">
+                    Email Adresi
+                  </label>
+                  <div className="relative">
+                    <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+                      <EnvelopeIcon className="h-5 w-5 text-slate-400" />
+                    </div>
+                    <input
+                      id="forgotEmail"
+                      name="forgotEmail"
+                      type="email"
+                      autoComplete="email"
+                      required
+                      value={forgotPasswordEmail}
+                      onChange={(e) => setForgotPasswordEmail(e.target.value)}
+                      className="w-full bg-white/5 border border-white/20 rounded-xl pl-12 pr-4 py-4 text-white placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-transparent transition-all duration-200"
+                      placeholder="admin@example.com"
+                    />
+                  </div>
+                </div>
+
+                <div className="flex space-x-3">
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setShowForgotPassword(false);
+                      setError(null);
+                      setForgotPasswordMessage(null);
+                      setForgotPasswordEmail('');
+                    }}
+                    className="flex-1 py-3 px-4 bg-white/5 border border-white/20 rounded-xl text-slate-300 hover:bg-white/10 transition-colors"
+                  >
+                    İptal
+                  </button>
+                  <button
+                    type="submit"
+                    disabled={forgotPasswordLoading}
+                    className={`flex-1 flex items-center justify-center space-x-2 py-3 px-4 rounded-xl font-semibold transition-all duration-200 ${
+                      forgotPasswordLoading
+                        ? 'bg-teal-600/50 cursor-not-allowed text-teal-200'
+                        : 'bg-gradient-to-r from-teal-600 to-blue-600 hover:from-teal-700 hover:to-blue-700 text-white'
+                    }`}
+                  >
+                    {forgotPasswordLoading ? (
+                      <>
+                        <div className="animate-spin rounded-full h-4 w-4 border-t-2 border-b-2 border-current"></div>
+                        <span>Gönderiliyor...</span>
+                      </>
+                    ) : (
+                      <span>Gönder</span>
+                    )}
+                  </button>
+                </div>
+              </form>
+            </div>
+          </div>
+        )}
 
         {/* Footer */}
         <div className="text-center mt-8">

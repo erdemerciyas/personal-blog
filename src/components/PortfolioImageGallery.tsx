@@ -115,6 +115,9 @@ const PortfolioImageGallery: React.FC<PortfolioImageGalleryProps> = ({
 
       setSuccess(`${files.length} resim başarıyla yüklendi!`);
       
+      // Modal'ı kapat
+      setMediaModalOpen(false);
+      
       setTimeout(() => {
         setSuccess('');
         setUploadProgress(0);
@@ -417,11 +420,8 @@ const PortfolioImageGallery: React.FC<PortfolioImageGalleryProps> = ({
         onSelect={handleMediaSelect}
         onUploadNew={() => {
           console.log('onUploadNew çağrıldı - PortfolioImageGallery');
-          // Modal'ı kapatıp dosya seçim input'unu tetikle
-          setMediaModalOpen(false);
-          setTimeout(() => {
-            fileInputRef.current?.click();
-          }, 100);
+          // Dosya seçim input'unu tetikle ama modal'ı kapatma
+          fileInputRef.current?.click();
         }}
         allowedTypes={["image/"]}
         allowMultipleSelect={true}
