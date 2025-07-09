@@ -4,6 +4,36 @@ import { authOptions } from '../../../../../lib/auth';
 import connectDB from '../../../../../lib/mongoose';
 import PageSettings from '../../../../../models/PageSettings';
 
+// GET - Belirli bir sayfanın ayarlarını getir
+export async function GET(
+  request: NextRequest,
+  { params }: { params: { pageId: string } }
+) {
+  try {
+    await connectDB();
+    
+    const { pageId } = params;
+    
+    const pageSettings = await PageSettings.findOne({ pageId });
+
+    if (!pageSettings) {
+      // Sayfa ayarı bulunamazsa, varsayılan değerleri döndür
+      return NextResponse.json({
+        title: pageId.charAt(0).toUpperCase() + pageId.slice(1), // 'portfolio' -> 'Portfolio'
+        description: ''
+      });
+    }
+
+    return NextResponse.json(pageSettings);
+  } catch (error) {
+    console.error('Page settings getirme hatası:', error);
+    return NextResponse.json(
+      { error: 'Sayfa ayarları getirilemedi' },
+      { status: 500 }
+    );
+  }
+}
+
 // PUT - Belirli bir sayfanın ayarlarını güncelle
 export async function PUT(
   request: NextRequest,
@@ -27,7 +57,7 @@ export async function PUT(
     const updatedPage = await PageSettings.findOneAndUpdate(
       { pageId },
       { ...updateData, updatedAt: new Date() },
-      { new: true }
+      { new: true, upsert: true } // upsert: true - eğer sayfa yoksa oluşturur
     );
 
     if (!updatedPage) {
@@ -51,4 +81,4 @@ export async function PUT(
       { status: 500 }
     );
   }
-} 
+}

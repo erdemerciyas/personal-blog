@@ -1,0 +1,5 @@
+feat: Sayfa ayarları API'sine GET metodu eklendi ve dil sistemi temizlendi
+
+- Sayfa ayarlarını dinamik olarak çekmek için `/api/admin/page-settings/[pageId]` endpoint'ine GET metodu eklendi.
+- Frontend'deki hero alanı açıklama sorunu giderildi.
+- Çok dilli sistemle ilgili tüm dosyalar ve kod parçacıkları projeden kaldırıldı.
