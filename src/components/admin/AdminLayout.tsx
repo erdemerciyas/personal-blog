@@ -303,8 +303,9 @@ export default function AdminLayout({ children, title, breadcrumbs }: AdminLayou
     return (
       <div className="min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 flex items-center justify-center">
         <div className="flex flex-col items-center space-y-4">
-          <Loader size="xl" color="primary" />
-          <p className="text-slate-300 text-lg">Yükleniyor...</p>
+          <Loader size="xl" color="primary">
+            Yükleniyor...
+          </Loader>
         </div>
       </div>
     );
