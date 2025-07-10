@@ -8,6 +8,7 @@ import HTMLContent from '../../components/HTMLContent';
 import { ArrowRightIcon, CheckBadgeIcon, ClockIcon, StarIcon, ChevronDownIcon, ChevronUpIcon } from '@heroicons/react/24/outline';
 
 
+
 import type { Metadata } from 'next';
 
 export const metadata: Metadata = {
