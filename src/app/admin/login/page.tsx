@@ -2,6 +2,7 @@
 import { useState, useEffect } from 'react';
 import { signIn } from 'next-auth/react';
 import { useRouter, useSearchParams } from 'next/navigation';
+import { Loader } from '../../../components/ui';
 import { 
   EyeIcon, 
   EyeSlashIcon, 
@@ -241,8 +242,9 @@ export default function LoginPage() {
             >
               {loading ? (
                 <>
-                  <div className="animate-spin rounded-full h-5 w-5 border-t-2 border-b-2 border-current"></div>
-                  <span>Giriş Yapılıyor...</span>
+                  <Loader size="md" color="current">
+                    Giriş Yapılıyor...
+                  </Loader>
                 </>
               ) : (
                 <>
@@ -343,8 +345,9 @@ export default function LoginPage() {
                   >
                     {forgotPasswordLoading ? (
                       <>
-                        <div className="animate-spin rounded-full h-4 w-4 border-t-2 border-b-2 border-current"></div>
-                        <span>Gönderiliyor...</span>
+                        <Loader size="sm" color="current">
+                        Gönderiliyor...
+                      </Loader>
                       </>
                     ) : (
                       <span>Gönder</span>

@@ -1,6 +1,7 @@
 'use client';
 import { useEffect, useState } from 'react';
 import Image from 'next/image';
+import { Loader } from '../components/ui';
 import { SparklesIcon } from '@heroicons/react/24/outline';
 
 interface SiteSettings {
@@ -55,16 +56,14 @@ export default function Loading() {
 
         {/* Loading Animation */}
         <div className="mb-8">
-          <div className="relative">
-            {/* Main spinner */}
-            <div className="w-12 h-12 mx-auto border-4 border-slate-200 border-t-teal-500 rounded-full animate-spin"></div>
-            
-            {/* Pulse ring */}
-            <div className="absolute inset-0 w-12 h-12 mx-auto border-2 border-teal-200 rounded-full animate-ping opacity-75"></div>
-            
-            {/* Glow effect */}
-            <div className="absolute inset-0 w-12 h-12 mx-auto bg-teal-500/20 rounded-full animate-pulse"></div>
-          </div>
+          {/* Main spinner */}
+          <Loader size="xl" color="primary" className="border-t-teal-500 border-b-teal-500">
+            Yükleniyor...
+          </Loader>
+          {/* Pulse ring */}
+          <div className="absolute inset-0 w-12 h-12 mx-auto border-2 border-teal-200 rounded-full animate-ping opacity-75"></div>
+          {/* Glow effect */}
+          <div className="absolute inset-0 w-12 h-12 mx-auto bg-teal-500/20 rounded-full animate-pulse"></div>
         </div>
 
         {/* Text */}

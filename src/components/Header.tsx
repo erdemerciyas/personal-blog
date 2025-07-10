@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
+import { Loader } from './ui';
 import { usePathname } from 'next/navigation';
 import { 
   Bars3Icon, 
@@ -552,8 +553,9 @@ E-posta: ${projectForm.email}
                 >
                   {isSubmitting ? (
                     <>
-                      <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
-                      <span>Gönderiliyor...</span>
+                      <Loader size="md" color="white">
+                        Gönderiliyor...
+                      </Loader>
                     </>
                   ) : (
                     <>

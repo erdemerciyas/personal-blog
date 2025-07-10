@@ -1,6 +1,7 @@
 'use client';
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
+import { Loader } from '../components/ui';
 import Image from 'next/image';
 import ProjectGrid from '../components/ProjectGrid';
 import HTMLContent from '../components/HTMLContent';
@@ -189,8 +190,9 @@ export default function HomePage() {
     return (
       <div className="section-hero bg-gradient-primary">
         <div className="container-content text-center">
-          <div className="animate-spin rounded-full h-16 w-16 border-4 border-white/20 border-t-white mx-auto mb-8"></div>
-          <p className="text-white/80 text-xl">Yükleniyor...</p>
+          <Loader size="xl" color="white">
+            Yükleniyor...
+          </Loader>
         </div>
       </div>
     );
