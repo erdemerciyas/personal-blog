@@ -13,6 +13,7 @@ export { default as Providers } from './Providers';
 export { default as AdminLayout } from './admin/AdminLayout';
 export { default as RichTextEditor } from './RichTextEditor';
 export { default as HTMLContent } from './HTMLContent';
+export { default as Breadcrumbs } from './Breadcrumbs';
 
 // UI Component exports
 export * from './ui'; 

@@ -4,6 +4,13 @@ import { useState, useEffect, Suspense } from 'react';
 import { Loader } from '../../components/ui';
 import { EnvelopeIcon, PhoneIcon, MapPinIcon, PaperAirplaneIcon, CheckCircleIcon, ExclamationCircleIcon, ClockIcon } from '@heroicons/react/24/outline';
 
+import type { Metadata } from 'next';
+
+export const metadata: Metadata = {
+  title: 'İletişim',
+  description: 'Bizimle iletişime geçin ve sorularınızı sorun.',
+};
+
 interface ContactInfo {
   email: string;
   phone: string;

@@ -20,6 +20,13 @@ import {
   RocketLaunchIcon
 } from '@heroicons/react/24/outline';
 
+import type { Metadata } from 'next';
+
+export const metadata: Metadata = {
+  title: 'Hakkımda',
+  description: 'Erdem Erciyas hakkında daha fazla bilgi edinin.',
+};
+
 interface Value {
   text: string;
   iconName: string;

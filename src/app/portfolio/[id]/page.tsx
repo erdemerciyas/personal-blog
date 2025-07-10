@@ -3,17 +3,21 @@
 import { useState, useEffect } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
-import {
-  ArrowLeftIcon,
-  TagIcon,
-  CalendarIcon,
-  UserIcon,
-  PhotoIcon,
-  MagnifyingGlassIcon,
-  XMarkIcon,
-  ChevronLeftIcon,
-  ChevronRightIcon
-} from '@heroicons/react/24/outline';
+import { ArrowLeftIcon, TagIcon, CalendarIcon, UserIcon, PhotoIcon, MagnifyingGlassIcon, XMarkIcon, ChevronLeftIcon, ChevronRightIcon } from '@heroicons/react/24/outline';
+import type { Metadata } from 'next';
+import connectDB from '../../../lib/mongoose';
+import Portfolio from '../../../models/Portfolio';
+
+export async function generateMetadata({ params }: { params: { id: string } }): Promise<Metadata> {
+  await connectDB();
+  const portfolioItem = await Portfolio.findById(params.id);
+
+  return {
+    title: portfolioItem?.title || 'Proje Detayı',
+    description: portfolioItem?.description || 'Portfolyo projesinin detayları.',
+  };
+}
+
 import { PortfolioItem } from '../../../types/portfolio'; // Assuming PortfolioItem type is correctly defined
 import { Loader } from '../../../components/ui';
 import ProjectGrid from '../../../components/ProjectGrid'; // Ensuring this import is correct
