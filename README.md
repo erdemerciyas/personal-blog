@@ -1,3 +1,55 @@
+# Personal Blog
+
+[![Production - Vercel](https://img.shields.io/badge/Production-Live-green?logo=vercel)](https://erdemerciyas.vercel.app)
+
+> **Canlı Demo:** [https://erdemerciyas.vercel.app](https://erdemerciyas.vercel.app)
+
+## Son Sürüm
+
+- **Versiyon:** 1.11.7
+- **Güncelleme Tarihi:** Otomatik Vercel senkronizasyonu sonrası
+
+## Hızlı Başlangıç
+
+### 1. Klonla
+```bash
+git clone https://github.com/erdemerciyas/personal-blog.git
+cd personal-blog
+```
+
+### 2. Bağımlılıkları Kur
+```bash
+npm install
+```
+
+### 3. .env.local Dosyasını Oluştur
+Aşağıdaki örneği kullanarak `.env.local` dosyasını projenin köküne ekleyin:
+
+```env
+NODE_ENV=production
+NEXTAUTH_URL=https://erdemerciyas.vercel.app
+NEXTAUTH_SECRET=f1181d6e1ce33c4ba4135a7497694541679c39f7ea81e7feddeca23a93e39ab9
+MONGODB_URI=mongodb+srv://erdemerciyasrev... # (tam URI Vercel panelinizde)
+
+APP_NAME=Personal Blog
+APP_URL=https://erdemerciyas.vercel.app
+
+CLOUDINARY_CLOUD_NAME=dlgnhbq8l
+CLOUDINARY_API_KEY=788149143685286
+CLOUDINARY_API_SECRET=1LVXl0-pogS9G7lnh4U_4rWiMW
+
+OPENAI_API_KEY=sk-proj-acQ2008TWsFkvbZh-a0ztm...
+PEXELS_API_KEY=ARLQnJxW2BYREGyHpviaUs93mV0z...
+GMAIL_USER=erdem.erciyas@gmail.com
+```
+
+### 4. Projeyi Başlat
+```bash
+npm run dev
+```
+
+---
+
 # 🚀 Personal Blog & Portfolio
 
 Modern, performant ve güvenli bir kişisel blog ve portfolio uygulaması. Next.js 14, TypeScript, MongoDB ve modern best practices ile geliştirilmiştir.
