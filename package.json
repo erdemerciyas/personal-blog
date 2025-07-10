@@ -1,6 +1,6 @@
 {
   "name": "personal-blog",
-  "version": "1.11.0",
+  "version": "1.11.1",
   "private": true,
   "author": {
     "name": "Erdem Erciyas",
@@ -26,7 +26,7 @@
     "dev": "next dev",
     "dev:turbo": "next dev --turbo",
     "build": "next build",
-    "build:analyze": "ANALYZE=true next build",
+    "build:analyze": "cross-env ANALYZE=true next build",
     "vercel-build": "next build",
     "cpanel-build": "node scripts/universal-build.js",
     "start": "next start",
@@ -92,6 +92,7 @@
   },
   "devDependencies": {
     "@types/jsonwebtoken": "^9.0.6",
+    "cross-env": "^7.0.3",
     "husky": "^9.1.7",
     "prettier": "^3.0.0",
     "standard-version": "^9.5.0",

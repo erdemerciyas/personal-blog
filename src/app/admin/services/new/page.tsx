@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react';
 import { useSession } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
+import Image from 'next/image';
 import AdminLayout from '../../../../components/admin/AdminLayout';
 import ImageUpload from '../../../../components/ImageUpload';
 import RichTextEditor from '../../../../components/RichTextEditor';
@@ -265,10 +266,11 @@ export default function NewServicePage() {
                 <div>
                   <div className="w-full h-40 bg-slate-200 rounded-xl overflow-hidden flex items-center justify-center">
                     {serviceImage ? (
-                      <img
+                      <Image
                         src={serviceImage}
                         alt="Service preview"
-                        className="w-full h-full object-cover"
+                        fill
+                        style={{ objectFit: 'cover' }}
                       />
                     ) : (
                       <div className="text-center">
