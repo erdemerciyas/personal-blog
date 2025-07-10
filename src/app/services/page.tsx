@@ -5,14 +5,15 @@ import Link from 'next/link';
 import { Loader } from '../../components/ui';
 import Image from 'next/image';
 import HTMLContent from '../../components/HTMLContent';
-import { 
-  ArrowRightIcon, 
-  CheckBadgeIcon,
-  ClockIcon,
-  StarIcon,
-  ChevronDownIcon,
-  ChevronUpIcon
-} from '@heroicons/react/24/outline';
+import { ArrowRightIcon, CheckBadgeIcon, ClockIcon, StarIcon, ChevronDownIcon, ChevronUpIcon } from '@heroicons/react/24/outline';
+
+
+import type { Metadata } from 'next';
+
+export const metadata: Metadata = {
+  title: 'Hizmetler',
+  description: 'Sunduğumuz tüm hizmetleri keşfedin.',
+};
 
 interface Service {
   _id: string;

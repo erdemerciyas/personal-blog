@@ -7,6 +7,13 @@ import ProjectGrid from '../../components/ProjectGrid';
 import { PortfolioItem, Category } from '../../types/portfolio';
 import { TagIcon, Squares2X2Icon, XMarkIcon } from '@heroicons/react/24/outline';
 
+import type { Metadata } from 'next';
+
+export const metadata: Metadata = {
+  title: 'Portfolyo',
+  description: 'Tamamladığımız projeleri inceleyin.',
+};
+
 // Helper component to handle client-side logic dependent on Suspense
 function PortfolioPageContent() {
   const [portfolioItems, setPortfolioItems] = useState<PortfolioItem[]>([]);

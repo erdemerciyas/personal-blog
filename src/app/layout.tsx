@@ -97,6 +97,10 @@ export async function generateMetadata(): Promise<Metadata> {
   }
 }
 
+import { Breadcrumbs } from '../components';
+
+// ... diğer importlar
+
 export default function RootLayout({
   children,
 }: {
@@ -133,6 +137,9 @@ export default function RootLayout({
 
             {/* Main content area with consistent container */}
             <main className="flex-grow">
+              <div className="container-main py-4"> {/* Breadcrumbs için bir kapsayıcı ekledim */}
+                <Breadcrumbs />
+              </div>
               {children}
             </main>
 
