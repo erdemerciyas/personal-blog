@@ -552,11 +552,9 @@ E-posta: ${projectForm.email}
                   className="flex-1 px-6 py-3 bg-gradient-primary text-white rounded-xl font-semibold hover:opacity-90 transition-opacity disabled:opacity-50 flex items-center justify-center space-x-2"
                 >
                   {isSubmitting ? (
-                    <>
-                      <Loader size="md" color="white">
-                        Gönderiliyor...
-                      </Loader>
-                    </>
+                    <Loader size="md" color="white">
+                      Gönderiliyor...
+                    </Loader>
                   ) : (
                     <>
                       <EnvelopeIcon className="w-5 h-5" />
