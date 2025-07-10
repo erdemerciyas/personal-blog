@@ -53,36 +53,13 @@ export async function GET(request: Request) {
     }
     
     const portfolios = await Portfolio.find(query)
+      .populate('categoryIds') // Yeni çoklu kategori alanı
+      .populate('categoryId')  // Geriye uyumluluk için eski tekli kategori alanı
       .sort({ createdAt: -1 });
     
-    // Kategorileri ayrıca al ve manuel olarak birleştir
-    const categories = await Category.find();
-    const categoryMap = categories.reduce((map, cat) => {
-      map[cat._id.toString()] = cat;
-      return map;
-    }, {} as Record<string, typeof categories[0]>);
     
-    // Portfolio'lara category bilgisini ekle
-    const portfoliosWithCategory = portfolios.map(portfolio => {
-      const portfolioObj = portfolio.toObject();
-      
-      // Çoklu kategori desteği
-      if (portfolioObj.categoryIds && portfolioObj.categoryIds.length > 0) {
-        portfolioObj.categories = portfolioObj.categoryIds.map(id => categoryMap[id.toString()]).filter(Boolean);
-        // Geriye uyumluluk için ilk kategoriyi category alanına da ekle
-        portfolioObj.category = portfolioObj.categories[0];
-      }
-      // Eski tekli kategori desteği
-      else if (portfolioObj.categoryId) {
-        portfolioObj.category = categoryMap[portfolioObj.categoryId.toString()];
-        // Yeni formata uyumluluk için categories array'i oluştur
-        portfolioObj.categories = portfolioObj.category ? [portfolioObj.category] : [];
-      }
-      
-      return portfolioObj;
-    });
     
-    return NextResponse.json(portfoliosWithCategory);
+    return NextResponse.json(portfolios);
   } catch (error) {
     console.error('Portfolio fetch error:', error);
     return NextResponse.json({ 

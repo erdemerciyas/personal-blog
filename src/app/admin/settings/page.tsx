@@ -3,6 +3,7 @@
 import { useState, useEffect, useRef } from 'react';
 import { useSession } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
+import Image from 'next/image';
 import AdminLayout from '../../../components/admin/AdminLayout';
 import { CheckIcon, ShieldCheckIcon, CloudArrowUpIcon, XMarkIcon, PhotoIcon } from '@heroicons/react/24/outline';
 
@@ -308,10 +309,11 @@ export default function AdminSettingsPage() {
                 <h4 className="text-sm font-medium text-slate-700 mb-3">Mevcut Logo</h4>
                 <div className="flex items-center justify-center h-24 bg-white rounded-lg border">
                   {settings.logo ? (
-                    <img 
+                    <Image 
                       src={settings.logo} 
                       alt="Mevcut Logo" 
-                      className="max-h-20 max-w-full object-contain"
+                      fill
+                      style={{ objectFit: 'contain' }}
                     />
                   ) : (
                     <div className="flex flex-col items-center space-y-2 text-slate-400">
@@ -361,10 +363,12 @@ export default function AdminSettingsPage() {
                     </div>
                     
                     <div className="flex items-center space-x-4">
-                      <img 
+                      <Image 
                         src={logoPreview} 
                         alt="Logo Önizleme" 
-                        className="w-16 h-16 object-contain bg-white rounded-lg border"
+                        width={64}
+                        height={64}
+                        style={{ objectFit: 'contain' }}
                       />
                       <div className="flex-1">
                         <p className="text-sm font-medium text-slate-700">{logoFile?.name}</p>
@@ -445,10 +449,12 @@ export default function AdminSettingsPage() {
                 <h4 className="text-sm font-medium text-slate-700 mb-3">Marka Önizleme</h4>
                 <div className="flex items-center space-x-4">
                   {settings.logo && (
-                    <img 
+                    <Image 
                       src={settings.logo} 
                       alt="Logo" 
-                      className="w-12 h-12 object-contain"
+                      width={48}
+                      height={48}
+                      style={{ objectFit: 'contain' }}
                     />
                   )}
                   <div>

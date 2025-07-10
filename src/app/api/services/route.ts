@@ -7,6 +7,8 @@ import { logger } from '../../../lib/logger';
 import { createError, asyncHandler } from '../../../lib/errorHandler';
 import { cache, CacheKeys, CacheTTL, cacheHelpers } from '../../../lib/cache';
 
+import Service from '../../../models/Service';
+
 // GET /api/services - Tüm servisleri getir
 export const GET = asyncHandler(async () => {
   const startTime = Date.now();
@@ -19,11 +21,9 @@ export const GET = asyncHandler(async () => {
     return NextResponse.json(cached);
   }
 
-  const { db } = await connectToDatabase();
-  const services = await db.collection('services')
-    .find({})
-    .sort({ createdAt: -1 })
-    .toArray();
+  await connectToDatabase();
+  const services = await Service.find({})
+    .sort({ createdAt: -1 });
 
   // Cache the results
   cache.set(CacheKeys.SERVICES, services, CacheTTL.MEDIUM);
@@ -81,17 +81,18 @@ export const POST = asyncHandler(async (request: Request) => {
   };
 
   try {
-    const result = await db.collection('services').insertOne(serviceData);
+    const newService = new Service(serviceData);
+    const result = await newService.save();
     
     // Invalidate services cache
     cacheHelpers.invalidateContentCaches();
     
-    const newService = { ...serviceData, _id: result.insertedId };
+    
     
     const duration = Date.now() - startTime;
     logger.apiResponse('POST', '/api/services', 201, duration);
     logger.info('Service created successfully', 'API', { 
-      serviceId: result.insertedId,
+      serviceId: newService._id,
       title: body.title 
     });
 
