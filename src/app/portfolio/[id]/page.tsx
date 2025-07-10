@@ -15,6 +15,7 @@ import {
   ChevronRightIcon
 } from '@heroicons/react/24/outline';
 import { PortfolioItem } from '../../../types/portfolio'; // Assuming PortfolioItem type is correctly defined
+import { Loader } from '../../../components/ui';
 import ProjectGrid from '../../../components/ProjectGrid'; // Ensuring this import is correct
 import HTMLContent from '../../../components/HTMLContent';
 
@@ -100,8 +101,9 @@ function PortfolioDetailPageContent({ params }: { params: { id: string } }) {
   if (loading) {
     return (
       <div className="flex flex-col items-center justify-center min-h-[calc(100vh-10rem)]">
-        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-teal-500 mb-4"></div>
-        <p className="text-slate-500">Proje detayları yükleniyor...</p>
+        <Loader size="xl" color="primary">
+          Proje detayları yükleniyor...
+        </Loader>
       </div>
     );
   }

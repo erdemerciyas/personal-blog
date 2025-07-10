@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
+import { Loader } from '../../components/ui';
 import Image from 'next/image';
 import HTMLContent from '../../components/HTMLContent';
 import { 
@@ -82,8 +83,9 @@ export default function ServicesPage() {
     return (
       <div className="min-h-screen flex items-center justify-center bg-slate-50">
           <div className="text-center">
-          <div className="animate-spin rounded-full h-16 w-16 border-t-2 border-b-2 border-teal-500 mx-auto mb-4"></div>
-          <p className="text-slate-600 text-lg">Hizmetler yükleniyor...</p>
+          <Loader size="xl" color="primary">
+            Hizmetler yükleniyor...
+          </Loader>
         </div>
       </div>
     );

@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react';
 import { useSession } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
 import Image from 'next/image';
+import { Loader } from '../../../../components/ui';
 import AdminLayout from '../../../../components/admin/AdminLayout';
 import ImageUpload from '../../../../components/ImageUpload';
 import RichTextEditor from '../../../../components/RichTextEditor';
@@ -95,8 +96,9 @@ export default function NewServicePage() {
       <AdminLayout>
         <div className="flex items-center justify-center min-h-[400px]">
           <div className="flex flex-col items-center space-y-4">
-            <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-teal-500"></div>
-            <p className="text-slate-600">Yükleniyor...</p>
+            <Loader size="xl" color="primary">
+              Yükleniyor...
+            </Loader>
           </div>
         </div>
       </AdminLayout>
@@ -293,8 +295,9 @@ export default function NewServicePage() {
             >
               {loading ? (
                 <>
-                  <div className="animate-spin rounded-full h-5 w-5 border-2 border-white border-t-transparent"></div>
-                  <span>Ekleniyor...</span>
+                  <Loader size="md" color="white">
+                    Ekleniyor...
+                  </Loader>
                 </>
               ) : (
                 <>

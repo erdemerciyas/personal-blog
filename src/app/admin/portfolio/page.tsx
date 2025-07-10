@@ -5,6 +5,7 @@ import { useSession } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
 import Image from 'next/image';
 import Link from 'next/link';
+import { Loader } from '../../../components/ui';
 import AdminLayout from '../../../components/admin/AdminLayout';
 import HTMLContent from '../../../components/HTMLContent';
 import { 
@@ -203,8 +204,9 @@ export default function PortfolioManagement() {
       <AdminLayout>
         <div className="flex items-center justify-center min-h-[400px]">
           <div className="flex flex-col items-center space-y-4">
-            <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-teal-500"></div>
-            <p className="text-slate-600">Portfolyo yükleniyor...</p>
+            <Loader size="xl" color="primary">
+              Portfolyo yükleniyor...
+            </Loader>
           </div>
         </div>
       </AdminLayout>
@@ -433,8 +435,9 @@ export default function PortfolioManagement() {
               
               {categoriesLoading ? (
                 <div className="p-12 text-center">
-                  <div className="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-purple-500 mx-auto"></div>
-                  <p className="text-slate-500 mt-2">Kategoriler yükleniyor...</p>
+                  <Loader size="lg" color="secondary">
+                    Kategoriler yükleniyor...
+                  </Loader>
                 </div>
               ) : categories.length === 0 ? (
                 <div className="p-12 text-center">

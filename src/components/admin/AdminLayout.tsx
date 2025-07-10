@@ -6,6 +6,7 @@ import { useRouter, usePathname } from 'next/navigation';
 import Link from 'next/link';
 import Image from 'next/image';
 import { createPortal } from 'react-dom';
+import { Loader } from '../ui';
 import { 
   Bars3Icon, 
   XMarkIcon,
@@ -302,7 +303,7 @@ export default function AdminLayout({ children, title, breadcrumbs }: AdminLayou
     return (
       <div className="min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 flex items-center justify-center">
         <div className="flex flex-col items-center space-y-4">
-          <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-teal-500"></div>
+          <Loader size="xl" color="primary" />
           <p className="text-slate-300 text-lg">Yükleniyor...</p>
         </div>
       </div>
