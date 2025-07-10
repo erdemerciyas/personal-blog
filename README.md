@@ -6,7 +6,7 @@
 
 ## Son Sürüm
 
-- **Versiyon:** 1.11.7
+- **Versiyon:** 1.11.8
 - **Güncelleme Tarihi:** Otomatik Vercel senkronizasyonu sonrası
 
 ## Hızlı Başlangıç
