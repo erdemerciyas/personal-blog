@@ -2,19 +2,17 @@
 
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
-import { Loader } from '../../components/ui';
+import UniversalLoader from '../../components/UniversalLoader';
 import Image from 'next/image';
 import HTMLContent from '../../components/HTMLContent';
-import { ArrowRightIcon, CheckBadgeIcon, ClockIcon, StarIcon, ChevronDownIcon, ChevronUpIcon } from '@heroicons/react/24/outline';
-
-
-
-import type { Metadata } from 'next';
-
-export const metadata: Metadata = {
-  title: 'Hizmetler',
-  description: 'Sunduğumuz tüm hizmetleri keşfedin.',
-};
+import { 
+  ArrowRightIcon,
+  CheckCircleIcon,
+  ClockIcon,
+  UserGroupIcon,
+  CogIcon,
+  SparklesIcon
+} from '@heroicons/react/24/outline';
 
 interface Service {
   _id: string;
@@ -82,15 +80,7 @@ export default function ServicesPage() {
 
 
   if (loading) {
-    return (
-      <div className="min-h-screen flex items-center justify-center bg-slate-50">
-          <div className="text-center">
-          <Loader size="xl" color="primary">
-            Hizmetler yükleniyor...
-          </Loader>
-        </div>
-      </div>
-    );
+    return <UniversalLoader text="Hizmetler yükleniyor..." />;
   }
 
   if (error) {
@@ -118,7 +108,7 @@ export default function ServicesPage() {
   }
 
   return (
-    <div className="min-h-screen bg-white">
+    <div className="min-h-screen">
       {/* Hero Section */}
       <section className="bg-gradient-to-br from-teal-500 to-cyan-600 text-white py-28 md:py-32">
         <div className="max-w-3xl mx-auto px-4 text-center">
@@ -149,7 +139,7 @@ export default function ServicesPage() {
           {services.length === 0 ? (
             <div className="text-center py-12">
               <div className="bg-gray-100 rounded-full w-24 h-24 flex items-center justify-center mx-auto mb-6">
-                <StarIcon className="w-12 h-12 text-gray-400" />
+                <SparklesIcon className="w-12 h-12 text-gray-400" />
               </div>
               <h2 className="text-2xl font-semibold text-gray-800 mb-4">
                 Henüz hizmet bulunmuyor
@@ -217,7 +207,7 @@ export default function ServicesPage() {
                       {service.features && service.features.length > 0 && (
                         <div className="mb-6">
                           <h4 className="text-base md:text-lg font-semibold text-gray-800 mb-3 flex items-center">
-                            <CheckBadgeIcon className="w-5 h-5 text-teal-500 mr-2" />
+                            <CheckCircleIcon className="w-5 h-5 text-teal-500 mr-2" />
                             Öne Çıkan Özellikler
                           </h4>
                           <ul className="space-y-2">
@@ -242,7 +232,7 @@ export default function ServicesPage() {
                         
                         {service.rating && (
                           <div className="flex items-center text-gray-600">
-                            <StarIcon className="w-4 h-4 mr-2 fill-yellow-400 text-yellow-400" />
+                            <CogIcon className="w-4 h-4 mr-2 fill-yellow-400 text-yellow-400" />
                             <span className="text-sm">{service.rating}/5</span>
                           </div>
                         )}

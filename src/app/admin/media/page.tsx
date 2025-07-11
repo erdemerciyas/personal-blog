@@ -4,7 +4,6 @@ import { useSession } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import Image from 'next/image';
-import { Loader } from '../../../components/ui';
 import AdminLayout from '../../../components/admin/AdminLayout';
 import {
   ArrowLeftIcon,
@@ -230,9 +229,11 @@ export default function AdminMediaPage() {
       <AdminLayout>
         <div className="flex items-center justify-center min-h-[400px]">
           <div className="flex flex-col items-center space-y-4">
-            <Loader size="xl" color="primary">
-              Yükleniyor...
-            </Loader>
+            <div className="flex flex-col items-center space-y-4">
+              <div className="w-full max-w-xs mx-auto bg-white/20 rounded-full h-2">
+                <div className="bg-gradient-to-r from-teal-500 to-blue-500 h-2 rounded-full animate-pulse"></div>
+              </div>
+            </div>
           </div>
         </div>
       </AdminLayout>
@@ -364,9 +365,9 @@ export default function AdminMediaPage() {
         {loadingMedia ? (
           <div className="flex items-center justify-center py-16">
             <div className="flex flex-col items-center space-y-4">
-              <Loader size="lg" color="primary">
-              Medya dosyaları yükleniyor...
-            </Loader>
+              <div className="w-full max-w-xs mx-auto bg-white/20 rounded-full h-2">
+                <div className="bg-gradient-to-r from-teal-500 to-blue-500 h-2 rounded-full animate-pulse"></div>
+              </div>
             </div>
           </div>
         ) : (

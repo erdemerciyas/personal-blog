@@ -2,7 +2,6 @@
 
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
-import { Loader } from '../../../components/ui';
 import AdminLayout from '../../../components/admin/AdminLayout';
 import { 
   DocumentTextIcon, 
@@ -126,9 +125,9 @@ export default function ContentManagement() {
     return (
       <AdminLayout title="İçerik Yönetimi" breadcrumbs={breadcrumbs}>
         <div className="flex items-center justify-center h-64">
-          <Loader size="xl" color="secondary">
+          <div className="flex items-center justify-center h-64">
             İçerik yükleniyor...
-          </Loader>
+          </div>
         </div>
       </AdminLayout>
     );

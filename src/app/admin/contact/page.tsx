@@ -2,7 +2,6 @@
 import { useState, useEffect } from 'react';
 import { useSession } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
-import { Loader } from '../../../components/ui';
 import AdminLayout from '../../../components/admin/AdminLayout';
 import { 
   EnvelopeIcon, 
@@ -126,9 +125,9 @@ export default function AdminContactPage() {
       <AdminLayout>
         <div className="flex items-center justify-center min-h-[400px]">
           <div className="flex flex-col items-center space-y-4">
-            <Loader size="xl" color="primary">
-              İletişim bilgileri yükleniyor...
-            </Loader>
+            <div className="flex items-center space-x-2">
+              <span>İletişim bilgileri yükleniyor...</span>
+            </div>
           </div>
         </div>
       </AdminLayout>
@@ -165,8 +164,9 @@ export default function AdminContactPage() {
           >
             {saving ? (
               <>
-                <Loader size="sm" color="current" />
-                <span>Kaydediliyor...</span>
+                <div className="flex items-center space-x-2">
+                  <span>Kaydediliyor...</span>
+                </div>
               </>
             ) : (
               <>

@@ -20,12 +20,7 @@ import {
   RocketLaunchIcon
 } from '@heroicons/react/24/outline';
 
-import type { Metadata } from 'next';
-
-export const metadata: Metadata = {
-  title: 'Hakkımda',
-  description: 'Erdem Erciyas hakkında daha fazla bilgi edinin.',
-};
+import UniversalLoader from '../../components/UniversalLoader';
 
 interface Value {
   text: string;
@@ -95,14 +90,7 @@ export default function AboutPage() {
   };
 
   if (loading) {
-    return (
-      <div className="section-hero bg-gradient-subtle">
-        <div className="container-content text-center">
-          <div className="animate-spin rounded-full h-16 w-16 border-4 border-teal-500/30 border-t-teal-500 mx-auto mb-8"></div>
-          <p className="text-xl text-slate-600">Sayfa yükleniyor...</p>
-        </div>
-      </div>
-    );
+    return <UniversalLoader text="Sayfa yükleniyor..." />;
   }
 
   if (!aboutData) {

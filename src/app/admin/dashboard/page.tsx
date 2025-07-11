@@ -2,7 +2,6 @@
 import { useState, useEffect } from 'react';
 import { useSession } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
-import { Loader } from '../../../components/ui';
 import Link from 'next/link';
 import AdminLayout from '../../../components/admin/AdminLayout';
 import { Version } from '../../../components';
@@ -32,6 +31,7 @@ import {
   CloudArrowUpIcon,
   ChatBubbleLeftRightIcon
 } from '@heroicons/react/24/outline';
+import UniversalLoader from '../../../components/UniversalLoader';
 
 export default function AdminDashboard() {
   const { data: session, status } = useSession();
@@ -98,17 +98,7 @@ export default function AdminDashboard() {
   }, []);
 
   if (status === 'loading') {
-    return (
-      <AdminLayout>
-        <div className="flex items-center justify-center min-h-[400px]">
-          <div className="flex flex-col items-center space-y-4">
-            <Loader size="xl" color="primary">
-              Yükleniyor...
-            </Loader>
-          </div>
-        </div>
-      </AdminLayout>
-    );
+    return <AdminLayout><UniversalLoader text="Yükleniyor..." /></AdminLayout>;
   }
 
   if (!session?.user) {
