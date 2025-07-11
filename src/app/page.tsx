@@ -1,10 +1,10 @@
 'use client';
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
-import { Loader } from '../components/ui';
 import Image from 'next/image';
 import ProjectGrid from '../components/ProjectGrid';
 import HTMLContent from '../components/HTMLContent';
+import UniversalLoader from '../components/UniversalLoader';
 import { 
   ArrowRightIcon,
   CubeTransparentIcon,
@@ -187,15 +187,7 @@ export default function HomePage() {
   const currentSlide = sliderItems[currentSlideIndex] || defaultSlider[0];
 
   if (loading) {
-    return (
-      <div className="section-hero bg-gradient-primary">
-        <div className="container-content text-center">
-          <Loader size="xl" color="white">
-            Yükleniyor...
-          </Loader>
-        </div>
-      </div>
-    );
+    return <UniversalLoader />;
   }
 
   return (

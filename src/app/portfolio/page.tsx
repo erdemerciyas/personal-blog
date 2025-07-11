@@ -1,18 +1,19 @@
 'use client';
 
-import { useState, useEffect, Suspense } from 'react';
-import { Loader } from '../../components/ui';
+import { useState, useEffect, Suspense, useMemo } from 'react';
+import UniversalLoader from '../../components/UniversalLoader';
 import { useSearchParams, useRouter } from 'next/navigation';
 import ProjectGrid from '../../components/ProjectGrid';
-import { PortfolioItem, Category } from '../../types/portfolio';
-import { TagIcon, Squares2X2Icon, XMarkIcon } from '@heroicons/react/24/outline';
-
-import type { Metadata } from 'next';
-
-export const metadata: Metadata = {
-  title: 'Portfolyo',
-  description: 'Tamamladığımız projeleri inceleyin.',
-};
+import HTMLContent from '../../components/HTMLContent';
+import { 
+  MagnifyingGlassIcon,
+  FunnelIcon,
+  XMarkIcon,
+  ArrowUpIcon,
+  ArrowDownIcon,
+  Squares2X2Icon,
+  TagIcon
+} from '@heroicons/react/24/outline';
 
 // Helper component to handle client-side logic dependent on Suspense
 function PortfolioPageContent() {
@@ -26,7 +27,7 @@ function PortfolioPageContent() {
   const router = useRouter();
   
   // Çoklu kategori desteği
-  const getSelectedCategories = (): string[] => {
+  const selectedCategories = useMemo(() => {
     const categoriesParam = searchParams?.get('categories');
     const categoryParam = searchParams?.get('category'); // Geriye uyumluluk
     
@@ -36,9 +37,7 @@ function PortfolioPageContent() {
       return [categoryParam];
     }
     return [];
-  };
-
-  const selectedCategories = getSelectedCategories();
+  }, [searchParams]);
 
   useEffect(() => {
     const fetchInitialData = async () => {
@@ -85,11 +84,11 @@ function PortfolioPageContent() {
       }
     };
     fetchInitialData();
-  }, [selectedCategories.join(',')]);
+  }, [selectedCategories]);
 
   const handleCategoryFilter = (slug: string) => {
     const params = new URLSearchParams(window.location.search);
-    const currentCategories = getSelectedCategories();
+    const currentCategories = selectedCategories;
     
     let newCategories: string[];
     
@@ -127,9 +126,7 @@ function PortfolioPageContent() {
     return (
       <div className="min-h-screen bg-gray-50 flex items-center justify-center">
         <div className="text-center">
-          <Loader size="xl" color="primary">
-            Portfolyo yükleniyor...
-          </Loader>
+          <UniversalLoader text="Portfolyo yükleniyor..." />
         </div>
       </div>
     );
@@ -276,14 +273,7 @@ function PortfolioPageContent() {
 
 export default function PortfolioPage() {
   return (
-    <Suspense fallback={
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
-        <div className="text-center">
-          <Loader size="xl" color="primary" />
-          <p className="text-slate-600">Sayfa yükleniyor...</p>
-        </div>
-      </div>
-    }>
+    <Suspense fallback={<UniversalLoader text="Sayfa yükleniyor..." />}>
       <PortfolioPageContent />
     </Suspense>
   );

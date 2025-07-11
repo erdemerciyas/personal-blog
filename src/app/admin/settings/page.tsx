@@ -4,7 +4,6 @@ import { useState, useEffect, useRef } from 'react';
 import { useSession } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
 import Image from 'next/image';
-import { Loader } from '../../../components/ui';
 import AdminLayout from '../../../components/admin/AdminLayout';
 import { CheckIcon, ShieldCheckIcon, CloudArrowUpIcon, XMarkIcon, PhotoIcon } from '@heroicons/react/24/outline';
 
@@ -191,9 +190,8 @@ export default function AdminSettingsPage() {
       <AdminLayout>
         <div className="flex items-center justify-center min-h-[400px]">
           <div className="flex flex-col items-center space-y-4">
-            <Loader size="xl" color="primary">
-              Ayarlar yükleniyor...
-            </Loader>
+            <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-teal-500"></div>
+            <p className="text-lg text-slate-700">Ayarlar yükleniyor...</p>
           </div>
         </div>
       </AdminLayout>
@@ -387,9 +385,8 @@ export default function AdminSettingsPage() {
                     >
                       {uploadingLogo ? (
                         <>
-                          <Loader size="sm" color="white">
-                            Yükleniyor...
-                          </Loader>
+                          <div className="animate-spin rounded-full h-4 w-4 border-t-2 border-b-2 border-white"></div>
+                          <span>Yükleniyor...</span>
                         </>
                       ) : (
                         <>

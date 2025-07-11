@@ -1,7 +1,6 @@
 'use client';
 import { useState, useEffect } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
-import { Loader } from '../../../components/ui';
 import { 
   LockClosedIcon,
   CubeTransparentIcon,
@@ -110,9 +109,7 @@ export default function ResetPasswordPage() {
 
             <div className="animate-pulse">
               <div className="flex items-center justify-center space-x-2">
-                <Loader size="sm" color="primary">
-                  Yönlendiriliyor...
-                </Loader>
+                <div className="w-6 h-6 border-4 border-green-500 rounded-full animate-spin"></div>
               </div>
             </div>
           </div>
@@ -230,9 +227,7 @@ export default function ResetPasswordPage() {
             >
               {loading ? (
                 <>
-                  <Loader size="md" color="current">
-                    Güncelleniyor...
-                  </Loader>
+                  <div className="w-6 h-6 border-4 border-teal-500 rounded-full animate-spin"></div>
                 </>
               ) : (
                 <>

@@ -3,7 +3,6 @@ import { useState, useEffect } from 'react';
 import { useSession } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
 import Image from 'next/image';
-import { Loader } from '../../../components/ui';
 import AdminLayout from '../../../components/admin/AdminLayout';
 import ImageUpload from '../../../components/ImageUpload';
 import { 
@@ -270,9 +269,10 @@ export default function AdminSliderPage() {
       <AdminLayout>
         <div className="flex items-center justify-center min-h-[400px]">
           <div className="flex flex-col items-center space-y-4">
-            <Loader size="xl" color="primary">
-              Slider yükleniyor...
-            </Loader>
+            <div className="flex flex-col items-center space-y-4">
+              <div className="w-12 h-12 border-4 border-teal-600 border-t-transparent rounded-full animate-spin"></div>
+              <p className="text-slate-600">Slider yükleniyor...</p>
+            </div>
           </div>
         </div>
       </AdminLayout>
@@ -655,9 +655,8 @@ export default function AdminSliderPage() {
                   >
                     {submitting ? (
                       <>
-                        <Loader size="sm" color="current">
-                        Kaydediliyor...
-                      </Loader>
+                        <div className="w-4 h-4 border-4 border-white border-t-transparent rounded-full animate-spin"></div>
+                        <span>Kaydediliyor...</span>
                       </>
                     ) : (
                       <>

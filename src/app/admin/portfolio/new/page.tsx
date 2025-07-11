@@ -3,7 +3,6 @@
 import { useState, useEffect } from 'react';
 import { useSession } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
-import { Loader } from '../../../../components/ui';
 import AdminLayout from '../../../../components/admin/AdminLayout';
 import RichTextEditor from '../../../../components/RichTextEditor';
 import PortfolioImageGallery from '../../../../components/PortfolioImageGallery';
@@ -175,9 +174,10 @@ export default function NewPortfolioItem() {
       <AdminLayout>
         <div className="flex items-center justify-center min-h-[400px]">
           <div className="flex flex-col items-center space-y-4">
-            <Loader size="xl" color="primary">
-              Sayfa yükleniyor...
-            </Loader>
+            <div className="flex flex-col items-center space-y-4">
+              <div className="w-12 h-12 border-4 border-teal-500 border-t-transparent rounded-full animate-spin"></div>
+              <p className="text-slate-600">Sayfa yükleniyor...</p>
+            </div>
           </div>
         </div>
       </AdminLayout>
@@ -513,9 +513,8 @@ export default function NewPortfolioItem() {
             >
               {submitting ? (
                 <>
-                  <Loader size="md" color="white">
-                    Kaydediliyor...
-                  </Loader>
+                  <div className="w-6 h-6 border-4 border-white border-t-transparent rounded-full animate-spin"></div>
+                  <span>Kaydediliyor...</span>
                 </>
               ) : (
                 <>

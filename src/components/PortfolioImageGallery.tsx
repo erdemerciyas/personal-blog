@@ -15,6 +15,7 @@ import {
 } from '@heroicons/react/24/outline';
 import { StarIcon as StarIconSolid } from '@heroicons/react/24/solid';
 import MediaBrowser from './MediaBrowser';
+import UniversalLoader from './UniversalLoader';
 
 interface PortfolioImageGalleryProps {
   images: string[];
@@ -48,6 +49,7 @@ const PortfolioImageGallery: React.FC<PortfolioImageGalleryProps> = ({
   const [draggedIndex, setDraggedIndex] = useState<number | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [mediaModalOpen, setMediaModalOpen] = useState(false);
+  const [loading, setLoading] = useState(false);
 
   // Görsel listesini ImageItem formatına çevir
   const imageItems: ImageItem[] = images.map((url, index) => ({
@@ -271,25 +273,29 @@ const PortfolioImageGallery: React.FC<PortfolioImageGalleryProps> = ({
         </div>
       )}
 
-      {/* Yükleme ve medya kütüphanesi butonları */}
-      <div className="flex flex-col md:flex-row items-center justify-center gap-4 mb-6">
-        <button
-          type="button"
-          className="flex items-center gap-2 px-4 py-2 rounded-lg border border-slate-300 bg-white hover:bg-slate-50 text-slate-700 transition-colors"
-          onClick={() => fileInputRef.current?.click()}
-          disabled={disabled || uploading}
-        >
-          <ArrowUpTrayIcon className="w-5 h-5" /> Görsel Yükle
-        </button>
-        <button
-          type="button"
-          className="flex items-center gap-2 px-4 py-2 rounded-lg border border-teal-500 bg-teal-50 hover:bg-teal-100 text-teal-700 transition-colors"
-          onClick={() => setMediaModalOpen(true)}
-          disabled={disabled || uploading}
-        >
-          <PhotoIcon className="w-5 h-5" /> Medya Kütüphanesinden Seç
-        </button>
-      </div>
+      {loading ? (
+        <UniversalLoader text="Görseller yükleniyor..." />
+      ) : (
+        // Yükleme ve medya kütüphanesi butonları
+        <div className="flex flex-col md:flex-row items-center justify-center gap-4 mb-6">
+          <button
+            type="button"
+            className="flex items-center gap-2 px-4 py-2 rounded-lg border border-slate-300 bg-white hover:bg-slate-50 text-slate-700 transition-colors"
+            onClick={() => fileInputRef.current?.click()}
+            disabled={disabled || uploading}
+          >
+            <ArrowUpTrayIcon className="w-5 h-5" /> Görsel Yükle
+          </button>
+          <button
+            type="button"
+            className="flex items-center gap-2 px-4 py-2 rounded-lg border border-teal-500 bg-teal-50 hover:bg-teal-100 text-teal-700 transition-colors"
+            onClick={() => setMediaModalOpen(true)}
+            disabled={disabled || uploading}
+          >
+            <PhotoIcon className="w-5 h-5" /> Medya Kütüphanesinden Seç
+          </button>
+        </div>
+      )}
       <input
         type="file"
         accept="image/jpeg,image/jpg,image/png,image/gif,image/webp"

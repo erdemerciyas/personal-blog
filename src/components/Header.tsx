@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
-import { Loader } from './ui';
+// import { Loader } from './ui'; // kaldırıldı
 import { usePathname } from 'next/navigation';
 import { 
   Bars3Icon, 
@@ -123,7 +123,6 @@ const Header: React.FC = () => {
         const response = await fetch('/api/admin/page-settings');
         if (response.ok) {
           const pageSettings: PageSetting[] = await response.json();
-          
           const activeNavPages = pageSettings
             .filter(page => page.isActive && page.showInNavigation)
             .sort((a, b) => a.order - b.order)
@@ -132,22 +131,29 @@ const Header: React.FC = () => {
               label: page.title,
               icon: getIconForPage(page.pageId)
             }));
-          
-          setNavLinks(activeNavPages);
+          // Benzersiz href'lere göre filtrele
+          const uniqueNavPages: typeof activeNavPages = [];
+          const seen = new Set();
+          for (const page of activeNavPages) {
+            if (!seen.has(page.href)) {
+              uniqueNavPages.push(page);
+              seen.add(page.href);
+            }
+          }
+          setNavLinks(uniqueNavPages);
         }
       } catch (error) {
         console.error('Page settings fetch error:', error);
-        // Fallback navigation
+        // Fallback navigation (sadece hata durumunda)
         setNavLinks([
-          { href: "/", label: "Anasayfa", icon: HomeIcon },
-          { href: "/about", label: "Hakkımda", icon: UserIcon },
-          { href: "/services", label: "Hizmetler", icon: WrenchScrewdriverIcon },
-          { href: "/portfolio", label: "Portfolyo", icon: FolderOpenIcon },
-          { href: "/contact", label: "İletişim", icon: PhoneIcon },
+          { href: '/', label: 'Anasayfa', icon: HomeIcon },
+          { href: '/about', label: 'Hakkımda', icon: UserIcon },
+          { href: '/services', label: 'Hizmetler', icon: WrenchScrewdriverIcon },
+          { href: '/portfolio', label: 'Portfolyo', icon: FolderOpenIcon },
+          { href: '/contact', label: 'İletişim', icon: PhoneIcon },
         ]);
       }
     };
-
     fetchPageSettings();
   }, []);
 
@@ -292,10 +298,10 @@ E-posta: ${projectForm.email}
                     isActive
                       ? isScrolled
                         ? 'bg-teal-100 text-teal-700'
-                        : 'bg-white/20 text-white backdrop-blur-sm'
+                        : 'bg-white text-teal-700 shadow'
                       : isScrolled
                       ? 'text-slate-700 hover:bg-slate-100 hover:text-teal-600'
-                      : 'text-white/80 hover:text-white hover:bg-white/10'
+                      : 'text-white hover:text-white hover:bg-white/10'
                   }`}
                 >
                   <link.icon className="w-4 h-4" />
@@ -552,9 +558,7 @@ E-posta: ${projectForm.email}
                   className="flex-1 px-6 py-3 bg-gradient-primary text-white rounded-xl font-semibold hover:opacity-90 transition-opacity disabled:opacity-50 flex items-center justify-center space-x-2"
                 >
                   {isSubmitting ? (
-                    <Loader size="md" color="white">
-                      Gönderiliyor...
-                    </Loader>
+                    <span>Gönderiliyor...</span>
                   ) : (
                     <>
                       <EnvelopeIcon className="w-5 h-5" />

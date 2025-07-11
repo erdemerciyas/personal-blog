@@ -137,10 +137,7 @@ export default function RootLayout({
 
             {/* Main content area with consistent container */}
             <main className="flex-grow">
-              <div className="container-main py-4"> {/* Breadcrumbs için bir kapsayıcı ekledim */}
-                <Breadcrumbs />
-              </div>
-              {children}
+              <div>{children}</div>
             </main>
 
             <ConditionalFooter />

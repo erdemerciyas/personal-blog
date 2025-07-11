@@ -1,15 +1,8 @@
 'use client';
 
 import { useState, useEffect, Suspense } from 'react';
-import { Loader } from '../../components/ui';
 import { EnvelopeIcon, PhoneIcon, MapPinIcon, PaperAirplaneIcon, CheckCircleIcon, ExclamationCircleIcon, ClockIcon } from '@heroicons/react/24/outline';
-
-import type { Metadata } from 'next';
-
-export const metadata: Metadata = {
-  title: 'İletişim',
-  description: 'Bizimle iletişime geçin ve sorularınızı sorun.',
-};
+import UniversalLoader from '../../components/UniversalLoader';
 
 interface ContactInfo {
   email: string;
@@ -203,9 +196,7 @@ function ContactPageContent() {
                   >
                     {isSubmitting ? (
                       <>
-                        <Loader size="md" color="white">
-                          Gönderiliyor...
-                        </Loader>
+                        <UniversalLoader text="Gönderiliyor..." />
                       </>
                     ) : (
                       <>
@@ -236,20 +227,7 @@ function ContactPageContent() {
                   <h2 className="text-2xl font-bold text-slate-800 mb-6">İletişim Bilgilerimiz</h2>
                   
                   {contactLoading ? (
-                    <div className="space-y-4">
-                      <div className="animate-pulse">
-                        <div className="h-4 bg-slate-200 rounded w-3/4 mb-2"></div>
-                        <div className="h-3 bg-slate-200 rounded w-1/2"></div>
-                      </div>
-                      <div className="animate-pulse">
-                        <div className="h-4 bg-slate-200 rounded w-3/4 mb-2"></div>
-                        <div className="h-3 bg-slate-200 rounded w-1/2"></div>
-                      </div>
-                      <div className="animate-pulse">
-                        <div className="h-4 bg-slate-200 rounded w-3/4 mb-2"></div>
-                        <div className="h-3 bg-slate-200 rounded w-1/2"></div>
-                      </div>
-                    </div>
+                    <UniversalLoader text="İletişim bilgileri yükleniyor..." />
                   ) : (
                     <div className="space-y-6">
                       <div className="flex items-start">
@@ -370,9 +348,7 @@ function ContactPageContent() {
               </div>
               
               {contactLoading ? (
-                <div className="animate-pulse">
-                  <div className="h-96 bg-slate-200 rounded-xl"></div>
-                </div>
+                <UniversalLoader text="Harita yükleniyor..." />
               ) : (
                 <div className="space-y-4">
                   {/* Address summary */}
@@ -427,9 +403,7 @@ function ContactPageContent() {
                     {/* Map loading overlay */}
                     <div className="absolute inset-0 bg-slate-100 flex items-center justify-center pointer-events-none opacity-0 transition-opacity duration-300" id="map-loading">
                       <div className="text-center">
-                        <Loader size="lg" color="primary">
-                      Harita yükleniyor...
-                    </Loader>
+                        <UniversalLoader text="Harita yükleniyor..." />
                       </div>
                     </div>
                   </div>
@@ -512,13 +486,7 @@ function ContactPageContent() {
 export default function ContactPage() {
   // Suspense can be used if there are searchParams or other async dependencies for the page itself
   return (
-    <Suspense fallback={
-      <div className="flex flex-col items-center justify-center min-h-[calc(100vh-10rem)]">
-        <Loader size="xl" color="primary">
-          Sayfa yükleniyor...
-        </Loader>
-      </div>
-    }>
+    <Suspense fallback={<UniversalLoader text="Sayfa yükleniyor..." />}>
       <ContactPageContent />
     </Suspense>
   );

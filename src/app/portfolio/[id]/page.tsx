@@ -1,27 +1,29 @@
 'use client';
 
-import { useState, useEffect } from 'react';
-import Image from 'next/image';
 import Link from 'next/link';
-import { ArrowLeftIcon, TagIcon, CalendarIcon, UserIcon, PhotoIcon, MagnifyingGlassIcon, XMarkIcon, ChevronLeftIcon, ChevronRightIcon } from '@heroicons/react/24/outline';
-import type { Metadata } from 'next';
+import Image from 'next/image';
+import { usePathname } from 'next/navigation';
+import { useState, useEffect } from 'react';
+import { 
+  ArrowLeftIcon,
+  CalendarIcon,
+  TagIcon,
+  UserIcon,
+  PhotoIcon,
+  MagnifyingGlassIcon,
+  XMarkIcon,
+  ChevronLeftIcon,
+  ChevronRightIcon
+} from '@heroicons/react/24/outline';
+import { StarIcon as StarIconSolid } from '@heroicons/react/24/solid';
+import { PortfolioItem } from '../../../types/portfolio'; // Assuming PortfolioItem type is correctly defined
+import ProjectGrid from '../../../components/ProjectGrid'; // Ensuring this import is correct
+import HTMLContent from '../../../components/HTMLContent';
+import Breadcrumbs from '../../../components/Breadcrumbs';
 import connectDB from '../../../lib/mongoose';
 import Portfolio from '../../../models/Portfolio';
 
-export async function generateMetadata({ params }: { params: { id: string } }): Promise<Metadata> {
-  await connectDB();
-  const portfolioItem = await Portfolio.findById(params.id);
-
-  return {
-    title: portfolioItem?.title || 'Proje Detayı',
-    description: portfolioItem?.description || 'Portfolyo projesinin detayları.',
-  };
-}
-
-import { PortfolioItem } from '../../../types/portfolio'; // Assuming PortfolioItem type is correctly defined
-import { Loader } from '../../../components/ui';
-import ProjectGrid from '../../../components/ProjectGrid'; // Ensuring this import is correct
-import HTMLContent from '../../../components/HTMLContent';
+import type { Metadata } from 'next';
 
 // Helper component to handle client-side logic dependent on Suspense
 function PortfolioDetailPageContent({ params }: { params: { id: string } }) {
@@ -105,9 +107,9 @@ function PortfolioDetailPageContent({ params }: { params: { id: string } }) {
   if (loading) {
     return (
       <div className="flex flex-col items-center justify-center min-h-[calc(100vh-10rem)]">
-        <Loader size="xl" color="primary">
-          Proje detayları yükleniyor...
-        </Loader>
+        <div className="text-center">
+          <p className="text-slate-500 text-sm">Proje detayları yükleniyor...</p>
+        </div>
       </div>
     );
   }
@@ -161,15 +163,7 @@ function PortfolioDetailPageContent({ params }: { params: { id: string } }) {
           <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold mb-4 tracking-tight leading-tight">
             {portfolioItem.title}
           </h1>
-          {portfolioItem.description && (
-            <div className="flex justify-center">
-              <HTMLContent 
-                content={portfolioItem.description}
-                className="text-base sm:text-lg text-teal-100 max-w-2xl mx-auto leading-relaxed mt-2"
-                truncate={220}
-              />
-            </div>
-          )}
+          
         </div>
       </section>
 
