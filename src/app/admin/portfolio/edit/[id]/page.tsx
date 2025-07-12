@@ -27,6 +27,8 @@ import {
 import Link from 'next/link';
 import { Category, PortfolioItem } from '../../../../../types/portfolio';
 
+import slugify from 'slugify';
+
 export default function EditPortfolioItem({ params }: { params: { id: string } }) {
   const { data: session, status } = useSession();
   const router = useRouter();
@@ -35,10 +37,12 @@ export default function EditPortfolioItem({ params }: { params: { id: string } }
   const [error, setError] = useState('');
   const [success, setSuccess] = useState(false);
   const [categories, setCategories] = useState<Category[]>([]);
+  const [slugLocked, setSlugLocked] = useState(true);
 
   const [formData, setFormData] = useState<PortfolioItem>({
     _id: '',
     title: '',
+    slug: '',
     description: '',
     categoryIds: [], // Çoklu kategori desteği
     client: '',
@@ -49,6 +53,15 @@ export default function EditPortfolioItem({ params }: { params: { id: string } }
     featured: false,
     order: 0,
   });
+
+  const handleTitleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const newTitle = e.target.value;
+    setFormData(prev => {
+      const newSlug = slugLocked ? slugify(newTitle, { lower: true, strict: true }) : prev.slug;
+      return { ...prev, title: newTitle, slug: newSlug };
+    });
+  };
+
 
   const fetchCategories = async () => {
     try {
@@ -267,11 +280,35 @@ export default function EditPortfolioItem({ params }: { params: { id: string } }
                 <input
                   type="text"
                   value={formData.title}
-                  onChange={(e) => setFormData(prev => ({ ...prev, title: e.target.value }))}
+                  onChange={handleTitleChange}
                   className="w-full border border-slate-300 rounded-xl px-4 py-3 text-slate-900 focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-transparent"
                   placeholder="Proje başlığı giriniz"
                   required
                 />
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-slate-700 mb-2">
+                  URL Slug (SEO)
+                </label>
+                <div className="relative">
+                  <input
+                    type="text"
+                    value={formData.slug}
+                    onChange={(e) => setFormData(prev => ({ ...prev, slug: e.target.value }))}
+                    className={`w-full border border-slate-300 rounded-xl px-4 py-3 text-slate-900 focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-transparent ${slugLocked ? 'bg-slate-100' : ''}`}
+                    placeholder="url-uyumlu-metin"
+                    required
+                    readOnly={slugLocked}
+                  />
+                  <button
+                    type="button"
+                    onClick={() => setSlugLocked(!slugLocked)}
+                    className="absolute inset-y-0 right-0 flex items-center px-3 text-slate-500 hover:text-teal-600"
+                  >
+                    {slugLocked ? <PencilIcon className="w-5 h-5" /> : <CheckIcon className="w-5 h-5" />}
+                  </button>
+                </div>
               </div>
               
               <div>

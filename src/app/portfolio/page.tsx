@@ -14,6 +14,7 @@ import {
   Squares2X2Icon,
   TagIcon
 } from '@heroicons/react/24/outline';
+import type { PortfolioItem, Category } from '../../types/portfolio';
 
 // Helper component to handle client-side logic dependent on Suspense
 function PortfolioPageContent() {
@@ -237,6 +238,7 @@ function PortfolioPageContent() {
           {portfolioItems.length > 0 ? (
             <ProjectGrid projects={portfolioItems.map(p => ({
               id: p._id,
+              slug: p.slug, // Slug'ı ekleyin
               title: p.title,
               description: p.description,
               coverImage: p.coverImage,

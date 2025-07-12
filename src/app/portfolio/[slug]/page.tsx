@@ -26,7 +26,7 @@ import Portfolio from '../../../models/Portfolio';
 import type { Metadata } from 'next';
 
 // Helper component to handle client-side logic dependent on Suspense
-function PortfolioDetailPageContent({ params }: { params: { id: string } }) {
+function PortfolioDetailPageContent({ params }: { params: { slug: string } }) {
   const [portfolioItem, setPortfolioItem] = useState<PortfolioItem | null>(null);
   const [relatedProjects, setRelatedProjects] = useState<PortfolioItem[]>([]);
   const [loading, setLoading] = useState(true);
@@ -40,7 +40,7 @@ function PortfolioDetailPageContent({ params }: { params: { id: string } }) {
       setLoading(true);
       setError(null);
     try {
-      const response = await fetch(`/api/portfolio/${params.id}`);
+      const response = await fetch(`/api/portfolio/slug/${params.slug}`);
         if (!response.ok) {
           const errorData = await response.json();
           throw new Error(errorData.error || 'Proje detayları getirilemedi.');
@@ -55,7 +55,7 @@ function PortfolioDetailPageContent({ params }: { params: { id: string } }) {
             const relatedData: PortfolioItem[] = await relatedResponse.json();
           setRelatedProjects(
             relatedData
-                .filter((project) => project._id !== params.id)
+                .filter((project) => project.slug !== params.slug)
               .slice(0, 3)
           );
         }
@@ -68,10 +68,10 @@ function PortfolioDetailPageContent({ params }: { params: { id: string } }) {
     }
   };
 
-    if (params.id) {
+    if (params.slug) {
       fetchPortfolioData();
     }
-  }, [params.id]);
+  }, [params.slug]);
 
   // Calculate allImages after portfolioItem is loaded
   const allImages = portfolioItem
@@ -425,6 +425,6 @@ function PortfolioDetailPageContent({ params }: { params: { id: string } }) {
 }
 
 // Wrap with Suspense for useSearchParams if it were used, not strictly needed here but good practice if params were dynamic from client
-export default function PortfolioDetailPage({ params }: { params: { id: string } }) {
+export default function PortfolioDetailPage({ params }: { params: { slug: string } }) {
   return <PortfolioDetailPageContent params={params} />;
-} 
+}

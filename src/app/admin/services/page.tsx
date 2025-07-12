@@ -5,7 +5,7 @@ import { useSession } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
 import Image from 'next/image';
 import Link from 'next/link';
-import { Loader } from '../../../components/ui';
+import UniversalLoader from '../../../components/UniversalLoader';
 import AdminLayout from '../../../components/admin/AdminLayout';
 import HTMLContent from '../../../components/HTMLContent';
 import { 
@@ -84,9 +84,7 @@ export default function ServicesPage() {
       <AdminLayout>
         <div className="flex items-center justify-center min-h-[400px]">
           <div className="flex flex-col items-center space-y-4">
-            <Loader size="xl" color="primary">
-              Servisler yükleniyor...
-            </Loader>
+            <UniversalLoader text="Servisler yükleniyor..." />
           </div>
         </div>
       </AdminLayout>

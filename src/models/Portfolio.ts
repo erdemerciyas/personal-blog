@@ -1,8 +1,14 @@
 import mongoose from 'mongoose';
+import slugify from 'slugify';
 
 const portfolioSchema = new mongoose.Schema({
   title: {
     type: String,
+    required: true,
+  },
+  slug: {
+    type: String,
+    unique: true,
     required: true,
   },
   description: {
@@ -55,6 +61,13 @@ const portfolioSchema = new mongoose.Schema({
     type: Date,
     default: Date.now,
   },
+});
+
+portfolioSchema.pre('save', function(next) {
+  if (this.isModified('title')) {
+    this.slug = slugify(this.title, { lower: true, strict: true });
+  }
+  next();
 });
 
 export default mongoose.models.Portfolio || mongoose.model('Portfolio', portfolioSchema); 

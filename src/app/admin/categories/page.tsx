@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react';
 import { useSession } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
-import { Loader } from '../../../components/ui';
+import UniversalLoader from '../../../components/UniversalLoader';
 import AdminLayout from '../../../components/admin/AdminLayout';
 import { 
   PlusIcon,
@@ -161,9 +161,7 @@ export default function Categories() {
       <AdminLayout>
         <div className="flex items-center justify-center min-h-[400px]">
           <div className="flex flex-col items-center space-y-4">
-            <Loader size="xl" color="primary">
-              Kategoriler yükleniyor...
-            </Loader>
+            <UniversalLoader text="Kategoriler yükleniyor..." />
           </div>
         </div>
       </AdminLayout>

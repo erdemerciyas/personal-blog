@@ -33,6 +33,7 @@ interface SliderItem {
 
 interface PortfolioItem {
   _id: string;
+  slug: string;
   title: string;
   description: string;
   coverImage: string;
@@ -405,6 +406,7 @@ export default function HomePage() {
               <ProjectGrid 
                 projects={portfolioItems.map(item => ({
                 id: item._id,
+                slug: item.slug, // Slug'ı ekleyin
                 title: item.title,
                 description: item.description,
                 coverImage: item.coverImage,

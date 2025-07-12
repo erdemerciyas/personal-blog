@@ -30,7 +30,7 @@ const ProjectCard: React.FC<ProjectCardProps> = ({ project }) => {
   };
 
   return (
-    <Link href={`/portfolio/${project.id}`} legacyBehavior>
+    <Link href={`/portfolio/${project.slug}`} legacyBehavior>
       <a className="card group block overflow-hidden transform transition-all duration-300 hover:shadow-2xl hover:-translate-y-1">
         <div className="relative w-full h-64 overflow-hidden rounded-t-xl">
           <Image 

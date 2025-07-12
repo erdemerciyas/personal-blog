@@ -204,9 +204,7 @@ export default function PortfolioManagement() {
       <AdminLayout>
         <div className="flex items-center justify-center min-h-[400px]">
           <div className="flex flex-col items-center space-y-4">
-            <UniversalLoader size="xl" color="primary">
-              Portfolyo yükleniyor...
-            </UniversalLoader>
+            <UniversalLoader text="Portfolyo yükleniyor..." />
           </div>
         </div>
       </AdminLayout>
@@ -435,9 +433,7 @@ export default function PortfolioManagement() {
               
               {categoriesLoading ? (
                 <div className="p-12 text-center">
-                  <UniversalLoader size="lg" color="secondary">
-                    Kategoriler yükleniyor...
-                  </UniversalLoader>
+                  <UniversalLoader text="Kategoriler yükleniyor..." />
                 </div>
               ) : categories.length === 0 ? (
                 <div className="p-12 text-center">

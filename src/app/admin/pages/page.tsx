@@ -2,7 +2,7 @@
 import { useState, useEffect } from 'react';
 import { useSession } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
-import { Loader } from '../../../components/ui';
+import UniversalLoader from '../../../components/UniversalLoader';
 import AdminLayout from '../../../components/admin/AdminLayout';
 import {
   DocumentTextIcon,
@@ -182,9 +182,7 @@ export default function AdminPagesManagement() {
       <AdminLayout>
         <div className="flex items-center justify-center min-h-[400px]">
           <div className="flex flex-col items-center space-y-4">
-            <Loader size="xl" color="primary">
-              Sayfa ayarları yükleniyor...
-            </Loader>
+            <UniversalLoader text="Sayfa ayarları yükleniyor..." />
           </div>
         </div>
       </AdminLayout>

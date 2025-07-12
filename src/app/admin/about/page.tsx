@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react';
 import { useSession } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
-import { Loader } from '../../../components/ui';
+import UniversalLoader from '../../../components/UniversalLoader';
 import AdminLayout from '../../../components/admin/AdminLayout';
 import {
   UserIcon,
@@ -165,9 +165,7 @@ export default function AdminAboutPage() {
       <AdminLayout>
         <div className="flex items-center justify-center min-h-[400px]">
           <div className="flex flex-col items-center space-y-4">
-            <Loader size="xl" color="primary">
-              Hakkımda verileri yükleniyor...
-            </Loader>
+            <UniversalLoader text="Hakkımda verileri yükleniyor..." />
           </div>
         </div>
       </AdminLayout>
@@ -215,7 +213,7 @@ export default function AdminAboutPage() {
             >
               {saving ? (
                 <>
-                  <Loader size="sm" color="current" />
+                  <UniversalLoader text="Kaydediliyor..." />
                   <span>Kaydediliyor...</span>
                 </>
               ) : (

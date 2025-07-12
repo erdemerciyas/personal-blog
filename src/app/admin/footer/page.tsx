@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react';
 import { useSession } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
-import { Loader } from '../../../components/ui';
+import UniversalLoader from '../../../components/UniversalLoader';
 import AdminLayout from '../../../components/admin/AdminLayout';
 import { 
   CogIcon, 
@@ -235,9 +235,7 @@ export default function FooterSettingsPage() {
       <AdminLayout>
         <div className="flex items-center justify-center min-h-[400px]">
           <div className="flex flex-col items-center space-y-4">
-            <Loader size="xl" color="primary">
-              Footer ayarları yükleniyor...
-            </Loader>
+            <UniversalLoader text="Footer ayarları yükleniyor..." />
           </div>
         </div>
       </AdminLayout>
@@ -281,7 +279,7 @@ export default function FooterSettingsPage() {
             >
               {resetting ? (
                 <>
-                  <Loader size="sm" color="current" />
+                  <UniversalLoader />
                   <span>Sıfırlanıyor...</span>
                 </>
               ) : (
@@ -302,7 +300,7 @@ export default function FooterSettingsPage() {
             >
               {saving ? (
                 <>
-                  <Loader size="sm" color="current" />
+                  <UniversalLoader />
                   <span>Kaydediliyor...</span>
                 </>
               ) : (

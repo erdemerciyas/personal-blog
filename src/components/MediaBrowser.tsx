@@ -2,7 +2,6 @@
 
 import React, { useState, useEffect, useRef } from 'react';
 import Image from 'next/image';
-import { Loader } from './ui';
 import UniversalLoader from './UniversalLoader';
 import {
   XMarkIcon,
@@ -371,7 +370,7 @@ const MediaBrowser: React.FC<MediaBrowserProps> = ({
         {/* Content */}
         <div className="p-6 overflow-y-auto flex-1">
           {loading ? (
-            <UniversalLoader text="Medya dosyaları yükleniyor..." />
+            <UniversalLoader text="Yükleniyor..." />
           ) : filteredItems.length === 0 ? (
             <div className="text-center py-12">
               <PhotoIcon className="w-16 h-16 text-slate-400 mx-auto mb-4" />
