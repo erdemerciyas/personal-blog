@@ -27,20 +27,20 @@ Aşağıdaki örneği kullanarak `.env.local` dosyasını projenin köküne ekle
 
 ```env
 NODE_ENV=production
-NEXTAUTH_URL=https://erdemerciyas.vercel.app
-NEXTAUTH_SECRET=f1181d6e1ce33c4ba4135a7497694541679c39f7ea81e7feddeca23a93e39ab9
-MONGODB_URI=mongodb+srv://erdemerciyasrev... # (tam URI Vercel panelinizde)
+NEXTAUTH_URL=https://xxx.vercel.app
+NEXTAUTH_SECRET=xxx
+MONGODB_URI=mongodb+srv://xxx... # (tam URI Vercel panelinizde)
 
 APP_NAME=Personal Blog
 APP_URL=https://erdemerciyas.vercel.app
 
-CLOUDINARY_CLOUD_NAME=dlgnhbq8l
-CLOUDINARY_API_KEY=788149143685286
-CLOUDINARY_API_SECRET=1LVXl0-pogS9G7lnh4U_4rWiMW
+CLOUDINARY_CLOUD_NAME=xxx
+CLOUDINARY_API_KEY=xxx
+CLOUDINARY_API_SECRET=xxxxx
 
-OPENAI_API_KEY=sk-proj-acQ2008TWsFkvbZh-a0ztm...
-PEXELS_API_KEY=ARLQnJxW2BYREGyHpviaUs93mV0z...
-GMAIL_USER=erdem.erciyas@gmail.com
+OPENAI_API_KEY=xxx
+PEXELS_API_KEY=xxx
+GMAIL_USER=xxx
 ```
 
 ### 4. Projeyi Başlat
