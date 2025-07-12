@@ -1,8 +1,8 @@
 # Personal Blog
 
-[![Production - Vercel](https://img.shields.io/badge/Production-Live-green?logo=vercel)](https://erdemerciyas.vercel.app)
+[![Production - Vercel](https://img.shields.io/badge/Production-Live-green?logo=vercel)](https://your-app-url.com)
 
-> **Canlı Demo:** [https://erdemerciyas.vercel.app](https://erdemerciyas.vercel.app)
+> **Canlı Demo:** [https://your-app-url.com](https://your-app-url.com)
 
 ## Son Sürüm
 
@@ -27,20 +27,20 @@ Aşağıdaki örneği kullanarak `.env.local` dosyasını projenin köküne ekle
 
 ```env
 NODE_ENV=production
-NEXTAUTH_URL=https://erdemerciyas.vercel.app
-NEXTAUTH_SECRET=f1181d6e1ce33c4ba4135a7497694541679c39f7ea81e7feddeca23a93e39ab9
-MONGODB_URI=mongodb+srv://erdemerciyasrev... # (tam URI Vercel panelinizde)
+NEXTAUTH_URL=https://your-nextauth-url.com
+NEXTAUTH_SECRET=your-super-secret-key-here
+MONGODB_URI=mongodb+srv://your-mongodb-uri... # (tam URI Vercel panelinizde)
 
 APP_NAME=Personal Blog
-APP_URL=https://erdemerciyas.vercel.app
+APP_URL=https://your-app-url.com
 
-CLOUDINARY_CLOUD_NAME=dlgnhbq8l
-CLOUDINARY_API_KEY=788149143685286
-CLOUDINARY_API_SECRET=1LVXl0-pogS9G7lnh4U_4rWiMW
+CLOUDINARY_CLOUD_NAME=your-cloudinary-cloud-name
+CLOUDINARY_API_KEY=your-cloudinary-api-key
+CLOUDINARY_API_SECRET=your-cloudinary-api-secret
 
-OPENAI_API_KEY=sk-proj-acQ2008TWsFkvbZh-a0ztm...
-PEXELS_API_KEY=ARLQnJxW2BYREGyHpviaUs93mV0z...
-GMAIL_USER=erdem.erciyas@gmail.com
+OPENAI_API_KEY=your-openai-api-key
+PEXELS_API_KEY=your-pexels-api-key
+GMAIL_USER=your-email@example.com
 ```
 
 ### 4. Projeyi Başlat
@@ -352,10 +352,10 @@ Bu proje MIT lisansı altında lisanslanmıştır. Detaylar için [LICENSE](LICE
 
 ## 👨‍💻 Geliştirici
 
-**Erdem Erciyas**
-- Website: [erdemerciyas.com.tr](https://www.erdemerciyas.com.tr)
-- Email: erdem.erciyas@gmail.com
-- GitHub: [@erdemerciyas](https://github.com/erdemerciyas)
+**Your Name**
+- Website: [your-website.com](https://your-website.com)
+- Email: your-email@example.com
+- GitHub: [@your-github-username](https://github.com/your-github-username)
 
 ## 🙏 Acknowledgments
 
