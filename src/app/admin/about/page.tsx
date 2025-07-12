@@ -76,7 +76,7 @@ export default function AdminAboutPage() {
 
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
-  const [message, setMessage] = useState('');
+  const [message, setMessage] = useState<{ type: 'success' | 'error'; text: string } | null>(null);
   const [messageType, setMessageType] = useState<'success' | 'error'>('success');
 
   // Authentication check
@@ -110,7 +110,7 @@ export default function AdminAboutPage() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setSaving(true);
-    setMessage('');
+    setMessage(null);
 
     try {
       const response = await fetch('/api/admin/about', {
@@ -127,12 +127,12 @@ export default function AdminAboutPage() {
         throw new Error(result.error || 'Güncelleme sırasında hata oluştu');
       }
 
-      setMessage('Hakkımda sayfası başarıyla güncellendi!');
+      setMessage({ type: 'success', text: 'Hakkımda sayfası başarıyla güncellendi!' });
       setMessageType('success');
       
-      setTimeout(() => setMessage(''), 3000);
+      setTimeout(() => setMessage(null), 3000);
     } catch (error) {
-      setMessage(error instanceof Error ? error.message : 'Bir hata oluştu');
+      setMessage({ type: 'error', text: error instanceof Error ? error.message : 'Bir hata oluştu' });
       setMessageType('error');
     } finally {
       setSaving(false);
@@ -229,11 +229,11 @@ export default function AdminAboutPage() {
         {/* Success/Error Messages */}
         {message && (
           <div className={`p-4 rounded-xl border ${
-            messageType === 'success' 
+            message.type === 'success' 
               ? 'bg-green-50 border-green-200 text-green-800' 
               : 'bg-red-50 border-red-200 text-red-800'
           }`}>
-            {message}
+            {message.text}
           </div>
         )}
 
@@ -571,4 +571,4 @@ export default function AdminAboutPage() {
       </div>
     </AdminLayout>
   );
-} 
+}

@@ -110,4 +110,4 @@ export async function POST(request: NextRequest) {
       error: 'Ayarlar güncellenirken bir hata oluştu' 
     }, { status: 500 });
   }
-} 
+}

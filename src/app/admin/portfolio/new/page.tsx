@@ -22,7 +22,8 @@ import {
   ExclamationTriangleIcon,
   TrashIcon,
   ArrowLeftIcon,
-  Bars3Icon
+  Bars3Icon,
+  PencilIcon
 } from '@heroicons/react/24/outline';
 import Link from 'next/link';
 import { Category } from '../../../../types/portfolio';
@@ -550,13 +551,14 @@ export default function NewPortfolioItem() {
             >
               {submitting ? (
                 <>
-                  <div className="w-6 h-6 border-4 border-white border-t-transparent rounded-full animate-spin"></div>
-                  <span>Kaydediliyor...</span>
+                  <div className="flex flex-col items-center space-y-4">
+                    <p className="text-white">Güncelleniyor...</p>
+                  </div>
                 </>
               ) : (
                 <>
                   <CheckIcon className="w-5 h-5" />
-                  <span>Kaydet</span>
+                  <span>Güncelle</span>
                 </>
               )}
             </button>
@@ -565,4 +567,4 @@ export default function NewPortfolioItem() {
       </div>
     </AdminLayout>
   );
-} 
+}

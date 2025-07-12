@@ -304,6 +304,7 @@ function PortfolioDetailPageContent({ params }: { params: { slug: string } }) {
                 </div>
                 <ProjectGrid projects={relatedProjects.map(p => ({
                   id: p._id,
+                  slug: p.slug, // slug'ı ekleyin
                   title: p.title || '',
                   description: p.description || '',
                   coverImage: p.coverImage || '',

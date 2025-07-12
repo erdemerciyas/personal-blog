@@ -199,7 +199,7 @@ export default function NewServicePage() {
           {/* Features */}
           <div className="bg-white rounded-xl p-6 shadow-sm border border-slate-200">
             <div className="flex items-center justify-between mb-4">
-              <h3 className="text-lg font-semibold text-slate-900 flex items-center space-x-2">
+              <h3 className="text-lg font-semibold text-slate-900 mb-4 flex items-center space-x-2">
                 <ListBulletIcon className="w-5 h-5 text-teal-600" />
                 <span>Servis Özellikleri</span>
               </h3>
@@ -320,4 +320,4 @@ export default function NewServicePage() {
       </div>
     </AdminLayout>
   );
-} 
+}

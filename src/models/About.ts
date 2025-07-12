@@ -166,4 +166,4 @@ AboutSchema.pre('save', async function(next) {
 
 const About = mongoose.models.About || mongoose.model<IAbout>('About', AboutSchema);
 
-export default About; 
+export default About;

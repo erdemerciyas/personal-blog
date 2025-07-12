@@ -39,4 +39,4 @@ const pageSettingsSchema = new mongoose.Schema({
   },
 });
 
-export default mongoose.models.PageSettings || mongoose.model('PageSettings', pageSettingsSchema); 
+export default mongoose.models.PageSettings || mongoose.model('PageSettings', pageSettingsSchema);

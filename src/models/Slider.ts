@@ -81,4 +81,4 @@ const SliderSchema = new mongoose.Schema({
 // Index for ordering
 SliderSchema.index({ order: 1, isActive: 1 });
 
-export default mongoose.models.Slider || mongoose.model('Slider', SliderSchema); 
+export default mongoose.models.Slider || mongoose.model('Slider', SliderSchema);

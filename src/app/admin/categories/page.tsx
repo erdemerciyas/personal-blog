@@ -43,8 +43,6 @@ export default function Categories() {
       router.push('/admin/login');
     } else if (status === 'authenticated' && session?.user?.role !== 'admin') {
       router.push('/');
-    } else if (status === 'authenticated') {
-      fetchCategories();
     }
   }, [status, session, router]);
 

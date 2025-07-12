@@ -33,6 +33,7 @@ export interface Category {
 export interface PortfolioItem {
   _id: string;
   title: string;
+  slug: string;
   description: string;
   // Geriye uyumluluk için eski alanları koruyoruz
   categoryId?: string;

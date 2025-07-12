@@ -94,4 +94,4 @@ const ContentSettings = (mongoose.models.ContentSettings as IContentSettingsMode
   mongoose.model<IContentSettings, IContentSettingsModel>('ContentSettings', ContentSettingsSchema);
 
 export default ContentSettings;
-export type { IContentSettings }; 
+export type { IContentSettings };

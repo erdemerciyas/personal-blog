@@ -70,4 +70,4 @@ portfolioSchema.pre('save', function(next) {
   next();
 });
 
-export default mongoose.models.Portfolio || mongoose.model('Portfolio', portfolioSchema); 
+export default mongoose.models.Portfolio || mongoose.model('Portfolio', portfolioSchema);

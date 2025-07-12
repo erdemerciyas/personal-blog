@@ -72,6 +72,8 @@ export default function EditPortfolioItem({ params }: { params: { id: string } }
     } catch (err) {
       setError('Kategoriler yüklenirken bir hata oluştu');
       console.error(err);
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -603,4 +605,4 @@ export default function EditPortfolioItem({ params }: { params: { id: string } }
       </div>
     </AdminLayout>
   );
-} 
+}

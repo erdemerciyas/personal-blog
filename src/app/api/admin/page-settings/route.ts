@@ -144,4 +144,4 @@ export async function PUT(request: Request) {
       error: 'Failed to update page settings' 
     }, { status: 500 });
   }
-} 
+}

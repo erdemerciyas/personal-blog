@@ -194,4 +194,4 @@ const SiteSettings = (mongoose.models.SiteSettings as ISiteSettingsModel) ||
   mongoose.model<ISiteSettings, ISiteSettingsModel>('SiteSettings', SiteSettingsSchema);
 
 export default SiteSettings;
-export type { ISiteSettings }; 
+export type { ISiteSettings };

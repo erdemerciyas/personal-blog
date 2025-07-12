@@ -499,14 +499,14 @@ export default function PortfolioManagement() {
                           <div className="flex space-x-2">
                             <button
                               onClick={() => setEditingCategory(category)}
-                              className="bg-blue-600 hover:bg-blue-700 text-white p-2 rounded-lg transition-colors"
+                              className="p-2 text-slate-600 hover:text-teal-600 hover:bg-teal-50 rounded-lg transition-colors"
                               title="Düzenle"
                             >
                               <PencilIcon className="w-4 h-4" />
                             </button>
                             <button
                               onClick={() => handleDeleteCategory(category._id)}
-                              className="bg-red-600 hover:bg-red-700 text-white p-2 rounded-lg transition-colors"
+                              className="p-2 text-slate-600 hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors"
                               title="Sil"
                             >
                               <TrashIcon className="w-4 h-4" />
@@ -524,4 +524,4 @@ export default function PortfolioManagement() {
       </div>
     </AdminLayout>
   );
-} 
+}

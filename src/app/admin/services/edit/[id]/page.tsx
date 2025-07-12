@@ -235,7 +235,7 @@ export default function EditServicePage({ params }: { params: { id: string } }) 
           {/* Features */}
           <div className="bg-white rounded-xl p-6 shadow-sm border border-slate-200">
             <div className="flex items-center justify-between mb-4">
-              <h3 className="text-lg font-semibold text-slate-900 flex items-center space-x-2">
+              <h3 className="text-lg font-semibold text-slate-900 mb-4 flex items-center space-x-2">
                 <ListBulletIcon className="w-5 h-5 text-teal-600" />
                 <span>Servis Özellikleri</span>
               </h3>
@@ -287,13 +287,8 @@ export default function EditServicePage({ params }: { params: { id: string } }) 
             <div className="bg-slate-50 rounded-xl p-6">
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div>
-                  <h4 className="font-semibold text-slate-900 mb-2">{serviceTitle || service.title}</h4>
-                  <div className="text-slate-600 text-sm mb-4">
-                    <HTMLContent 
-                      content={serviceDescription || service.description}
-                      truncate={200}
-                    />
-                  </div>
+                  <h4 className="font-semibold text-slate-900 mb-2">{serviceTitle || 'Servis Başlığı'}</h4>
+                  <p className="text-slate-600 text-sm mb-4">Buraya servis açıklaması gelecek...</p>
                   
                   {features.filter(f => f.trim()).length > 0 && (
                     <div>
@@ -332,21 +327,19 @@ export default function EditServicePage({ params }: { params: { id: string } }) 
           <div className="flex flex-col sm:flex-row gap-4 pt-6 border-t border-slate-200">
             <button
               type="submit"
-              disabled={saving}
+              disabled={loading}
               className="flex-1 bg-teal-600 text-white px-6 py-3 rounded-xl font-medium hover:bg-teal-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors flex items-center justify-center space-x-2"
             >
-              {saving ? (
+              {loading ? (
                 <>
-                  <div className="flex flex-col items-center space-y-4">
-                    <div className="text-center">
-                      <p className="text-slate-600">Güncelleniyor...</p>
-                    </div>
+                  <div className="text-center">
+                    <p className="text-slate-600">Yükleniyor...</p>
                   </div>
                 </>
               ) : (
                 <>
                   <CheckIcon className="w-5 h-5" />
-                  <span>Değişiklikleri Kaydet</span>
+                  <span>Servis Ekle</span>
                 </>
               )}
             </button>
@@ -363,4 +356,4 @@ export default function EditServicePage({ params }: { params: { id: string } }) 
       </div>
     </AdminLayout>
   );
-} 
+}

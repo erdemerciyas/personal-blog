@@ -5,7 +5,7 @@ import connectDB from '../../../lib/mongoose';
 import Portfolio from '../../../models/Portfolio';
 import Category from '../../../models/Category';
 
-// GET - Tüm portfolyo öğelerini getir
+// GET - Tüm portfolyo öğelerini getir (çok dilli alanlar dahil)
 export async function GET(request: Request) {
   try {
     await connectDB();
@@ -68,7 +68,7 @@ export async function GET(request: Request) {
   }
 }
 
-// POST - Yeni portfolyo öğesi ekle
+// POST - Yeni portfolyo öğesi ekle (çok dilli alanları kabul eder)
 export async function POST(request: Request) {
   try {
     const session = await getServerSession(authOptions);

@@ -104,4 +104,4 @@ export const POST = asyncHandler(async (request: Request) => {
     }
     throw createError.database('Servis oluşturulurken veritabanı hatası oluştu');
   }
-}); 
+});

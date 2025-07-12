@@ -64,8 +64,8 @@ export async function POST(request: Request) {
       isActive: body.isActive !== undefined ? body.isActive : true,
       order: nextOrder,
       duration: body.duration || 5000,
-      createdBy: session.user.email || 'admin',
-      updatedBy: session.user.email || 'admin',
+      createdBy: session.user.email,
+      updatedBy: session.user.email,
     };
 
     // Yeni slider'ı oluştur

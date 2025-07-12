@@ -73,4 +73,7 @@ jspm_packages/
 *.tgz
 
 # Yarn Integrity file
-.yarn-integrity 
+.yarn-integrity
+
+# Temporary commit message file
+temp_commit_message.txt

@@ -50,8 +50,8 @@ interface IFooterSettingsModel extends Model<IFooterSettings> {
 const FooterSettingsSchema = new mongoose.Schema({
   // Ana Açıklama
   mainDescription: {
-    type: String,
-    default: 'Mühendislik ve teknoloji alanında yenilikçi çözümler sunarak projelerinizi hayata geçiriyoruz.'
+    en: { type: String, default: 'We bring your projects to life by offering innovative solutions in engineering and technology.' },
+    tr: { type: String, default: 'Mühendislik ve teknoloji alanında yenilikçi çözümler sunarak projelerinizi hayata geçiriyoruz.' },
   },
   
   // İletişim Bilgileri
@@ -65,16 +65,16 @@ const FooterSettingsSchema = new mongoose.Schema({
       default: '+90 (500) 123 45 67'
     },
     address: {
-      type: String,
-      default: 'Teknoloji Vadisi, Ankara, Türkiye'
+      en: { type: String, default: 'Technology Valley, Ankara, Turkey' },
+      tr: { type: String, default: 'Teknoloji Vadisi, Ankara, Türkiye' },
     }
   },
   
   // Hızlı Bağlantılar
   quickLinks: [{
     title: {
-      type: String,
-      required: true
+      en: { type: String, required: true },
+      tr: { type: String, required: true },
     },
     url: {
       type: String,
@@ -117,32 +117,32 @@ const FooterSettingsSchema = new mongoose.Schema({
   // Copyright Bilgileri
   copyrightInfo: {
     companyName: {
-      type: String,
-      default: 'Erdem Erciyas'
+      en: { type: String, default: 'Erdem Erciyas' },
+      tr: { type: String, default: 'Erdem Erciyas' },
     },
     year: {
       type: Number,
       default: new Date().getFullYear()
     },
     additionalText: {
-      type: String,
-      default: 'Tüm Hakları Saklıdır.'
+      en: { type: String, default: 'All Rights Reserved.' },
+      tr: { type: String, default: 'Tüm Hakları Saklıdır.' },
     }
   },
   
   // Geliştirici Bilgileri
   developerInfo: {
     name: {
-      type: String,
-      default: 'Erdem Erciyas'
+      en: { type: String, default: 'Erdem Erciyas' },
+      tr: { type: String, default: 'Erdem Erciyas' },
     },
     website: {
       type: String,
       default: 'https://www.erdemerciyas.com.tr'
     },
     companyName: {
-      type: String,
-      default: 'Erciyas Engineering'
+      en: { type: String, default: 'Erciyas Engineering' },
+      tr: { type: String, default: 'Erciyas Engineering' },
     }
   },
   
