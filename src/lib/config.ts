@@ -204,8 +204,12 @@ class ConfigManager {
     };
   }
 
-  // Get all configuration (for debugging)
-  getAll(): EnvironmentConfig {
+  // Get all configuration (for debugging) - ONLY in development
+  getAll(): EnvironmentConfig | null {
+    if (this.config.NODE_ENV !== 'development') {
+      logger.warn('Attempted to access full config in production', 'SECURITY');
+      return null;
+    }
     return { ...this.config };
   }
 
@@ -219,6 +223,22 @@ class ConfigManager {
       cloudinaryConfigured: this.cloudinary.isConfigured,
       openaiConfigured: this.openai.isConfigured,
       isValidated: this.isValidated,
+      timestamp: Date.now()
+    };
+  }
+
+  // Mask sensitive values for logging
+  getMaskedConfig() {
+    return {
+      NODE_ENV: this.config.NODE_ENV,
+      NEXTAUTH_URL: this.config.NEXTAUTH_URL,
+      NEXTAUTH_SECRET: this.config.NEXTAUTH_SECRET ? '***MASKED***' : 'NOT_SET',
+      MONGODB_URI: this.config.MONGODB_URI ? 
+        this.config.MONGODB_URI.replace(/\/\/([^:]+):([^@]+)@/, '//***:***@') : 'NOT_SET',
+      CLOUDINARY_CLOUD_NAME: this.config.CLOUDINARY_CLOUD_NAME || 'NOT_SET',
+      CLOUDINARY_API_KEY: this.config.CLOUDINARY_API_KEY ? '***MASKED***' : 'NOT_SET',
+      CLOUDINARY_API_SECRET: this.config.CLOUDINARY_API_SECRET ? '***MASKED***' : 'NOT_SET',
+      OPENAI_API_KEY: this.config.OPENAI_API_KEY ? '***MASKED***' : 'NOT_SET',
     };
   }
 }

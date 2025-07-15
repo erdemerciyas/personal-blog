@@ -1,6 +1,6 @@
 {
   "name": "personal-blog",
-  "version": "1.11.11",
+  "version": "1.11.12",
   "private": true,
   "author": {
     "name": "Erdem Erciyas",
@@ -48,7 +48,10 @@
     "prepare": "husky",
     "migrate:portfolio-categories": "node scripts/migrate-portfolio-categories.js",
     "migrate:portfolio-categories:dry-run": "node scripts/migrate-portfolio-categories.js --dry-run",
-    "migrate:slugs": "ts-node -r tsconfig-paths/register scripts/migrate-portfolio-slugs.ts"
+    "migrate:slugs": "ts-node -r tsconfig-paths/register scripts/migrate-portfolio-slugs.ts",
+    "security:test": "node scripts/security-test.js",
+    "security:audit": "npm audit --audit-level moderate",
+    "security:check": "npm run security:test && npm run security:audit"
   },
   "dependencies": {
     "@heroicons/react": "^2.2.0",
@@ -57,6 +60,7 @@
     "@tailwindcss/typography": "^0.5.16",
     "@types/bcryptjs": "^2.4.6",
     "@types/dompurify": "^3.0.5",
+    "@types/jsdom": "^21.1.7",
     "@types/multer": "^1.4.12",
     "@types/nodemailer": "^6.4.17",
     "@types/react": "^18.2.45",
@@ -72,6 +76,7 @@
     "eslint": "^8.56.0",
     "eslint-config-next": "^14.0.4",
     "jose": "^6.0.11",
+    "jsdom": "^26.1.0",
     "jsonwebtoken": "^9.0.2",
     "mongodb": "^6.16.0",
     "mongoose": "^8.15.1",

@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import dynamic from 'next/dynamic';
+import DOMPurify from 'dompurify';
 import 'react-quill/dist/quill.snow.css';
 
 // Dinamik import ile ReactQuill'i yükleme (SSR problemi için)
@@ -65,11 +66,31 @@ export default function RichTextEditor({
     'link', 'image'
   ];
 
+  // Güvenli HTML sanitization
+  const sanitizeHtml = (html: string): string => {
+    if (typeof window === 'undefined') return html;
+    
+    return DOMPurify.sanitize(html, {
+      ALLOWED_TAGS: [
+        'p', 'br', 'strong', 'em', 'u', 's', 'ol', 'ul', 'li', 
+        'h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'blockquote', 'code', 'pre', 'a', 'span'
+      ],
+      ALLOWED_ATTR: ['href', 'target', 'rel', 'class', 'style'],
+      FORBID_TAGS: ['script', 'object', 'embed', 'form', 'input', 'button', 'iframe'],
+      FORBID_ATTR: ['onclick', 'onload', 'onerror', 'onmouseover'],
+      ADD_ATTR: ['target'],
+      ALLOW_DATA_ATTR: false,
+    });
+  };
+
   const handleChange = (content: string) => {
     if (maxLength && content.length > maxLength) {
       return;
     }
-    onChange(content);
+    
+    // Güvenlik: İçeriği sanitize et
+    const sanitizedContent = sanitizeHtml(content);
+    onChange(sanitizedContent);
   };
 
   if (!mounted) {

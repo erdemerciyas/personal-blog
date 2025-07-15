@@ -70,6 +70,22 @@ userSchema.methods.comparePassword = async function(candidatePassword: string): 
   return bcrypt.compare(candidatePassword, this.password);
 };
 
+// Güvenlik için şifreyi JSON'da gösterme
+userSchema.methods.toJSON = function() {
+  const userObject = this.toObject();
+  delete userObject.password;
+  delete userObject.resetToken;
+  delete userObject.resetTokenExpiry;
+  return userObject;
+};
+
+// Şifre geçmişi kontrolü için (opsiyonel)
+userSchema.methods.isPasswordReused = async function(newPassword: string): Promise<boolean> {
+  // Bu örnekte sadece mevcut şifre ile karşılaştırıyoruz
+  // Gerçek uygulamada son 5-10 şifreyi saklayabilirsiniz
+  return bcrypt.compare(newPassword, this.password);
+};
+
 const User = mongoose.models.User || mongoose.model<IUser>('User', userSchema);
 
 export default User; 

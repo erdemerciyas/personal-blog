@@ -34,19 +34,62 @@ export const authOptions: NextAuthOptions = {
           return null;
         }
 
+        // Input validation and sanitization
+        const email = credentials.email.trim().toLowerCase();
+        const password = credentials.password;
+
+        // Basic email validation
+        if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+          return null;
+        }
+
+        // Password length check
+        if (password.length < 6 || password.length > 128) {
+          return null;
+        }
+
         try {
           await connectDB();
-          const user = await UserModel.findOne({ email: credentials.email });
+          
+          // Add timing attack protection
+          const startTime = Date.now();
+          
+          const user = await UserModel.findOne({ email: email });
 
           if (!user) {
+            // Constant time delay to prevent user enumeration
+            await bcrypt.compare(password, '$2a$12$dummy.hash.to.prevent.timing.attacks');
+            const elapsed = Date.now() - startTime;
+            if (elapsed < 100) {
+              await new Promise(resolve => setTimeout(resolve, 100 - elapsed));
+            }
             return null;
           }
 
-          const isPasswordValid = await bcrypt.compare(credentials.password, user.password);
+          const isPasswordValid = await bcrypt.compare(password, user.password);
           
           if (!isPasswordValid) {
+            // Log failed login attempt
+            console.warn('Failed login attempt:', {
+              email: email,
+              timestamp: new Date().toISOString(),
+              ip: 'unknown' // Will be logged by middleware
+            });
+            
+            const elapsed = Date.now() - startTime;
+            if (elapsed < 100) {
+              await new Promise(resolve => setTimeout(resolve, 100 - elapsed));
+            }
             return null;
           }
+
+          // Log successful login
+          console.info('Successful login:', {
+            userId: user._id.toString(),
+            email: email,
+            role: user.role,
+            timestamp: new Date().toISOString()
+          });
 
           return {
             id: user._id.toString(),
@@ -56,6 +99,7 @@ export const authOptions: NextAuthOptions = {
           };
         } catch (error) {
           console.error('Auth error:', error);
+          // Don't reveal internal errors to client
           return null;
         }
       }
@@ -63,21 +107,42 @@ export const authOptions: NextAuthOptions = {
   ],
   session: {
     strategy: 'jwt',
-    maxAge: 30 * 24 * 60 * 60, // 30 days
-    updateAge: 24 * 60 * 60, // 24 hours
+    maxAge: 24 * 60 * 60, // 24 hours (reduced from 30 days for security)
+    updateAge: 60 * 60, // 1 hour (reduced from 24 hours)
   },
   jwt: {
-    maxAge: 30 * 24 * 60 * 60, // 30 days
+    maxAge: 24 * 60 * 60, // 24 hours (reduced from 30 days)
   },
   cookies: {
     sessionToken: {
       name: process.env.NODE_ENV === 'production' ? '__Secure-next-auth.session-token' : 'next-auth.session-token',
       options: {
         httpOnly: true,
-        sameSite: 'lax',
+        sameSite: 'strict', // Changed from 'lax' to 'strict' for better security
         path: '/',
         secure: process.env.NODE_ENV === 'production',
-        // Domain ayarını kaldırıyoruz, Vercel otomatik olarak ayarlayacak
+        // Add additional security options
+        ...(process.env.NODE_ENV === 'production' && {
+          domain: new URL(process.env.NEXTAUTH_URL || '').hostname,
+        }),
+      },
+    },
+    callbackUrl: {
+      name: process.env.NODE_ENV === 'production' ? '__Secure-next-auth.callback-url' : 'next-auth.callback-url',
+      options: {
+        httpOnly: true,
+        sameSite: 'strict',
+        path: '/',
+        secure: process.env.NODE_ENV === 'production',
+      },
+    },
+    csrfToken: {
+      name: process.env.NODE_ENV === 'production' ? '__Host-next-auth.csrf-token' : 'next-auth.csrf-token',
+      options: {
+        httpOnly: true,
+        sameSite: 'strict',
+        path: '/',
+        secure: process.env.NODE_ENV === 'production',
       },
     },
   },

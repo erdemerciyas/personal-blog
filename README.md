@@ -6,8 +6,9 @@
 
 ## Son Sürüm
 
-- **Versiyon:** 1.11.8
-- **Güncelleme Tarihi:** Otomatik Vercel senkronizasyonu sonrası
+- **Versiyon:** 1.11.12
+- **Güncelleme Tarihi:** 2025-01-15 - Kapsamlı Güvenlik Güncellemesi
+- **Güvenlik Skoru:** 81% (Çok İyi)
 
 ## Hızlı Başlangıç
 
@@ -91,12 +92,18 @@ Modern, performant ve güvenli bir kişisel blog ve portfolio uygulaması. Next.
 - **Error Tracking**: Detailed error logging ve reporting
 - **Cache Optimization**: Intelligent caching strategies
 
-### 🔒 Security
+### 🔒 Security (v1.11.12 - Kapsamlı Güvenlik Güncellemesi)
+- **Advanced Rate Limiting**: Endpoint bazında gelişmiş rate limiting sistemi
 - **CSRF Protection**: Cross-site request forgery koruması
-- **XSS Protection**: Cross-site scripting koruması
-- **Security Headers**: Comprehensive security headers
-- **Input Validation**: Server-side validation ve sanitization
-- **Rate Limiting**: API endpoint koruma
+- **XSS Protection**: DOMPurify ile cross-site scripting koruması
+- **Input Validation & Sanitization**: Kapsamlı server-side validation
+- **File Upload Security**: Magic number validation ve güvenli dosya yükleme
+- **Authentication Security**: Timing attack koruması ve güçlü şifre politikası
+- **Security Headers**: HTTP güvenlik başlıkları (CSP, HSTS, X-Frame-Options)
+- **Session Security**: Secure cookies ve kısa session süreleri
+- **Suspicious Activity Detection**: Otomatik tehdit tespiti
+- **Database Security**: Password masking ve güvenli hashing
+- **Environment Security**: Masked logging ve güvenli konfigürasyon
 
 ## 🏗 Teknoloji Stack
 
@@ -208,6 +215,11 @@ npm start
 - `npm run test:db` - Database connection test
 - `npm run precommit` - Pre-commit checks (lint + type-check)
 
+### Security (NEW)
+- `npm run security:test` - Kapsamlı güvenlik testi
+- `npm run security:audit` - Dependency güvenlik audit
+- `npm run security:check` - Tüm güvenlik kontrolleri
+
 ### Maintenance
 - `npm run clean` - Cache ve build dosyalarını temizle
 - `npm run check-deps` - Dependency security audit
@@ -265,7 +277,21 @@ Uygulama, type-safe configuration management sistemi kullanır. Tüm environment
 
 ## 📝 Recent Updates
 
-### v2.1.0 - Media Library Migration (Latest)
+### v1.11.12 - Kapsamlı Güvenlik Güncellemesi (Latest)
+- 🔒 **Advanced Rate Limiting**: Endpoint bazında farklı limitler (Login: 3/15min, API: 30-100/15min)
+- 🛡️ **CSRF Protection**: Token bazlı Cross-Site Request Forgery koruması
+- 🔍 **Input Validation**: Kapsamlı server-side validation ve sanitization sistemi
+- � ***File Upload Security**: Magic number validation, dosya türü kontrolü, EXIF removal
+- 🔐 **Authentication Hardening**: Timing attack koruması, güçlü şifre politikası
+- �  **Session Security**: Secure cookies, HttpOnly, SameSite=strict, 24h session
+- � **Tehreat Detection**: Suspicious activity detection ve otomatik IP blocking
+- � **USecurity Headers**: CSP, HSTS, X-Frame-Options, X-Content-Type-Options
+- 🗄️ **Database Security**: Password masking, güvenli hashing (bcrypt cost 12)
+- 📝 **Security Logging**: Masked logging, güvenlik event tracking
+- 🧪 **Security Testing**: Otomatik güvenlik test suite (`npm run security:test`)
+- 📋 **OWASP Compliance**: OWASP Top 10 2021 standartlarına uygunluk
+
+### v2.1.0 - Media Library Migration
 - ✅ **Independent Media Library**: Medya kütüphanesi artık admin settings'ten ayrı bir sayfa olarak çalışıyor (`/admin/media`)
 - 🎨 **Enhanced UI**: Modern glassmorphism effects ve animations
 - 🔍 **Advanced Filtering**: Tüm dosyalar, sadece resimler, Cloudinary/yerel dosyalar filtresi
@@ -274,7 +300,6 @@ Uygulama, type-safe configuration management sistemi kullanır. Tüm environment
 - 🏷️ **Source Badges**: Cloud vs Local dosya gösterimi
 - 📱 **Responsive Design**: Mobil uyumlu responsive grid layout
 - 🔗 **Updated Navigation**: Dashboard'daki tüm linkler yeni medya sayfasına yönlendiriliyor
-- **DEBUG**: Development detayları (sadece dev mode)
 
 ### Performance Thresholds
 - **Slow Operation**: > 1 saniye (warning)

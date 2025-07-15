@@ -2,18 +2,59 @@ import connectDB from '../../../lib/mongoose';
 import Message from '../../../models/Message';
 import { NextResponse } from 'next/server';
 import nodemailer from 'nodemailer';
+import { rateLimit, getClientIP } from '../../../lib/rate-limit';
+import { RequestValidator, CommonValidationRules } from '../../../lib/validation';
+import { logger } from '../../../lib/logger';
 
 export async function POST(request: Request) {
+  const startTime = Date.now();
+  const clientIP = getClientIP(request as any);
+  
   try {
-    const { name, email, subject, message } = await request.json();
-
-    // Validasyon
-    if (!name || !email || !subject || !message) {
+    // Rate limiting - contact form specific
+    const rateLimitResult = rateLimit(clientIP, 'CONTACT');
+    if (!rateLimitResult.allowed) {
+      logger.warn('Contact form rate limit exceeded', 'SECURITY', {
+        ip: clientIP,
+        remaining: rateLimitResult.remaining
+      });
+      
       return NextResponse.json(
-        { message: 'Tüm alanlar zorunludur.' },
+        { 
+          message: 'Çok fazla mesaj gönderdiniz. Lütfen 1 saat sonra tekrar deneyin.',
+          success: false 
+        },
+        { 
+          status: 429,
+          headers: {
+            'Retry-After': Math.ceil((rateLimitResult.resetTime - Date.now()) / 1000).toString(),
+            'X-RateLimit-Remaining': rateLimitResult.remaining.toString()
+          }
+        }
+      );
+    }
+
+    const body = await request.json();
+    
+    // Input validation and sanitization
+    const validation = RequestValidator.validate(body, CommonValidationRules.contact);
+    
+    if (!validation.isValid) {
+      logger.warn('Contact form validation failed', 'VALIDATION', {
+        ip: clientIP,
+        errors: validation.errors
+      });
+      
+      return NextResponse.json(
+        { 
+          message: 'Gönderilen veriler geçersiz: ' + validation.errors.join(', '),
+          success: false 
+        },
         { status: 400 }
       );
     }
+
+    const { name, email, subject, message } = validation.sanitizedData;
 
     // Database'e bağlan
     await connectDB();
@@ -156,6 +197,14 @@ export async function POST(request: Request) {
       // Email hatası olsa bile database kaydı başarılı olduğu için devam et
     }
 
+    // Log successful contact
+    logger.info('Contact form submitted successfully', 'CONTACT', {
+      ip: clientIP,
+      email: email,
+      subject: subject,
+      responseTime: Date.now() - startTime
+    });
+
     return NextResponse.json(
       { 
         message: 'Mesajınız başarıyla gönderildi! 24 saat içinde geri dönüş yapacağız. Ayrıca size bir onay emaili gönderdik.',
@@ -164,7 +213,12 @@ export async function POST(request: Request) {
       { status: 200 }
     );
   } catch (error) {
-    console.error('Mesaj gönderimi sırasında hata:', error);
+    logger.error('Contact form submission failed', 'ERROR', {
+      ip: clientIP,
+      error: error instanceof Error ? error.message : 'Unknown error',
+      responseTime: Date.now() - startTime
+    });
+    
     return NextResponse.json(
       { message: 'Mesaj gönderimi başarısız oldu. Lütfen tekrar deneyin.', success: false },
       { status: 500 }
