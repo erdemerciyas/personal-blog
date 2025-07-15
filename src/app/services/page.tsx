@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
-import UniversalLoader from '../../components/UniversalLoader';
+import { SkeletonHero, SkeletonServiceGrid } from '../../components/SkeletonLoader';
 import Image from 'next/image';
 import HTMLContent from '../../components/HTMLContent';
 import { 
@@ -80,7 +80,16 @@ export default function ServicesPage() {
 
 
   if (loading) {
-    return <UniversalLoader text="Hizmetler yükleniyor..." />;
+    return (
+      <div className="min-h-screen">
+        <SkeletonHero />
+        <div className="py-12 md:py-16 lg:py-20 bg-gray-50">
+          <div className="container mx-auto px-4">
+            <SkeletonServiceGrid count={3} />
+          </div>
+        </div>
+      </div>
+    );
   }
 
   if (error) {

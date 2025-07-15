@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect, Suspense, useMemo } from 'react';
-import UniversalLoader from '../../components/UniversalLoader';
+import { SkeletonHero, SkeletonGrid } from '../../components/SkeletonLoader';
 import { useSearchParams, useRouter } from 'next/navigation';
 import ProjectGrid from '../../components/ProjectGrid';
 import HTMLContent from '../../components/HTMLContent';
@@ -125,9 +125,12 @@ function PortfolioPageContent() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
-        <div className="text-center">
-          <UniversalLoader text="Portfolyo yükleniyor..." />
+      <div className="min-h-screen">
+        <SkeletonHero />
+        <div className="py-12 md:py-16 lg:py-20 bg-gray-50">
+          <div className="container mx-auto px-4">
+            <SkeletonGrid count={6} />
+          </div>
         </div>
       </div>
     );
@@ -275,7 +278,16 @@ function PortfolioPageContent() {
 
 export default function PortfolioPage() {
   return (
-    <Suspense fallback={<UniversalLoader text="Sayfa yükleniyor..." />}>
+    <Suspense fallback={
+      <div className="min-h-screen">
+        <SkeletonHero />
+        <div className="py-12 md:py-16 lg:py-20 bg-gray-50">
+          <div className="container mx-auto px-4">
+            <SkeletonGrid count={6} />
+          </div>
+        </div>
+      </div>
+    }>
       <PortfolioPageContent />
     </Suspense>
   );

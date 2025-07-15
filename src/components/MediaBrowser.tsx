@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect, useRef } from 'react';
 import Image from 'next/image';
-import UniversalLoader from './UniversalLoader';
+import { Skeleton } from './SkeletonLoader';
 import {
   XMarkIcon,
   PhotoIcon,
@@ -370,7 +370,19 @@ const MediaBrowser: React.FC<MediaBrowserProps> = ({
         {/* Content */}
         <div className="p-6 overflow-y-auto flex-1">
           {loading ? (
-            <UniversalLoader text="Yükleniyor..." />
+            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-4">
+              {Array.from({ length: 12 }).map((_, i) => (
+                <div key={i} className={`${themeStyles.card} rounded-xl p-3 border`}>
+                  <Skeleton height="aspect-square" className="mb-2 rounded-lg" />
+                  <Skeleton height="h-6" className="mb-1 rounded" />
+                  <Skeleton height="h-4" width="w-3/4" className="rounded" />
+                  <div className="flex justify-between mt-2">
+                    <Skeleton height="h-3" width="w-12" className="rounded" />
+                    <Skeleton height="h-4" width="w-16" className="rounded" />
+                  </div>
+                </div>
+              ))}
+            </div>
           ) : filteredItems.length === 0 ? (
             <div className="text-center py-12">
               <PhotoIcon className="w-16 h-16 text-slate-400 mx-auto mb-4" />

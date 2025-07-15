@@ -30,10 +30,20 @@ const nextConfig = {
     // Security: Disable external image optimization for untrusted sources
     dangerouslyAllowSVG: false,
     contentSecurityPolicy: "default-src 'self'; script-src 'none'; sandbox;",
+    // Performance: Enable image optimization
+    formats: ['image/webp'],
+    minimumCacheTTL: 60 * 60 * 24 * 30, // 30 days
   },
   experimental: {
     esmExternals: true,
+    // Performance optimizations
+    optimizeCss: true,
+    scrollRestoration: true,
   },
+  // Performance: Enable compression
+  compress: true,
+  // Performance: Optimize bundle
+  swcMinify: true,
   // Security headers
   async headers() {
     return [

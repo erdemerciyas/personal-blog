@@ -13,7 +13,7 @@ const requestCounts = new Map<string, RateLimitEntry>();
 const suspiciousIPs = new Set<string>();
 
 // Different limits for different endpoints
-export const RATE_LIMITS = {
+const PRODUCTION_LIMITS = {
   // Authentication endpoints - very strict
   AUTH: { limit: 5, windowMs: 15 * 60 * 1000 }, // 5 attempts per 15 minutes
   LOGIN: { limit: 3, windowMs: 15 * 60 * 1000 }, // 3 attempts per 15 minutes
@@ -33,6 +33,29 @@ export const RATE_LIMITS = {
   // General
   GENERAL: { limit: 200, windowMs: 15 * 60 * 1000 }, // 200 requests per 15 minutes
 };
+
+const DEVELOPMENT_LIMITS = {
+  // Development'da çok daha gevşek limitler
+  AUTH: { limit: 50, windowMs: 5 * 60 * 1000 }, // 50 attempts per 5 minutes
+  LOGIN: { limit: 20, windowMs: 5 * 60 * 1000 }, // 20 attempts per 5 minutes
+  REGISTER: { limit: 10, windowMs: 10 * 60 * 1000 }, // 10 attempts per 10 minutes
+  PASSWORD_RESET: { limit: 10, windowMs: 10 * 60 * 1000 }, // 10 attempts per 10 minutes
+
+  // API endpoints - çok gevşek
+  API_STRICT: { limit: 1000, windowMs: 5 * 60 * 1000 }, // 1000 requests per 5 minutes
+  API_MODERATE: { limit: 2000, windowMs: 5 * 60 * 1000 }, // 2000 requests per 5 minutes
+
+  // Contact form
+  CONTACT: { limit: 20, windowMs: 10 * 60 * 1000 }, // 20 messages per 10 minutes
+
+  // File upload
+  UPLOAD: { limit: 100, windowMs: 10 * 60 * 1000 }, // 100 uploads per 10 minutes
+
+  // General - çok gevşek
+  GENERAL: { limit: 5000, windowMs: 5 * 60 * 1000 }, // 5000 requests per 5 minutes
+};
+
+export const RATE_LIMITS = process.env.NODE_ENV === 'production' ? PRODUCTION_LIMITS : DEVELOPMENT_LIMITS;
 
 export function rateLimit(
   ip: string,

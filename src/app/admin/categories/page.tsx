@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react';
 import { useSession } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
-import UniversalLoader from '../../../components/UniversalLoader';
+import { Skeleton } from '../../../components/SkeletonLoader';
 import AdminLayout from '../../../components/admin/AdminLayout';
 import { 
   PlusIcon,
@@ -157,9 +157,54 @@ export default function Categories() {
   if (status === 'loading' || loading) {
     return (
       <AdminLayout>
-        <div className="flex items-center justify-center min-h-[400px]">
-          <div className="flex flex-col items-center space-y-4">
-            <UniversalLoader text="Kategoriler yükleniyor..." />
+        <div className="space-y-6">
+          <div className="flex items-center justify-between">
+            <div className="space-y-2">
+              <Skeleton height="h-6" width="w-48" />
+              <Skeleton height="h-4" width="w-64" />
+            </div>
+          </div>
+          
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+            {Array.from({ length: 3 }).map((_, i) => (
+              <Skeleton key={i} height="h-24" className="rounded-xl" />
+            ))}
+          </div>
+          
+          <div className="bg-white rounded-xl shadow-sm border border-slate-200">
+            <div className="p-6 border-b border-slate-200">
+              <Skeleton height="h-6" width="w-48" />
+            </div>
+            <div className="p-6 space-y-4">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <Skeleton height="h-12" />
+                <Skeleton height="h-12" />
+              </div>
+              <Skeleton height="h-24" />
+              <Skeleton height="h-12" width="w-32" />
+            </div>
+          </div>
+          
+          <div className="bg-white rounded-xl shadow-sm border border-slate-200">
+            <div className="p-6 border-b border-slate-200">
+              <Skeleton height="h-6" width="w-32" />
+            </div>
+            <div className="divide-y divide-slate-200">
+              {Array.from({ length: 3 }).map((_, i) => (
+                <div key={i} className="p-6 flex items-start justify-between">
+                  <div className="flex-1 space-y-3">
+                    <Skeleton height="h-6" width="w-3/4" />
+                    <Skeleton height="h-4" width="w-1/2" />
+                    <Skeleton height="h-4" />
+                    <Skeleton height="h-4" width="w-32" />
+                  </div>
+                  <div className="flex space-x-2">
+                    <Skeleton height="h-8" width="w-8" className="rounded-lg" />
+                    <Skeleton height="h-8" width="w-8" className="rounded-lg" />
+                  </div>
+                </div>
+              ))}
+            </div>
           </div>
         </div>
       </AdminLayout>

@@ -20,7 +20,7 @@ import {
   RocketLaunchIcon
 } from '@heroicons/react/24/outline';
 
-import UniversalLoader from '../../components/UniversalLoader';
+import { SkeletonHero, SkeletonGrid } from '../../components/SkeletonLoader';
 
 interface Value {
   text: string;
@@ -90,7 +90,16 @@ export default function AboutPage() {
   };
 
   if (loading) {
-    return <UniversalLoader text="Sayfa yükleniyor..." />;
+    return (
+      <div className="min-h-screen">
+        <SkeletonHero />
+        <div className="py-12 md:py-16 lg:py-20 bg-gray-50">
+          <div className="container mx-auto px-4">
+            <SkeletonGrid count={3} />
+          </div>
+        </div>
+      </div>
+    );
   }
 
   if (!aboutData) {

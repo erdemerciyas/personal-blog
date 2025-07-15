@@ -2,7 +2,7 @@
 
 import { useState, useEffect, Suspense } from 'react';
 import { EnvelopeIcon, PhoneIcon, MapPinIcon, PaperAirplaneIcon, CheckCircleIcon, ExclamationCircleIcon, ClockIcon } from '@heroicons/react/24/outline';
-import UniversalLoader from '../../components/UniversalLoader';
+import { SkeletonHero, Skeleton } from '../../components/SkeletonLoader';
 
 interface ContactInfo {
   email: string;
@@ -196,7 +196,10 @@ function ContactPageContent() {
                   >
                     {isSubmitting ? (
                       <>
-                        <UniversalLoader text="Gönderiliyor..." />
+                        <div className="flex items-center">
+                          <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2"></div>
+                          <span>Gönderiliyor...</span>
+                        </div>
                       </>
                     ) : (
                       <>
@@ -227,7 +230,13 @@ function ContactPageContent() {
                   <h2 className="text-2xl font-bold text-slate-800 mb-6">İletişim Bilgilerimiz</h2>
                   
                   {contactLoading ? (
-                    <UniversalLoader text="İletişim bilgileri yükleniyor..." />
+                    <div className="space-y-4">
+                      <Skeleton height="h-6" width="w-3/4" />
+                      <Skeleton height="h-4" />
+                      <Skeleton height="h-4" width="w-5/6" />
+                      <Skeleton height="h-6" width="w-2/3" className="mt-6" />
+                      <Skeleton height="h-4" />
+                    </div>
                   ) : (
                     <div className="space-y-6">
                       <div className="flex items-start">
@@ -348,7 +357,14 @@ function ContactPageContent() {
               </div>
               
               {contactLoading ? (
-                <UniversalLoader text="Harita yükleniyor..." />
+                <div className="space-y-4">
+                  <Skeleton height="h-6" width="w-1/2" />
+                  <Skeleton height="h-96" className="rounded-xl" />
+                  <div className="grid md:grid-cols-2 gap-4">
+                    <Skeleton height="h-24" />
+                    <Skeleton height="h-24" />
+                  </div>
+                </div>
               ) : (
                 <div className="space-y-4">
                   {/* Address summary */}
@@ -403,7 +419,8 @@ function ContactPageContent() {
                     {/* Map loading overlay */}
                     <div className="absolute inset-0 bg-slate-100 flex items-center justify-center pointer-events-none opacity-0 transition-opacity duration-300" id="map-loading">
                       <div className="text-center">
-                        <UniversalLoader text="Harita yükleniyor..." />
+                        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-teal-600 mx-auto mb-2"></div>
+                        <span className="text-slate-600">Harita yükleniyor...</span>
                       </div>
                     </div>
                   </div>
@@ -486,7 +503,25 @@ function ContactPageContent() {
 export default function ContactPage() {
   // Suspense can be used if there are searchParams or other async dependencies for the page itself
   return (
-    <Suspense fallback={<UniversalLoader text="Sayfa yükleniyor..." />}>
+    <Suspense fallback={
+      <div className="min-h-screen">
+        <SkeletonHero />
+        <div className="py-12 md:py-16 lg:py-20 bg-gray-50">
+          <div className="container mx-auto px-4">
+            <div className="max-w-6xl mx-auto">
+              <div className="grid md:grid-cols-2 gap-12 lg:gap-16">
+                <Skeleton height="h-96" className="rounded-xl" />
+                <div className="space-y-6">
+                  <Skeleton height="h-8" width="w-3/4" />
+                  <Skeleton height="h-32" />
+                  <Skeleton height="h-32" />
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    }>
       <ContactPageContent />
     </Suspense>
   );

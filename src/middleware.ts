@@ -188,25 +188,32 @@ export async function middleware(request: NextRequest) {
     return new NextResponse('Forbidden', { status: 403 });
   }
 
-  // 2. Apply rate limiting
-  const rateLimitType = getRateLimitType(pathname);
-  const rateLimitResult = rateLimit(clientIP, rateLimitType);
+  // 2. Apply rate limiting (skip in development if bypass is enabled)
+  const shouldBypassRateLimit = process.env.NODE_ENV === 'development' && 
+                                process.env.BYPASS_RATE_LIMIT === 'true';
   
-  if (!rateLimitResult.allowed) {
-    logger.warn('Rate limit exceeded', 'SECURITY', {
-      ip: clientIP,
-      pathname,
-      type: rateLimitType,
-      resetTime: new Date(rateLimitResult.resetTime).toISOString()
-    });
+  const rateLimitType = getRateLimitType(pathname);
+  let rateLimitResult = { allowed: true, remaining: 1000, resetTime: Date.now() + 60000 };
+  
+  if (!shouldBypassRateLimit) {
+    rateLimitResult = rateLimit(clientIP, rateLimitType);
     
-    const response = new NextResponse('Too Many Requests', { status: 429 });
-    response.headers.set('Retry-After', Math.ceil((rateLimitResult.resetTime - Date.now()) / 1000).toString());
-    response.headers.set('X-RateLimit-Limit', RATE_LIMITS[rateLimitType].limit.toString());
-    response.headers.set('X-RateLimit-Remaining', '0');
-    response.headers.set('X-RateLimit-Reset', rateLimitResult.resetTime.toString());
-    
-    return SecurityHeaders.apply(response);
+    if (!rateLimitResult.allowed) {
+      logger.warn('Rate limit exceeded', 'SECURITY', {
+        ip: clientIP,
+        pathname,
+        type: rateLimitType,
+        resetTime: new Date(rateLimitResult.resetTime).toISOString()
+      });
+      
+      const response = new NextResponse('Too Many Requests', { status: 429 });
+      response.headers.set('Retry-After', Math.ceil((rateLimitResult.resetTime - Date.now()) / 1000).toString());
+      response.headers.set('X-RateLimit-Limit', RATE_LIMITS[rateLimitType].limit.toString());
+      response.headers.set('X-RateLimit-Remaining', '0');
+      response.headers.set('X-RateLimit-Reset', rateLimitResult.resetTime.toString());
+      
+      return SecurityHeaders.apply(response);
+    }
   }
 
   // 3. CSRF Protection for state-changing requests

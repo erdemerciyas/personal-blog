@@ -31,7 +31,7 @@ import {
   CloudArrowUpIcon,
   ChatBubbleLeftRightIcon
 } from '@heroicons/react/24/outline';
-import UniversalLoader from '../../../components/UniversalLoader';
+import { Skeleton } from '../../../components/SkeletonLoader';
 
 export default function AdminDashboard() {
   const { data: session, status } = useSession();
@@ -98,7 +98,24 @@ export default function AdminDashboard() {
   }, []);
 
   if (status === 'loading') {
-    return <AdminLayout><UniversalLoader text="Yükleniyor..." /></AdminLayout>;
+    return (
+      <AdminLayout>
+        <div className="h-full bg-slate-50 p-6">
+          <div className="space-y-6">
+            <Skeleton height="h-32" className="rounded-2xl" />
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+              {Array.from({ length: 6 }).map((_, i) => (
+                <Skeleton key={i} height="h-24" className="rounded-xl" />
+              ))}
+            </div>
+            <div className="grid grid-cols-1 xl:grid-cols-2 gap-8">
+              <Skeleton height="h-96" className="rounded-xl" />
+              <Skeleton height="h-96" className="rounded-xl" />
+            </div>
+          </div>
+        </div>
+      </AdminLayout>
+    );
   }
 
   if (!session?.user) {

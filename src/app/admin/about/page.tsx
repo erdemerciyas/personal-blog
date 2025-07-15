@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react';
 import { useSession } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
-import UniversalLoader from '../../../components/UniversalLoader';
+import { Skeleton } from '../../../components/SkeletonLoader';
 import AdminLayout from '../../../components/admin/AdminLayout';
 import {
   UserIcon,
@@ -163,9 +163,32 @@ export default function AdminAboutPage() {
   if (status === 'loading' || loading) {
     return (
       <AdminLayout>
-        <div className="flex items-center justify-center min-h-[400px]">
-          <div className="flex flex-col items-center space-y-4">
-            <UniversalLoader text="Hakkımda verileri yükleniyor..." />
+        <div className="space-y-6">
+          <div className="flex items-center justify-between">
+            <div className="space-y-2">
+              <Skeleton height="h-6" width="w-48" />
+              <Skeleton height="h-4" width="w-64" />
+            </div>
+            <div className="flex space-x-3">
+              <Skeleton height="h-12" width="w-24" className="rounded-xl" />
+              <Skeleton height="h-12" width="w-24" className="rounded-xl" />
+            </div>
+          </div>
+          
+          <div className="space-y-8">
+            {Array.from({ length: 6 }).map((_, i) => (
+              <div key={i} className="bg-white rounded-xl p-6 shadow-sm border border-slate-200">
+                <div className="flex items-center space-x-2 mb-4">
+                  <Skeleton height="h-5" width="w-5" className="rounded" />
+                  <Skeleton height="h-6" width="w-32" />
+                </div>
+                <div className="space-y-4">
+                  <Skeleton height="h-12" />
+                  <Skeleton height="h-12" />
+                  <Skeleton height="h-24" />
+                </div>
+              </div>
+            ))}
           </div>
         </div>
       </AdminLayout>
@@ -213,7 +236,7 @@ export default function AdminAboutPage() {
             >
               {saving ? (
                 <>
-                  <UniversalLoader text="Kaydediliyor..." />
+                  <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2"></div>
                   <span>Kaydediliyor...</span>
                 </>
               ) : (

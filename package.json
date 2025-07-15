@@ -1,6 +1,6 @@
 {
   "name": "personal-blog",
-  "version": "1.11.12",
+  "version": "1.11.13",
   "private": true,
   "author": {
     "name": "Erdem Erciyas",
@@ -51,7 +51,12 @@
     "migrate:slugs": "ts-node -r tsconfig-paths/register scripts/migrate-portfolio-slugs.ts",
     "security:test": "node scripts/security-test.js",
     "security:audit": "npm audit --audit-level moderate",
-    "security:check": "npm run security:test && npm run security:audit"
+    "security:check": "npm run security:test && npm run security:audit",
+    "perf:test": "node scripts/performance-test.js",
+    "perf:analyze": "cross-env ANALYZE=true npm run build",
+    "perf:lighthouse": "lighthouse http://localhost:3000 --output=html --output-path=./lighthouse-report.html",
+    "perf:bundle": "npm run build && npx @next/bundle-analyzer",
+    "perf:check": "npm run perf:test && npm run build"
   },
   "dependencies": {
     "@heroicons/react": "^2.2.0",
@@ -98,10 +103,12 @@
     "tailwindcss": "^3.4.0"
   },
   "devDependencies": {
+    "@next/bundle-analyzer": "^15.4.1",
     "@types/jsonwebtoken": "^9.0.6",
     "@types/node": "^24.0.13",
     "cross-env": "^7.0.3",
     "husky": "^9.1.7",
+    "lighthouse": "^12.8.0",
     "prettier": "^3.0.0",
     "standard-version": "^9.5.0",
     "ts-node": "^10.9.2",

@@ -6,7 +6,7 @@ import { useRouter, usePathname } from 'next/navigation';
 import Link from 'next/link';
 import Image from 'next/image';
 import { createPortal } from 'react-dom';
-import UniversalLoader from '../UniversalLoader';
+import { Skeleton } from '../SkeletonLoader';
 import { 
   Bars3Icon, 
   XMarkIcon,
@@ -300,7 +300,14 @@ export default function AdminLayout({ children, title, breadcrumbs }: AdminLayou
   };
 
   if (status === 'loading') {
-    return <UniversalLoader text="Yükleniyor..." />;
+    return (
+      <div className="min-h-screen bg-slate-50 dark:bg-slate-900 flex items-center justify-center">
+        <div className="text-center space-y-4">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-teal-600 mx-auto"></div>
+          <p className="text-slate-600 dark:text-slate-400">Yükleniyor...</p>
+        </div>
+      </div>
+    );
   }
 
   if (status === 'unauthenticated') {

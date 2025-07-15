@@ -2,7 +2,7 @@
 import { useState, useEffect } from 'react';
 import { useSession } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
-import UniversalLoader from '../../../components/UniversalLoader';
+import { Skeleton } from '../../../components/SkeletonLoader';
 import AdminLayout from '../../../components/admin/AdminLayout';
 import {
   DocumentTextIcon,
@@ -180,9 +180,40 @@ export default function AdminPagesManagement() {
   if (status === 'loading' || loading) {
     return (
       <AdminLayout>
-        <div className="flex items-center justify-center min-h-[400px]">
-          <div className="flex flex-col items-center space-y-4">
-            <UniversalLoader text="Sayfa ayarları yükleniyor..." />
+        <div className="space-y-6">
+          <div className="flex items-center justify-between">
+            <div className="space-y-2">
+              <Skeleton height="h-6" width="w-48" />
+              <Skeleton height="h-4" width="w-64" />
+            </div>
+            <Skeleton height="h-6" width="w-32" />
+          </div>
+          
+          <div className="bg-white rounded-xl shadow-sm border border-slate-200">
+            <div className="p-6 border-b border-slate-200">
+              <Skeleton height="h-6" width="w-32" />
+            </div>
+            <div className="divide-y divide-slate-200">
+              {Array.from({ length: 5 }).map((_, i) => (
+                <div key={i} className="p-6 flex items-center justify-between">
+                  <div className="flex items-center space-x-3">
+                    <Skeleton height="h-10" width="w-10" className="rounded-xl" />
+                    <div className="space-y-2">
+                      <Skeleton height="h-6" width="w-48" />
+                      <Skeleton height="h-4" width="w-64" />
+                    </div>
+                  </div>
+                  <div className="flex items-center space-x-4">
+                    <Skeleton height="h-6" width="w-16" />
+                    <Skeleton height="h-6" width="w-16" />
+                    <div className="flex space-x-1">
+                      <Skeleton height="h-8" width="w-8" className="rounded-lg" />
+                      <Skeleton height="h-8" width="w-8" className="rounded-lg" />
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
           </div>
         </div>
       </AdminLayout>

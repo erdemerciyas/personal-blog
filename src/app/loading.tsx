@@ -1,6 +1,10 @@
 'use client';
-import UniversalLoader from '../components/UniversalLoader';
+import { SkeletonHero } from '../components/SkeletonLoader';
 
 export default function Loading() {
-  return <UniversalLoader />;
+  return (
+    <div className="min-h-screen">
+      <SkeletonHero />
+    </div>
+  );
 } 
