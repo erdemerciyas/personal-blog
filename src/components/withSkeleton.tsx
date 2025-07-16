@@ -5,7 +5,7 @@ import { usePathname } from 'next/navigation';
 import { getLoadingConfig } from '@/lib/config';
 import { SkeletonLoader } from './SkeletonLoader';
 
-export function withSkeleton<T>(WrappedComponent: React.ComponentType<T>, pageKey?: string) {
+export function withSkeleton<T extends Record<string, any>>(WrappedComponent: React.ComponentType<T>, pageKey?: string) {
   return function WithSkeletonWrapper(props: T) {
     const pathname = usePathname();
     const [loading, setLoading] = React.useState(false);

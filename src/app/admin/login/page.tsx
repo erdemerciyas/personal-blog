@@ -11,7 +11,10 @@ import {
   ExclamationTriangleIcon,
   ArrowRightIcon,
   EnvelopeIcon,
-  CheckCircleIcon
+  CheckCircleIcon,
+  SunIcon,
+  MoonIcon,
+  SparklesIcon
 } from '@heroicons/react/24/outline';
 
 export default function LoginPage() {
@@ -21,6 +24,7 @@ export default function LoginPage() {
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
+  const [darkMode, setDarkMode] = useState(false);
   
   const [formData, setFormData] = useState({
     email: '',
@@ -30,6 +34,23 @@ export default function LoginPage() {
   const [forgotPasswordEmail, setForgotPasswordEmail] = useState('');
   const [forgotPasswordLoading, setForgotPasswordLoading] = useState(false);
   const [forgotPasswordMessage, setForgotPasswordMessage] = useState<string | null>(null);
+
+  // Dark mode initialization
+  useEffect(() => {
+    const savedTheme = localStorage.getItem('admin-login-theme');
+    if (savedTheme === 'dark') {
+      setDarkMode(true);
+    } else {
+      setDarkMode(false);
+    }
+  }, []);
+
+  // Toggle dark mode
+  const toggleDarkMode = () => {
+    const newDarkMode = !darkMode;
+    setDarkMode(newDarkMode);
+    localStorage.setItem('admin-login-theme', newDarkMode ? 'dark' : 'light');
+  };
 
   useEffect(() => {
     if (!searchParams) return;
@@ -44,8 +65,6 @@ export default function LoginPage() {
           setError('Bir hata oluştu. Lütfen tekrar deneyin.');
       }
     }
-
-
   }, [searchParams]);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -144,27 +163,79 @@ export default function LoginPage() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 flex items-center justify-center px-4">
-      <div className="max-w-md w-full">
+    <div className={`min-h-screen transition-all duration-500 ${
+      darkMode 
+        ? 'bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900' 
+        : 'bg-gradient-to-br from-indigo-500 via-purple-600 to-pink-500'
+    } flex items-center justify-center px-4 relative overflow-hidden`}>
+      
+      {/* Animated Background Elements */}
+      <div className="absolute inset-0 overflow-hidden">
+        <div className={`absolute -top-40 -right-40 w-80 h-80 rounded-full opacity-20 animate-pulse ${
+          darkMode ? 'bg-teal-500' : 'bg-white'
+        }`}></div>
+        <div className={`absolute -bottom-40 -left-40 w-80 h-80 rounded-full opacity-20 animate-pulse delay-1000 ${
+          darkMode ? 'bg-blue-500' : 'bg-white'
+        }`}></div>
+        <div className={`absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-96 h-96 rounded-full opacity-10 animate-spin ${
+          darkMode ? 'bg-gradient-to-r from-teal-500 to-blue-500' : 'bg-white'
+        }`} style={{ animationDuration: '20s' }}></div>
+      </div>
+
+      {/* Theme Toggle Button */}
+      <button
+        onClick={toggleDarkMode}
+        className={`absolute top-6 right-6 p-3 rounded-full backdrop-blur-xl border transition-all duration-300 hover:scale-110 ${
+          darkMode 
+            ? 'bg-white/10 border-white/20 text-white hover:bg-white/20' 
+            : 'bg-white/20 border-white/30 text-white hover:bg-white/30'
+        }`}
+      >
+        {darkMode ? (
+          <SunIcon className="w-6 h-6" />
+        ) : (
+          <MoonIcon className="w-6 h-6" />
+        )}
+      </button>
+
+      <div className="max-w-md w-full relative z-10">
         
         {/* Logo and Title */}
         <div className="text-center mb-8">
-          <div className="inline-flex items-center justify-center w-16 h-16 bg-gradient-to-br from-teal-500 to-blue-600 rounded-2xl mb-6">
-            <CubeTransparentIcon className="w-8 h-8 text-white" />
+          <div className={`inline-flex items-center justify-center w-20 h-20 rounded-3xl mb-6 shadow-2xl transform hover:scale-105 transition-all duration-300 ${
+            darkMode 
+              ? 'bg-gradient-to-br from-teal-500 to-blue-600' 
+              : 'bg-gradient-to-br from-white/20 to-white/10 backdrop-blur-xl border border-white/30'
+          }`}>
+            {darkMode ? (
+              <CubeTransparentIcon className="w-10 h-10 text-white" />
+            ) : (
+              <SparklesIcon className="w-10 h-10 text-white" />
+            )}
           </div>
-          <h1 className="text-3xl font-bold text-white mb-2">Admin Girişi</h1>
-          <p className="text-slate-400">Yönetim paneline erişim için giriş yapın</p>
+          <h1 className="text-4xl font-bold text-white mb-3 tracking-tight">Admin Panel</h1>
+          <p className={`${darkMode ? 'text-slate-400' : 'text-white/80'} text-lg`}>
+            Yönetim paneline hoş geldiniz
+          </p>
         </div>
 
         {/* Login Card */}
-        <div className="bg-white/10 backdrop-blur-xl rounded-3xl p-8 border border-white/20">
+        <div className={`backdrop-blur-2xl rounded-3xl p-8 border shadow-2xl transform hover:scale-[1.02] transition-all duration-500 ${
+          darkMode 
+            ? 'bg-white/5 border-white/10' 
+            : 'bg-white/10 border-white/20'
+        }`}>
           
           {/* Error Message */}
           {error && (
-            <div className="mb-6">
-              <div className="bg-red-500/10 border border-red-500/30 text-red-300 p-4 rounded-2xl flex items-center space-x-3">
+            <div className="mb-6 animate-shake">
+              <div className={`border p-4 rounded-2xl flex items-center space-x-3 ${
+                darkMode 
+                  ? 'bg-red-500/10 border-red-500/30 text-red-300' 
+                  : 'bg-red-500/20 border-red-500/40 text-red-100'
+              }`}>
                 <ExclamationTriangleIcon className="w-5 h-5 text-red-400 flex-shrink-0" />
-                <span className="text-sm">{error}</span>
+                <span className="text-sm font-medium">{error}</span>
               </div>
             </div>
           )}
@@ -233,14 +304,23 @@ export default function LoginPage() {
             <button
               type="submit"
               disabled={loading}
-              className={`w-full flex items-center justify-center space-x-3 py-4 px-6 rounded-xl font-semibold transition-all duration-200 ${
+              className={`w-full flex items-center justify-center space-x-3 py-4 px-6 rounded-xl font-semibold transition-all duration-300 shadow-lg ${
                 loading
-                  ? 'bg-teal-600/50 cursor-not-allowed text-teal-200'
-                  : 'bg-gradient-to-r from-teal-600 to-blue-600 hover:from-teal-700 hover:to-blue-700 text-white hover:scale-105 hover:shadow-xl transform'
+                  ? `cursor-not-allowed ${
+                      darkMode 
+                        ? 'bg-teal-600/30 text-teal-300' 
+                        : 'bg-white/20 text-white/60'
+                    }`
+                  : `transform hover:scale-105 hover:shadow-2xl ${
+                      darkMode 
+                        ? 'bg-gradient-to-r from-teal-500 to-blue-600 hover:from-teal-600 hover:to-blue-700 text-white' 
+                        : 'bg-gradient-to-r from-white/20 to-white/10 backdrop-blur-xl border border-white/30 hover:bg-white/30 text-white'
+                    }`
               }`}
             >
               {loading ? (
                 <>
+                  <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-white"></div>
                   <span>Giriş Yapılıyor...</span>
                 </>
               ) : (
