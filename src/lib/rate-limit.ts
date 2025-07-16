@@ -20,9 +20,9 @@ const PRODUCTION_LIMITS = {
   REGISTER: { limit: 2, windowMs: 60 * 60 * 1000 }, // 2 attempts per hour
   PASSWORD_RESET: { limit: 3, windowMs: 60 * 60 * 1000 }, // 3 attempts per hour
 
-  // API endpoints
-  API_STRICT: { limit: 30, windowMs: 15 * 60 * 1000 }, // 30 requests per 15 minutes
-  API_MODERATE: { limit: 100, windowMs: 15 * 60 * 1000 }, // 100 requests per 15 minutes
+  // API endpoints - çok gevşek
+  API_STRICT: { limit: 1000, windowMs: 15 * 60 * 1000 }, // 1000 requests per 15 minutes
+  API_MODERATE: { limit: 2000, windowMs: 15 * 60 * 1000 }, // 2000 requests per 15 minutes
 
   // Contact form
   CONTACT: { limit: 3, windowMs: 60 * 60 * 1000 }, // 3 messages per hour
@@ -30,8 +30,8 @@ const PRODUCTION_LIMITS = {
   // File upload
   UPLOAD: { limit: 10, windowMs: 60 * 60 * 1000 }, // 10 uploads per hour
 
-  // General - daha gevşek normal gezinme için
-  GENERAL: { limit: 1000, windowMs: 15 * 60 * 1000 }, // 1000 requests per 15 minutes
+  // General - çok gevşek normal gezinme için
+  GENERAL: { limit: 5000, windowMs: 15 * 60 * 1000 }, // 5000 requests per 15 minutes
 };
 
 const DEVELOPMENT_LIMITS = {
