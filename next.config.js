@@ -45,7 +45,7 @@ const nextConfig = {
     imageSizes: [16, 32, 48, 64, 96, 128, 256, 384],
     // Security: Disable external image optimization for untrusted sources
     dangerouslyAllowSVG: false,
-    contentSecurityPolicy: "default-src 'self'; script-src 'none'; sandbox;",
+    contentSecurityPolicy: "default-src 'self'; script-src 'none'; frame-src 'self' https://vercel.live https://vercel.com; sandbox;",
     // Performance: Enable image optimization
     formats: ['image/webp'],
     minimumCacheTTL: 60 * 60 * 24 * 30, // 30 days
