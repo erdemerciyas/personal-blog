@@ -3,6 +3,9 @@ import { getServerSession } from 'next-auth';
 import { authOptions } from '../../../lib/auth';
 import OpenAI from 'openai';
 
+// Force dynamic rendering
+export const dynamic = 'force-dynamic';
+
 // OpenAI configuration
 const openai = new OpenAI({
   apiKey: process.env.OPENAI_API_KEY,
