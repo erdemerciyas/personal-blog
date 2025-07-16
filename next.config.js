@@ -1,3 +1,5 @@
+const path = require('path');
+
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   eslint: {
@@ -8,6 +10,18 @@ const nextConfig = {
   },
   // Vercel deployment optimizations
   // output: 'standalone', // Vercel için gerekli değil
+  webpack: (config, { buildId, dev, isServer, defaultLoaders, webpack }) => {
+    // Path aliases için webpack alias ekleme
+    config.resolve.alias = {
+      ...config.resolve.alias,
+      '@': path.resolve(__dirname, 'src'),
+      '@/components': path.resolve(__dirname, 'src/components'),
+      '@/lib': path.resolve(__dirname, 'src/lib'),
+      '@/models': path.resolve(__dirname, 'src/models'),
+      '@/types': path.resolve(__dirname, 'src/types'),
+    };
+    return config;
+  },
   images: {
     remotePatterns: [
       {
