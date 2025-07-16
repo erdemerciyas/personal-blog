@@ -92,7 +92,7 @@ export default function LoginPage() {
         email: formData.email, 
         passwordLength: formData.password.length,
         currentUrl: window.location.href,
-        nextAuthUrl: process.env.NEXTAUTH_URL 
+        nextAuthUrl: window.location.origin 
       });
       
       const result = await signIn('credentials', {

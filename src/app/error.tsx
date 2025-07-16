@@ -17,10 +17,8 @@ export default function Error({
   reset: () => void;
 }) {
   useEffect(() => {
-    // Only log errors in development
-    if (process.env.NODE_ENV === 'development') {
-      console.error('Application Error:', error);
-    }
+    // Always log errors for debugging (will be removed in production build)
+    console.error('Application Error:', error);
     
     // In production, you might want to send to error tracking service
     // e.g., Sentry, LogRocket, etc.
