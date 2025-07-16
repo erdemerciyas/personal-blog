@@ -4,7 +4,7 @@ import Link from 'next/link';
 import Image from 'next/image';
 import ProjectGrid from '../components/ProjectGrid';
 import HTMLContent from '../components/HTMLContent';
-import { SkeletonHero, SkeletonServiceGrid, SkeletonGrid } from '../components/SkeletonLoader';
+import { SkeletonLoader } from '../components/SkeletonLoader';
 import { useSliderItems, usePortfolioItems, useServices } from '../hooks/useApi';
 import { 
   ArrowRightIcon,
@@ -158,9 +158,15 @@ export default function HomePage() {
   return (
     <div className="min-h-screen">
       {/* Hero Slider Section */}
-      <section className="relative overflow-hidden min-h-screen flex items-center justify-center">
+      <section className={`relative overflow-hidden min-h-screen flex items-center justify-center ${
+        sliderLoading ? 'bg-gradient-to-br from-slate-900 to-blue-900' : ''
+      }`}>
         {sliderLoading ? (
-          <SkeletonHero />
+          <SkeletonLoader 
+            pageKey="home" 
+            loadingText="Hero içeriği yükleniyor..." 
+            className="absolute inset-0 flex items-center justify-center text-white" 
+          />
         ) : (
           <>
             {/* Background Images */}
@@ -300,7 +306,7 @@ export default function HomePage() {
 
           {/* Services Grid */}
           {servicesLoading ? (
-            <SkeletonServiceGrid count={3} />
+            <SkeletonLoader pageKey="home" loadingText="Hizmetler yükleniyor..." className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8" />
           ) : (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mb-16">
               {services.map((service, index) => (
@@ -376,7 +382,7 @@ export default function HomePage() {
           
           {/* Projects */}
           {portfolioLoading ? (
-            <SkeletonGrid count={6} />
+            <SkeletonLoader pageKey="home" loadingText="Projeler yükleniyor..." className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8" />
           ) : portfolioItems.length > 0 ? (
             <>
               <ProjectGrid 

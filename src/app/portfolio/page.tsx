@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect, Suspense, useMemo } from 'react';
-import { SkeletonHero, SkeletonGrid } from '../../components/SkeletonLoader';
+import { SkeletonLoader } from '../../components/SkeletonLoader';
 import { useSearchParams, useRouter } from 'next/navigation';
 import ProjectGrid from '../../components/ProjectGrid';
 import HTMLContent from '../../components/HTMLContent';
@@ -126,12 +126,7 @@ function PortfolioPageContent() {
   if (loading) {
     return (
       <div className="min-h-screen">
-        <SkeletonHero />
-        <div className="py-12 md:py-16 lg:py-20 bg-gray-50">
-          <div className="container mx-auto px-4">
-            <SkeletonGrid count={6} />
-          </div>
-        </div>
+        <SkeletonLoader pageKey="portfolio" loadingText="Portfolio yükleniyor..." className="min-h-screen flex items-center justify-center bg-gradient-to-br from-teal-500 to-cyan-600 text-white" />
       </div>
     );
   }
@@ -280,12 +275,7 @@ export default function PortfolioPage() {
   return (
     <Suspense fallback={
       <div className="min-h-screen">
-        <SkeletonHero />
-        <div className="py-12 md:py-16 lg:py-20 bg-gray-50">
-          <div className="container mx-auto px-4">
-            <SkeletonGrid count={6} />
-          </div>
-        </div>
+        <SkeletonLoader pageKey="portfolio" loadingText="Portfolio yükleniyor..." className="min-h-screen flex items-center justify-center bg-gradient-to-br from-teal-500 to-cyan-600 text-white" />
       </div>
     }>
       <PortfolioPageContent />

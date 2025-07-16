@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
-import { SkeletonHero, SkeletonServiceGrid } from '../../components/SkeletonLoader';
+import { SkeletonLoader } from '../../components/SkeletonLoader';
 import Image from 'next/image';
 import HTMLContent from '../../components/HTMLContent';
 import { 
@@ -82,12 +82,7 @@ export default function ServicesPage() {
   if (loading) {
     return (
       <div className="min-h-screen">
-        <SkeletonHero />
-        <div className="py-12 md:py-16 lg:py-20 bg-gray-50">
-          <div className="container mx-auto px-4">
-            <SkeletonServiceGrid count={3} />
-          </div>
-        </div>
+        <SkeletonLoader pageKey="services" loadingText="Hizmetler yükleniyor..." className="min-h-screen flex items-center justify-center bg-gradient-to-br from-teal-500 to-cyan-600 text-white" />
       </div>
     );
   }

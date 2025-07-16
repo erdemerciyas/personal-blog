@@ -20,7 +20,7 @@ import {
   RocketLaunchIcon
 } from '@heroicons/react/24/outline';
 
-import { SkeletonHero, SkeletonGrid } from '../../components/SkeletonLoader';
+import { SkeletonLoader } from '../../components/SkeletonLoader';
 
 interface Value {
   text: string;
@@ -92,12 +92,7 @@ export default function AboutPage() {
   if (loading) {
     return (
       <div className="min-h-screen">
-        <SkeletonHero />
-        <div className="py-12 md:py-16 lg:py-20 bg-gray-50">
-          <div className="container mx-auto px-4">
-            <SkeletonGrid count={3} />
-          </div>
-        </div>
+        <SkeletonLoader pageKey="about" loadingText="Hakkımda sayfası yükleniyor..." className="min-h-screen flex items-center justify-center bg-gradient-to-br from-teal-500 to-cyan-600 text-white" />
       </div>
     );
   }

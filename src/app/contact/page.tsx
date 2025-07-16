@@ -2,7 +2,7 @@
 
 import { useState, useEffect, Suspense } from 'react';
 import { EnvelopeIcon, PhoneIcon, MapPinIcon, PaperAirplaneIcon, CheckCircleIcon, ExclamationCircleIcon, ClockIcon } from '@heroicons/react/24/outline';
-import { SkeletonHero, Skeleton } from '../../components/SkeletonLoader';
+import { SkeletonLoader } from '../../components/SkeletonLoader';
 
 interface ContactInfo {
   email: string;
@@ -230,13 +230,7 @@ function ContactPageContent() {
                   <h2 className="text-2xl font-bold text-slate-800 mb-6">İletişim Bilgilerimiz</h2>
                   
                   {contactLoading ? (
-                    <div className="space-y-4">
-                      <Skeleton height="h-6" width="w-3/4" />
-                      <Skeleton height="h-4" />
-                      <Skeleton height="h-4" width="w-5/6" />
-                      <Skeleton height="h-6" width="w-2/3" className="mt-6" />
-                      <Skeleton height="h-4" />
-                    </div>
+                    <SkeletonLoader pageKey="contact" loadingText="İletişim bilgileri yükleniyor..." className="space-y-4" />
                   ) : (
                     <div className="space-y-6">
                       <div className="flex items-start">
@@ -357,14 +351,7 @@ function ContactPageContent() {
               </div>
               
               {contactLoading ? (
-                <div className="space-y-4">
-                  <Skeleton height="h-6" width="w-1/2" />
-                  <Skeleton height="h-96" className="rounded-xl" />
-                  <div className="grid md:grid-cols-2 gap-4">
-                    <Skeleton height="h-24" />
-                    <Skeleton height="h-24" />
-                  </div>
-                </div>
+                <SkeletonLoader pageKey="contact" loadingText="Harita yükleniyor..." className="space-y-4" />
               ) : (
                 <div className="space-y-4">
                   {/* Address summary */}
@@ -505,21 +492,7 @@ export default function ContactPage() {
   return (
     <Suspense fallback={
       <div className="min-h-screen">
-        <SkeletonHero />
-        <div className="py-12 md:py-16 lg:py-20 bg-gray-50">
-          <div className="container mx-auto px-4">
-            <div className="max-w-6xl mx-auto">
-              <div className="grid md:grid-cols-2 gap-12 lg:gap-16">
-                <Skeleton height="h-96" className="rounded-xl" />
-                <div className="space-y-6">
-                  <Skeleton height="h-8" width="w-3/4" />
-                  <Skeleton height="h-32" />
-                  <Skeleton height="h-32" />
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
+        <SkeletonLoader pageKey="contact" loadingText="İletişim sayfası yükleniyor..." className="min-h-screen flex items-center justify-center bg-gradient-to-br from-teal-500 to-cyan-600 text-white" />
       </div>
     }>
       <ContactPageContent />

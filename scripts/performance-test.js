@@ -76,10 +76,10 @@ checkFileContent('src/lib/cache-manager.ts', 'cleanup()', 'Cache Cleanup');
 
 // 4. Loading optimizasyonları kontrolü
 console.log('\n⏳ Loading Optimizasyonları:');
-checkFileContent('src/app/page.tsx', 'SkeletonHero', 'Hero Skeleton Loading');
-checkFileContent('src/app/page.tsx', 'SkeletonServiceGrid', 'Services Skeleton Loading');
-checkFileContent('src/app/page.tsx', 'SkeletonGrid', 'Portfolio Skeleton Loading');
-checkFileContent('src/app/loading.tsx', 'SkeletonHero', 'Global Loading Optimization');
+checkFileContent('src/app/page.tsx', 'SkeletonLoader', 'Modular Skeleton Loading');
+checkFileContent('src/app/loading.tsx', 'DefaultLoading', 'Global Loading Optimization');
+checkFileContent('src/components/withSkeleton.tsx', 'withSkeleton', 'HOC Loading System');
+checkFileContent('src/lib/config.ts', 'showSkeleton', 'Loading System Configuration');
 
 // 5. Image optimizasyonları kontrolü
 console.log('\n🖼️ Image Optimizasyonları:');

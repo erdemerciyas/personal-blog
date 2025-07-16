@@ -253,6 +253,59 @@ export const env = {
   isTest: config.isTest,
 };
 
+// App configuration
+export const appConfig = {
+  showSkeleton: process.env.NEXT_PUBLIC_SHOW_SKELETON === 'true',
+};
+
+// Dynamic loading system configuration
+export async function getLoadingConfig() {
+  try {
+    if (typeof window !== 'undefined') {
+      // Client-side: use cached config or fetch from API
+      const cached = localStorage.getItem('loadingConfig');
+      if (cached) {
+        const config = JSON.parse(cached);
+        // Check if cache is still valid (5 minutes)
+        if (Date.now() - config.timestamp < 5 * 60 * 1000) {
+          return config.data;
+        }
+      }
+      
+      const response = await fetch('/api/admin/loading-system');
+      if (response.ok) {
+        const config = await response.json();
+        localStorage.setItem('loadingConfig', JSON.stringify({
+          data: config,
+          timestamp: Date.now()
+        }));
+        return config;
+      }
+    }
+    
+    // Fallback to default config
+    return {
+      globalEnabled: appConfig.showSkeleton,
+      systemInstalled: true,
+      pages: {
+        home: { enabled: true, loadingText: 'Ana Sayfa yükleniyor...', installed: true },
+        about: { enabled: true, loadingText: 'Hakkımda sayfası yükleniyor...', installed: true },
+        services: { enabled: true, loadingText: 'Hizmetler yükleniyor...', installed: true },
+        portfolio: { enabled: true, loadingText: 'Portfolio yükleniyor...', installed: true },
+        'portfolio-detail': { enabled: true, loadingText: 'Proje detayları yükleniyor...', installed: true },
+        contact: { enabled: true, loadingText: 'İletişim sayfası yükleniyor...', installed: true }
+      }
+    };
+  } catch (error) {
+    console.error('Loading config fetch error:', error);
+    return {
+      globalEnabled: appConfig.showSkeleton,
+      systemInstalled: true,
+      pages: {}
+    };
+  }
+}
+
 // Feature flags based on configuration
 export const features = {
   cloudinaryUpload: config.cloudinary.isConfigured,

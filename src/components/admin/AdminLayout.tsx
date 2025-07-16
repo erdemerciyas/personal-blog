@@ -130,7 +130,8 @@ export default function AdminLayout({ children, title, breadcrumbs }: AdminLayou
       href: '/admin/settings',
       subItems: [
         { label: 'Genel Ayarlar', href: '/admin/settings' },
-        { label: 'Footer Ayarları', href: '/admin/footer' }
+        { label: 'Footer Ayarları', href: '/admin/footer' },
+        { label: 'Loading System', href: '/admin/loading-system' }
       ]
     }
   ];

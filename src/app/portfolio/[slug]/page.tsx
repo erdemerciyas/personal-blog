@@ -20,6 +20,7 @@ import { PortfolioItem } from '../../../types/portfolio'; // Assuming PortfolioI
 import ProjectGrid from '../../../components/ProjectGrid'; // Ensuring this import is correct
 import HTMLContent from '../../../components/HTMLContent';
 import Breadcrumbs from '../../../components/Breadcrumbs';
+import { SkeletonLoader } from '../../../components/SkeletonLoader';
 import connectDB from '../../../lib/mongoose';
 import Portfolio from '../../../models/Portfolio';
 
@@ -106,10 +107,12 @@ function PortfolioDetailPageContent({ params }: { params: { slug: string } }) {
 
   if (loading) {
     return (
-      <div className="flex flex-col items-center justify-center min-h-[calc(100vh-10rem)]">
-        <div className="text-center">
-          <p className="text-slate-500 text-sm">Proje detayları yükleniyor...</p>
-        </div>
+      <div className="min-h-screen">
+        <SkeletonLoader 
+          pageKey="portfolio-detail" 
+          loadingText="Proje detayları yükleniyor..." 
+          className="min-h-screen flex items-center justify-center bg-gradient-to-br from-teal-500 to-cyan-600 text-white" 
+        />
       </div>
     );
   }

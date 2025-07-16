@@ -1,10 +1,4 @@
-'use client';
-import { SkeletonHero } from '../components/SkeletonLoader';
-
+// Ana loading devre dışı - sayfalar kendi loading'lerini kullanıyor
 export default function Loading() {
-  return (
-    <div className="min-h-screen">
-      <SkeletonHero />
-    </div>
-  );
+  return null;
 } 
