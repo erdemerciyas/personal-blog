@@ -38,8 +38,15 @@ class ConfigManager {
   private isValidated = false;
 
   constructor() {
-    this.config = this.loadEnvironmentVariables();
-    this.validateConfig();
+    // Only validate on server-side or in Node.js environment
+    if (typeof window === 'undefined') {
+      this.config = this.loadEnvironmentVariables();
+      this.validateConfig();
+    } else {
+      // Client-side: use minimal config
+      this.config = this.getClientSideConfig();
+      this.isValidated = true;
+    }
   }
 
   private loadEnvironmentVariables(): EnvironmentConfig {
@@ -128,6 +135,24 @@ class ConfigManager {
       logger.info('Environment configuration validated successfully', 'CONFIG');
       this.isValidated = true;
     }
+  }
+
+  private getClientSideConfig(): EnvironmentConfig {
+    // Client-side: use safe defaults, no environment validation
+    return {
+      NODE_ENV: 'production' as any, // Assume production on client
+      NEXTAUTH_URL: typeof window !== 'undefined' ? window.location.origin : '',
+      NEXTAUTH_SECRET: '', // Not available on client-side
+      MONGODB_URI: '', // Not available on client-side
+      CLOUDINARY_CLOUD_NAME: '',
+      CLOUDINARY_API_KEY: '',
+      CLOUDINARY_API_SECRET: '',
+      OPENAI_API_KEY: '',
+      APP_NAME: 'Personal Blog',
+      APP_URL: typeof window !== 'undefined' ? window.location.origin : '',
+      RATE_LIMIT_MAX: '100',
+      RATE_LIMIT_WINDOW: '900000',
+    };
   }
 
   private isValidUrl(url: string): boolean {
@@ -254,7 +279,7 @@ export const env = {
 
 // App configuration
 export const appConfig = {
-  showSkeleton: process.env.NEXT_PUBLIC_SHOW_SKELETON === 'true',
+  showSkeleton: typeof window !== 'undefined' ? false : process.env.NEXT_PUBLIC_SHOW_SKELETON === 'true',
 };
 
 // Dynamic loading system configuration
