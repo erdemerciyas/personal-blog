@@ -10,6 +10,7 @@ export function withSkeleton<T extends Record<string, any>>(WrappedComponent: Re
     const pathname = usePathname();
     const [loading, setLoading] = React.useState(false);
     const [config, setConfig] = React.useState<any>(null);
+    const [configLoaded, setConfigLoaded] = React.useState(false);
 
     React.useEffect(() => {
       const loadConfig = async () => {
@@ -18,13 +19,21 @@ export function withSkeleton<T extends Record<string, any>>(WrappedComponent: Re
           setConfig(loadingConfig);
         } catch (error) {
           console.error('Failed to load loading config:', error);
+          // Set default config on error
+          setConfig({
+            systemInstalled: false,
+            globalEnabled: false,
+            pages: {}
+          });
+        } finally {
+          setConfigLoaded(true);
         }
       };
       loadConfig();
     }, []);
 
     React.useEffect(() => {
-      if (!config) return;
+      if (!configLoaded || !config) return;
       
       // Check if system is installed and globally enabled
       if (!config.systemInstalled || !config.globalEnabled) {
@@ -32,16 +41,21 @@ export function withSkeleton<T extends Record<string, any>>(WrappedComponent: Re
         return;
       }
       
+      // Show skeleton immediately on route change
       setLoading(true);
-      const timeout = setTimeout(() => setLoading(false), 500); // örnek gecikme
+      
+      // Hide skeleton after a short delay
+      const timeout = setTimeout(() => setLoading(false), 300); // Reduced delay
       return () => clearTimeout(timeout);
-    }, [pathname, config]);
+    }, [pathname, config, configLoaded]);
 
-    // If config not loaded yet, don't show skeleton
-    if (!config) return <WrappedComponent {...props} />;
+    // Show component immediately if config not loaded yet (prevents white screen)
+    if (!configLoaded) {
+      return <WrappedComponent {...props} />;
+    }
     
     // Check if system is disabled
-    if (!config.systemInstalled || !config.globalEnabled) {
+    if (!config || !config.systemInstalled || !config.globalEnabled) {
       return <WrappedComponent {...props} />;
     }
     

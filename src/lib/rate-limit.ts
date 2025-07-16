@@ -30,8 +30,8 @@ const PRODUCTION_LIMITS = {
   // File upload
   UPLOAD: { limit: 10, windowMs: 60 * 60 * 1000 }, // 10 uploads per hour
 
-  // General
-  GENERAL: { limit: 200, windowMs: 15 * 60 * 1000 }, // 200 requests per 15 minutes
+  // General - daha gevşek normal gezinme için
+  GENERAL: { limit: 1000, windowMs: 15 * 60 * 1000 }, // 1000 requests per 15 minutes
 };
 
 const DEVELOPMENT_LIMITS = {
