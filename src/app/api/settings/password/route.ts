@@ -4,6 +4,7 @@ import { authOptions } from '../../../../lib/auth';
 import connectDB from '../../../../lib/mongoose';
 import User from '../../../../models/User';
 import bcrypt from 'bcryptjs';
+import { SecurityUtils } from '../../../../lib/security-utils';
 
 // PUT /api/settings/password - Kullanıcı şifresini değiştir
 export async function PUT(request: Request) {
@@ -33,9 +34,27 @@ export async function PUT(request: Request) {
       );
     }
 
-    if (newPassword.length < 6) {
+    // Güvenlik kontrolleri
+    const sanitizedCurrentPassword = SecurityUtils.sanitizeString(currentPassword);
+    const sanitizedNewPassword = SecurityUtils.sanitizeString(newPassword);
+    
+    // SQL injection kontrolü
+    if (SecurityUtils.containsSQLInjection(currentPassword) || SecurityUtils.containsSQLInjection(newPassword)) {
+      SecurityUtils.logSecurityEvent('Password Change SQL Injection Attempt', {
+        email: session.user.email,
+        ip: 'unknown' // Request IP should be passed from middleware
+      }, 'high');
       return NextResponse.json(
-        { error: 'Yeni şifre en az 6 karakter olmalıdır' },
+        { error: 'Güvenlik riski tespit edildi' },
+        { status: 400 }
+      );
+    }
+
+    // Güçlü şifre politikası kontrolü
+    const passwordValidation = SecurityUtils.isStrongPassword(newPassword);
+    if (!passwordValidation.valid) {
+      return NextResponse.json(
+        { error: passwordValidation.errors[0] }, // İlk hatayı göster
         { status: 400 }
       );
     }
@@ -56,6 +75,15 @@ export async function PUT(request: Request) {
     if (!isCurrentPasswordValid) {
       return NextResponse.json(
         { error: 'Mevcut şifre yanlış' },
+        { status: 400 }
+      );
+    }
+
+    // Şifre tekrarı kontrolü (mevcut şifre ile aynı olmamalı)
+    const isSamePassword = await bcrypt.compare(newPassword, user.password);
+    if (isSamePassword) {
+      return NextResponse.json(
+        { error: 'Yeni şifre mevcut şifre ile aynı olamaz' },
         { status: 400 }
       );
     }

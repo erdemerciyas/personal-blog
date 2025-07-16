@@ -188,11 +188,15 @@ export async function middleware(request: NextRequest) {
     return new NextResponse('Forbidden', { status: 403 });
   }
 
-  // 2. Apply rate limiting (skip in development if bypass is enabled)
-  const shouldBypassRateLimit = process.env.NODE_ENV === 'development' && 
-                                process.env.BYPASS_RATE_LIMIT === 'true';
-  
+  // 2. Apply rate limiting (only bypass for non-auth endpoints in development)
   const rateLimitType = getRateLimitType(pathname);
+  const isAuthEndpoint = ['LOGIN', 'REGISTER', 'PASSWORD_RESET', 'AUTH'].includes(rateLimitType);
+  
+  // Never bypass rate limiting for authentication endpoints
+  const shouldBypassRateLimit = process.env.NODE_ENV === 'development' && 
+                                process.env.BYPASS_RATE_LIMIT === 'true' &&
+                                !isAuthEndpoint;
+  
   let rateLimitResult = { allowed: true, remaining: 1000, resetTime: Date.now() + 60000 };
   
   if (!shouldBypassRateLimit) {

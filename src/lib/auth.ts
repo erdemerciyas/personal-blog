@@ -43,8 +43,8 @@ export const authOptions: NextAuthOptions = {
           return null;
         }
 
-        // Password length check
-        if (password.length < 6 || password.length > 128) {
+        // Password length check (minimum 8 characters for security)
+        if (password.length < 8 || password.length > 128) {
           return null;
         }
 
@@ -107,11 +107,11 @@ export const authOptions: NextAuthOptions = {
   ],
   session: {
     strategy: 'jwt',
-    maxAge: 24 * 60 * 60, // 24 hours (reduced from 30 days for security)
-    updateAge: 60 * 60, // 1 hour (reduced from 24 hours)
+    maxAge: 8 * 60 * 60, // 8 hours (reduced for better security)
+    updateAge: 30 * 60, // 30 minutes (more frequent updates)
   },
   jwt: {
-    maxAge: 24 * 60 * 60, // 24 hours (reduced from 30 days)
+    maxAge: 8 * 60 * 60, // 8 hours (reduced for better security)
   },
   cookies: {
     sessionToken: {

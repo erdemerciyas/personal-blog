@@ -45,18 +45,22 @@ async function seedData() {
     await mongoose.connect(mongoUri);
     console.log('Connected to MongoDB');
 
-    // Admin kullanıcısı oluştur
-    const hashedPassword = await hash('admin123', 12);
-    await User.findOneAndUpdate(
-      { email: 'admin@example.com' },
-      {
+    // Admin kullanıcısı oluştur - GÜÇLÜ ŞİFRE KULLANIN!
+    const adminPassword = process.env.ADMIN_DEFAULT_PASSWORD || 'TempAdmin2024!@#';
+    const hashedPassword = await hash(adminPassword, 12);
+    
+    // Sadece admin yoksa oluştur
+    const existingAdmin = await User.findOne({ email: 'admin@example.com' });
+    if (!existingAdmin) {
+      await User.create({
         email: 'admin@example.com',
         password: hashedPassword,
         name: 'Admin',
         role: 'admin',
-      },
-      { upsert: true }
-    );
+      });
+      console.log('⚠️  GÜVENLIK UYARISI: Varsayılan admin şifresi oluşturuldu!');
+      console.log('⚠️  Lütfen ilk girişten sonra şifrenizi değiştirin!');
+    }
 
     // Örnek hizmetler
     const services = [
@@ -139,7 +143,8 @@ async function seedData() {
     console.log('Örnek veriler başarıyla eklendi');
     console.log('Admin kullanıcısı:');
     console.log('Email: admin@example.com');
-    console.log('Şifre: admin123');
+    console.log('Şifre: ' + adminPassword);
+    console.log('⚠️  GÜVENLİK: İlk girişten sonra mutlaka şifrenizi değiştirin!');
 
     await mongoose.connection.close();
   } catch (error) {
