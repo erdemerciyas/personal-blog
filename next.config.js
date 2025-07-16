@@ -6,6 +6,8 @@ const nextConfig = {
   typescript: {
     ignoreBuildErrors: true,
   },
+  // Vercel deployment optimizations
+  // output: 'standalone', // Vercel için gerekli değil
   images: {
     remotePatterns: [
       {

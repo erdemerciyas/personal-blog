@@ -1,6 +1,6 @@
 {
   "name": "personal-blog",
-  "version": "1.13.4",
+  "version": "1.13.5",
   "private": true,
   "author": {
     "name": "Erdem Erciyas",
@@ -27,7 +27,7 @@
     "dev:turbo": "next dev --turbo",
     "build": "next build",
     "build:analyze": "cross-env ANALYZE=true next build",
-    "vercel-build": "next build",
+    "vercel-build": "node vercel-build-fix.js",
     "cpanel-build": "node scripts/universal-build.js",
     "start": "next start",
     "start:dev": "next start",
