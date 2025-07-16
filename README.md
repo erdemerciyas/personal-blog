@@ -1,8 +1,8 @@
 # Personal Blog
 
-[![Production - Vercel](https://img.shields.io/badge/Production-Live-green?logo=vercel)](https://your-app-url.com)
+[![Production - Vercel](https://img.shields.io/badge/Production-Live-green?logo=vercel)]([https://your-app-url.com](https://erdemerciyas.com.tr))
 
-> **Canlı Demo:** [https://your-app-url.com](https://your-app-url.com)
+> **Canlı Demo:** [https://erdemerciyas.com.tr](https://erdemerciyas.com.tr)
 
 ## Son Sürüm
 
