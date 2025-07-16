@@ -5,10 +5,17 @@ import connectDB from '../../../../lib/mongoose';
 import User from '../../../../models/User';
 import bcrypt from 'bcryptjs';
 import { SecurityUtils } from '../../../../lib/security-utils';
+import { SecurityEvents } from '../../../../lib/security-audit';
 
 // PUT /api/settings/password - Kullanıcı şifresini değiştir
 export async function PUT(request: Request) {
   try {
+    // Get client IP and user agent for security logging
+    const clientIP = request.headers.get('x-forwarded-for') || 
+                    request.headers.get('x-real-ip') || 
+                    'unknown';
+    const userAgent = request.headers.get('user-agent') || 'unknown';
+
     const session = await getServerSession(authOptions);
     if (!session?.user?.email) {
       return NextResponse.json(
@@ -96,6 +103,9 @@ export async function PUT(request: Request) {
       password: hashedNewPassword,
       updatedAt: new Date(),
     });
+
+    // Log successful password change
+    SecurityEvents.passwordChange(clientIP, session.user.email, userAgent);
 
     return NextResponse.json({
       message: 'Şifre başarıyla güncellendi'

@@ -3,6 +3,7 @@ import CredentialsProvider from 'next-auth/providers/credentials';
 import connectDB from './mongoose';
 import UserModel from '../models/User';
 import bcrypt from 'bcryptjs';
+import { SecurityEvents } from './security-audit';
 
 interface AuthUser {
   id: string;
@@ -29,7 +30,7 @@ export const authOptions: NextAuthOptions = {
         email: { label: 'Email', type: 'email' },
         password: { label: 'Password', type: 'password' }
       },
-      async authorize(credentials: Credentials | undefined): Promise<AuthUser | null> {
+      async authorize(credentials: Credentials | undefined, req: any): Promise<AuthUser | null> {
         if (!credentials?.email || !credentials?.password) {
           return null;
         }
@@ -37,6 +38,13 @@ export const authOptions: NextAuthOptions = {
         // Input validation and sanitization
         const email = credentials.email.trim().toLowerCase();
         const password = credentials.password;
+        
+        // Get client IP and user agent for security logging
+        const clientIP = req?.headers?.['x-forwarded-for'] || 
+                        req?.headers?.['x-real-ip'] || 
+                        req?.connection?.remoteAddress || 
+                        'unknown';
+        const userAgent = req?.headers?.['user-agent'] || 'unknown';
 
         // Basic email validation
         if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
@@ -51,6 +59,9 @@ export const authOptions: NextAuthOptions = {
         try {
           await connectDB();
           
+          // Log login attempt
+          SecurityEvents.loginAttempt(clientIP, email, userAgent);
+          
           // Add timing attack protection
           const startTime = Date.now();
           
@@ -63,6 +74,9 @@ export const authOptions: NextAuthOptions = {
             if (elapsed < 100) {
               await new Promise(resolve => setTimeout(resolve, 100 - elapsed));
             }
+            
+            // Log failed login - user not found
+            SecurityEvents.loginFailure(clientIP, email, userAgent, 'user_not_found');
             return null;
           }
 
@@ -70,11 +84,7 @@ export const authOptions: NextAuthOptions = {
           
           if (!isPasswordValid) {
             // Log failed login attempt
-            console.warn('Failed login attempt:', {
-              email: email,
-              timestamp: new Date().toISOString(),
-              ip: 'unknown' // Will be logged by middleware
-            });
+            SecurityEvents.loginFailure(clientIP, email, userAgent, 'invalid_password');
             
             const elapsed = Date.now() - startTime;
             if (elapsed < 100) {
@@ -84,12 +94,7 @@ export const authOptions: NextAuthOptions = {
           }
 
           // Log successful login
-          console.info('Successful login:', {
-            userId: user._id.toString(),
-            email: email,
-            role: user.role,
-            timestamp: new Date().toISOString()
-          });
+          SecurityEvents.loginSuccess(clientIP, email, userAgent);
 
           return {
             id: user._id.toString(),
