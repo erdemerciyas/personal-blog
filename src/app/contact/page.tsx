@@ -2,7 +2,7 @@
 
 import { useState, useEffect, Suspense } from 'react';
 import { EnvelopeIcon, PhoneIcon, MapPinIcon, PaperAirplaneIcon, CheckCircleIcon, ExclamationCircleIcon, ClockIcon } from '@heroicons/react/24/outline';
-import { SkeletonLoader } from '../../components/SkeletonLoader';
+import ContentSkeleton from '../../components/ContentSkeleton';
 
 interface ContactInfo {
   email: string;
@@ -230,7 +230,7 @@ function ContactPageContent() {
                   <h2 className="text-2xl font-bold text-slate-800 mb-6">İletişim Bilgilerimiz</h2>
                   
                   {contactLoading ? (
-                    <SkeletonLoader pageKey="contact" loadingText="İletişim bilgileri yükleniyor..." className="space-y-4" />
+                    <ContentSkeleton type="list" count={4} />
                   ) : (
                     <div className="space-y-6">
                       <div className="flex items-start">
@@ -351,7 +351,7 @@ function ContactPageContent() {
               </div>
               
               {contactLoading ? (
-                <SkeletonLoader pageKey="contact" loadingText="Harita yükleniyor..." className="space-y-4" />
+                <ContentSkeleton type="card" count={1} />
               ) : (
                 <div className="space-y-4">
                   {/* Address summary */}
@@ -491,8 +491,16 @@ export default function ContactPage() {
   // Suspense can be used if there are searchParams or other async dependencies for the page itself
   return (
     <Suspense fallback={
-      <div className="min-h-screen">
-        <SkeletonLoader pageKey="contact" loadingText="İletişim sayfası yükleniyor..." className="min-h-screen flex items-center justify-center bg-gradient-to-br from-teal-500 to-cyan-600 text-white" />
+      <div className="min-h-screen bg-gray-50">
+        <div className="bg-gradient-to-br from-teal-500 to-cyan-600 py-28">
+          <div className="max-w-3xl mx-auto px-4 text-center">
+            <div className="w-16 h-16 border-4 border-white/30 border-t-white rounded-full animate-spin mx-auto mb-4"></div>
+            <p className="text-white text-lg">İletişim sayfası yükleniyor...</p>
+          </div>
+        </div>
+        <div className="container mx-auto px-4 py-20">
+          <ContentSkeleton type="card" count={2} className="grid md:grid-cols-2 gap-8" />
+        </div>
       </div>
     }>
       <ContactPageContent />

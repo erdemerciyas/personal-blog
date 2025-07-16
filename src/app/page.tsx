@@ -4,7 +4,7 @@ import Link from 'next/link';
 import Image from 'next/image';
 import ProjectGrid from '../components/ProjectGrid';
 import HTMLContent from '../components/HTMLContent';
-import { SkeletonLoader } from '../components/SkeletonLoader';
+import ContentSkeleton from '../components/ContentSkeleton';
 import { useSliderItems, usePortfolioItems, useServices } from '../hooks/useApi';
 import { 
   ArrowRightIcon,
@@ -162,11 +162,12 @@ export default function HomePage() {
         sliderLoading ? 'bg-gradient-to-br from-slate-900 to-blue-900' : ''
       }`}>
         {sliderLoading ? (
-          <SkeletonLoader 
-            pageKey="home" 
-            loadingText="Hero içeriği yükleniyor..." 
-            className="absolute inset-0 flex items-center justify-center text-white" 
-          />
+          <div className="absolute inset-0 flex items-center justify-center">
+            <div className="text-center text-white">
+              <div className="w-16 h-16 border-4 border-white/30 border-t-white rounded-full animate-spin mx-auto mb-4"></div>
+              <p className="text-lg">Hero içeriği yükleniyor...</p>
+            </div>
+          </div>
         ) : (
           <>
             {/* Background Images */}
@@ -306,7 +307,7 @@ export default function HomePage() {
 
           {/* Services Grid */}
           {servicesLoading ? (
-            <SkeletonLoader pageKey="home" loadingText="Hizmetler yükleniyor..." className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8" />
+            <ContentSkeleton type="card" count={3} className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8" />
           ) : (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mb-16">
               {services.map((service, index) => (
@@ -382,7 +383,7 @@ export default function HomePage() {
           
           {/* Projects */}
           {portfolioLoading ? (
-            <SkeletonLoader pageKey="home" loadingText="Projeler yükleniyor..." className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8" />
+            <ContentSkeleton type="card" count={6} className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8" />
           ) : portfolioItems.length > 0 ? (
             <>
               <ProjectGrid 

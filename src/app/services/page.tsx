@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
-import { SkeletonLoader } from '../../components/SkeletonLoader';
+import ContentSkeleton from '../../components/ContentSkeleton';
 import Image from 'next/image';
 import HTMLContent from '../../components/HTMLContent';
 import { 
@@ -81,8 +81,16 @@ export default function ServicesPage() {
 
   if (loading) {
     return (
-      <div className="min-h-screen">
-        <SkeletonLoader pageKey="services" loadingText="Hizmetler yükleniyor..." className="min-h-screen flex items-center justify-center bg-gradient-to-br from-teal-500 to-cyan-600 text-white" />
+      <div className="min-h-screen bg-gray-50">
+        <div className="bg-gradient-to-br from-teal-500 to-cyan-600 py-28">
+          <div className="max-w-3xl mx-auto px-4 text-center">
+            <div className="w-16 h-16 border-4 border-white/30 border-t-white rounded-full animate-spin mx-auto mb-4"></div>
+            <p className="text-white text-lg">Hizmetler yükleniyor...</p>
+          </div>
+        </div>
+        <div className="container mx-auto px-4 py-20">
+          <ContentSkeleton type="card" count={3} />
+        </div>
       </div>
     );
   }

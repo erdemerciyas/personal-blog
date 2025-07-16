@@ -20,7 +20,7 @@ import {
   RocketLaunchIcon
 } from '@heroicons/react/24/outline';
 
-import { SkeletonLoader } from '../../components/SkeletonLoader';
+import ContentSkeleton from '../../components/ContentSkeleton';
 
 interface Value {
   text: string;
@@ -91,8 +91,11 @@ export default function AboutPage() {
 
   if (loading) {
     return (
-      <div className="min-h-screen">
-        <SkeletonLoader pageKey="about" loadingText="Hakkımda sayfası yükleniyor..." className="min-h-screen flex items-center justify-center bg-gradient-to-br from-teal-500 to-cyan-600 text-white" />
+      <div className="min-h-screen bg-gradient-to-br from-teal-500 to-cyan-600">
+        <div className="container mx-auto px-4 py-20">
+          <ContentSkeleton type="profile" count={1} className="mb-8" />
+          <ContentSkeleton type="article" count={2} />
+        </div>
       </div>
     );
   }
