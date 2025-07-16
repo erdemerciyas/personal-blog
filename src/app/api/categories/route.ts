@@ -3,6 +3,9 @@ import { getServerSession } from 'next-auth';
 import { connectToDatabase } from '../../../lib/mongoose';
 import { authOptions } from '../../../lib/auth';
 
+// Force dynamic rendering
+export const dynamic = 'force-dynamic';
+
 // GET - Tüm kategorileri getir
 export async function GET() {
   try {

@@ -1,9 +1,12 @@
-export const runtime = 'nodejs';
 import { NextResponse } from 'next/server';
 import { getServerSession } from 'next-auth';
 import { authOptions } from '../../../../lib/auth';
 import connectDB from '../../../../lib/mongoose';
 import User from '../../../../models/User';
+
+// Force dynamic rendering
+export const dynamic = 'force-dynamic';
+export const runtime = 'nodejs';
 
 interface SessionUser {
   id: string;

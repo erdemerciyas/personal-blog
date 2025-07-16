@@ -6,6 +6,9 @@ import { rateLimit, getClientIP } from '../../../lib/rate-limit';
 import { RequestValidator, CommonValidationRules } from '../../../lib/validation';
 import { logger } from '../../../lib/logger';
 
+// Force dynamic rendering
+export const dynamic = 'force-dynamic';
+
 export async function POST(request: Request) {
   const startTime = Date.now();
   const clientIP = getClientIP(request as any);

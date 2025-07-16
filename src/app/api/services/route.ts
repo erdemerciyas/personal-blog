@@ -9,6 +9,9 @@ import { cache, CacheKeys, CacheTTL, cacheHelpers } from '../../../lib/cache';
 
 import Service from '../../../models/Service';
 
+// Force dynamic rendering
+export const dynamic = 'force-dynamic';
+
 // GET /api/services - Tüm servisleri getir
 export const GET = asyncHandler(async () => {
   const startTime = Date.now();

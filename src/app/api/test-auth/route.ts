@@ -3,6 +3,9 @@ import connectDB from '../../../lib/mongoose';
 import User from '../../../models/User';
 import bcrypt from 'bcryptjs';
 
+// Force dynamic rendering
+export const dynamic = 'force-dynamic';
+
 export async function POST(request: Request) {
   try {
     const { email, password } = await request.json();

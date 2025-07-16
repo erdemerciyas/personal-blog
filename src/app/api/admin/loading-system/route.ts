@@ -3,6 +3,9 @@ import { getServerSession } from 'next-auth';
 import connectDB from '@/lib/mongoose';
 import LoadingSystemConfig from '../../../../models/LoadingSystemConfig';
 
+// Force dynamic rendering
+export const dynamic = 'force-dynamic';
+
 export async function GET() {
     try {
         const session = await getServerSession();

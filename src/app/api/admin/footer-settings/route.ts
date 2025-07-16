@@ -1,8 +1,11 @@
-export const runtime = 'nodejs';
 import { NextResponse } from 'next/server';
 import connectDB from '../../../../lib/mongoose';
 import FooterSettings from '../../../../models/FooterSettings';
 import { getServerSession } from 'next-auth/next';
+
+// Force dynamic rendering
+export const dynamic = 'force-dynamic';
+export const runtime = 'nodejs';
 
 // GET: Footer ayarlarını getir
 export async function GET() {

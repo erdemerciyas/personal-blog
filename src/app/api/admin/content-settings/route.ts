@@ -1,9 +1,12 @@
-export const runtime = 'nodejs';
 import { NextRequest, NextResponse } from 'next/server';
 import { getServerSession } from 'next-auth/next';
 import { authOptions } from '../../../../lib/auth';
 import connectDB from '../../../../lib/mongoose';
 import ContentSettings from '../../../../models/ContentSettings';
+
+// Force dynamic rendering
+export const dynamic = 'force-dynamic';
+export const runtime = 'nodejs';
 
 // GET: İçerik ayarlarını getir
 export async function GET() {

@@ -4,6 +4,8 @@ import { authOptions } from '../../../../lib/auth';
 import connectDB from '../../../../lib/mongoose';
 import About from '../../../../models/About';
 
+// Force dynamic rendering
+export const dynamic = 'force-dynamic';
 export const runtime = 'nodejs';
 
 // GET /api/admin/about - Get about page content
