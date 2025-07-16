@@ -65,8 +65,7 @@ class ConfigManager {
     // Required variables
     const required: (keyof EnvironmentConfig)[] = [
       'NEXTAUTH_URL',
-      'NEXTAUTH_SECRET',
-      'MONGODB_URI'
+      'NEXTAUTH_SECRET'
     ];
 
     for (const key of required) {
@@ -89,9 +88,9 @@ class ConfigManager {
       errors.push(`Invalid APP_URL: ${this.config.APP_URL}`);
     }
 
-    // Validate MongoDB URI
+    // Validate MongoDB URI (optional for now)
     if (this.config.MONGODB_URI && !this.config.MONGODB_URI.startsWith('mongodb')) {
-      errors.push(`Invalid MONGODB_URI format`);
+      logger.warn('Invalid MONGODB_URI format - database features will be disabled', 'CONFIG');
     }
 
     // Validate numeric values
