@@ -1,3 +1,4 @@
+export const runtime = 'nodejs';
 import { NextResponse } from 'next/server';
 import connectDB from '../../../../lib/mongoose';
 import FooterSettings from '../../../../models/FooterSettings';

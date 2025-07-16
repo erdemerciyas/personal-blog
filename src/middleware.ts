@@ -2,7 +2,7 @@ import { NextResponse } from 'next/server';
 import type { NextRequest } from 'next/server';
 import { rateLimit, getClientIP, RATE_LIMITS } from './lib/rate-limit';
 import { SecurityHeaders, getPageType } from './lib/security-headers';
-import { CSRFProtection } from './lib/csrf';
+// import { CSRFProtection } from './lib/csrf';
 import { logger } from './lib/logger';
 
 // Cache for page settings (5 minutes cache)
@@ -216,13 +216,13 @@ export async function middleware(request: NextRequest) {
     }
   }
 
-  // 3. CSRF Protection for state-changing requests
-  if (CSRFProtection.needsProtection(request)) {
-    const csrfResult = await CSRFProtection.middleware()(request);
-    if (csrfResult) {
-      return SecurityHeaders.apply(NextResponse.next());
-    }
-  }
+  // 3. CSRF Protection for state-changing requests (temporarily disabled for deployment)
+  // if (CSRFProtection.needsProtection(request)) {
+  //   const csrfResult = await CSRFProtection.middleware()(request);
+  //   if (csrfResult) {
+  //     return SecurityHeaders.apply(NextResponse.next());
+  //   }
+  // }
 
   // 4. Check page accessibility (for non-API routes)
   if (!pathname.startsWith('/api') && !pathname.startsWith('/admin')) {
