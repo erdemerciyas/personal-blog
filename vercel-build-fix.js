@@ -7,6 +7,11 @@
 
 console.log('🔧 Vercel build başlatılıyor...');
 
+// Vercel environment variables ayarla
+process.env.NODE_ENV = 'production';
+process.env.VERCEL = '1';
+process.env.SKIP_ENV_VALIDATION = 'true';
+
 // Environment variables kontrolü
 const requiredEnvs = ['NEXTAUTH_URL', 'NEXTAUTH_SECRET', 'MONGODB_URI'];
 const missingEnvs = requiredEnvs.filter(env => !process.env[env]);
@@ -24,7 +29,9 @@ try {
     env: { 
       ...process.env, 
       NODE_ENV: 'production',
-      SKIP_ENV_VALIDATION: 'true'
+      VERCEL: '1',
+      SKIP_ENV_VALIDATION: 'true',
+      CI: 'true'
     }
   });
   console.log('✅ Build başarılı!');

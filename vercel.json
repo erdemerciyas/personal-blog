@@ -2,7 +2,7 @@
   "version": 2,
   "framework": "nextjs",
   "buildCommand": "npm run vercel-build",
-  "installCommand": "npm install --legacy-peer-deps",
+  "installCommand": "HUSKY=0 npm install --legacy-peer-deps",
   "functions": {
     "src/app/api/**/*.ts": {
       "maxDuration": 60
