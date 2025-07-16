@@ -43,7 +43,7 @@ class SecurityAudit {
     });
 
     // Check for patterns that require immediate attention
-    this.checkForSuspiciousPatterns(event);
+    this.checkForSuspiciousPatterns(securityEvent);
   }
 
   // Check for suspicious patterns
