@@ -1,6 +1,6 @@
 {
   "name": "personal-blog",
-  "version": "1.13.24",
+  "version": "1.13.25",
   "private": true,
   "author": {
     "name": "Erdem Erciyas",
@@ -80,6 +80,7 @@
     "dotenv": "^16.5.0",
     "eslint": "^8.56.0",
     "eslint-config-next": "^14.0.4",
+    "framer-motion": "^12.23.6",
     "jose": "^6.0.11",
     "jsdom": "^26.1.0",
     "jsonwebtoken": "^9.0.2",

@@ -98,8 +98,7 @@ export async function generateMetadata(): Promise<Metadata> {
 }
 
 import { Breadcrumbs } from '../components';
-
-// ... diğer importlar
+import LoadingBar from '../components/LoadingBar';
 
 export default function RootLayout({
   children,
@@ -131,6 +130,7 @@ export default function RootLayout({
         <link rel="dns-prefetch" href="//res.cloudinary.com" />
       </head>
       <body className={`${inter.className} min-h-screen bg-slate-50 flex flex-col text-slate-900 antialiased`}>
+        <LoadingBar />
         <Providers>
           <ClientWrapper>
             <Header />
