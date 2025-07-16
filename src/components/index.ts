@@ -16,8 +16,9 @@ export { default as HTMLContent } from './HTMLContent';
 export { default as Breadcrumbs } from './Breadcrumbs';
 
 // Loading System exports
-export { SkeletonLoader } from './SkeletonLoader';
-export { withSkeleton } from './withSkeleton';
+// Old skeleton system removed - replaced with modern loading
+// export { SkeletonLoader } from './SkeletonLoader';
+// export { withSkeleton } from './withSkeleton';
 export { default as DefaultLoading } from './DefaultLoading';
 
 // UI Component exports

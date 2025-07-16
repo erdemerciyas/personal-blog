@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
-import { SkeletonLoader } from './SkeletonLoader';
+import ContentSkeleton from './ContentSkeleton';
 import { getLoadingConfig } from '@/lib/config';
 
 export default function DefaultLoading() {
@@ -22,5 +22,5 @@ export default function DefaultLoading() {
   }, []);
 
   if (!shouldShow) return null;
-  return <SkeletonLoader className="p-4" />;
+  return <ContentSkeleton type="card" count={1} className="p-4" />;
 }

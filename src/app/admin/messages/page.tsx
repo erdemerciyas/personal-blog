@@ -1,5 +1,5 @@
 'use client';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, Suspense } from 'react';
 import { useSession } from 'next-auth/react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import AdminLayout from '../../../components/admin/AdminLayout';
@@ -40,7 +40,7 @@ interface Message {
   repliedAt?: string;
 }
 
-export default function AdminMessagesPage() {
+function AdminMessagesContent() {
   const { data: session, status } = useSession();
   const router = useRouter();
   const searchParams = useSearchParams();
@@ -593,5 +593,20 @@ export default function AdminMessagesPage() {
         </div>
       )}
     </AdminLayout>
+  );
+}
+
+export default function AdminMessagesPage() {
+  return (
+    <Suspense fallback={
+      <div className="min-h-screen bg-slate-50 dark:bg-slate-900 flex items-center justify-center">
+        <div className="text-center">
+          <div className="w-16 h-16 border-4 border-teal-500/30 border-t-teal-500 rounded-full animate-spin mx-auto mb-4"></div>
+          <p className="text-slate-600 dark:text-slate-400 text-lg">Mesajlar yükleniyor...</p>
+        </div>
+      </div>
+    }>
+      <AdminMessagesContent />
+    </Suspense>
   );
 } 

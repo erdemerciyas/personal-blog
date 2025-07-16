@@ -2,7 +2,10 @@
 
 import React, { useState, useEffect, useRef } from 'react';
 import Image from 'next/image';
-import { Skeleton } from './SkeletonLoader';
+// Simple loading placeholder component
+const Skeleton = ({ className = '', width = '', height = '' }: { className?: string; width?: string; height?: string }) => (
+  <div className={`animate-pulse bg-gray-200 rounded ${height} ${width} ${className}`} />
+);
 import {
   XMarkIcon,
   PhotoIcon,

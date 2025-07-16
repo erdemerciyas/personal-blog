@@ -5,7 +5,7 @@ import { useSession } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
 import Image from 'next/image';
 import Link from 'next/link';
-import { Skeleton } from '../../../components/SkeletonLoader';
+import ContentSkeleton from '../../../components/ContentSkeleton';
 import AdminLayout from '../../../components/admin/AdminLayout';
 import HTMLContent from '../../../components/HTMLContent';
 import { 
@@ -83,43 +83,9 @@ export default function ServicesPage() {
     return (
       <AdminLayout>
         <div className="space-y-6">
-          <div className="flex items-center justify-between">
-            <div className="space-y-2">
-              <Skeleton height="h-6" width="w-48" />
-              <Skeleton height="h-4" width="w-64" />
-            </div>
-            <Skeleton height="h-12" width="w-32" className="rounded-xl" />
-          </div>
-          
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-            {Array.from({ length: 3 }).map((_, i) => (
-              <Skeleton key={i} height="h-24" className="rounded-xl" />
-            ))}
-          </div>
-          
-          <div className="bg-white rounded-xl shadow-sm border border-slate-200">
-            <div className="p-6 border-b border-slate-200">
-              <Skeleton height="h-6" width="w-32" />
-            </div>
-            <div className="divide-y divide-slate-200">
-              {Array.from({ length: 3 }).map((_, i) => (
-                <div key={i} className="p-6 flex items-start space-x-4">
-                  <Skeleton height="h-20" width="w-20" className="rounded-xl flex-shrink-0" />
-                  <div className="flex-1 space-y-3">
-                    <Skeleton height="h-6" width="w-3/4" />
-                    <Skeleton height="h-4" />
-                    <Skeleton height="h-4" width="w-5/6" />
-                    <Skeleton height="h-4" width="w-32" />
-                  </div>
-                  <div className="flex space-x-2">
-                    <Skeleton height="h-8" width="w-8" className="rounded-lg" />
-                    <Skeleton height="h-8" width="w-8" className="rounded-lg" />
-                    <Skeleton height="h-8" width="w-8" className="rounded-lg" />
-                  </div>
-                </div>
-              ))}
-            </div>
-          </div>
+          <ContentSkeleton type="profile" count={1} className="mb-6" />
+          <ContentSkeleton type="card" count={3} className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6" />
+          <ContentSkeleton type="list" count={3} />
         </div>
       </AdminLayout>
     );

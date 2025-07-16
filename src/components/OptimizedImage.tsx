@@ -1,6 +1,9 @@
 import React, { useState } from 'react';
 import Image from 'next/image';
-import { Skeleton } from './SkeletonLoader';
+// Simple loading placeholder component
+const Skeleton = ({ className = '', width = '', height = '' }: { className?: string; width?: string; height?: string }) => (
+  <div className={`animate-pulse bg-gray-200 ${height} ${width} ${className}`} />
+);
 
 interface OptimizedImageProps {
   src: string;

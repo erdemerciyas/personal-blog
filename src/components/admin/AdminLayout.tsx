@@ -6,7 +6,10 @@ import { useRouter, usePathname } from 'next/navigation';
 import Link from 'next/link';
 import Image from 'next/image';
 import { createPortal } from 'react-dom';
-import { Skeleton } from '../SkeletonLoader';
+// Simple loading placeholder component
+const Skeleton = ({ className = '' }: { className?: string }) => (
+  <div className={`animate-pulse bg-gray-200 rounded ${className}`} />
+);
 import { 
   Bars3Icon, 
   XMarkIcon,
