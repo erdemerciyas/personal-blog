@@ -116,45 +116,16 @@ const Header: React.FC = () => {
     fetchSiteSettings();
   }, []);
 
-  // Fetch page settings for navigation
+  // Set default navigation (temporarily disabled dynamic loading)
   useEffect(() => {
-    const fetchPageSettings = async () => {
-      try {
-        const response = await fetch('/api/admin/page-settings');
-        if (response.ok) {
-          const pageSettings: PageSetting[] = await response.json();
-          const activeNavPages = pageSettings
-            .filter(page => page.isActive && page.showInNavigation)
-            .sort((a, b) => a.order - b.order)
-            .map(page => ({
-              href: page.path,
-              label: page.title,
-              icon: getIconForPage(page.pageId)
-            }));
-          // Benzersiz href'lere göre filtrele
-          const uniqueNavPages: typeof activeNavPages = [];
-          const seen = new Set();
-          for (const page of activeNavPages) {
-            if (!seen.has(page.href)) {
-              uniqueNavPages.push(page);
-              seen.add(page.href);
-            }
-          }
-          setNavLinks(uniqueNavPages);
-        }
-      } catch (error) {
-        console.error('Page settings fetch error:', error);
-        // Fallback navigation (sadece hata durumunda)
-        setNavLinks([
-          { href: '/', label: 'Anasayfa', icon: HomeIcon },
-          { href: '/about', label: 'Hakkımda', icon: UserIcon },
-          { href: '/services', label: 'Hizmetler', icon: WrenchScrewdriverIcon },
-          { href: '/portfolio', label: 'Portfolyo', icon: FolderOpenIcon },
-          { href: '/contact', label: 'İletişim', icon: PhoneIcon },
-        ]);
-      }
-    };
-    fetchPageSettings();
+    // Default navigation links
+    setNavLinks([
+      { href: '/', label: 'Anasayfa', icon: HomeIcon },
+      { href: '/about', label: 'Hakkımda', icon: UserIcon },
+      { href: '/services', label: 'Hizmetler', icon: WrenchScrewdriverIcon },
+      { href: '/portfolio', label: 'Portfolyo', icon: FolderOpenIcon },
+      { href: '/contact', label: 'İletişim', icon: PhoneIcon },
+    ]);
   }, []);
 
   // Hide header on admin pages

@@ -21,6 +21,14 @@ interface Credentials {
 // Vercel'de `VERCEL_URL` varsa onu kullan, yoksa env'den al.
 const vercelUrl = process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : process.env.NEXTAUTH_URL;
 
+// Console hatalarını önlemek için URL validation
+const getBaseUrl = () => {
+  if (typeof window !== 'undefined') {
+    return window.location.origin;
+  }
+  return vercelUrl || process.env.NEXTAUTH_URL || 'http://localhost:3000';
+};
+
 export const authOptions: NextAuthOptions = {
   providers: [
     CredentialsProvider({
@@ -143,8 +151,8 @@ export const authOptions: NextAuthOptions = {
         path: '/',
         secure: process.env.NODE_ENV === 'production',
         // Add additional security options
-        ...(process.env.NODE_ENV === 'production' && {
-          domain: new URL(process.env.NEXTAUTH_URL || '').hostname,
+        ...(process.env.NODE_ENV === 'production' && process.env.NEXTAUTH_URL && {
+          domain: new URL(process.env.NEXTAUTH_URL).hostname,
         }),
       },
     },

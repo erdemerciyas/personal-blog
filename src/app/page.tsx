@@ -89,6 +89,13 @@ const defaultSlider: SliderItem[] = [
 ];
 
 export default function HomePage() {
+  // Client-side mounting state to prevent hydration issues
+  const [isMounted, setIsMounted] = useState(false);
+  
+  useEffect(() => {
+    setIsMounted(true);
+  }, []);
+
   // Use optimized API hooks with caching
   const { data: sliderData, loading: sliderLoading } = useSliderItems();
   const { data: portfolioData, loading: portfolioLoading } = usePortfolioItems(6);
@@ -154,6 +161,18 @@ export default function HomePage() {
   };
 
   const currentSlide = sliderItems[currentSlideIndex] || defaultSlider[0];
+
+  // Prevent hydration mismatch by not rendering until mounted
+  if (!isMounted) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-slate-900 to-blue-900 flex items-center justify-center">
+        <div className="text-center text-white">
+          <div className="w-16 h-16 border-4 border-white/30 border-t-white rounded-full animate-spin mx-auto mb-4"></div>
+          <p className="text-lg">Sayfa yükleniyor...</p>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen">

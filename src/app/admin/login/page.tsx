@@ -13,8 +13,7 @@ import {
   EnvelopeIcon,
   CheckCircleIcon,
   SunIcon,
-  MoonIcon,
-  SparklesIcon
+  MoonIcon
 } from '@heroicons/react/24/outline';
 
 function LoginForm() {
