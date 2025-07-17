@@ -79,11 +79,19 @@ export default function AdminDashboard() {
 
   useEffect(() => {
     const fetchStats = async () => {
+      // Session kontrolü - sadece authenticated user için API çağrısı yap
+      if (status !== 'authenticated' || !session?.user) {
+        setLoading(false);
+        return;
+      }
+
       try {
         const response = await fetch('/api/admin/dashboard-stats');
         if (response.ok) {
           const data = await response.json();
           setStats(data);
+        } else {
+          console.warn('Dashboard stats API returned:', response.status);
         }
       } catch (error) {
         console.error('Dashboard stats fetch error:', error);
@@ -93,7 +101,7 @@ export default function AdminDashboard() {
     };
 
     fetchStats();
-  }, []);
+  }, [status, session]);
 
   if (status === 'loading') {
     return (
