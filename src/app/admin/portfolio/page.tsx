@@ -5,7 +5,7 @@ import { useSession } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
 import Image from 'next/image';
 import Link from 'next/link';
-import ContentSkeleton from '../../../components/ContentSkeleton';
+import { PageLoader, InlineLoader } from '../../../components/AdminLoader';
 import AdminLayout from '../../../components/admin/AdminLayout';
 import HTMLContent from '../../../components/HTMLContent';
 import { 
@@ -202,11 +202,7 @@ export default function PortfolioManagement() {
   if (status === 'loading' || loading) {
     return (
       <AdminLayout>
-        <div className="space-y-6">
-          <ContentSkeleton type="profile" count={1} className="mb-6" />
-          <ContentSkeleton type="card" count={2} className="mb-6" />
-          <ContentSkeleton type="list" count={3} />
-        </div>
+        <PageLoader text="Portfolio yükleniyor..." />
       </AdminLayout>
     );
   }
@@ -432,8 +428,8 @@ export default function PortfolioManagement() {
               </div>
               
               {categoriesLoading ? (
-                <div className="divide-y divide-slate-200">
-                  <ContentSkeleton type="list" count={3} />
+                <div className="p-6">
+                  <InlineLoader text="Kategoriler yükleniyor..." />
                 </div>
               ) : categories.length === 0 ? (
                 <div className="p-12 text-center">

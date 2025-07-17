@@ -2,10 +2,10 @@
 import { useState, useEffect, Suspense } from 'react';
 import { signIn } from 'next-auth/react';
 import { useRouter, useSearchParams } from 'next/navigation';
-import { 
-  EyeIcon, 
-  EyeSlashIcon, 
-  UserIcon, 
+import {
+  EyeIcon,
+  EyeSlashIcon,
+  UserIcon,
   LockClosedIcon,
   CubeTransparentIcon,
   ExclamationTriangleIcon,
@@ -20,12 +20,12 @@ import {
 function LoginForm() {
   const router = useRouter();
   const searchParams = useSearchParams();
-  
+
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
   const [darkMode, setDarkMode] = useState(false);
-  
+
   const [formData, setFormData] = useState({
     email: '',
     password: ''
@@ -54,7 +54,7 @@ function LoginForm() {
 
   useEffect(() => {
     if (!searchParams) return;
-    
+
     const errorMessage = searchParams.get('error');
     if (errorMessage) {
       switch (errorMessage) {
@@ -88,13 +88,13 @@ function LoginForm() {
     setLoading(true);
 
     try {
-      console.log('🔐 Login attempt:', { 
-        email: formData.email, 
+      console.log('🔐 Login attempt:', {
+        email: formData.email,
         passwordLength: formData.password.length,
         currentUrl: window.location.href,
-        nextAuthUrl: window.location.origin 
+        nextAuthUrl: window.location.origin
       });
-      
+
       const result = await signIn('credentials', {
         email: formData.email,
         password: formData.password,
@@ -163,78 +163,44 @@ function LoginForm() {
   };
 
   return (
-    <div className={`min-h-screen transition-all duration-500 ${
-      darkMode 
-        ? 'bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900' 
-        : 'bg-gradient-to-br from-indigo-500 via-purple-600 to-pink-500'
-    } flex items-center justify-center px-4 relative overflow-hidden`}>
+    <div className={`min-h-screen flex items-center justify-center px-4 py-8 transition-colors duration-300 ${
+      darkMode ? 'dark bg-slate-900' : 'bg-slate-50'
+    }`}>
       
-      {/* Animated Background Elements */}
-      <div className="absolute inset-0 overflow-hidden">
-        <div className={`absolute -top-40 -right-40 w-80 h-80 rounded-full opacity-20 animate-pulse ${
-          darkMode ? 'bg-teal-500' : 'bg-white'
-        }`}></div>
-        <div className={`absolute -bottom-40 -left-40 w-80 h-80 rounded-full opacity-20 animate-pulse delay-1000 ${
-          darkMode ? 'bg-blue-500' : 'bg-white'
-        }`}></div>
-        <div className={`absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-96 h-96 rounded-full opacity-10 animate-spin ${
-          darkMode ? 'bg-gradient-to-r from-teal-500 to-blue-500' : 'bg-white'
-        }`} style={{ animationDuration: '20s' }}></div>
-      </div>
-
       {/* Theme Toggle Button */}
       <button
         onClick={toggleDarkMode}
-        className={`absolute top-6 right-6 p-3 rounded-full backdrop-blur-xl border transition-all duration-300 hover:scale-110 ${
-          darkMode 
-            ? 'bg-white/10 border-white/20 text-white hover:bg-white/20' 
-            : 'bg-white/20 border-white/30 text-white hover:bg-white/30'
-        }`}
+        className="fixed top-6 right-6 p-3 rounded-xl bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 shadow-sm hover:shadow-md transition-all duration-200 z-10"
+        title={darkMode ? 'Light moda geç' : 'Dark moda geç'}
       >
         {darkMode ? (
-          <SunIcon className="w-6 h-6" />
+          <SunIcon className="w-5 h-5 text-slate-600 dark:text-slate-300" />
         ) : (
-          <MoonIcon className="w-6 h-6" />
+          <MoonIcon className="w-5 h-5 text-slate-600 dark:text-slate-300" />
         )}
       </button>
 
-      <div className="max-w-md w-full relative z-10">
-        
+      <div className="max-w-md w-full">
+
         {/* Logo and Title */}
         <div className="text-center mb-8">
-          <div className={`inline-flex items-center justify-center w-20 h-20 rounded-3xl mb-6 shadow-2xl transform hover:scale-105 transition-all duration-300 ${
-            darkMode 
-              ? 'bg-gradient-to-br from-teal-500 to-blue-600' 
-              : 'bg-gradient-to-br from-white/20 to-white/10 backdrop-blur-xl border border-white/30'
-          }`}>
-            {darkMode ? (
-              <CubeTransparentIcon className="w-10 h-10 text-white" />
-            ) : (
-              <SparklesIcon className="w-10 h-10 text-white" />
-            )}
+          <div className="inline-flex items-center justify-center w-16 h-16 bg-gradient-to-br from-teal-500 to-blue-600 rounded-2xl mb-6 shadow-lg">
+            <CubeTransparentIcon className="w-8 h-8 text-white" />
           </div>
-          <h1 className="text-4xl font-bold text-white mb-3 tracking-tight">Admin Panel</h1>
-          <p className={`${darkMode ? 'text-slate-400' : 'text-white/80'} text-lg`}>
+          <h1 className="text-3xl font-bold text-slate-900 dark:text-white mb-2">Admin Panel</h1>
+          <p className="text-slate-600 dark:text-slate-400">
             Yönetim paneline hoş geldiniz
           </p>
         </div>
 
         {/* Login Card */}
-        <div className={`backdrop-blur-2xl rounded-3xl p-8 border shadow-2xl transform hover:scale-[1.02] transition-all duration-500 ${
-          darkMode 
-            ? 'bg-white/5 border-white/10' 
-            : 'bg-white/10 border-white/20'
-        }`}>
-          
+        <div className="bg-white dark:bg-slate-800 rounded-2xl p-8 shadow-sm border border-slate-200 dark:border-slate-700">
+
           {/* Error Message */}
           {error && (
-            <div className="mb-6 animate-shake">
-              <div className={`border p-4 rounded-2xl flex items-center space-x-3 ${
-                darkMode 
-                  ? 'bg-red-500/10 border-red-500/30 text-red-300' 
-                  : 'bg-red-500/20 border-red-500/40 text-red-100'
-              }`}>
-                <ExclamationTriangleIcon className="w-5 h-5 text-red-400 flex-shrink-0" />
+            <div className="mb-6">
+              <div className="bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 text-red-700 dark:text-red-300 p-4 rounded-xl flex items-center space-x-3">
+                <ExclamationTriangleIcon className="w-5 h-5 text-red-500 flex-shrink-0" />
                 <span className="text-sm font-medium">{error}</span>
               </div>
             </div>
@@ -242,10 +208,10 @@ function LoginForm() {
 
           {/* Login Form */}
           <form onSubmit={handleSubmit} className="space-y-6">
-            
+
             {/* Email Field */}
             <div className="space-y-2">
-              <label htmlFor="email" className="block text-sm font-semibold text-slate-200">
+              <label htmlFor="email" className="block text-sm font-medium text-slate-700 dark:text-slate-300">
                 Email Adresi
               </label>
               <div className="relative">
@@ -260,7 +226,7 @@ function LoginForm() {
                   required
                   value={formData.email}
                   onChange={handleChange}
-                  className="w-full bg-white/5 border border-white/20 rounded-xl pl-12 pr-4 py-4 text-white placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-transparent transition-all duration-200"
+                  className="w-full bg-slate-50 dark:bg-slate-700 border border-slate-200 dark:border-slate-600 rounded-xl pl-12 pr-4 py-3 text-slate-900 dark:text-white placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-transparent transition-all duration-200"
                   placeholder="admin@example.com"
                 />
               </div>
@@ -268,7 +234,7 @@ function LoginForm() {
 
             {/* Password Field */}
             <div className="space-y-2">
-              <label htmlFor="password" className="block text-sm font-semibold text-slate-200">
+              <label htmlFor="password" className="block text-sm font-medium text-slate-700 dark:text-slate-300">
                 Şifre
               </label>
               <div className="relative">
@@ -283,13 +249,13 @@ function LoginForm() {
                   required
                   value={formData.password}
                   onChange={handleChange}
-                  className="w-full bg-white/5 border border-white/20 rounded-xl pl-12 pr-12 py-4 text-white placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-transparent transition-all duration-200"
+                  className="w-full bg-slate-50 dark:bg-slate-700 border border-slate-200 dark:border-slate-600 rounded-xl pl-12 pr-12 py-3 text-slate-900 dark:text-white placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-transparent transition-all duration-200"
                   placeholder="••••••••"
                 />
                 <button
                   type="button"
                   onClick={() => setShowPassword(!showPassword)}
-                  className="absolute inset-y-0 right-0 pr-4 flex items-center text-slate-400 hover:text-white transition-colors"
+                  className="absolute inset-y-0 right-0 pr-4 flex items-center text-slate-400 hover:text-slate-600 dark:hover:text-slate-300 transition-colors"
                 >
                   {showPassword ? (
                     <EyeSlashIcon className="h-5 w-5" />
@@ -304,23 +270,14 @@ function LoginForm() {
             <button
               type="submit"
               disabled={loading}
-              className={`w-full flex items-center justify-center space-x-3 py-4 px-6 rounded-xl font-semibold transition-all duration-300 shadow-lg ${
-                loading
-                  ? `cursor-not-allowed ${
-                      darkMode 
-                        ? 'bg-teal-600/30 text-teal-300' 
-                        : 'bg-white/20 text-white/60'
-                    }`
-                  : `transform hover:scale-105 hover:shadow-2xl ${
-                      darkMode 
-                        ? 'bg-gradient-to-r from-teal-500 to-blue-600 hover:from-teal-600 hover:to-blue-700 text-white' 
-                        : 'bg-gradient-to-r from-white/20 to-white/10 backdrop-blur-xl border border-white/30 hover:bg-white/30 text-white'
-                    }`
-              }`}
+              className={`w-full flex items-center justify-center space-x-3 py-3 px-6 rounded-xl font-medium transition-all duration-200 ${loading
+                ? 'cursor-not-allowed bg-teal-400 text-white opacity-50'
+                : 'bg-gradient-to-r from-teal-500 to-blue-600 hover:from-teal-600 hover:to-blue-700 text-white shadow-sm hover:shadow-md'
+                }`}
             >
               {loading ? (
                 <>
-                  <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-white"></div>
+                  <div className="animate-spin rounded-full h-5 w-5 border-2 border-white/30 border-t-white"></div>
                   <span>Giriş Yapılıyor...</span>
                 </>
               ) : (
@@ -336,7 +293,7 @@ function LoginForm() {
           <div className="mt-6 text-center">
             <button
               onClick={() => setShowForgotPassword(true)}
-              className="text-slate-400 hover:text-white transition-colors text-sm"
+              className="text-slate-500 dark:text-slate-400 hover:text-teal-600 dark:hover:text-teal-400 transition-colors text-sm font-medium"
             >
               Şifremi unuttum
             </button>
@@ -346,20 +303,20 @@ function LoginForm() {
         {/* Forgot Password Modal */}
         {showForgotPassword && (
           <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 p-4">
-            <div className="bg-white/10 backdrop-blur-xl rounded-3xl p-8 border border-white/20 max-w-md w-full">
+            <div className="bg-white dark:bg-slate-800 rounded-2xl p-8 border border-slate-200 dark:border-slate-700 shadow-xl max-w-md w-full">
               <div className="text-center mb-6">
                 <div className="inline-flex items-center justify-center w-12 h-12 bg-gradient-to-br from-teal-500 to-blue-600 rounded-xl mb-4">
                   <EnvelopeIcon className="w-6 h-6 text-white" />
                 </div>
-                <h2 className="text-2xl font-bold text-white mb-2">Şifremi Unuttum</h2>
-                <p className="text-slate-400 text-sm">Email adresinizi girin, şifre sıfırlama bağlantısı göndereceğiz</p>
+                <h2 className="text-2xl font-bold text-slate-900 dark:text-white mb-2">Şifremi Unuttum</h2>
+                <p className="text-slate-600 dark:text-slate-400 text-sm">Email adresinizi girin, şifre sıfırlama bağlantısı göndereceğiz</p>
               </div>
 
               {/* Success Message */}
               {forgotPasswordMessage && (
                 <div className="mb-6">
-                  <div className="bg-green-500/10 border border-green-500/30 text-green-300 p-4 rounded-2xl flex items-center space-x-3">
-                    <CheckCircleIcon className="w-5 h-5 text-green-400 flex-shrink-0" />
+                  <div className="bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800 text-green-700 dark:text-green-300 p-4 rounded-xl flex items-center space-x-3">
+                    <CheckCircleIcon className="w-5 h-5 text-green-500 flex-shrink-0" />
                     <span className="text-sm">{forgotPasswordMessage}</span>
                   </div>
                 </div>
@@ -368,8 +325,8 @@ function LoginForm() {
               {/* Error Message */}
               {error && (
                 <div className="mb-6">
-                  <div className="bg-red-500/10 border border-red-500/30 text-red-300 p-4 rounded-2xl flex items-center space-x-3">
-                    <ExclamationTriangleIcon className="w-5 h-5 text-red-400 flex-shrink-0" />
+                  <div className="bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 text-red-700 dark:text-red-300 p-4 rounded-xl flex items-center space-x-3">
+                    <ExclamationTriangleIcon className="w-5 h-5 text-red-500 flex-shrink-0" />
                     <span className="text-sm">{error}</span>
                   </div>
                 </div>
@@ -377,7 +334,7 @@ function LoginForm() {
 
               <form onSubmit={handleForgotPassword} className="space-y-6">
                 <div className="space-y-2">
-                  <label htmlFor="forgotEmail" className="block text-sm font-semibold text-slate-200">
+                  <label htmlFor="forgotEmail" className="block text-sm font-medium text-slate-700 dark:text-slate-300">
                     Email Adresi
                   </label>
                   <div className="relative">
@@ -392,7 +349,7 @@ function LoginForm() {
                       required
                       value={forgotPasswordEmail}
                       onChange={(e) => setForgotPasswordEmail(e.target.value)}
-                      className="w-full bg-white/5 border border-white/20 rounded-xl pl-12 pr-4 py-4 text-white placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-transparent transition-all duration-200"
+                      className="w-full bg-slate-50 dark:bg-slate-700 border border-slate-200 dark:border-slate-600 rounded-xl pl-12 pr-4 py-3 text-slate-900 dark:text-white placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-transparent transition-all duration-200"
                       placeholder="admin@example.com"
                     />
                   </div>
@@ -407,21 +364,21 @@ function LoginForm() {
                       setForgotPasswordMessage(null);
                       setForgotPasswordEmail('');
                     }}
-                    className="flex-1 py-3 px-4 bg-white/5 border border-white/20 rounded-xl text-slate-300 hover:bg-white/10 transition-colors"
+                    className="flex-1 py-3 px-4 bg-slate-100 dark:bg-slate-700 border border-slate-200 dark:border-slate-600 rounded-xl text-slate-700 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-600 transition-colors"
                   >
                     İptal
                   </button>
                   <button
                     type="submit"
                     disabled={forgotPasswordLoading}
-                    className={`flex-1 flex items-center justify-center space-x-2 py-3 px-4 rounded-xl font-semibold transition-all duration-200 ${
-                      forgotPasswordLoading
-                        ? 'bg-teal-600/50 cursor-not-allowed text-teal-200'
-                        : 'bg-gradient-to-r from-teal-600 to-blue-600 hover:from-teal-700 hover:to-blue-700 text-white'
-                    }`}
+                    className={`flex-1 flex items-center justify-center space-x-2 py-3 px-4 rounded-xl font-medium transition-all duration-200 ${forgotPasswordLoading
+                      ? 'bg-teal-400 cursor-not-allowed text-white opacity-50'
+                      : 'bg-gradient-to-r from-teal-500 to-blue-600 hover:from-teal-600 hover:to-blue-700 text-white shadow-sm hover:shadow-md'
+                      }`}
                   >
                     {forgotPasswordLoading ? (
                       <>
+                        <div className="animate-spin rounded-full h-4 w-4 border-2 border-white/30 border-t-white"></div>
                         <span>Gönderiliyor...</span>
                       </>
                     ) : (
@@ -436,7 +393,7 @@ function LoginForm() {
 
         {/* Footer */}
         <div className="text-center mt-8">
-          <p className="text-slate-400 text-sm">
+          <p className="text-slate-500 dark:text-slate-400 text-sm">
             © 2025 Erciyas Engineering. Tüm hakları saklıdır.
           </p>
         </div>
@@ -448,10 +405,10 @@ function LoginForm() {
 export default function LoginPage() {
   return (
     <Suspense fallback={
-      <div className="min-h-screen bg-gradient-to-br from-indigo-500 via-purple-600 to-pink-500 flex items-center justify-center">
-        <div className="text-center text-white">
-          <div className="w-16 h-16 border-4 border-white/30 border-t-white rounded-full animate-spin mx-auto mb-4"></div>
-          <p className="text-lg">Giriş sayfası yükleniyor...</p>
+      <div className="min-h-screen bg-slate-50 dark:bg-slate-900 flex items-center justify-center">
+        <div className="text-center">
+          <div className="w-16 h-16 border-4 border-slate-200 dark:border-slate-700 border-t-teal-500 rounded-full animate-spin mx-auto mb-4"></div>
+          <p className="text-lg text-slate-600 dark:text-slate-300">Giriş sayfası yükleniyor...</p>
         </div>
       </div>
     }>

@@ -2,10 +2,7 @@
 
 import React, { useState, useEffect, useRef } from 'react';
 import Image from 'next/image';
-// Simple loading placeholder component
-const Skeleton = ({ className = '', width = '', height = '' }: { className?: string; width?: string; height?: string }) => (
-  <div className={`animate-pulse bg-gray-200 rounded ${height} ${width} ${className}`} />
-);
+import { InlineLoader } from './AdminLoader';
 import {
   XMarkIcon,
   PhotoIcon,
@@ -373,18 +370,8 @@ const MediaBrowser: React.FC<MediaBrowserProps> = ({
         {/* Content */}
         <div className="p-6 overflow-y-auto flex-1">
           {loading ? (
-            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-4">
-              {Array.from({ length: 12 }).map((_, i) => (
-                <div key={i} className={`${themeStyles.card} rounded-xl p-3 border`}>
-                  <Skeleton height="aspect-square" className="mb-2 rounded-lg" />
-                  <Skeleton height="h-6" className="mb-1 rounded" />
-                  <Skeleton height="h-4" width="w-3/4" className="rounded" />
-                  <div className="flex justify-between mt-2">
-                    <Skeleton height="h-3" width="w-12" className="rounded" />
-                    <Skeleton height="h-4" width="w-16" className="rounded" />
-                  </div>
-                </div>
-              ))}
+            <div className="flex items-center justify-center py-12">
+              <InlineLoader text="Medya dosyaları yükleniyor..." />
             </div>
           ) : filteredItems.length === 0 ? (
             <div className="text-center py-12">

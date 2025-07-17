@@ -393,18 +393,52 @@ function ContactPageContent() {
                   
                   {/* Interactive Map */}
                   <div className="relative h-96 rounded-xl overflow-hidden bg-slate-100 shadow-lg">
-                    {/* Google Maps embed without API key - uses search URL */}
+                    {/* Google Maps embed without API key - using search URL */}
                     <iframe
-                      src={`https://www.google.com/maps?q=${encodeURIComponent(contactInfo.address)}&output=embed&z=15`}
+                      src={`https://maps.google.com/maps?width=100%25&height=400&hl=tr&q=${encodeURIComponent(contactInfo.address)}&t=&z=15&ie=UTF8&iwloc=&output=embed`}
                       className="w-full h-full border-0"
                       allowFullScreen
                       loading="lazy"
                       referrerPolicy="no-referrer-when-downgrade"
                       title="İletişim Konumu"
+                      onLoad={() => {
+                        const loadingOverlay = document.getElementById('map-loading');
+                        if (loadingOverlay) {
+                          loadingOverlay.style.opacity = '0';
+                          setTimeout(() => {
+                            loadingOverlay.style.display = 'none';
+                          }, 300);
+                        }
+                      }}
+                      onError={() => {
+                        console.log('Harita yüklenirken hata oluştu, alternatif yöntem deneniyor...');
+                        const loadingOverlay = document.getElementById('map-loading');
+                        if (loadingOverlay) {
+                          loadingOverlay.innerHTML = `
+                            <div class="text-center">
+                              <div class="w-12 h-12 bg-teal-600 rounded-lg flex items-center justify-center mx-auto mb-4">
+                                <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"></path>
+                                </svg>
+                              </div>
+                              <p class="text-slate-700 font-medium mb-2">Harita yüklenemedi</p>
+                              <p class="text-slate-500 text-sm mb-4">Konumumuzu görüntülemek için aşağıdaki bağlantıları kullanabilirsiniz</p>
+                              <div class="flex flex-col space-y-2">
+                                <a href="https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(contactInfo.address)}" target="_blank" rel="noopener noreferrer" class="inline-flex items-center justify-center px-4 py-2 text-sm font-medium text-white bg-teal-600 hover:bg-teal-700 rounded-lg transition-colors">
+                                  <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"></path>
+                                  </svg>
+                                  Google Maps'te Aç
+                                </a>
+                              </div>
+                            </div>
+                          `;
+                        }
+                      }}
                     />
                     
                     {/* Map loading overlay */}
-                    <div className="absolute inset-0 bg-slate-100 flex items-center justify-center pointer-events-none opacity-0 transition-opacity duration-300" id="map-loading">
+                    <div className="absolute inset-0 bg-slate-100 flex items-center justify-center pointer-events-none opacity-100 transition-opacity duration-300" id="map-loading">
                       <div className="text-center">
                         <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-teal-600 mx-auto mb-2"></div>
                         <span className="text-slate-600">Harita yükleniyor...</span>

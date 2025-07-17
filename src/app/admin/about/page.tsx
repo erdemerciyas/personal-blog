@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react';
 import { useSession } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
-import ContentSkeleton from '../../../components/ContentSkeleton';
+import { PageLoader } from '../../../components/AdminLoader';
 import AdminLayout from '../../../components/admin/AdminLayout';
 import {
   UserIcon,
@@ -99,9 +99,13 @@ export default function AdminAboutPage() {
       if (response.ok) {
         const data = await response.json();
         setAboutData(data);
+      } else {
+        console.error('About data fetch failed:', response.status);
+        setMessage({ type: 'error', text: 'Veriler yüklenirken hata oluştu' });
       }
     } catch (error) {
       console.error('About data fetch error:', error);
+      setMessage({ type: 'error', text: 'Veriler yüklenirken hata oluştu' });
     } finally {
       setLoading(false);
     }
@@ -163,12 +167,7 @@ export default function AdminAboutPage() {
   if (status === 'loading' || loading) {
     return (
       <AdminLayout>
-        <div className="space-y-6">
-          <div className="flex items-center justify-between">
-          <ContentSkeleton type="profile" count={1} className="mb-8" />
-          <ContentSkeleton type="article" count={6} />
-          </div>
-        </div>
+        <PageLoader text="Hakkımda sayfası yükleniyor..." />
       </AdminLayout>
     );
   }

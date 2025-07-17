@@ -2,7 +2,7 @@
 import { useState, useEffect } from 'react';
 import { useSession } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
-import ContentSkeleton from '../../../components/ContentSkeleton';
+import { PageLoader } from '../../../components/AdminLoader';
 import AdminLayout from '../../../components/admin/AdminLayout';
 import {
   DocumentTextIcon,
@@ -53,12 +53,17 @@ export default function AdminPagesManagement() {
   const fetchPages = async () => {
     try {
       const response = await fetch('/api/admin/page-settings');
-      if (!response.ok) throw new Error('Sayfa ayarları getirilemedi');
+      if (!response.ok) {
+        throw new Error(`Sayfa ayarları getirilemedi: ${response.status}`);
+      }
       const data = await response.json();
       setPages(data);
+      setError(''); // Clear any previous errors
     } catch (err) {
+      console.error('Page settings fetch error:', err);
       setError('Sayfa ayarları yüklenirken bir hata oluştu');
-      console.error(err);
+      // Set empty array to prevent infinite loading
+      setPages([]);
     } finally {
       setLoading(false);
     }
@@ -180,12 +185,7 @@ export default function AdminPagesManagement() {
   if (status === 'loading' || loading) {
     return (
       <AdminLayout>
-        <div className="space-y-6">
-          <div className="flex items-center justify-between">
-          <ContentSkeleton type="profile" count={1} className="mb-6" />
-          <ContentSkeleton type="list" count={5} />
-        </div>
-        </div>
+        <PageLoader text="Sayfa ayarları yükleniyor..." />
       </AdminLayout>
     );
   }

@@ -50,15 +50,34 @@ function PortfolioDetailPageContent({ params }: { params: { slug: string } }) {
       setPortfolioItem(data);
         setSelectedImage(data.coverImage || (data.images && data.images[0]) || 'https://via.placeholder.com/1200x800?text=Görsel+Yok');
       
+      // Benzer projeleri getir - kategori bilgisi varsa
       if (data.category?.slug) {
-        const relatedResponse = await fetch(`/api/portfolio?category=${data.category.slug}`);
-        if (relatedResponse.ok) {
+        try {
+          const relatedResponse = await fetch(`/api/portfolio?category=${data.category.slug}`);
+          if (relatedResponse.ok) {
             const relatedData: PortfolioItem[] = await relatedResponse.json();
-          setRelatedProjects(
-            relatedData
-                .filter((project) => project.slug !== params.slug)
-              .slice(0, 3)
-          );
+            const filteredProjects = relatedData
+              .filter((project) => project.slug !== params.slug)
+              .slice(0, 3);
+            setRelatedProjects(filteredProjects);
+          }
+        } catch (relatedError) {
+          console.error('Benzer projeler yüklenirken hata:', relatedError);
+        }
+      } else {
+        // Kategori bilgisi yoksa tüm projelerden rastgele 3 tane al
+        try {
+          const allProjectsResponse = await fetch('/api/portfolio');
+          if (allProjectsResponse.ok) {
+            const allProjects: PortfolioItem[] = await allProjectsResponse.json();
+            const filteredProjects = allProjects
+              .filter((project) => project.slug !== params.slug)
+              .sort(() => 0.5 - Math.random()) // Rastgele sırala
+              .slice(0, 3);
+            setRelatedProjects(filteredProjects);
+          }
+        } catch (relatedError) {
+          console.error('Rastgele projeler yüklenirken hata:', relatedError);
         }
       }
     } catch (err) {

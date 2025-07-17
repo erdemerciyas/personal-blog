@@ -1,114 +1,92 @@
-import { NextResponse } from 'next/server';
-import { getServerSession } from 'next-auth';
+import { NextRequest, NextResponse } from 'next/server';
+import { getServerSession } from 'next-auth/next';
 import { authOptions } from '../../../../lib/auth';
 import connectDB from '../../../../lib/mongoose';
 import User from '../../../../models/User';
+import bcrypt from 'bcryptjs';
 
-// Force dynamic rendering
-export const dynamic = 'force-dynamic';
-export const runtime = 'nodejs';
-
-interface SessionUser {
-  id: string;
-  email: string;
-  name: string;
-  role: string;
-}
-
-// GET /api/admin/users - Tüm kullanıcıları listele
-export async function GET() {
+export async function GET(request: NextRequest) {
   try {
     const session = await getServerSession(authOptions);
     
-    if (!session?.user) {
-      return NextResponse.json(
-        { error: 'Bu işlem için yetkiniz yok' },
-        { status: 401 }
-      );
-    }
-
-    if ((session.user as SessionUser).role !== 'admin') {
-      return NextResponse.json(
-        { error: 'Bu işlem için admin yetkisi gerekli' },
-        { status: 403 }
-      );
+    if (!session?.user || session.user.role !== 'admin') {
+      return NextResponse.json({ message: 'Yetkisiz erişim' }, { status: 401 });
     }
 
     await connectDB();
-
-    const users = await User.find({}, { password: 0 }).sort({ createdAt: -1 });
+    
+    const users = await User.find({})
+      .select('-password')
+      .sort({ createdAt: -1 });
 
     return NextResponse.json(users);
   } catch (error) {
-    console.error('Kullanıcı listesi hatası:', error);
+    console.error('Users fetch error:', error);
     return NextResponse.json(
-      { error: 'Kullanıcılar yüklenirken hata oluştu' },
+      { message: 'Kullanıcılar yüklenirken hata oluştu' },
       { status: 500 }
     );
   }
 }
 
-// POST /api/admin/users - Yeni kullanıcı oluştur
-export async function POST(request: Request) {
+export async function POST(request: NextRequest) {
   try {
     const session = await getServerSession(authOptions);
     
-    if (!session?.user) {
-      return NextResponse.json(
-        { error: 'Bu işlem için yetkiniz yok' },
-        { status: 401 }
-      );
+    if (!session?.user || session.user.role !== 'admin') {
+      return NextResponse.json({ message: 'Yetkisiz erişim' }, { status: 401 });
     }
 
-    if ((session.user as SessionUser).role !== 'admin') {
-      return NextResponse.json(
-        { error: 'Bu işlem için admin yetkisi gerekli' },
-        { status: 403 }
-      );
-    }
-
-    const { name, email, password, role } = await request.json();
+    const { name, email, password, role, isActive } = await request.json();
 
     if (!name || !email || !password) {
       return NextResponse.json(
-        { error: 'İsim, email ve şifre gerekli' },
+        { message: 'Ad, e-posta ve şifre gereklidir' },
         { status: 400 }
       );
     }
 
     await connectDB();
 
-    // Email kontrolü
-    const existingUser = await User.findOne({ email: email.toLowerCase() });
+    // Check if user already exists
+    const existingUser = await User.findOne({ email });
     if (existingUser) {
       return NextResponse.json(
-        { error: 'Bu email adresi zaten kullanımda' },
+        { message: 'Bu e-posta adresi zaten kullanılıyor' },
         { status: 400 }
       );
     }
 
-    const newUser = new User({
-      name: name.trim(),
-      email: email.toLowerCase(),
-      password,
-      role: role || 'user'
+    // Hash password
+    const hashedPassword = await bcrypt.hash(password, 12);
+
+    // Create user
+    const user = new User({
+      name,
+      email,
+      password: hashedPassword,
+      role: role || 'user',
+      isActive: isActive !== undefined ? isActive : true
     });
 
-    await newUser.save();
+    await user.save();
 
-    // Şifreyi response'dan çıkar
-    const userResponse = newUser.toObject();
-    delete userResponse.password;
+    // Return user without password
+    const userResponse = {
+      _id: user._id,
+      name: user.name,
+      email: user.email,
+      role: user.role,
+      isActive: user.isActive,
+      createdAt: user.createdAt
+    };
 
-    return NextResponse.json({
-      message: 'Kullanıcı başarıyla oluşturuldu',
-      user: userResponse
-    }, { status: 201 });
+    return NextResponse.json(userResponse, { status: 201 });
   } catch (error) {
-    console.error('Kullanıcı oluşturma hatası:', error);
+    console.error('User creation error:', error);
     return NextResponse.json(
-      { error: 'Kullanıcı oluşturulurken hata oluştu' },
+      { message: 'Kullanıcı oluşturulurken hata oluştu' },
       { status: 500 }
     );
   }
-} 
+}

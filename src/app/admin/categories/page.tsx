@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react';
 import { useSession } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
-import ContentSkeleton from '../../../components/ContentSkeleton';
+import { PageLoader } from '../../../components/AdminLoader';
 import AdminLayout from '../../../components/admin/AdminLayout';
 import { 
   PlusIcon,
@@ -43,6 +43,8 @@ export default function Categories() {
       router.push('/admin/login');
     } else if (status === 'authenticated' && session?.user?.role !== 'admin') {
       router.push('/');
+    } else if (status === 'authenticated') {
+      fetchCategories();
     }
   }, [status, session, router]);
 
@@ -157,13 +159,7 @@ export default function Categories() {
   if (status === 'loading' || loading) {
     return (
       <AdminLayout>
-        <div className="space-y-6">
-          <div className="flex items-center justify-between">
-          <ContentSkeleton type="profile" count={1} className="mb-6" />
-          <ContentSkeleton type="card" count={3} className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6" />
-          <ContentSkeleton type="article" count={2} />
-        </div>
-        </div>
+        <PageLoader text="Kategoriler yükleniyor..." />
       </AdminLayout>
     );
   }

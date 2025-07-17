@@ -1,9 +1,5 @@
 import React, { useState } from 'react';
 import Image from 'next/image';
-// Simple loading placeholder component
-const Skeleton = ({ className = '', width = '', height = '' }: { className?: string; width?: string; height?: string }) => (
-  <div className={`animate-pulse bg-gray-200 ${height} ${width} ${className}`} />
-);
 
 interface OptimizedImageProps {
   src: string;
@@ -55,11 +51,7 @@ export const OptimizedImage: React.FC<OptimizedImageProps> = ({
   return (
     <div className={`relative ${className}`}>
       {isLoading && (
-        <Skeleton 
-          className="absolute inset-0 z-10" 
-          width="w-full" 
-          height="h-full" 
-        />
+        <div className="absolute inset-0 z-10 bg-gray-200 animate-pulse rounded" />
       )}
       <Image
         src={src}

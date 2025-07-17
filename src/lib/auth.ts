@@ -51,8 +51,8 @@ export const authOptions: NextAuthOptions = {
           return null;
         }
 
-        // Password length check (minimum 8 characters for security)
-        if (password.length < 8 || password.length > 128) {
+        // Password length check (minimum 6 characters for security)
+        if (password.length < 6 || password.length > 128) {
           return null;
         }
 
@@ -60,7 +60,11 @@ export const authOptions: NextAuthOptions = {
           await connectDB();
           
           // Log login attempt
-          SecurityEvents.loginAttempt(clientIP, email, userAgent);
+          try {
+            SecurityEvents.loginAttempt(clientIP, email, userAgent);
+          } catch (secError) {
+            console.log('⚠️ Security logging error:', secError);
+          }
           
           // Add timing attack protection
           const startTime = Date.now();
@@ -76,7 +80,11 @@ export const authOptions: NextAuthOptions = {
             }
             
             // Log failed login - user not found
-            SecurityEvents.loginFailure(clientIP, email, userAgent, 'user_not_found');
+            try {
+              SecurityEvents.loginFailure(clientIP, email, userAgent, 'user_not_found');
+            } catch (secError) {
+              console.log('⚠️ Security logging error:', secError);
+            }
             return null;
           }
 
@@ -84,7 +92,11 @@ export const authOptions: NextAuthOptions = {
           
           if (!isPasswordValid) {
             // Log failed login attempt
-            SecurityEvents.loginFailure(clientIP, email, userAgent, 'invalid_password');
+            try {
+              SecurityEvents.loginFailure(clientIP, email, userAgent, 'invalid_password');
+            } catch (secError) {
+              console.log('⚠️ Security logging error:', secError);
+            }
             
             const elapsed = Date.now() - startTime;
             if (elapsed < 100) {
@@ -94,7 +106,11 @@ export const authOptions: NextAuthOptions = {
           }
 
           // Log successful login
-          SecurityEvents.loginSuccess(clientIP, email, userAgent);
+          try {
+            SecurityEvents.loginSuccess(clientIP, email, userAgent);
+          } catch (secError) {
+            console.log('⚠️ Security logging error:', secError);
+          }
 
           return {
             id: user._id.toString(),

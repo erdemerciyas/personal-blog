@@ -124,9 +124,12 @@ export default function ContentManagement() {
   if (loading) {
     return (
       <AdminLayout title="İçerik Yönetimi" breadcrumbs={breadcrumbs}>
-        <div className="flex items-center justify-center h-64">
-          <div className="flex items-center justify-center h-64">
-            İçerik yükleniyor...
+        <div className="flex items-center justify-center min-h-[400px]">
+          <div className="flex flex-col items-center space-y-4">
+            <div className="animate-spin rounded-full h-12 w-12 border-4 border-slate-200 dark:border-slate-700 border-t-teal-500"></div>
+            <p className="text-slate-600 dark:text-slate-300 font-medium text-lg">
+              İçerik yükleniyor...
+            </p>
           </div>
         </div>
       </AdminLayout>

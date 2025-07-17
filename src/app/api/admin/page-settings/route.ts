@@ -1,151 +1,141 @@
-import { NextResponse } from 'next/server';
-import { getServerSession } from 'next-auth';
+import { NextRequest, NextResponse } from 'next/server';
+import { getServerSession } from 'next-auth/next';
 import { authOptions } from '../../../../lib/auth';
 import connectDB from '../../../../lib/mongoose';
-import PageSettings from '../../../../models/PageSettings';
+import PageSetting from '../../../../models/PageSetting';
 
-// Force dynamic rendering
-export const dynamic = 'force-dynamic';
-export const runtime = 'nodejs';
-
-const DEFAULT_PAGES = [
-  {
-    pageId: 'home',
-    title: 'Ana Sayfa',
-    path: '/',
-    description: 'Site ana sayfası',
-    isActive: true,
-    showInNavigation: false,
-    order: 0,
-  },
-  {
-    pageId: 'portfolio',
-    title: 'Portfolio',
-    path: '/portfolio',
-    description: 'Projeler ve çalışmalar',
-    isActive: true,
-    showInNavigation: true,
-    order: 1,
-  },
-  {
-    pageId: 'services',
-    title: 'Hizmetlerimiz',
-    path: '/services',
-    description: 'Sunduğumuz hizmetler',
-    isActive: true,
-    showInNavigation: true,
-    order: 2,
-  },
-  {
-    pageId: 'about',
-    title: 'Hakkımızda',
-    path: '/about',
-    description: 'Şirket hakkında bilgiler',
-    isActive: true,
-    showInNavigation: true,
-    order: 3,
-  },
-  {
-    pageId: 'contact',
-    title: 'İletişim',
-    path: '/contact',
-    description: 'İletişim bilgileri ve form',
-    isActive: true,
-    showInNavigation: true,
-    order: 4,
-  },
-];
-
-// GET - Tüm sayfa ayarlarını getir
-export async function GET() {
+export async function GET(request: NextRequest) {
   try {
+    const session = await getServerSession(authOptions);
+    
+    if (!session?.user || session.user.role !== 'admin') {
+      return NextResponse.json({ message: 'Yetkisiz erişim' }, { status: 401 });
+    }
+
     await connectDB();
     
-    let pageSettings = await PageSettings.find().sort({ order: 1 });
+    let pages = await PageSetting.find().sort({ order: 1 });
     
-    // Eğer hiç sayfa ayarı yoksa, varsayılan sayfaları oluştur
-    if (pageSettings.length === 0) {
-      await PageSettings.insertMany(DEFAULT_PAGES);
-      pageSettings = await PageSettings.find().sort({ order: 1 });
+    // If no page settings exist, create default pages
+    if (pages.length === 0) {
+      const defaultPages = [
+        {
+          pageId: 'home',
+          title: 'Ana Sayfa',
+          path: '/',
+          description: 'Mühendislik ve 3D tarama hizmetlerimizi keşfedin',
+          isActive: true,
+          showInNavigation: true,
+          order: 0
+        },
+        {
+          pageId: 'about',
+          title: 'Hakkımda',
+          path: '/about',
+          description: 'Deneyimim ve uzmanlık alanlarım hakkında bilgi alın',
+          isActive: true,
+          showInNavigation: true,
+          order: 1
+        },
+        {
+          pageId: 'services',
+          title: 'Hizmetler',
+          path: '/services',
+          description: 'Sunduğum profesyonel hizmetleri inceleyin',
+          isActive: true,
+          showInNavigation: true,
+          order: 2
+        },
+        {
+          pageId: 'portfolio',
+          title: 'Portfolio',
+          path: '/portfolio',
+          description: 'Tamamladığım projeleri ve çalışmalarımı görün',
+          isActive: true,
+          showInNavigation: true,
+          order: 3
+        },
+        {
+          pageId: 'contact',
+          title: 'İletişim',
+          path: '/contact',
+          description: 'Benimle iletişime geçin ve projelerinizi konuşalım',
+          isActive: true,
+          showInNavigation: true,
+          order: 4
+        }
+      ];
+
+      pages = await PageSetting.insertMany(defaultPages);
     }
-    
-    return NextResponse.json(pageSettings);
+
+    return NextResponse.json(pages);
   } catch (error) {
     console.error('Page settings fetch error:', error);
-    return NextResponse.json({ 
-      error: 'Failed to fetch page settings' 
-    }, { status: 500 });
+    return NextResponse.json(
+      { message: 'Sayfa ayarları yüklenirken hata oluştu' },
+      { status: 500 }
+    );
   }
 }
 
-// POST - Sayfa ayarlarını güncelle
-export async function POST(request: Request) {
+export async function POST(request: NextRequest) {
   try {
     const session = await getServerSession(authOptions);
     
-    if (!session?.user?.email) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    if (!session?.user || session.user.role !== 'admin') {
+      return NextResponse.json({ message: 'Yetkisiz erişim' }, { status: 401 });
     }
 
+    const { pageId, ...updates } = await request.json();
+
     await connectDB();
-    
-    const { pageId, ...updateData } = await request.json();
-    
-    if (!pageId) {
-      return NextResponse.json({ 
-        error: 'pageId gereklidir' 
-      }, { status: 400 });
-    }
-    
-    const updatedPage = await PageSettings.findOneAndUpdate(
+
+    const page = await PageSetting.findOneAndUpdate(
       { pageId },
-      { ...updateData, updatedAt: new Date() },
+      updates,
       { new: true, upsert: true }
     );
-    
-    return NextResponse.json(updatedPage);
+
+    return NextResponse.json(page);
   } catch (error) {
     console.error('Page settings update error:', error);
-    return NextResponse.json({ 
-      error: 'Failed to update page settings' 
-    }, { status: 500 });
+    return NextResponse.json(
+      { message: 'Sayfa ayarları güncellenirken hata oluştu' },
+      { status: 500 }
+    );
   }
 }
 
-// PUT - Toplu sayfa ayarları güncelleme
-export async function PUT(request: Request) {
+export async function PUT(request: NextRequest) {
   try {
     const session = await getServerSession(authOptions);
     
-    if (!session?.user?.email) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    if (!session?.user || session.user.role !== 'admin') {
+      return NextResponse.json({ message: 'Yetkisiz erişim' }, { status: 401 });
     }
 
-    await connectDB();
-    
     const pages = await request.json();
-    
-    if (!Array.isArray(pages)) {
-      return NextResponse.json({ 
-        error: 'Geçersiz veri formatı' 
-      }, { status: 400 });
-    }
-    
-    const updatePromises = pages.map(page => 
-      PageSettings.findOneAndUpdate(
+
+    await connectDB();
+
+    // Update all pages with new order
+    const updatePromises = pages.map((page: any) =>
+      PageSetting.findOneAndUpdate(
         { pageId: page.pageId },
-        { ...page, updatedAt: new Date() },
-        { new: true, upsert: true }
+        { order: page.order },
+        { new: true }
       )
     );
-    
-    const updatedPages = await Promise.all(updatePromises);
-    
-    return NextResponse.json(updatedPages);
+
+    await Promise.all(updatePromises);
+
+    return NextResponse.json({ message: 'Sayfa sıralaması güncellendi' });
   } catch (error) {
-    console.error('Bulk page settings update error:', error);
-    return NextResponse.json({ 
-      error: 'Failed to update page settings' 
-    }, { status: 500 });
+    console.error('Page order update error:', error);
+    return NextResponse.json(
+      { message: 'Sayfa sıralaması güncellenirken hata oluştu' },
+      { status: 500 }
+    );
   }
 }

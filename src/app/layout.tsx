@@ -97,7 +97,6 @@ export async function generateMetadata(): Promise<Metadata> {
   }
 }
 
-import { Breadcrumbs } from '../components';
 import LoadingBar from '../components/LoadingBar';
 
 export default function RootLayout({

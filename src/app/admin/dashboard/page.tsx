@@ -4,10 +4,7 @@ import { useSession } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import AdminLayout from '../../../components/admin/AdminLayout';
-import { Version } from '../../../components';
-import { getServerSession } from 'next-auth';
-import { authOptions } from '@/lib/auth';
-import { redirect } from 'next/navigation';
+
 import { 
   FolderOpenIcon, 
   PhotoIcon, 
@@ -31,7 +28,7 @@ import {
   CloudArrowUpIcon,
   ChatBubbleLeftRightIcon
 } from '@heroicons/react/24/outline';
-import ContentSkeleton from '../../../components/ContentSkeleton';
+import { PageLoader } from '../../../components/AdminLoader';
 
 export default function AdminDashboard() {
   const { data: session, status } = useSession();
@@ -43,7 +40,8 @@ export default function AdminDashboard() {
     servicesCount: 0,
     categoriesCount: 0,
     sliderCount: 0,
-    cloudinaryCount: 0
+    cloudinaryCount: 0,
+    usersCount: 0
   });
 
   const [recentActivity, setRecentActivity] = useState([
@@ -100,17 +98,7 @@ export default function AdminDashboard() {
   if (status === 'loading') {
     return (
       <AdminLayout>
-        <div className="h-full bg-slate-50 p-6">
-          <div className="space-y-6">
-            <ContentSkeleton type="card" count={1} className="mb-6" />
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-              <ContentSkeleton type="card" count={6} />
-            </div>
-            <div className="grid grid-cols-1 xl:grid-cols-2 gap-8">
-              <ContentSkeleton type="article" count={2} />
-            </div>
-          </div>
-        </div>
+        <PageLoader text="Dashboard yükleniyor..." />
       </AdminLayout>
     );
   }
@@ -119,152 +107,7 @@ export default function AdminDashboard() {
     return null;
   }
 
-  const menuItems = [
-    {
-      title: 'Portfolio Yönetimi',
-      description: 'Projelerinizi görüntüleyin ve düzenleyin',
-      icon: FolderOpenIcon,
-      href: '/admin/portfolio',
-      color: 'from-blue-500 to-blue-600',
-      stats: stats.portfolioCount,
-      badge: 'Projeler'
-    },
-    {
-      title: 'Medya Kütüphanesi',
-      description: 'Resim ve dosyalarınızı yönetin',
-      icon: PhotoIcon,
-      href: '/admin/media',
-      color: 'from-violet-500 to-purple-600',
-      stats: stats.mediaCount,
-      badge: 'Dosyalar'
-    },
-    {
-      title: 'Hakkımda Sayfası',
-      description: 'Hakkımda sayfası içeriğini düzenle',
-      icon: FolderOpenIcon,
-      href: '/admin/about',
-      color: 'from-indigo-500 to-indigo-600',
-      stats: '1',
-      badge: 'Aktif'
-    },
-    {
-      title: 'Hizmet Yönetimi',
-      description: 'Sunduğunuz hizmetleri yönetin',
-      icon: WrenchScrewdriverIcon,
-      href: '/admin/services',
-      color: 'from-teal-500 to-teal-600',
-      stats: stats.servicesCount,
-      badge: 'Hizmetler'
-    },
-    {
-      title: 'Slider Yönetimi',
-      description: 'Ana sayfa slider içeriklerini yönetin',
-      icon: PhotoIcon,
-      href: '/admin/slider',
-      color: 'from-pink-500 to-pink-600',
-      stats: stats.sliderCount,
-      badge: 'Slider'
-    },
-    {
-      title: 'Sayfa Yönetimi',
-      description: 'Sayfaları aktif/pasif yapın ve menü görünürlüğü ayarlayın',
-      icon: DocumentTextIcon,
-      href: '/admin/pages',
-      color: 'from-amber-500 to-amber-600',
-      stats: '5',
-      badge: 'Sayfalar'
-    },
-    {
-      title: 'Mesaj Yönetimi',
-      description: 'Gelen mesajları görüntüleyin',
-      icon: ChatBubbleLeftRightIcon,
-      href: '/admin/messages',
-      color: 'from-purple-500 to-purple-600',
-      stats: stats.messagesCount,
-      badge: 'Mesajlar'
-    },
-    {
-      title: 'İletişim Bilgileri',
-      description: 'İletişim sayfası ayarları',
-      icon: EnvelopeIcon,
-      href: '/admin/contact',
-      color: 'from-emerald-500 to-emerald-600',
-      stats: '1',
-      badge: 'Aktif'
-    },
-    {
-      title: 'Kategori Yönetimi',
-      description: 'Proje kategorilerini düzenle',
-      icon: TagIcon,
-      href: '/admin/categories',
-      color: 'from-orange-500 to-orange-600',
-      stats: stats.categoriesCount,
-      badge: 'Kategoriler'
-    },
-    {
-      title: 'Footer Yönetimi',
-      description: 'Site alt kısmı ayarları ve içeriği',
-      icon: CogIcon,
-      href: '/admin/footer',
-      color: 'from-slate-500 to-slate-600',
-      stats: '1',
-      badge: 'Aktif'
-    }
-  ];
 
-  const quickActions = [
-    {
-      title: 'Yeni Proje',
-      description: 'Portfolio\'ya yeni proje ekle',
-      icon: PlusIcon,
-      href: '/admin/portfolio/new',
-      color: 'from-blue-500 to-blue-600'
-    },
-    {
-      title: 'Hizmet Ekle',
-      description: 'Yeni hizmet tanımı oluştur',
-      icon: WrenchScrewdriverIcon,
-      href: '/admin/services/new',
-      color: 'from-teal-500 to-teal-600'
-    },
-    {
-      title: 'Medya Yükle',
-      description: 'Resim ve dosya yükle',
-      icon: PhotoIcon,
-      href: '/admin/media',
-      color: 'from-violet-500 to-violet-600'
-    },
-    {
-      title: 'Mesajlar',
-      description: 'Gelen mesajları görüntüle',
-      icon: EnvelopeIcon,
-      href: '/admin/messages',
-      color: 'from-orange-500 to-orange-600'
-    },
-    {
-      title: 'Hakkımda Sayfası',
-      description: 'Hakkımda sayfası içeriğini düzenle',
-      icon: FolderOpenIcon,
-      href: '/admin/about',
-      color: 'from-indigo-500 to-indigo-600'
-    },
-    {
-      title: 'İletişim Bilgileri',
-      description: 'İletişim sayfası ayarları',
-      icon: EnvelopeIcon,
-      href: '/admin/contact',
-      color: 'from-emerald-500 to-emerald-600'
-    }
-  ];
-
-  const systemStatus = [
-    {
-      title: 'Site Görüntüle',
-      icon: PhotoIcon,
-      href: '/',
-      color: 'bg-gradient-to-r from-slate-600 to-slate-700'
-    }
-  ];
 
   return (
     <AdminLayout 
@@ -395,6 +238,24 @@ export default function AdminDashboard() {
           <div className="bg-white rounded-xl p-6 shadow-sm border border-slate-200 hover:shadow-md transition-shadow">
             <div className="flex items-center justify-between">
               <div className="flex-1">
+                <p className="text-slate-600 text-sm font-medium">Kayıtlı Kullanıcı</p>
+                <p className="text-2xl font-bold text-slate-900 mt-1">{stats.usersCount}</p>
+                <div className="flex items-center space-x-1 mt-2">
+                  <UsersIcon className="w-4 h-4 text-emerald-500" />
+                  <span className="text-emerald-600 text-sm font-medium">Aktif</span>
+                </div>
+              </div>
+              <div className="flex-shrink-0">
+                <div className="w-12 h-12 bg-emerald-100 rounded-xl flex items-center justify-center">
+                  <UsersIcon className="w-6 h-6 text-emerald-600" />
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div className="bg-white rounded-xl p-6 shadow-sm border border-slate-200 hover:shadow-md transition-shadow">
+            <div className="flex items-center justify-between">
+              <div className="flex-1">
                 <p className="text-slate-600 text-sm font-medium">Kategori</p>
                 <p className="text-2xl font-bold text-slate-900 mt-1">0</p>
                 <div className="flex items-center space-x-1 mt-2">
@@ -451,6 +312,13 @@ export default function AdminDashboard() {
                 <AdjustmentsHorizontalIcon className="w-6 h-6 text-white" />
               </div>
               <span className="text-sm font-medium text-slate-700 text-center">Ayarlar</span>
+            </Link>
+            
+            <Link href="/admin/users" className="flex flex-col items-center space-y-3 p-4 rounded-xl hover:bg-slate-50 transition-colors group">
+              <div className="w-12 h-12 bg-gradient-to-br from-emerald-500 to-emerald-600 rounded-xl flex items-center justify-center group-hover:scale-110 transition-transform">
+                <UsersIcon className="w-6 h-6 text-white" />
+              </div>
+              <span className="text-sm font-medium text-slate-700 text-center">Kullanıcılar</span>
             </Link>
             
             <Link href="/admin/about" className="flex flex-col items-center space-y-3 p-4 rounded-xl hover:bg-slate-50 transition-colors group">
@@ -562,6 +430,10 @@ export default function AdminDashboard() {
             <Link href="/admin/messages" className="flex items-center space-x-3 p-4 rounded-lg hover:bg-slate-50 transition-colors">
               <EnvelopeIcon className="w-5 h-5 text-slate-400" />
               <span className="text-sm font-medium text-slate-700">Gelen Mesajlar</span>
+            </Link>
+            <Link href="/admin/users" className="flex items-center space-x-3 p-4 rounded-lg hover:bg-slate-50 transition-colors">
+              <UsersIcon className="w-5 h-5 text-slate-400" />
+              <span className="text-sm font-medium text-slate-700">Kullanıcı Yönetimi</span>
             </Link>
             <Link href="/admin/settings" className="flex items-center space-x-3 p-4 rounded-lg hover:bg-slate-50 transition-colors">
               <CogIcon className="w-5 h-5 text-slate-400" />

@@ -13,13 +13,29 @@ export async function GET(request: Request, { params }: { params: { slug: string
       return NextResponse.json({ error: 'Slug gerekli' }, { status: 400 });
     }
 
-    const portfolioItem = await Portfolio.findOne({ slug }).populate('categoryIds');
+    const portfolioItem = await Portfolio.findOne({ slug })
+      .populate('categoryIds')
+      .populate('categoryId'); // Geriye uyumluluk için
 
     if (!portfolioItem) {
       return NextResponse.json({ error: 'Portfolyo öğesi bulunamadı' }, { status: 404 });
     }
 
-    return NextResponse.json(portfolioItem);
+    // Kategori bilgisini normalize et
+    let category = null;
+    if (portfolioItem.categoryIds && portfolioItem.categoryIds.length > 0) {
+      category = portfolioItem.categoryIds[0]; // İlk kategoriyi al
+    } else if (portfolioItem.categoryId) {
+      category = portfolioItem.categoryId;
+    }
+
+    // Response'a category bilgisini ekle
+    const response = {
+      ...portfolioItem.toObject(),
+      category: category
+    };
+
+    return NextResponse.json(response);
   } catch (error) {
     console.error('Slug ile portfolyo öğesi getirilirken hata:', error);
     return NextResponse.json({ error: 'Dahili Sunucu Hatası' }, { status: 500 });

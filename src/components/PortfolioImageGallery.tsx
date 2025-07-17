@@ -2,6 +2,7 @@
 
 import { useState, useRef, useCallback } from 'react';
 import Image from 'next/image';
+import { InlineLoader } from './AdminLoader';
 import {
   PhotoIcon,
   ArrowUpTrayIcon,
@@ -15,10 +16,6 @@ import {
 } from '@heroicons/react/24/outline';
 import { StarIcon as StarIconSolid } from '@heroicons/react/24/solid';
 import MediaBrowser from './MediaBrowser';
-// Simple loading placeholder component
-const Skeleton = ({ className = '', width = '', height = '' }: { className?: string; width?: string; height?: string }) => (
-  <div className={`animate-pulse bg-gray-200 rounded ${height} ${width} ${className}`} />
-);
 
 interface PortfolioImageGalleryProps {
   images: string[];
@@ -277,24 +274,8 @@ const PortfolioImageGallery: React.FC<PortfolioImageGalleryProps> = ({
       )}
 
       {loading ? (
-        <div className="space-y-4">
-          <div className="flex flex-col md:flex-row items-center justify-center gap-4 mb-6">
-            <Skeleton height="h-10" width="w-32" className="rounded-lg" />
-            <Skeleton height="h-10" width="w-48" className="rounded-lg" />
-          </div>
-          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-            {Array.from({ length: 8 }).map((_, i) => (
-              <div key={i} className="relative">
-                <Skeleton height="aspect-square" className="rounded-xl" />
-                <div className="absolute top-2 right-2">
-                  <Skeleton height="h-6" width="w-16" className="rounded-full" />
-                </div>
-                <div className="absolute bottom-2 left-2">
-                  <Skeleton height="h-5" width="w-6" className="rounded" />
-                </div>
-              </div>
-            ))}
-          </div>
+        <div className="flex items-center justify-center py-12">
+          <InlineLoader text="Görseller yükleniyor..." />
         </div>
       ) : (
         // Yükleme ve medya kütüphanesi butonları

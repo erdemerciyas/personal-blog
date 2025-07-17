@@ -22,6 +22,7 @@ import {
   DocumentTextIcon,
   TagIcon,
   UserIcon,
+  UsersIcon,
   PhoneIcon,
   ArrowRightOnRectangleIcon,
   BellIcon,
@@ -119,6 +120,13 @@ export default function AdminLayout({ children, title, breadcrumbs }: AdminLayou
       icon: ChatBubbleLeftRightIcon,
       href: '/admin/messages',
       badge: stats.messagesCount
+    },
+    {
+      id: 'users',
+      label: 'Kullanıcı Yönetimi',
+      icon: UsersIcon,
+      href: '/admin/users',
+      badge: stats.usersCount
     },
     {
       id: 'contact',
@@ -264,7 +272,14 @@ export default function AdminLayout({ children, title, breadcrumbs }: AdminLayou
   const markMessageAsRead = async (messageId: string) => {
     try {
       const response = await fetch(`/api/messages/${messageId}`, {
-        method: 'GET', // GET request otomatik olarak mesajı okundu işaretler
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          isRead: true,
+          status: 'read'
+        }),
       });
       
       if (response.ok) {
@@ -572,13 +587,14 @@ export default function AdminLayout({ children, title, breadcrumbs }: AdminLayou
                               <div 
                                 key={index} 
                                 className="px-4 py-3 hover:bg-slate-50 dark:hover:bg-slate-700 cursor-pointer border-b border-slate-100 dark:border-slate-700 last:border-b-0"
-                                onClick={async () => {
+                                onClick={() => {
                                   if (notification.type === 'message') {
-                                    // Mesajı okundu olarak işaretle
-                                    await markMessageAsRead(notification.id);
-                                    // Specific mesaj detay sayfasına git
-                                    router.push(`/admin/messages?id=${notification.id}`);
+                                    // Dropdown'ı kapat
                                     setNotificationDropdownOpen(false);
+                                    // Mesaj sayfasına git
+                                    router.push(`/admin/messages?id=${notification.id}`);
+                                    // Mesajı okundu olarak işaretle (arka planda)
+                                    markMessageAsRead(notification.id);
                                   }
                                 }}
                               >
@@ -696,7 +712,7 @@ export default function AdminLayout({ children, title, breadcrumbs }: AdminLayou
           )}
           
           <div className="p-6">
-            <div className="max-w-7xl mx-auto">
+            <div className="mx-auto">
               {children}
             </div>
           </div>

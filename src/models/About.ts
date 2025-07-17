@@ -1,169 +1,89 @@
 import mongoose from 'mongoose';
 
-interface IAbout extends mongoose.Document {
-  // Hero Section
-  heroTitle: string;
-  heroSubtitle: string;
-  heroDescription: string;
-  
-  // Personal Story
-  storyTitle: string;
-  storyParagraphs: string[];
-  
-  // Skills
-  skills: string[];
-  
-  // Experience
-  experience: {
-    title: string;
-    company: string;
-    period: string;
-    description: string;
-  }[];
-  
-  // Achievements
-  achievements: string[];
-  
-  // Values
-  values: {
-    text: string;
-    iconName: string;
-  }[];
-  
-  // Contact Information
-  contactTitle: string;
-  contactDescription: string;
-  contactEmail: string;
-  contactPhone: string;
-  contactLocation: string;
-  
-  // Meta
-  isActive: boolean;
-  updatedAt: Date;
-  createdAt: Date;
-}
-
-const AboutSchema = new mongoose.Schema({
-  // Hero Section
-  heroTitle: {
+const ValueSchema = new mongoose.Schema({
+  text: {
+    type: String,
+    required: true
+  },
+  iconName: {
     type: String,
     required: true,
-    default: 'Merhaba, Ben Erdem Erciyas'
+    default: 'SparklesIcon'
+  }
+});
+
+const ExperienceSchema = new mongoose.Schema({
+  title: {
+    type: String,
+    required: true
+  },
+  company: {
+    type: String,
+    required: true
+  },
+  period: {
+    type: String,
+    required: true
+  },
+  description: {
+    type: String,
+    required: true
+  }
+});
+
+const AboutSchema = new mongoose.Schema({
+  heroTitle: {
+    type: String,
+    required: true
   },
   heroSubtitle: {
     type: String,
-    required: true,
-    default: 'Developer & Mühendis'
+    required: true
   },
   heroDescription: {
     type: String,
-    required: true,
-    default: 'Full-Stack Developer ve Mühendis olarak modern teknolojiler ve yaratıcı çözümlerle projelerinizi hayata geçiriyorum.'
+    required: true
   },
-  
-  // Personal Story
   storyTitle: {
     type: String,
-    required: true,
-    default: 'Hikayem'
+    required: true
   },
   storyParagraphs: [{
     type: String,
     required: true
   }],
-  
-  // Skills
   skills: [{
     type: String,
     required: true
   }],
-  
-  // Experience
-  experience: [{
-    title: {
-      type: String,
-      required: true
-    },
-    company: {
-      type: String,
-      required: true
-    },
-    period: {
-      type: String,
-      required: true
-    },
-    description: {
-      type: String,
-      required: true
-    }
-  }],
-  
-  // Achievements
+  experience: [ExperienceSchema],
   achievements: [{
     type: String,
     required: true
   }],
-  
-  // Values
-  values: [{
-    text: {
-      type: String,
-      required: true
-    },
-    iconName: {
-      type: String,
-      required: true,
-      enum: ['SparklesIcon', 'HeartIcon', 'TrophyIcon', 'AcademicCapIcon', 'UserGroupIcon', 'CogIcon']
-    }
-  }],
-  
-  // Contact Information
+  values: [ValueSchema],
   contactTitle: {
     type: String,
-    required: true,
-    default: 'Birlikte Çalışalım'
+    required: true
   },
   contactDescription: {
     type: String,
-    required: true,
-    default: 'Yeni bir proje mi planlıyorsunuz? Teknoloji ve mühendislik çözümleri için benimle iletişime geçin.'
+    required: true
   },
   contactEmail: {
     type: String,
-    required: true,
-    default: 'erdem@erciyasengineering.com'
+    required: true
   },
   contactPhone: {
     type: String,
-    required: true,
-    default: '+90 (555) 123 45 67'
+    required: true
   },
   contactLocation: {
     type: String,
-    required: true,
-    default: 'Ankara, Türkiye'
-  },
-  
-  // Meta
-  isActive: {
-    type: Boolean,
-    default: true
+    required: true
   }
 }, {
   timestamps: true
 });
 
-// Ensure only one active about record
-AboutSchema.pre('save', async function(next) {
-  if (this.isActive) {
-    await mongoose.model('About').updateMany(
-      { _id: { $ne: this._id } },
-      { isActive: false }
-    );
-  }
-  next();
-});
-
-const About = mongoose.models.About || mongoose.model<IAbout>('About', AboutSchema);
-
-export default About;
+export default mongoose.models.About || mongoose.model('About', AboutSchema);

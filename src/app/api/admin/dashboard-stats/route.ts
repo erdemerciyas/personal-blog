@@ -7,6 +7,7 @@ import connectDB from '../../../../lib/mongoose';
 import Portfolio from '../../../../models/Portfolio';
 import Service from '../../../../models/Service';
 import Message from '../../../../models/Message';
+import User from '../../../../models/User';
 
 export async function GET(request: NextRequest) {
   try {
@@ -29,10 +30,11 @@ export async function GET(request: NextRequest) {
     await connectDB();
 
     // Paralel olarak tüm istatistikleri al
-    const [portfolioCount, servicesCount, messagesCount, recentMessages] = await Promise.all([
+    const [portfolioCount, servicesCount, messagesCount, usersCount, recentMessages] = await Promise.all([
       Portfolio.countDocuments(),
       Service.countDocuments(),
       Message.countDocuments(),
+      User.countDocuments(),
       Message.find()
         .sort({ createdAt: -1 })
         .limit(5)
@@ -43,6 +45,7 @@ export async function GET(request: NextRequest) {
       portfolioCount,
       servicesCount,
       messagesCount,
+      usersCount,
       mediaCount: 0, // Placeholder - medya sayısı için
       recentMessages: recentMessages.map(msg => ({
         _id: msg._id,

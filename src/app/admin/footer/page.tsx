@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react';
 import { useSession } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
-import ContentSkeleton from '../../../components/ContentSkeleton';
+import { PageLoader } from '../../../components/AdminLoader';
 import AdminLayout from '../../../components/admin/AdminLayout';
 import { 
   CogIcon, 
@@ -233,12 +233,7 @@ export default function FooterSettingsPage() {
   if (status === 'loading' || loading) {
     return (
       <AdminLayout>
-        <div className="space-y-6">
-          <div className="flex items-center justify-between">
-          <ContentSkeleton type="profile" count={1} className="mb-6" />
-          <ContentSkeleton type="article" count={2} />
-        </div>
-        </div>
+        <PageLoader text="Footer ayarları yükleniyor..." />
       </AdminLayout>
     );
   }

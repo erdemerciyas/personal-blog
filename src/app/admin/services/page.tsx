@@ -5,7 +5,7 @@ import { useSession } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
 import Image from 'next/image';
 import Link from 'next/link';
-import ContentSkeleton from '../../../components/ContentSkeleton';
+import { PageLoader } from '../../../components/AdminLoader';
 import AdminLayout from '../../../components/admin/AdminLayout';
 import HTMLContent from '../../../components/HTMLContent';
 import { 
@@ -82,11 +82,7 @@ export default function ServicesPage() {
   if (status === 'loading' || loading) {
     return (
       <AdminLayout>
-        <div className="space-y-6">
-          <ContentSkeleton type="profile" count={1} className="mb-6" />
-          <ContentSkeleton type="card" count={3} className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6" />
-          <ContentSkeleton type="list" count={3} />
-        </div>
+        <PageLoader text="Hizmetler yükleniyor..." />
       </AdminLayout>
     );
   }

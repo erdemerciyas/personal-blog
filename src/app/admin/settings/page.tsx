@@ -307,13 +307,15 @@ export default function AdminSettingsPage() {
               {/* Mevcut Logo Görüntüleme */}
               <div className="bg-slate-50 rounded-xl p-6 border-2 border-dashed border-slate-200">
                 <h4 className="text-sm font-medium text-slate-700 mb-3">Mevcut Logo</h4>
-                <div className="flex items-center justify-center h-24 bg-white rounded-lg border">
+                <div className="flex items-center justify-center h-24 bg-white rounded-lg border relative">
                   {settings.logo ? (
                     <Image 
                       src={settings.logo} 
                       alt="Mevcut Logo" 
-                      fill
+                      width={80}
+                      height={80}
                       style={{ objectFit: 'contain' }}
+                      className="max-w-full max-h-full"
                     />
                   ) : (
                     <div className="flex flex-col items-center space-y-2 text-slate-400">
