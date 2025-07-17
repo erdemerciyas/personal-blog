@@ -147,20 +147,16 @@ export const authOptions: NextAuthOptions = {
       name: process.env.NODE_ENV === 'production' ? '__Secure-next-auth.session-token' : 'next-auth.session-token',
       options: {
         httpOnly: true,
-        sameSite: 'strict', // Changed from 'lax' to 'strict' for better security
+        sameSite: 'lax', // Vercel için 'lax' daha uygun
         path: '/',
         secure: process.env.NODE_ENV === 'production',
-        // Add additional security options
-        ...(process.env.NODE_ENV === 'production' && process.env.NEXTAUTH_URL && {
-          domain: new URL(process.env.NEXTAUTH_URL).hostname,
-        }),
       },
     },
     callbackUrl: {
       name: process.env.NODE_ENV === 'production' ? '__Secure-next-auth.callback-url' : 'next-auth.callback-url',
       options: {
         httpOnly: true,
-        sameSite: 'strict',
+        sameSite: 'lax', // Vercel için 'lax' daha uygun
         path: '/',
         secure: process.env.NODE_ENV === 'production',
       },
@@ -169,7 +165,7 @@ export const authOptions: NextAuthOptions = {
       name: process.env.NODE_ENV === 'production' ? '__Host-next-auth.csrf-token' : 'next-auth.csrf-token',
       options: {
         httpOnly: true,
-        sameSite: 'strict',
+        sameSite: 'lax', // Vercel için 'lax' daha uygun
         path: '/',
         secure: process.env.NODE_ENV === 'production',
       },
@@ -197,18 +193,40 @@ export const authOptions: NextAuthOptions = {
       return session;
     },
     async redirect({ url, baseUrl }) {
-      const finalBaseUrl = vercelUrl || baseUrl;
+      const finalBaseUrl = getBaseUrl();
       
-      // Login veya ana sayfadan geliyorsa her zaman dashboard'a yönlendir.
-      if (url.startsWith('/admin/login') || url === finalBaseUrl) {
+      console.log('🔄 NextAuth redirect:', { url, baseUrl, finalBaseUrl });
+      
+      // Eğer callbackUrl dashboard ise direkt oraya git
+      if (url.includes('/admin/dashboard')) {
         return `${finalBaseUrl}/admin/dashboard`;
       }
-      // Göreceli bir URL ise tam adrese çevir.
-      else if (url.startsWith('/')) {
-        return new URL(url, finalBaseUrl).toString();
+      
+      // Login sayfasından geliyorsa dashboard'a yönlendir
+      if (url.includes('/admin/login') || url === finalBaseUrl || url === baseUrl) {
+        return `${finalBaseUrl}/admin/dashboard`;
       }
-      // Zaten tam bir URL ise dokunma.
-      return url;
+      
+      // Göreceli URL ise tam adrese çevir
+      if (url.startsWith('/')) {
+        return `${finalBaseUrl}${url}`;
+      }
+      
+      // Güvenlik kontrolü - sadece kendi domain'imize redirect
+      try {
+        const urlObj = new URL(url);
+        const baseUrlObj = new URL(finalBaseUrl);
+        
+        if (urlObj.hostname === baseUrlObj.hostname) {
+          return url;
+        } else {
+          // Farklı domain ise dashboard'a yönlendir
+          return `${finalBaseUrl}/admin/dashboard`;
+        }
+      } catch (error) {
+        console.error('Redirect URL parse error:', error);
+        return `${finalBaseUrl}/admin/dashboard`;
+      }
     }
   },
   secret: process.env.NEXTAUTH_SECRET,

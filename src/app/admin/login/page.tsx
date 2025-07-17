@@ -94,6 +94,7 @@ function LoginForm() {
         nextAuthUrl: window.location.origin
       });
 
+      // İlk önce redirect: false ile dene
       const result = await signIn('credentials', {
         email: formData.email,
         password: formData.password,
@@ -105,11 +106,12 @@ function LoginForm() {
 
       if (result?.error) {
         console.error('❌ Login error:', result.error);
-        setError(`Giriş hatası: ${result.error}`);
+        setError('Geçersiz email veya şifre.');
       } else if (result?.ok) {
         console.log('✅ Login successful, redirecting...');
-        // Next.js router ile yönlendirme
-        router.push('/admin/dashboard');
+        // Başarılı login sonrası window.location ile redirect
+        window.location.href = '/admin/dashboard';
+        return; // Function'dan çık
       } else {
         console.error('❌ Unexpected login result:', result);
         setError('Beklenmeyen bir hata oluştu.');
