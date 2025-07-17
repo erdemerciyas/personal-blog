@@ -244,26 +244,28 @@ export default function AdminLayout({ children, title, breadcrumbs }: AdminLayou
             mediaCount: mediaData.length || 0,
             usersCount: 0
           });
+
+          const recentNotifications = messagesData && messagesData.length > 0
+            ? messagesData.filter((msg: any) => msg.status === 'pending' || !msg.status).slice(0, 5).map((message: any) => ({
+              title: `${message.name || 'Anonim'} adlı kişiden yeni mesaj`,
+              message: message.message ? message.message.substring(0, 50) + '...' : 'Mesaj içeriği yok',
+              time: new Date(message.createdAt || Date.now()).toLocaleDateString('tr-TR', {
+                day: '2-digit',
+                month: '2-digit',
+                hour: '2-digit',
+                minute: '2-digit'
+              }),
+              type: 'message',
+              id: message._id || Math.random().toString(),
+              isUnread: true
+            }))
+            : [];
+
+          setNotifications(recentNotifications);
+          console.log('📊 Notifications loaded:', recentNotifications.length, 'total messages:', messagesData?.length || 0);
         }
 
-        const recentNotifications = unreadMessages.length > 0
-          ? unreadMessages.slice(0, 5).map((message: any) => ({
-            title: `${message.name || 'Anonim'} adlı kişiden yeni mesaj`,
-            message: message.message ? message.message.substring(0, 50) + '...' : 'Mesaj içeriği yok',
-            time: new Date(message.createdAt || Date.now()).toLocaleDateString('tr-TR', {
-              day: '2-digit',
-              month: '2-digit',
-              hour: '2-digit',
-              minute: '2-digit'
-            }),
-            type: 'message',
-            id: message._id || Math.random().toString(),
-            isUnread: true
-          }))
-          : [];
 
-        setNotifications(recentNotifications);
-        console.log('📊 Notifications loaded:', recentNotifications.length, 'unread messages:', unreadMessages.length, 'total messages:', messagesData.length);
       } catch (error) {
         console.error('Stats fetch error:', error);
       }

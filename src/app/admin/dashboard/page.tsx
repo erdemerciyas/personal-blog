@@ -1,9 +1,22 @@
 'use client';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, Suspense } from 'react';
 import { useSession } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
-import AdminLayout from '../../../components/admin/AdminLayout';
+import dynamic from 'next/dynamic';
+
+// Dynamic import for AdminLayout to prevent SSR issues
+const AdminLayout = dynamic(() => import('../../../components/admin/AdminLayout'), {
+  ssr: false,
+  loading: () => (
+    <div className="min-h-screen bg-slate-50 flex items-center justify-center">
+      <div className="text-center space-y-4">
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-teal-600 mx-auto"></div>
+        <p className="text-slate-600">Dashboard yükleniyor...</p>
+      </div>
+    </div>
+  )
+});
 
 import { 
   FolderOpenIcon, 
@@ -30,7 +43,8 @@ import {
 } from '@heroicons/react/24/outline';
 import { PageLoader } from '../../../components/AdminLoader';
 
-export default function AdminDashboard() {
+// Vercel için client-side only component
+function AdminDashboardContent() {
   const { data: session, status } = useSession();
   const router = useRouter();
   const [stats, setStats] = useState({
@@ -76,43 +90,108 @@ export default function AdminDashboard() {
   ]);
 
   const [loading, setLoading] = useState(true);
+  const [mounted, setMounted] = useState(false);
+
+  // Client-side mounting check for Vercel
+  useEffect(() => {
+    setMounted(true);
+  }, []);
 
   useEffect(() => {
     const fetchStats = async () => {
       // Session kontrolü - sadece authenticated user için API çağrısı yap
-      if (status !== 'authenticated' || !session?.user) {
-        setLoading(false);
+      if (status !== 'authenticated' || !session?.user || !mounted) {
+        if (status !== 'loading') {
+          setLoading(false);
+        }
         return;
       }
 
       try {
-        const response = await fetch('/api/admin/dashboard-stats');
+        // Vercel için timeout ekle
+        const controller = new AbortController();
+        const timeoutId = setTimeout(() => controller.abort(), 10000); // 10s timeout
+
+        const response = await fetch('/api/admin/dashboard-stats', {
+          signal: controller.signal,
+          headers: {
+            'Cache-Control': 'no-cache',
+          }
+        });
+
+        clearTimeout(timeoutId);
+
         if (response.ok) {
           const data = await response.json();
           setStats(data);
         } else {
           console.warn('Dashboard stats API returned:', response.status);
+          // Fallback stats for Vercel
+          setStats({
+            portfolioCount: 0,
+            mediaCount: 0,
+            messagesCount: 0,
+            servicesCount: 0,
+            categoriesCount: 0,
+            sliderCount: 0,
+            cloudinaryCount: 0,
+            usersCount: 0
+          });
         }
       } catch (error) {
         console.error('Dashboard stats fetch error:', error);
+        // Fallback stats for Vercel
+        setStats({
+          portfolioCount: 0,
+          mediaCount: 0,
+          messagesCount: 0,
+          servicesCount: 0,
+          categoriesCount: 0,
+          sliderCount: 0,
+          cloudinaryCount: 0,
+          usersCount: 0
+        });
       } finally {
         setLoading(false);
       }
     };
 
-    fetchStats();
-  }, [status, session]);
+    // Delay for Vercel hydration
+    const timer = setTimeout(() => {
+      fetchStats();
+    }, 100);
 
-  if (status === 'loading') {
+    return () => clearTimeout(timer);
+  }, [status, session, mounted]);
+
+  // Vercel için loading ve authentication handling
+  if (status === 'loading' || !mounted) {
     return (
-      <AdminLayout>
-        <PageLoader text="Dashboard yükleniyor..." />
-      </AdminLayout>
+      <div className="min-h-screen bg-slate-50 flex items-center justify-center">
+        <div className="text-center space-y-4">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-teal-600 mx-auto"></div>
+          <p className="text-slate-600">Dashboard yükleniyor...</p>
+        </div>
+      </div>
     );
   }
 
-  if (!session?.user) {
+  if (status === 'unauthenticated') {
+    if (typeof window !== 'undefined') {
+      router.push('/admin/login');
+    }
     return null;
+  }
+
+  if (!session?.user) {
+    return (
+      <div className="min-h-screen bg-slate-50 flex items-center justify-center">
+        <div className="text-center space-y-4">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-teal-600 mx-auto"></div>
+          <p className="text-slate-600">Oturum kontrol ediliyor...</p>
+        </div>
+      </div>
+    );
   }
 
 
@@ -458,5 +537,20 @@ export default function AdminDashboard() {
       </div>
     </AdminLayout>
   );
-} 
+}
 
+// Vercel için dynamic export
+export default function AdminDashboard() {
+  return (
+    <Suspense fallback={
+      <div className="min-h-screen bg-slate-50 flex items-center justify-center">
+        <div className="text-center space-y-4">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-teal-600 mx-auto"></div>
+          <p className="text-slate-600">Dashboard yükleniyor...</p>
+        </div>
+      </div>
+    }>
+      <AdminDashboardContent />
+    </Suspense>
+  );
+}

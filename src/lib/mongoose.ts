@@ -53,7 +53,6 @@ async function connectDB() {
       maxStalenessSeconds: 90,
       // Vercel serverless optimizations
       retryWrites: true,
-      w: 'majority',
     };
 
     cached!.promise = mongoose.connect(mongoUri, opts);
@@ -90,7 +89,6 @@ export async function connectToDatabase() {
       serverSelectionTimeoutMS: 5000,
       socketTimeoutMS: 45000, // Vercel function timeout'a uygun
       retryWrites: true,
-      w: 'majority',
     };
     const client = new MongoClient(mongoUri, options);
     clientCached!.promise = client.connect();
