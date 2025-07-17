@@ -8,9 +8,8 @@ const nextConfig = {
   typescript: {
     ignoreBuildErrors: true,
   },
-  // Vercel deployment optimizations
-  // output: 'standalone', // Vercel için gerekli değil
-  webpack: (config, { buildId, dev, isServer, defaultLoaders, webpack }) => {
+  // Vercel optimizations
+  webpack: (config) => {
     // Path aliases için webpack alias ekleme
     config.resolve.alias = {
       ...config.resolve.alias,
@@ -20,6 +19,13 @@ const nextConfig = {
       '@/models': path.resolve(__dirname, 'src/models'),
       '@/types': path.resolve(__dirname, 'src/types'),
     };
+    
+    // Vercel için MongoDB optimizasyonu
+    config.externals.push({
+      'utf-8-validate': 'commonjs utf-8-validate',
+      'bufferutil': 'commonjs bufferutil',
+    });
+    
     return config;
   },
   images: {
@@ -55,6 +61,11 @@ const nextConfig = {
     // Performance optimizations
     optimizeCss: true,
     scrollRestoration: true,
+    // Vercel optimizations
+    optimizePackageImports: ['@heroicons/react', 'framer-motion'],
+    serverComponentsExternalPackages: ['mongoose', 'mongodb'],
+    // Edge runtime optimizations
+    runtime: 'nodejs',
   },
   // Performance: Enable compression
   compress: true,
@@ -84,7 +95,7 @@ const nextConfig = {
           },
           {
             key: 'Content-Security-Policy',
-            value: "default-src 'self'; script-src 'self' 'unsafe-eval' 'unsafe-inline' https://vercel.live https://vercel.com https://*.vercel.app https://*.vercel.live; script-src-elem 'self' 'unsafe-inline' https://vercel.live https://vercel.com https://*.vercel.app https://*.vercel.live; style-src 'self' 'unsafe-inline' https:; img-src 'self' data: https: blob:; font-src 'self' data: https:; connect-src 'self' https: wss: blob:; frame-src 'self' https://vercel.live https://vercel.com; object-src 'none'; base-uri 'self'; form-action 'self'; frame-ancestors 'self' https://vercel.live https://vercel.com;",
+            value: "default-src 'self'; script-src 'self' 'unsafe-eval' 'unsafe-inline' https://vercel.live https://vercel.com https://*.vercel.app https://*.vercel.live https://vercel.live/_next-live/ https://vercel.live/_next-live/feedback/; script-src-elem 'self' 'unsafe-inline' https://vercel.live https://vercel.com https://*.vercel.app https://*.vercel.live https://vercel.live/_next-live/ https://vercel.live/_next-live/feedback/; style-src 'self' 'unsafe-inline' https:; img-src 'self' data: https: blob:; font-src 'self' data: https:; connect-src 'self' https: wss: blob:; frame-src 'self' https://vercel.live https://vercel.com; object-src 'none'; base-uri 'self'; form-action 'self'; frame-ancestors 'self' https://vercel.live https://vercel.com;",
           },
         ],
       },

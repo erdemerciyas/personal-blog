@@ -41,16 +41,19 @@ async function connectDB() {
   }
 
   if (!cached!.promise) {
-    // cPanel hosting için optimize edilmiş ayarlar
+    // Vercel serverless için optimize edilmiş ayarlar
     const opts = {
       bufferCommands: false,
-      maxPoolSize: 5, // cPanel için düşük - hosting kaynak limitleri
-      serverSelectionTimeoutMS: 5000, // Hızlı timeout
-      socketTimeoutMS: 30000, // 30s socket timeout
-      maxIdleTimeMS: 30000, // 30s idle timeout
-      // Connection maintenance
+      maxPoolSize: process.env.VERCEL ? 1 : 5, // Vercel serverless için tek connection
+      serverSelectionTimeoutMS: 5000,
+      socketTimeoutMS: 45000, // Vercel function timeout'a uygun
+      maxIdleTimeMS: 30000,
+      // Vercel için connection maintenance
       heartbeatFrequencyMS: 10000,
       maxStalenessSeconds: 90,
+      // Vercel serverless optimizations
+      retryWrites: true,
+      w: 'majority',
     };
 
     cached!.promise = mongoose.connect(mongoUri, opts);
@@ -81,11 +84,13 @@ export async function connectToDatabase() {
   }
 
   if (!clientCached!.promise) {
-    // cPanel için optimize edilmiş client ayarları
+    // Vercel serverless için optimize edilmiş client ayarları
     const options = {
-      maxPoolSize: 5,
+      maxPoolSize: process.env.VERCEL ? 1 : 5, // Vercel serverless için tek connection
       serverSelectionTimeoutMS: 5000,
-      socketTimeoutMS: 30000,
+      socketTimeoutMS: 45000, // Vercel function timeout'a uygun
+      retryWrites: true,
+      w: 'majority',
     };
     const client = new MongoClient(mongoUri, options);
     clientCached!.promise = client.connect();
