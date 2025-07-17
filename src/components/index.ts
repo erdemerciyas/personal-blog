@@ -16,9 +16,9 @@ export { default as HTMLContent } from './HTMLContent';
 export { default as Breadcrumbs } from './Breadcrumbs';
 
 // Loading System exports
-export { default as DefaultLoading } from './DefaultLoading';
+
 export { default as LoadingBar } from './LoadingBar';
-export { default as AdminLoader, AdminPageLoader, AdminCardLoader, AdminListLoader, AdminInlineLoader } from './AdminLoader';
+export { default as AdminLoader, PageLoader, CardLoader, InlineLoader } from './AdminLoader';
 
 // UI Component exports
 export * from './ui'; 

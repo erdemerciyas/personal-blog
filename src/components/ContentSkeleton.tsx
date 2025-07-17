@@ -3,7 +3,7 @@
 import React, { memo } from 'react';
 
 interface ContentSkeletonProps {
-  type?: 'text' | 'card' | 'list' | 'hero';
+  type?: 'text' | 'card' | 'list' | 'hero' | 'profile' | 'article' | 'gallery';
   count?: number;
   className?: string;
 }
@@ -65,6 +65,48 @@ const ContentSkeleton = memo(function ContentSkeleton({
     </div>
   );
 
+  const renderProfileSkeleton = () => (
+    <div className={`animate-pulse ${className}`}>
+      <div className="flex items-center space-x-4 mb-6">
+        <div className="h-20 w-20 bg-slate-200 dark:bg-slate-700 rounded-full" />
+        <div className="space-y-2">
+          <div className="h-6 bg-slate-200 dark:bg-slate-700 rounded w-32" />
+          <div className="h-4 bg-slate-200 dark:bg-slate-700 rounded w-24" />
+        </div>
+      </div>
+      <div className="space-y-3">
+        <div className="h-4 bg-slate-200 dark:bg-slate-700 rounded" />
+        <div className="h-4 bg-slate-200 dark:bg-slate-700 rounded w-5/6" />
+        <div className="h-4 bg-slate-200 dark:bg-slate-700 rounded w-3/4" />
+      </div>
+    </div>
+  );
+
+  const renderArticleSkeleton = () => (
+    <div className={`animate-pulse space-y-6 ${className}`}>
+      {Array.from({ length: count }).map((_, index) => (
+        <div key={index} className="space-y-4">
+          <div className="h-6 bg-slate-200 dark:bg-slate-700 rounded w-3/4" />
+          <div className="space-y-2">
+            <div className="h-4 bg-slate-200 dark:bg-slate-700 rounded" />
+            <div className="h-4 bg-slate-200 dark:bg-slate-700 rounded" />
+            <div className="h-4 bg-slate-200 dark:bg-slate-700 rounded w-5/6" />
+          </div>
+        </div>
+      ))}
+    </div>
+  );
+
+  const renderGallerySkeleton = () => (
+    <div className={`animate-pulse ${className}`}>
+      <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+        {Array.from({ length: count || 8 }).map((_, index) => (
+          <div key={index} className="aspect-square bg-slate-200 dark:bg-slate-700 rounded-lg" />
+        ))}
+      </div>
+    </div>
+  );
+
   switch (type) {
     case 'hero':
       return renderHeroSkeleton();
@@ -72,6 +114,12 @@ const ContentSkeleton = memo(function ContentSkeleton({
       return renderCardSkeleton();
     case 'list':
       return renderListSkeleton();
+    case 'profile':
+      return renderProfileSkeleton();
+    case 'article':
+      return renderArticleSkeleton();
+    case 'gallery':
+      return renderGallerySkeleton();
     default:
       return renderTextSkeleton();
   }

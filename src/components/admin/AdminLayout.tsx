@@ -10,8 +10,8 @@ import { createPortal } from 'react-dom';
 const Skeleton = ({ className = '' }: { className?: string }) => (
   <div className={`animate-pulse bg-gray-200 rounded ${className}`} />
 );
-import { 
-  Bars3Icon, 
+import {
+  Bars3Icon,
   XMarkIcon,
   HomeIcon,
   FolderOpenIcon,
@@ -61,7 +61,7 @@ export default function AdminLayout({ children, title, breadcrumbs }: AdminLayou
   const { data: session, status } = useSession();
   const router = useRouter();
   const pathname = usePathname();
-  
+
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
   const [profileDropdownOpen, setProfileDropdownOpen] = useState(false);
@@ -71,7 +71,8 @@ export default function AdminLayout({ children, title, breadcrumbs }: AdminLayou
   const [stats, setStats] = useState({
     messagesCount: 0,
     portfolioCount: 0,
-    mediaCount: 0
+    mediaCount: 0,
+    usersCount: 0
   });
   const [notifications, setNotifications] = useState<any[]>([]);
 
@@ -126,7 +127,7 @@ export default function AdminLayout({ children, title, breadcrumbs }: AdminLayou
       label: 'Kullanıcı Yönetimi',
       icon: UsersIcon,
       href: '/admin/users',
-      badge: stats.usersCount
+      badge: (stats as any).usersCount
     },
     {
       id: 'contact',
@@ -141,8 +142,7 @@ export default function AdminLayout({ children, title, breadcrumbs }: AdminLayou
       href: '/admin/settings',
       subItems: [
         { label: 'Genel Ayarlar', href: '/admin/settings' },
-        { label: 'Footer Ayarları', href: '/admin/footer' },
-        { label: 'Loading System', href: '/admin/loading-system' }
+        { label: 'Footer Ayarları', href: '/admin/footer' }
       ]
     }
   ];
@@ -170,7 +170,7 @@ export default function AdminLayout({ children, title, breadcrumbs }: AdminLayou
   const toggleDarkMode = () => {
     const newDarkMode = !darkMode;
     setDarkMode(newDarkMode);
-    
+
     if (newDarkMode) {
       document.documentElement.classList.add('dark');
       localStorage.setItem('admin-theme', 'dark');
@@ -203,41 +203,63 @@ export default function AdminLayout({ children, title, breadcrumbs }: AdminLayou
   useEffect(() => {
     const fetchStats = async () => {
       try {
-        const [messagesRes, portfolioRes, mediaRes] = await Promise.all([
-          fetch('/api/messages'),
-          fetch('/api/portfolio'),
-          fetch('/api/admin/media')
-        ]);
+        const statsRes = await fetch('/api/admin/dashboard-stats');
 
-        const messagesData = messagesRes.ok ? await messagesRes.json() : [];
-        const portfolioData = portfolioRes.ok ? await portfolioRes.json() : [];
-        const mediaData = mediaRes.ok ? await mediaRes.json() : [];
+        if (statsRes.ok) {
+          const statsData = await statsRes.json();
+          setStats({
+            messagesCount: statsData.messagesCount || 0,
+            portfolioCount: statsData.portfolioCount || 0,
+            mediaCount: statsData.mediaCount || 0,
+            usersCount: statsData.usersCount || 0
+          });
 
-        // Convert only unread messages to notifications
-        const unreadMessages = Array.isArray(messagesData) && messagesData.length > 0 
-          ? messagesData.filter((message: any) => !message.isRead || message.status === 'new')
-          : [];
+          // Convert recent messages to notifications
+          const recentMessages = statsData.recentMessages || [];
+          const unreadMessages = recentMessages.filter((message: any) => message.status === 'pending' || message.status === 'new');
 
-        setStats({
-          messagesCount: unreadMessages.length || 0,
-          portfolioCount: portfolioData.length || 0,
-          mediaCount: mediaData.length || 0
-        });
-          
-        const recentNotifications = unreadMessages.length > 0 
+          setStats(prev => ({
+            ...prev,
+            messagesCount: unreadMessages.length
+          }));
+        } else {
+          // Fallback to old method if dashboard-stats fails
+          const [messagesRes, portfolioRes, mediaRes] = await Promise.all([
+            fetch('/api/messages'),
+            fetch('/api/portfolio'),
+            fetch('/api/admin/media')
+          ]);
+
+          const messagesData = messagesRes.ok ? await messagesRes.json() : [];
+          const portfolioData = portfolioRes.ok ? await portfolioRes.json() : [];
+          const mediaData = mediaRes.ok ? await mediaRes.json() : [];
+
+          const unreadMessages = Array.isArray(messagesData) && messagesData.length > 0
+            ? messagesData.filter((message: any) => !message.isRead || message.status === 'new')
+            : [];
+
+          setStats({
+            messagesCount: unreadMessages.length || 0,
+            portfolioCount: portfolioData.length || 0,
+            mediaCount: mediaData.length || 0,
+            usersCount: 0
+          });
+        }
+
+        const recentNotifications = unreadMessages.length > 0
           ? unreadMessages.slice(0, 5).map((message: any) => ({
-              title: `${message.name || 'Anonim'} adlı kişiden yeni mesaj`,
-              message: message.message ? message.message.substring(0, 50) + '...' : 'Mesaj içeriği yok',
-              time: new Date(message.createdAt || Date.now()).toLocaleDateString('tr-TR', { 
-                day: '2-digit', 
-                month: '2-digit', 
-                hour: '2-digit', 
-                minute: '2-digit' 
-              }),
-              type: 'message',
-              id: message._id || Math.random().toString(),
-              isUnread: true
-            }))
+            title: `${message.name || 'Anonim'} adlı kişiden yeni mesaj`,
+            message: message.message ? message.message.substring(0, 50) + '...' : 'Mesaj içeriği yok',
+            time: new Date(message.createdAt || Date.now()).toLocaleDateString('tr-TR', {
+              day: '2-digit',
+              month: '2-digit',
+              hour: '2-digit',
+              minute: '2-digit'
+            }),
+            type: 'message',
+            id: message._id || Math.random().toString(),
+            isUnread: true
+          }))
           : [];
 
         setNotifications(recentNotifications);
@@ -281,12 +303,12 @@ export default function AdminLayout({ children, title, breadcrumbs }: AdminLayou
           status: 'read'
         }),
       });
-      
+
       if (response.ok) {
         // Notifications'ı yenile
         const updatedNotifications = notifications.filter(n => n.id !== messageId);
         setNotifications(updatedNotifications);
-        
+
         // Stats'ı güncelle
         setStats(prev => ({
           ...prev,
@@ -337,7 +359,7 @@ export default function AdminLayout({ children, title, breadcrumbs }: AdminLayou
     <div className="min-h-screen bg-slate-50 dark:bg-slate-900">
       {/* Sidebar Overlay (Mobile) */}
       {sidebarOpen && (
-        <div 
+        <div
           className="fixed inset-0 bg-black/50 backdrop-blur-sm z-40 lg:hidden"
           onClick={() => setSidebarOpen(false)}
         />
@@ -346,8 +368,8 @@ export default function AdminLayout({ children, title, breadcrumbs }: AdminLayou
       {/* Sidebar */}
       <div className={`fixed inset-y-0 left-0 z-50 ${sidebarCollapsed ? 'w-20' : 'w-72'} bg-white dark:bg-slate-800 shadow-2xl transform transition-all duration-300 ease-in-out ${sidebarOpen ? 'translate-x-0' : '-translate-x-full'} lg:translate-x-0`}>
         <div className="flex h-full flex-col">
-                      {/* Logo */}
-            <div className={`flex items-center ${sidebarCollapsed ? 'justify-center px-4' : 'justify-between px-6'} py-4 border-b border-slate-200 dark:border-slate-700`}>
+          {/* Logo */}
+          <div className={`flex items-center ${sidebarCollapsed ? 'justify-center px-4' : 'justify-between px-6'} py-4 border-b border-slate-200 dark:border-slate-700`}>
             {!sidebarCollapsed && (
               <Link href="/admin/dashboard" className="flex items-center space-x-3">
                 {siteSettings?.logo?.url ? (
@@ -373,7 +395,7 @@ export default function AdminLayout({ children, title, breadcrumbs }: AdminLayou
                 </div>
               </Link>
             )}
-            
+
             {/* Collapse Button (Desktop) */}
             <button
               onClick={() => setSidebarCollapsed(!sidebarCollapsed)}
@@ -405,11 +427,10 @@ export default function AdminLayout({ children, title, breadcrumbs }: AdminLayou
                 <div key={item.id}>
                   <Link
                     href={item.href}
-                    className={`flex items-center ${sidebarCollapsed ? 'justify-center' : 'justify-between'} px-3 py-2 rounded-xl transition-all duration-200 group ${
-                      isActive || hasActiveSub
-                        ? 'bg-teal-50 text-teal-700 shadow-sm dark:bg-teal-900/50 dark:text-teal-300'
-                        : 'text-slate-700 hover:bg-slate-100 hover:text-slate-900 dark:text-slate-300 dark:hover:bg-slate-700 dark:hover:text-slate-100'
-                    }`}
+                    className={`flex items-center ${sidebarCollapsed ? 'justify-center' : 'justify-between'} px-3 py-2 rounded-xl transition-all duration-200 group ${isActive || hasActiveSub
+                      ? 'bg-teal-50 text-teal-700 shadow-sm dark:bg-teal-900/50 dark:text-teal-300'
+                      : 'text-slate-700 hover:bg-slate-100 hover:text-slate-900 dark:text-slate-300 dark:hover:bg-slate-700 dark:hover:text-slate-100'
+                      }`}
                   >
                     <div className="flex items-center space-x-3">
                       <item.icon className={`w-5 h-5 ${isActive || hasActiveSub ? 'text-teal-600 dark:text-teal-400' : 'text-slate-500 dark:text-slate-400'}`} />
@@ -417,7 +438,7 @@ export default function AdminLayout({ children, title, breadcrumbs }: AdminLayou
                         <span className="font-medium">{item.label}</span>
                       )}
                     </div>
-                    
+
                     {!sidebarCollapsed && item.badge && (
                       <span className="px-2 py-1 text-xs bg-teal-100 text-teal-700 rounded-full">
                         {item.badge}
@@ -432,11 +453,10 @@ export default function AdminLayout({ children, title, breadcrumbs }: AdminLayou
                         <Link
                           key={subItem.href}
                           href={subItem.href}
-                          className={`block px-3 py-2 text-sm rounded-lg transition-colors ${
-                            isActiveRoute(subItem.href)
-                              ? 'bg-teal-50 text-teal-700 dark:bg-teal-900/50 dark:text-teal-300'
-                              : 'text-slate-600 hover:bg-slate-50 hover:text-slate-900 dark:text-slate-400 dark:hover:bg-slate-700 dark:hover:text-slate-100'
-                          }`}
+                          className={`block px-3 py-2 text-sm rounded-lg transition-colors ${isActiveRoute(subItem.href)
+                            ? 'bg-teal-50 text-teal-700 dark:bg-teal-900/50 dark:text-teal-300'
+                            : 'text-slate-600 hover:bg-slate-50 hover:text-slate-900 dark:text-slate-400 dark:hover:bg-slate-700 dark:hover:text-slate-100'
+                            }`}
                         >
                           {subItem.label}
                         </Link>
@@ -550,7 +570,7 @@ export default function AdminLayout({ children, title, breadcrumbs }: AdminLayou
               <div className="flex items-center space-x-3">
                 {/* Notification Button */}
                 <div className="relative notification-dropdown">
-                  <button 
+                  <button
                     onClick={() => setNotificationDropdownOpen(!notificationDropdownOpen)}
                     className="relative p-3 rounded-xl bg-white/50 dark:bg-slate-700/50 hover:bg-white dark:hover:bg-slate-700 transition-all duration-200 shadow-sm hover:shadow-md group"
                   >
@@ -563,9 +583,9 @@ export default function AdminLayout({ children, title, breadcrumbs }: AdminLayou
                   </button>
 
                   {/* Notification Dropdown */}
-                  {notificationDropdownOpen && typeof window !== 'undefined' && 
+                  {notificationDropdownOpen && typeof window !== 'undefined' &&
                     createPortal(
-                      <div 
+                      <div
                         className="fixed top-16 right-4 w-80 bg-white dark:bg-slate-800 rounded-xl shadow-2xl border border-slate-200 dark:border-slate-700 py-2 ring-1 ring-black ring-opacity-5"
                         style={{ zIndex: 999999 }}
                       >
@@ -574,7 +594,7 @@ export default function AdminLayout({ children, title, breadcrumbs }: AdminLayou
                             Bildirimler
                           </h3>
                         </div>
-                        
+
                         <div className="max-h-96 overflow-y-auto">
                           {notifications.length === 0 ? (
                             <div className="px-4 py-6 text-center">
@@ -584,8 +604,8 @@ export default function AdminLayout({ children, title, breadcrumbs }: AdminLayou
                             </div>
                           ) : (
                             notifications.map((notification, index) => (
-                              <div 
-                                key={index} 
+                              <div
+                                key={index}
                                 className="px-4 py-3 hover:bg-slate-50 dark:hover:bg-slate-700 cursor-pointer border-b border-slate-100 dark:border-slate-700 last:border-b-0"
                                 onClick={() => {
                                   if (notification.type === 'message') {
@@ -618,9 +638,9 @@ export default function AdminLayout({ children, title, breadcrumbs }: AdminLayou
                             ))
                           )}
                         </div>
-                        
+
                         <div className="px-4 py-3 border-t border-slate-200 dark:border-slate-700">
-                          <button 
+                          <button
                             onClick={() => {
                               router.push('/admin/messages');
                               setNotificationDropdownOpen(false);
@@ -677,15 +697,15 @@ export default function AdminLayout({ children, title, breadcrumbs }: AdminLayou
                     {title}
                   </h1>
                   <p className="mt-2 text-slate-600 dark:text-slate-400">
-                    {new Date().toLocaleDateString('tr-TR', { 
-                      weekday: 'long', 
-                      year: 'numeric', 
-                      month: 'long', 
-                      day: 'numeric' 
+                    {new Date().toLocaleDateString('tr-TR', {
+                      weekday: 'long',
+                      year: 'numeric',
+                      month: 'long',
+                      day: 'numeric'
                     })}
                   </p>
                 </div>
-                
+
                 {/* Quick Stats */}
                 <div className="hidden lg:flex items-center space-x-6">
                   <div className="text-center">
@@ -710,7 +730,7 @@ export default function AdminLayout({ children, title, breadcrumbs }: AdminLayou
               </div>
             </div>
           )}
-          
+
           <div className="p-6">
             <div className="mx-auto">
               {children}

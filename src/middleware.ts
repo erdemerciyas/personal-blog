@@ -23,40 +23,10 @@ const SUSPICIOUS_PATTERNS = [
   /eval\(/i,                 // Code evaluation
 ];
 
-// Get page settings with caching
+// Get page settings with caching (disabled for now to prevent circular calls)
 async function getPageSettings(): Promise<any[]> {
-  const now = Date.now();
-  
-  // Return cached data if still valid
-  if (pageSettingsCache && (now - pageSettingsCache.timestamp) < CACHE_DURATION) {
-    return pageSettingsCache.data;
-  }
-
-  try {
-    const baseUrl = process.env.NEXTAUTH_URL || 'http://localhost:3000';
-    const response = await fetch(`${baseUrl}/api/admin/page-settings`, {
-      next: { revalidate: 300 }, // 5 minutes cache
-    });
-    
-    if (!response.ok) {
-      return [];
-    }
-    
-    const pageSettings = await response.json();
-    
-    // Update cache
-    pageSettingsCache = {
-      data: pageSettings,
-      timestamp: now
-    };
-    
-    return pageSettings;
-  } catch (error) {
-    if (process.env.NODE_ENV === 'development') {
-      console.error('Page access check error:', error);
-    }
-    return [];
-  }
+  // Temporarily return empty array to prevent API calls from middleware
+  return [];
 }
 
 // Check for suspicious activity
