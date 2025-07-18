@@ -6,7 +6,7 @@ import { SecurityHeaders, getPageType } from './lib/security-headers';
 import { logger } from './lib/logger';
 
 // Cache for page settings (5 minutes cache)
-let pageSettingsCache: { data: any[], timestamp: number } | null = null;
+const pageSettingsCache: { data: any[], timestamp: number } | null = null;
 const CACHE_DURATION = 5 * 60 * 1000; // 5 minutes
 
 // Suspicious patterns to detect

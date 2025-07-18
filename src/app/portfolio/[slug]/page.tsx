@@ -1,8 +1,8 @@
 'use client';
 
 import Link from 'next/link';
-import Image from 'next/image';
 import { usePathname } from 'next/navigation';
+import { HeroImage, GalleryImage } from '../../../components/OptimizedImage';
 import { useState, useEffect } from 'react';
 import { 
   ArrowLeftIcon,
@@ -210,15 +210,16 @@ function PortfolioDetailPageContent({ params }: { params: { slug: string } }) {
                      onClick={() => openLightbox(allImages.findIndex(img => img === selectedImage))}>
                   {selectedImage ? (
                     <>
-                      <Image
+                      <HeroImage
                         src={selectedImage}
                         alt={`${portfolioItem.title} - Seçili Görsel`}
                         fill
-                        className="object-cover transition-all duration-300 ease-in-out group-hover:scale-105"
+                        className="transition-all duration-300 ease-in-out group-hover:scale-105"
                         priority
+                        placeholder="blur"
                       />
                       {/* Hover overlay */}
-                      <div className="absolute inset-0 bg-black/0 group-hover:bg-black/20 transition-all duration-300 flex items-center justify-center">
+                      <div className="absolute inset-0 bg-black/0 group-hover:bg-black/20 transition-all duration-300 flex items-center justify-center z-10">
                         <div className="opacity-0 group-hover:opacity-100 transition-opacity duration-300">
                           <div className="bg-white/90 backdrop-blur-sm rounded-full p-3 shadow-lg">
                             <MagnifyingGlassIcon className="w-6 h-6 text-slate-700" />
@@ -251,11 +252,12 @@ function PortfolioDetailPageContent({ params }: { params: { slug: string } }) {
                               : 'border-slate-200 hover:border-teal-300'
                           }`}
                         >
-                          <Image
+                          <GalleryImage
                             src={image}
                             alt={`Proje görseli ${index + 1}`}
                             fill
                             className="object-cover"
+                            sizes="(max-width: 768px) 25vw, 12.5vw"
                           />
                           {selectedImage === image && (
                             <div className="absolute inset-0 bg-teal-500/20 flex items-center justify-center">
@@ -381,7 +383,7 @@ function PortfolioDetailPageContent({ params }: { params: { slug: string } }) {
             
             {/* Main Image Container */}
             <div className="relative w-full h-full max-w-7xl max-h-full">
-              <Image
+              <HeroImage
                 src={allImages[lightboxImageIndex]}
                 alt={`${portfolioItem?.title} - Görsel ${lightboxImageIndex + 1}`}
                 fill
@@ -423,11 +425,12 @@ function PortfolioDetailPageContent({ params }: { params: { slug: string } }) {
                           : 'border-white/30 hover:border-white/60'
                       }`}
                     >
-                      <Image
+                      <GalleryImage
                         src={image}
                         alt={`Küçük görsel ${index + 1}`}
                         fill
                         className="object-cover"
+                        sizes="64px"
                       />
                       {lightboxImageIndex === index && (
                         <div className="absolute inset-0 bg-teal-400/20 flex items-center justify-center">

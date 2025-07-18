@@ -32,14 +32,12 @@ import {
   GlobeAltIcon,
   PresentationChartBarIcon,
   CloudIcon,
-  CalendarDaysIcon,
   UsersIcon,
   ViewColumnsIcon,
   ClockIcon,
   ServerIcon,
   AdjustmentsHorizontalIcon,
-  CloudArrowUpIcon,
-  ChatBubbleLeftRightIcon
+  CloudArrowUpIcon
 } from '@heroicons/react/24/outline';
 import { PageLoader } from '../../../components/AdminLoader';
 
@@ -58,7 +56,7 @@ function AdminDashboardContent() {
     usersCount: 0
   });
 
-  const [recentActivity, setRecentActivity] = useState([
+  const [recentActivity] = useState([
     {
       id: 1,
       type: 'portfolio',
@@ -89,7 +87,7 @@ function AdminDashboardContent() {
     }
   ]);
 
-  const [loading, setLoading] = useState(true);
+
   const [mounted, setMounted] = useState(false);
 
   // Client-side mounting check for Vercel
@@ -102,7 +100,7 @@ function AdminDashboardContent() {
       // Session kontrolü - sadece authenticated user için API çağrısı yap
       if (status !== 'authenticated' || !session?.user || !mounted) {
         if (status !== 'loading') {
-          setLoading(false);
+          // setLoading removed
         }
         return;
       }
@@ -152,7 +150,7 @@ function AdminDashboardContent() {
           usersCount: 0
         });
       } finally {
-        setLoading(false);
+        // setLoading removed
       }
     };
 

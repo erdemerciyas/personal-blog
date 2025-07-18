@@ -46,15 +46,18 @@ const nextConfig = {
         pathname: '/**',
       },
     ],
-    // Security: Limit image sizes
-    deviceSizes: [640, 750, 828, 1080, 1200, 1920, 2048],
-    imageSizes: [16, 32, 48, 64, 96, 128, 256, 384],
+    // Performance: Optimized device sizes for responsive images
+    deviceSizes: [640, 768, 1024, 1280, 1536, 1920, 2048],
+    imageSizes: [16, 32, 48, 64, 96, 128, 256, 384, 512],
     // Security: Disable external image optimization for untrusted sources
     dangerouslyAllowSVG: false,
     contentSecurityPolicy: "default-src 'self'; script-src 'none'; frame-src 'self' https://vercel.live https://vercel.com; sandbox;",
-    // Performance: Enable image optimization
-    formats: ['image/webp'],
-    minimumCacheTTL: 60 * 60 * 24 * 30, // 30 days
+    // Performance: Enable modern image formats with fallbacks
+    formats: ['image/avif', 'image/webp'],
+    // Cache optimization: Extended cache TTL for better performance
+    minimumCacheTTL: 60 * 60 * 24 * 365, // 1 year for immutable images
+    // Use default Next.js image loader
+    loader: 'default',
   },
   experimental: {
     esmExternals: true,
@@ -64,14 +67,12 @@ const nextConfig = {
     // Vercel optimizations
     optimizePackageImports: ['@heroicons/react', 'framer-motion'],
     serverComponentsExternalPackages: ['mongoose', 'mongodb'],
-    // Edge runtime optimizations
-    runtime: 'nodejs',
   },
   // Performance: Enable compression
   compress: true,
   // Performance: Optimize bundle
   swcMinify: true,
-  // Security headers
+  // Security and Performance headers
   async headers() {
     return [
       {
@@ -105,6 +106,46 @@ const nextConfig = {
           {
             key: 'X-Robots-Tag',
             value: 'noindex, nofollow',
+          },
+        ],
+      },
+      // Static assets cache optimization
+      {
+        source: '/_next/static/(.*)',
+        headers: [
+          {
+            key: 'Cache-Control',
+            value: 'public, max-age=31536000, immutable',
+          },
+        ],
+      },
+      // Image optimization cache
+      {
+        source: '/_next/image(.*)',
+        headers: [
+          {
+            key: 'Cache-Control',
+            value: 'public, max-age=31536000, immutable',
+          },
+        ],
+      },
+      // Public assets cache
+      {
+        source: '/images/(.*)',
+        headers: [
+          {
+            key: 'Cache-Control',
+            value: 'public, max-age=31536000, immutable',
+          },
+        ],
+      },
+      // Font files cache
+      {
+        source: '/fonts/:path*',
+        headers: [
+          {
+            key: 'Cache-Control',
+            value: 'public, max-age=31536000, immutable',
           },
         ],
       },

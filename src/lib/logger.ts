@@ -137,9 +137,27 @@ class Logger {
 // Export singleton instance
 export const logger = new Logger();
 
+// Production'da console.log'ları devre dışı bırak
+const isProduction = process.env.NODE_ENV === 'production';
+
 // Legacy console.log replacement (for gradual migration)
-export const devLog = (message: string, data?: any): void => {
-  if (process.env.NODE_ENV === 'development') {
-    logger.debug(message, 'DEV', data);
+export const safeConsole = {
+  log: (...args: any[]) => {
+    if (!isProduction) {
+      console.log(...args);
+    }
+  },
+  error: (...args: any[]) => {
+    // Error'ları her zaman logla
+    console.error(...args);
+  },
+  warn: (...args: any[]) => {
+    // Warning'leri her zaman logla
+    console.warn(...args);
+  },
+  info: (...args: any[]) => {
+    if (!isProduction) {
+      console.info(...args);
+    }
   }
 }; 

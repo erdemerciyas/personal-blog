@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import ContentSkeleton from '../../components/ContentSkeleton';
-import Image from 'next/image';
+import { CardImage } from '../../components/OptimizedImage';
 import HTMLContent from '../../components/HTMLContent';
 import { 
   ArrowRightIcon,
@@ -172,11 +172,13 @@ export default function ServicesPage() {
                   <div className={`${index % 2 === 1 ? 'lg:order-2' : ''}`}>
                     <div className="relative h-64 md:h-72 lg:h-80 rounded-xl overflow-hidden shadow-lg">
                       {service.image ? (
-                        <Image
+                        <CardImage
                           src={service.image}
                           alt={service.title}
                           fill
                           className="object-cover"
+                          sizes="(max-width: 768px) 100vw, 50vw"
+                          placeholder="blur"
                         />
                       ) : (
                         <div className="bg-gradient-to-br from-teal-500 to-blue-600 h-full flex items-center justify-center">

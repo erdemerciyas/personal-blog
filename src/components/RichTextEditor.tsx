@@ -1,19 +1,8 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import dynamic from 'next/dynamic';
-import DOMPurify from 'dompurify';
-import 'react-quill/dist/quill.snow.css';
-
-// Dinamik import ile ReactQuill'i yükleme (SSR problemi için)
-const ReactQuill = dynamic(() => import('react-quill'), {
-  ssr: false,
-  loading: () => (
-    <div className="animate-pulse">
-      <div className="h-32 bg-gray-200 rounded-lg"></div>
-    </div>
-  )
-});
+import { useEditor, EditorContent } from '@tiptap/react';
+import StarterKit from '@tiptap/starter-kit';
 
 interface RichTextEditorProps {
   value: string;
@@ -21,167 +10,112 @@ interface RichTextEditorProps {
   placeholder?: string;
   className?: string;
   disabled?: boolean;
-  maxLength?: number;
-  required?: boolean;
 }
 
 export default function RichTextEditor({
   value,
   onChange,
-  placeholder = 'İçerik yazınız...',
+  placeholder = 'İçerik yazın...',
   className = '',
-  disabled = false,
-  maxLength,
-  required = false
+  disabled = false
 }: RichTextEditorProps) {
-  const [mounted, setMounted] = useState(false);
+  const editor = useEditor({
+    extensions: [StarterKit],
+    content: value,
+    editable: !disabled,
+    onUpdate: ({ editor }) => {
+      onChange(editor.getHTML());
+    },
+  });
 
   useEffect(() => {
-    setMounted(true);
-  }, []);
-
-  const modules = {
-    toolbar: [
-      [{ 'header': [1, 2, 3, 4, 5, 6, false] }],
-      ['bold', 'italic', 'underline', 'strike'],
-      [{ 'color': [] }, { 'background': [] }],
-      [{ 'align': [] }],
-      [{ 'list': 'ordered'}, { 'list': 'bullet' }],
-      ['blockquote', 'code-block'],
-      ['link', 'image'],
-      ['clean']
-    ],
-    clipboard: {
-      matchVisual: false,
+    if (editor && value !== editor.getHTML()) {
+      editor.commands.setContent(value);
     }
-  };
+  }, [value, editor]);
 
-  const formats = [
-    'header',
-    'bold', 'italic', 'underline', 'strike',
-    'color', 'background',
-    'align',
-    'list', 'bullet',
-    'blockquote', 'code-block',
-    'link', 'image'
-  ];
-
-  // Güvenli HTML sanitization
-  const sanitizeHtml = (html: string): string => {
-    if (typeof window === 'undefined') return html;
-    
-    return DOMPurify.sanitize(html, {
-      ALLOWED_TAGS: [
-        'p', 'br', 'strong', 'em', 'u', 's', 'ol', 'ul', 'li', 
-        'h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'blockquote', 'code', 'pre', 'a', 'span'
-      ],
-      ALLOWED_ATTR: ['href', 'target', 'rel', 'class', 'style'],
-      FORBID_TAGS: ['script', 'object', 'embed', 'form', 'input', 'button', 'iframe'],
-      FORBID_ATTR: ['onclick', 'onload', 'onerror', 'onmouseover'],
-      ADD_ATTR: ['target'],
-      ALLOW_DATA_ATTR: false,
-    });
-  };
-
-  const handleChange = (content: string) => {
-    if (maxLength && content.length > maxLength) {
-      return;
-    }
-    
-    // Güvenlik: İçeriği sanitize et
-    const sanitizedContent = sanitizeHtml(content);
-    onChange(sanitizedContent);
-  };
-
-  if (!mounted) {
+  if (!editor) {
     return (
-      <div className="animate-pulse">
-        <div className="h-32 bg-gray-200 rounded-lg"></div>
+      <div className={`border border-gray-300 rounded-lg p-3 min-h-[200px] bg-gray-50 ${className}`}>
+        <div className="animate-pulse">
+          <div className="h-4 bg-gray-200 rounded w-3/4 mb-2"></div>
+          <div className="h-4 bg-gray-200 rounded w-1/2 mb-2"></div>
+          <div className="h-4 bg-gray-200 rounded w-5/6"></div>
+        </div>
       </div>
     );
   }
 
   return (
-    <div className={`rich-text-editor ${className}`}>
-      <ReactQuill
-        theme="snow"
-        value={value}
-        onChange={handleChange}
-        modules={modules}
-        formats={formats}
-        placeholder={placeholder}
-        readOnly={disabled}
-        style={{
-          backgroundColor: 'white',
-          border: '1px solid #e2e8f0',
-          borderRadius: '0.75rem',
-          minHeight: '200px'
-        }}
+    <div className={`border border-gray-300 rounded-lg ${className}`}>
+      {/* Toolbar */}
+      <div className="border-b border-gray-300 p-2 flex flex-wrap gap-1">
+        <button
+          type="button"
+          onClick={() => editor.chain().focus().toggleBold().run()}
+          disabled={!editor.can().chain().focus().toggleBold().run()}
+          className={`p-2 rounded hover:bg-gray-100 ${editor.isActive('bold') ? 'bg-gray-200' : ''}`}
+        >
+          <strong>B</strong>
+        </button>
+        <button
+          type="button"
+          onClick={() => editor.chain().focus().toggleItalic().run()}
+          disabled={!editor.can().chain().focus().toggleItalic().run()}
+          className={`p-2 rounded hover:bg-gray-100 ${editor.isActive('italic') ? 'bg-gray-200' : ''}`}
+        >
+          <em>I</em>
+        </button>
+        <button
+          type="button"
+          onClick={() => editor.chain().focus().toggleStrike().run()}
+          disabled={!editor.can().chain().focus().toggleStrike().run()}
+          className={`p-2 rounded hover:bg-gray-100 ${editor.isActive('strike') ? 'bg-gray-200' : ''}`}
+        >
+          <s>S</s>
+        </button>
+        <button
+          type="button"
+          onClick={() => editor.chain().focus().toggleHeading({ level: 1 }).run()}
+          className={`p-2 rounded hover:bg-gray-100 ${editor.isActive('heading', { level: 1 }) ? 'bg-gray-200' : ''}`}
+        >
+          H1
+        </button>
+        <button
+          type="button"
+          onClick={() => editor.chain().focus().toggleHeading({ level: 2 }).run()}
+          className={`p-2 rounded hover:bg-gray-100 ${editor.isActive('heading', { level: 2 }) ? 'bg-gray-200' : ''}`}
+        >
+          H2
+        </button>
+        <button
+          type="button"
+          onClick={() => editor.chain().focus().toggleBulletList().run()}
+          className={`p-2 rounded hover:bg-gray-100 ${editor.isActive('bulletList') ? 'bg-gray-200' : ''}`}
+        >
+          •
+        </button>
+        <button
+          type="button"
+          onClick={() => editor.chain().focus().toggleOrderedList().run()}
+          className={`p-2 rounded hover:bg-gray-100 ${editor.isActive('orderedList') ? 'bg-gray-200' : ''}`}
+        >
+          1.
+        </button>
+        <button
+          type="button"
+          onClick={() => editor.chain().focus().toggleBlockquote().run()}
+          className={`p-2 rounded hover:bg-gray-100 ${editor.isActive('blockquote') ? 'bg-gray-200' : ''}`}
+        >
+          "
+        </button>
+      </div>
+      
+      {/* Editor Content */}
+      <EditorContent 
+        editor={editor} 
+        className={`p-3 min-h-[200px] focus:outline-none ${disabled ? 'bg-gray-50' : ''}`}
       />
-      
-      {/* Karakter sayacı */}
-      {maxLength && (
-        <div className="flex justify-end mt-2">
-          <span className={`text-sm ${
-            value.length > maxLength * 0.9 ? 'text-red-600' : 'text-slate-500'
-          }`}>
-            {value.length} / {maxLength}
-          </span>
-        </div>
-      )}
-      
-      {/* Zorunlu alan uyarısı */}
-      {required && !value.trim() && (
-        <div className="text-red-600 text-sm mt-1">
-          Bu alan zorunludur
-        </div>
-      )}
-
-      <style jsx global>{`
-        .rich-text-editor .ql-container {
-          min-height: 200px;
-          border-bottom-left-radius: 0.75rem;
-          border-bottom-right-radius: 0.75rem;
-        }
-        
-        .rich-text-editor .ql-toolbar {
-          border-top-left-radius: 0.75rem;
-          border-top-right-radius: 0.75rem;
-          border-bottom: 1px solid #e2e8f0;
-        }
-        
-        .rich-text-editor .ql-editor {
-          font-family: inherit;
-          font-size: 14px;
-          line-height: 1.5;
-          padding: 12px 16px;
-        }
-        
-        .rich-text-editor .ql-editor.ql-blank::before {
-          color: #9ca3af;
-          font-style: normal;
-        }
-        
-        .rich-text-editor .ql-toolbar .ql-formats {
-          margin-right: 15px;
-        }
-        
-        .rich-text-editor .ql-toolbar button:hover {
-          color: #059669;
-        }
-        
-        .rich-text-editor .ql-toolbar button.ql-active {
-          color: #059669;
-        }
-        
-        .rich-text-editor .ql-snow .ql-picker.ql-expanded .ql-picker-label {
-          color: #059669;
-        }
-        
-        .rich-text-editor .ql-snow .ql-picker.ql-expanded .ql-picker-options {
-          border-color: #d1d5db;
-        }
-      `}</style>
     </div>
   );
 } 

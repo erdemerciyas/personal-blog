@@ -175,8 +175,6 @@ export default function NewServicePage() {
                   value={serviceDescription}
                   onChange={setServiceDescription}
                   placeholder="Servis hakkında detaylı açıklama yazınız"
-                  required
-                  maxLength={5000}
                 />
               </div>
             </div>

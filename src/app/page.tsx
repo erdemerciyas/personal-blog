@@ -1,8 +1,9 @@
 'use client';
 import { useState, useEffect } from 'react';
-import Link from 'next/link';
-import Image from 'next/image';
 import ProjectGrid from '../components/ProjectGrid';
+import { HeroImage, OptimizedImage } from '../components/OptimizedImage';
+import { ButtonLink, CardLink } from '../components/SmartLink';
+import { PrefetchLinks } from '../components/PrefetchLinks';
 import HTMLContent from '../components/HTMLContent';
 import ContentSkeleton from '../components/ContentSkeleton';
 import { useSliderItems, usePortfolioItems, useServices } from '../hooks/useApi';
@@ -157,6 +158,14 @@ export default function HomePage() {
 
   return (
     <div className="min-h-screen">
+      {/* Prefetch critical pages and preload images */}
+      <PrefetchLinks 
+        links={['/portfolio', '/services', '/contact', '/about']}
+        priority="high"
+        portfolioData={portfolioItems}
+        strategy="homepage"
+      />
+      
       {/* Hero Slider Section */}
       <section className={`relative overflow-hidden min-h-screen flex items-center justify-center ${
         sliderLoading ? 'bg-gradient-to-br from-slate-900 to-blue-900' : ''
@@ -181,7 +190,7 @@ export default function HomePage() {
                       : 'opacity-0 scale-110'
                   }`}
                 >
-                  <Image
+                  <HeroImage
                     src={slide.image}
                     alt={slide.title}
                     fill
@@ -276,14 +285,14 @@ export default function HomePage() {
                 
                 {/* CTAs */}
                 <div className="flex flex-col sm:flex-row gap-6 justify-center items-center animate-fade-in">
-                  <Link href={currentSlide.buttonLink || '/portfolio'} className="btn-primary">
+                  <ButtonLink href={currentSlide.buttonLink || '/portfolio'} className="btn-primary">
                     <RocketLaunchIcon className="w-5 h-5 mr-2" />
                     {currentSlide.buttonText}
                     <ArrowRightIcon className="w-5 h-5 ml-2" />
-                  </Link>
-                  <Link href="/contact" className="btn-secondary">
+                  </ButtonLink>
+                  <ButtonLink href="/contact" className="btn-secondary">
                     İletişime Geçin
-                  </Link>
+                  </ButtonLink>
                 </div>
               </div>
             </div>
@@ -316,11 +325,13 @@ export default function HomePage() {
                   <div className="mb-8 flex justify-center">
                     {service.image ? (
                       <div className="relative w-full h-48 rounded-2xl overflow-hidden">
-                        <Image
+                        <OptimizedImage
                           src={service.image}
                           alt={service.title}
                           fill
-                          className="object-cover transition-transform duration-500"
+                          className="object-cover transition-transform duration-500 group-hover:scale-105"
+                          preset="card"
+                          sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
                         />
                       </div>
                     ) : (
@@ -344,13 +355,13 @@ export default function HomePage() {
                         className="line-clamp-3"
                       />
                     </div>
-                    <Link
+                    <CardLink
                       href={`/services#${service.title.toLowerCase().replace(/\s+/g, '-').replace(/&/g, '')}`}
                       className="inline-flex items-center text-teal-600 hover:text-teal-700 font-semibold transition-colors duration-200 mt-auto"
                     >
                       Detayları Gör
                       <ArrowRightIcon className="w-4 h-4 ml-2" />
-                    </Link>
+                    </CardLink>
                   </div>
                 </div>
               ))}
@@ -359,10 +370,10 @@ export default function HomePage() {
 
           {/* View All Link */}
           <div className="text-center">
-            <Link href="/services" className="btn-outline">
+            <ButtonLink href="/services" className="btn-outline">
               Tüm Hizmetlerimizi Görüntüle
               <ArrowRightIcon className="w-5 h-5 ml-2" />
-            </Link>
+            </ButtonLink>
           </div>
         </div>
       </section>
@@ -398,10 +409,10 @@ export default function HomePage() {
                 limit={6} 
               />
               <div className="text-center mt-16">
-                <Link href="/portfolio" className="btn-outline">
+                <ButtonLink href="/portfolio" className="btn-outline">
                   Tüm Projeleri Görüntüle
                   <ArrowRightIcon className="w-5 h-5 ml-2" />
-                </Link>
+                </ButtonLink>
               </div>
             </>
           ) : (
@@ -437,14 +448,14 @@ export default function HomePage() {
             Uzman ekibimiz ve modern teknolojilerimizle fikirlerinizi hayata geçirmeye hazırız.
           </p>
           <div className="flex flex-col sm:flex-row gap-6 justify-center">
-            <Link href="/contact" className="btn-secondary">
+            <ButtonLink href="/contact" className="btn-secondary">
               <SparklesIcon className="w-5 h-5 mr-2" />
               İletişime Geçin
-            </Link>
-            <Link href="/portfolio" className="btn-secondary">
+            </ButtonLink>
+            <ButtonLink href="/portfolio" className="btn-secondary">
               Projelerimizi İnceleyin
               <ArrowRightIcon className="w-5 h-5 ml-2" />
-            </Link>
+            </ButtonLink>
           </div>
         </div>
       </section>

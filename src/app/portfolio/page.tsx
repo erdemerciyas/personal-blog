@@ -5,6 +5,8 @@ import ContentSkeleton from '../../components/ContentSkeleton';
 import { useSearchParams, useRouter } from 'next/navigation';
 import ProjectGrid from '../../components/ProjectGrid';
 import HTMLContent from '../../components/HTMLContent';
+import { ButtonLink } from '../../components/SmartLink';
+import { PrefetchLinks } from '../../components/PrefetchLinks';
 import { 
   MagnifyingGlassIcon,
   FunnelIcon,
@@ -157,6 +159,14 @@ function PortfolioPageContent() {
 
   return (
     <div className="min-h-screen bg-gray-50">
+      {/* Prefetch portfolio detail pages */}
+      <PrefetchLinks 
+        links={portfolioItems.map(item => `/portfolio/${item.slug}`)}
+        priority="low"
+        portfolioData={portfolioItems}
+        strategy="portfolio"
+      />
+      
       {/* Hero Section */}
       <section className="bg-gradient-to-br from-teal-500 to-cyan-600 text-white py-28 md:py-32">
         <div className="max-w-3xl mx-auto px-4 text-center">
@@ -264,12 +274,12 @@ function PortfolioPageContent() {
                   : "Görüntülenecek proje bulunmuyor."}
               </p>
               {selectedCategories.length > 0 && (
-                 <button
-                  onClick={clearAllFilters}
+                 <ButtonLink
+                  href="/portfolio"
                   className="btn-outline mt-6"
                 >
                   Tüm Projeleri Göster
-                </button>
+                </ButtonLink>
               )}
             </div>
           )}

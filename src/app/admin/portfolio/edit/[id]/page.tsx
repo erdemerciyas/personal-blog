@@ -348,8 +348,6 @@ export default function EditPortfolioItem({ params }: { params: { id: string } }
                   value={formData.description}
                   onChange={(content) => setFormData(prev => ({ ...prev, description: content }))}
                   placeholder="Proje hakkında detaylı açıklama yazınız"
-                  maxLength={5000}
-                  required
                 />
               </div>
             </div>

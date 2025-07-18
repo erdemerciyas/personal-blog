@@ -6,11 +6,9 @@ import { useRouter } from 'next/navigation';
 import { PageLoader } from '../../../components/AdminLoader';
 import AdminLayout from '../../../components/admin/AdminLayout';
 import {
-  UserIcon,
   PlusIcon,
   TrashIcon,
   CheckIcon,
-  ExclamationTriangleIcon,
   SparklesIcon,
   EyeIcon
 } from '@heroicons/react/24/outline';
@@ -46,7 +44,7 @@ interface AboutData {
 }
 
 export default function AdminAboutPage() {
-  const { data: session, status } = useSession();
+  const { status } = useSession();
   const router = useRouter();
   
   const [aboutData, setAboutData] = useState<AboutData>({
@@ -77,7 +75,7 @@ export default function AdminAboutPage() {
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [message, setMessage] = useState<{ type: 'success' | 'error'; text: string } | null>(null);
-  const [messageType, setMessageType] = useState<'success' | 'error'>('success');
+
 
   // Authentication check
   useEffect(() => {
@@ -132,12 +130,11 @@ export default function AdminAboutPage() {
       }
 
       setMessage({ type: 'success', text: 'Hakkımda sayfası başarıyla güncellendi!' });
-      setMessageType('success');
+
       
       setTimeout(() => setMessage(null), 3000);
     } catch (error) {
       setMessage({ type: 'error', text: error instanceof Error ? error.message : 'Bir hata oluştu' });
-      setMessageType('error');
     } finally {
       setSaving(false);
     }

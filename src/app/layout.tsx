@@ -98,6 +98,7 @@ export async function generateMetadata(): Promise<Metadata> {
 }
 
 import LoadingBar from '../components/LoadingBar';
+import { PerformanceMonitor } from '../components/PerformanceMonitor';
 
 export default function RootLayout({
   children,
@@ -143,6 +144,9 @@ export default function RootLayout({
             <ConditionalFooter />
           </ClientWrapper>
         </Providers>
+        
+        {/* Performance monitoring */}
+        <PerformanceMonitor enabled={config.isDevelopment} />
         
         {/* Development tools */}
         {config.isDevelopment && (

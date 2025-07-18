@@ -8,7 +8,7 @@ import {
   type CloudinaryOptions 
 } from '../lib/cloudinary-utils';
 
-interface OptimizedImageProps {
+interface CloudinaryImageProps {
   src: string;
   alt: string;
   width?: number;
@@ -17,7 +17,7 @@ interface OptimizedImageProps {
   priority?: boolean;
   fill?: boolean;
   sizes?: string;
-  quality?: number | 'auto';
+  quality?: number | 'auto' | 'auto:good' | 'auto:low';
   placeholder?: 'blur' | 'empty';
   blurDataURL?: string;
   preset?: keyof typeof CLOUDINARY_PRESETS;
@@ -25,11 +25,16 @@ interface OptimizedImageProps {
   loading?: 'lazy' | 'eager';
   onLoad?: () => void;
   onError?: () => void;
-  unoptimized?: boolean;
   style?: React.CSSProperties;
+  // Cloudinary specific props
+  crop?: 'fill' | 'fit' | 'scale' | 'crop' | 'thumb';
+  gravity?: 'auto' | 'face' | 'center' | 'north' | 'south' | 'east' | 'west';
+  format?: 'auto' | 'webp' | 'avif' | 'jpg' | 'png';
+  dpr?: number | 'auto';
+  effects?: string[];
 }
 
-export const OptimizedImage: React.FC<OptimizedImageProps> = ({
+export const CloudinaryImage: React.FC<CloudinaryImageProps> = ({
   src,
   alt,
   width,
@@ -39,15 +44,19 @@ export const OptimizedImage: React.FC<OptimizedImageProps> = ({
   fill = false,
   sizes,
   quality = 'auto',
-  placeholder = 'empty',
+  placeholder = 'blur',
   blurDataURL,
   preset,
   cloudinaryOptions,
   loading = 'lazy',
   onLoad,
   onError,
-  unoptimized = false,
-  style
+  style,
+  crop,
+  gravity,
+  format = 'auto',
+  dpr = 'auto',
+  effects = []
 }) => {
   const [isLoading, setIsLoading] = useState(true);
   const [hasError, setHasError] = useState(false);
@@ -56,38 +65,60 @@ export const OptimizedImage: React.FC<OptimizedImageProps> = ({
   const optimizedSrc = useMemo(() => {
     if (!src) return src;
     
-    // Eğer src zaten tam bir URL ise (http/https ile başlıyorsa), olduğu gibi kullan
-    if (src.startsWith('http://') || src.startsWith('https://')) {
+    // Eğer src zaten tam bir URL ise ve Cloudinary değilse, olduğu gibi kullan
+    if ((src.startsWith('http://') || src.startsWith('https://')) && !src.includes('cloudinary.com')) {
       return src;
     }
     
-    // Eğer Cloudinary public ID ise, optimize et
-    if (src.includes('cloudinary.com') || (!src.startsWith('/') && !src.startsWith('data:'))) {
-      const options: CloudinaryOptions = {
-        ...cloudinaryOptions,
-        ...(preset ? CLOUDINARY_PRESETS[preset] : {}),
-        ...(width && { width }),
-        ...(height && { height }),
-        ...(quality && { quality })
-      };
-      
-      return buildCloudinaryUrl(src, options);
-    }
+    // Cloudinary optimizasyon seçenekleri
+    const options: CloudinaryOptions = {
+      ...cloudinaryOptions,
+      ...(preset ? CLOUDINARY_PRESETS[preset] : {}),
+      ...(width && { width }),
+      ...(height && { height }),
+      quality: quality,
+      format: format,
+      ...(crop && { crop }),
+      ...(gravity && { gravity }),
+      ...(dpr && { dpr }),
+      ...(effects.length > 0 && { flags: effects })
+    };
     
-    return src;
-  }, [src, width, height, quality, preset, cloudinaryOptions]);
+    return buildCloudinaryUrl(src, options);
+  }, [src, width, height, quality, preset, cloudinaryOptions, crop, gravity, format, dpr, effects]);
 
   // Blur placeholder
   const optimizedBlurDataURL = useMemo(() => {
     if (blurDataURL) return blurDataURL;
     
-    // Eğer placeholder blur ise ve Cloudinary URL'si varsa, blur placeholder oluştur
+    // Eğer placeholder blur ise, blur placeholder oluştur
     if (placeholder === 'blur' && src && !src.startsWith('data:')) {
       return buildBlurPlaceholder(extractPublicIdFromUrl(src));
     }
     
     return undefined;
   }, [blurDataURL, placeholder, src]);
+
+  // Responsive sizes
+  const responsiveSizes = useMemo(() => {
+    if (sizes) return sizes;
+    
+    if (fill) return '100vw';
+    
+    // Preset'e göre varsayılan sizes
+    switch (preset) {
+      case 'hero':
+        return '100vw';
+      case 'card':
+        return '(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw';
+      case 'thumbnail':
+        return '(max-width: 768px) 50vw, 25vw';
+      case 'gallery':
+        return '(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw';
+      default:
+        return undefined;
+    }
+  }, [sizes, fill, preset]);
 
   const handleLoad = useCallback(() => {
     setIsLoading(false);
@@ -114,7 +145,7 @@ export const OptimizedImage: React.FC<OptimizedImageProps> = ({
   }
 
   return (
-    <div className={`relative overflow-hidden ${fill ? 'w-full h-full' : ''} ${className}`}>
+    <div className={`relative overflow-hidden ${fill ? 'w-full h-full' : ''}`}>
       {isLoading && (
         <div className="absolute inset-0 z-10 bg-gradient-to-r from-slate-200 via-slate-100 to-slate-200 animate-pulse" />
       )}
@@ -124,7 +155,7 @@ export const OptimizedImage: React.FC<OptimizedImageProps> = ({
         width={width}
         height={height}
         fill={fill}
-        sizes={sizes || (fill ? '100vw' : undefined)}
+        sizes={responsiveSizes}
         quality={typeof quality === 'number' ? quality : 85}
         priority={priority}
         loading={priority ? 'eager' : loading}
@@ -132,10 +163,9 @@ export const OptimizedImage: React.FC<OptimizedImageProps> = ({
         {...(placeholder === 'blur' && optimizedBlurDataURL ? { blurDataURL: optimizedBlurDataURL } : {})}
         className={`transition-all duration-500 ease-out object-cover ${
           isLoading ? 'opacity-0 scale-105' : 'opacity-100 scale-100'
-        } ${fill ? 'w-full h-full' : ''}`}
+        } ${fill ? 'w-full h-full' : ''} ${className}`}
         onLoad={handleLoad}
         onError={handleError}
-        unoptimized={unoptimized}
         style={{
           objectFit: 'cover',
           objectPosition: 'center',
@@ -147,40 +177,40 @@ export const OptimizedImage: React.FC<OptimizedImageProps> = ({
   );
 };
 
-// Preset configurations for common use cases
-export const HeroImage: React.FC<OptimizedImageProps> = (props) => (
-  <OptimizedImage
+// Preset bileşenleri - kolay kullanım için
+export const CloudinaryHeroImage: React.FC<CloudinaryImageProps> = (props) => (
+  <CloudinaryImage
     {...props}
-    sizes={props.sizes || "100vw"}
+    preset="hero"
     priority={props.priority !== undefined ? props.priority : true}
-    preset={props.preset || "hero"}
-    quality={props.quality || "auto"}
-    loading={props.loading || "eager"}
+    loading="eager"
+    quality="auto:good"
   />
 );
 
-export const CardImage: React.FC<OptimizedImageProps> = (props) => (
-  <OptimizedImage
+export const CloudinaryCardImage: React.FC<CloudinaryImageProps> = (props) => (
+  <CloudinaryImage
     {...props}
-    sizes={props.sizes || "(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"}
-    preset={props.preset || "card"}
-    quality={props.quality || "auto"}
+    preset="card"
+    quality="auto:good"
   />
 );
 
-export const ThumbnailImage: React.FC<OptimizedImageProps> = (props) => (
-  <OptimizedImage
+export const CloudinaryThumbnailImage: React.FC<CloudinaryImageProps> = (props) => (
+  <CloudinaryImage
     {...props}
-    sizes={props.sizes || "(max-width: 768px) 50vw, 25vw"}
-    preset={props.preset || "thumbnail"}
-    quality={props.quality || "auto"}
+    preset="thumbnail"
+    quality="auto:low"
+    crop="thumb"
+    gravity="face"
   />
 );
 
-export const GalleryImage: React.FC<OptimizedImageProps> = (props) => (
-  <OptimizedImage
+export const CloudinaryGalleryImage: React.FC<CloudinaryImageProps> = (props) => (
+  <CloudinaryImage
     {...props}
-    preset={props.preset || "gallery"}
-    quality={props.quality || "auto"}
+    preset="gallery"
+    quality="auto:good"
+    crop="fit"
   />
 );
