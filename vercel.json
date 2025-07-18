@@ -1,7 +1,7 @@
 {
   "version": 2,
   "framework": "nextjs",
-  "buildCommand": "npm run build",
+  "buildCommand": "npm run vercel-build",
   "installCommand": "npm install --legacy-peer-deps",
   "outputDirectory": ".next",
   "functions": {
@@ -10,6 +10,7 @@
       "memory": 1024
     }
   },
+  "regions": ["fra1"],
   "headers": [
     {
       "source": "/(.*)",
