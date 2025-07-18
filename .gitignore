@@ -27,7 +27,17 @@ yarn-error.log*
 # local env files
 .env*.local
 .env
+.env.production
+.env.development
+.env.staging
 conf.env
+
+# Security - Never commit these
+**/credentials.json
+**/secrets.json
+**/*secret*
+**/*credential*
+**/*password*
 
 # vercel
 .vercel
