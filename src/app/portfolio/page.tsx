@@ -3,8 +3,8 @@
 import { useState, useEffect, Suspense, useMemo } from 'react';
 import ContentSkeleton from '../../components/ContentSkeleton';
 import { useSearchParams, useRouter } from 'next/navigation';
-import ProjectGrid from '../../components/ProjectGrid';
-import HTMLContent from '../../components/HTMLContent';
+import ModernProjectGrid from '../../components/ModernProjectGrid';
+import PortfolioShowcase from '../../components/PortfolioShowcase';
 import { ButtonLink } from '../../components/SmartLink';
 import { PrefetchLinks } from '../../components/PrefetchLinks';
 import { 
@@ -158,7 +158,7 @@ function PortfolioPageContent() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-blue-50/30">
       {/* Prefetch portfolio detail pages */}
       <PrefetchLinks 
         links={portfolioItems.map(item => `/portfolio/${item.slug}`)}
@@ -167,124 +167,18 @@ function PortfolioPageContent() {
         strategy="portfolio"
       />
       
-      {/* Hero Section */}
-      <section className="bg-gradient-to-br from-teal-500 to-cyan-600 text-white py-28 md:py-32">
-        <div className="max-w-3xl mx-auto px-4 text-center">
-          <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold mb-10">
-            {hero.title}
-          </h1>
-          {hero.description && (
-            <p className="text-lg md:text-xl lg:text-2xl text-teal-100 max-w-2xl mx-auto mt-0 mb-2 md:mb-0">
-              {hero.description}
-            </p>
-          )}
-        </div>
-      </section>
-
-      {/* Portfolio Content */}
-      <section className="py-12 md:py-16 lg:py-20 bg-gray-50">
-        <div className="container mx-auto px-4">
-          
-          {/* Category Filters */}
-          {categories.length > 0 && (
-            <div className="mb-12">
-              {/* Seçili Kategoriler */}
-              {selectedCategories.length > 0 && (
-                <div className="mb-6">
-                  <div className="flex flex-wrap items-center gap-2 mb-4">
-                    <span className="text-sm font-medium text-slate-600">Seçili Kategoriler:</span>
-                    {getSelectedCategoryNames().map((categoryName, index) => (
-                      <span
-                        key={selectedCategories[index]}
-                        className="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-teal-100 text-teal-800"
-                      >
-                        {categoryName}
-                        <button
-                          onClick={() => handleCategoryFilter(selectedCategories[index])}
-                          className="ml-2 hover:text-teal-600"
-                        >
-                          <XMarkIcon className="h-4 w-4" />
-                        </button>
-                      </span>
-                    ))}
-                    <button
-                      onClick={clearAllFilters}
-                      className="text-sm text-slate-500 hover:text-slate-700 underline"
-                    >
-                      Tümünü Temizle
-                    </button>
-                  </div>
-                </div>
-              )}
-              
-              {/* Kategori Butonları */}
-              <div className="flex flex-wrap justify-center gap-3">
-                <button
-                  onClick={clearAllFilters}
-                  className={`px-6 py-3 rounded-lg text-sm font-medium transition-all duration-200 ease-in-out
-                              ${
-                                selectedCategories.length === 0
-                                  ? 'bg-teal-500 text-white shadow-md'
-                                  : 'bg-white text-slate-600 hover:bg-teal-50 hover:text-teal-600 border border-slate-300'
-                              }`}
-                >
-                  <Squares2X2Icon className="h-5 w-5 inline-block mr-2 -mt-0.5" />
-                  Tüm Projeler
-                </button>
-                {categories.map((category) => (
-                  <button
-                    key={category._id}
-                    onClick={() => handleCategoryFilter(category.slug)}
-                    className={`px-6 py-3 rounded-lg text-sm font-medium transition-all duration-200 ease-in-out
-                                ${
-                                  selectedCategories.includes(category.slug)
-                                    ? 'bg-teal-500 text-white shadow-md'
-                                    : 'bg-white text-slate-600 hover:bg-teal-50 hover:text-teal-600 border border-slate-300'
-                                }`}
-                  >
-                    <TagIcon className="h-5 w-5 inline-block mr-2 -mt-0.5" />
-                    {category.name}
-                  </button>
-                ))}
-              </div>
-            </div>
-          )}
-
-          {/* Portfolio Grid or Loading/Error State */}
-          {portfolioItems.length > 0 ? (
-            <ProjectGrid projects={portfolioItems.map(p => ({
-              id: p._id,
-              slug: p.slug, // Slug'ı ekleyin
-              title: p.title,
-              description: p.description,
-              coverImage: p.coverImage,
-              category: p.categories && p.categories.length > 0 
-                ? p.categories.map(cat => cat.name).join(', ')
-                : p.category?.name || ''
-            }))} />
-          ) : (
-            <div className="text-center py-16 min-h-[40vh] flex flex-col justify-center items-center">
-              <Squares2X2Icon className="h-16 w-16 text-slate-300 mb-4" />
-              <h3 className="text-xl font-semibold text-slate-700 mb-2">
-                Proje Bulunamadı
-              </h3>
-              <p className="text-slate-500">
-                {selectedCategories.length > 0 
-                  ? `Seçili kategorilerde henüz proje bulunmuyor.` 
-                  : "Görüntülenecek proje bulunmuyor."}
-              </p>
-              {selectedCategories.length > 0 && (
-                 <ButtonLink
-                  href="/portfolio"
-                  className="btn-outline mt-6"
-                >
-                  Tüm Projeleri Göster
-                </ButtonLink>
-              )}
-            </div>
-          )}
-        </div>
-      </section>
+      {/* Modern Portfolio Showcase */}
+      <div className="container-main py-16">
+        <PortfolioShowcase
+          projects={portfolioItems}
+          categories={categories}
+          title={hero.title || "Portfolio"}
+          subtitle={hero.description || "Gerçekleştirdiğim projeler ve çalışmalar"}
+          showSearch={true}
+          showFilter={true}
+          showAnimation={true}
+        />
+      </div>
     </div>
   );
 }
