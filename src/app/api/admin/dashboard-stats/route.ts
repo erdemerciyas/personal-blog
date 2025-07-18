@@ -29,6 +29,30 @@ export async function GET(request: NextRequest) {
 
     await connectDB();
 
+    // Medya sayısını Cloudinary'den al
+    let mediaCount = 0;
+    try {
+      const { v2: cloudinary } = require('cloudinary');
+      
+      // Cloudinary config
+      cloudinary.config({
+        cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
+        api_key: process.env.CLOUDINARY_API_KEY,
+        api_secret: process.env.CLOUDINARY_API_SECRET,
+      });
+
+      const result = await cloudinary.api.resources({
+        resource_type: 'image',
+        max_results: 500, // Maksimum sayı
+        type: 'upload'
+      });
+      
+      mediaCount = result.resources ? result.resources.length : 0;
+    } catch (cloudinaryError) {
+      console.error('Cloudinary media count error:', cloudinaryError);
+      mediaCount = 0;
+    }
+
     // Paralel olarak tüm istatistikleri al
     const [portfolioCount, servicesCount, messagesCount, usersCount, recentMessages] = await Promise.all([
       Portfolio.countDocuments(),
@@ -46,7 +70,7 @@ export async function GET(request: NextRequest) {
       servicesCount,
       messagesCount,
       usersCount,
-      mediaCount: 0, // Placeholder - medya sayısı için
+      mediaCount,
       recentMessages: recentMessages.map(msg => ({
         _id: msg._id,
         name: msg.name,

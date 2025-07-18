@@ -53,27 +53,8 @@ interface ServiceItem {
   features?: string[];
 }
 
-// Default content
-const defaultServices = [
-  {
-    _id: 'default-1',
-    title: '3D Tarama & Modelleme',
-    description: 'Yüksek çözünürlüklü 3D tarama teknolojisi ile fiziksel objeleri dijital dünyaya aktarıyoruz. Profesyonel ekipmanlarımız sayesinde milimetrik hassasiyette çalışarak, endüstriyel kalitede çözümler sunuyoruz.',
-    icon: CubeTransparentIcon,
-  },
-  {
-    _id: 'default-2',
-    title: 'Tersine Mühendislik',
-    description: 'Mevcut parçaları detaylı analiz ederek teknik çizimlerini ve 3D modellerini yeniden oluşturuyoruz. Eskimiş veya dokümantasyonu kayıp parçalar için ideal çözümler geliştiriyoruz.',
-    icon: WrenchScrewdriverIcon,
-  },
-  {
-    _id: 'default-3',
-    title: '3D Baskı & Prototipleme',
-    description: 'Fikirlerinizi hızlı ve uygun maliyetli şekilde fiziksel prototiplere dönüştürüyoruz. Çeşitli malzeme seçenekleri ile test süreçlerini hızlandırıyoruz.',
-    icon: CheckBadgeIcon,
-  },
-];
+// Default content - empty to avoid showing static content when dynamic content is not available
+const defaultServices: ServiceItem[] = [];
 
 const defaultSlider: SliderItem[] = [
   {

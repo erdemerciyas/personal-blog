@@ -116,16 +116,49 @@ const Header: React.FC = () => {
     fetchSiteSettings();
   }, []);
 
-  // Set default navigation (temporarily disabled dynamic loading)
+  // Fetch dynamic navigation from page settings
   useEffect(() => {
-    // Default navigation links
-    setNavLinks([
-      { href: '/', label: 'Anasayfa', icon: HomeIcon },
-      { href: '/about', label: 'Hakkımda', icon: UserIcon },
-      { href: '/services', label: 'Hizmetler', icon: WrenchScrewdriverIcon },
-      { href: '/portfolio', label: 'Portfolyo', icon: FolderOpenIcon },
-      { href: '/contact', label: 'İletişim', icon: PhoneIcon },
-    ]);
+    const fetchNavigation = async () => {
+      try {
+        const response = await fetch('/api/admin/page-settings');
+        if (response.ok) {
+          const pages = await response.json();
+          
+          // Filter active pages that should show in navigation and sort by order
+          const navPages = pages
+            .filter((page: PageSetting) => page.isActive && page.showInNavigation)
+            .sort((a: PageSetting, b: PageSetting) => a.order - b.order)
+            .map((page: PageSetting) => ({
+              href: page.path,
+              label: page.title,
+              icon: getIconForPage(page.pageId)
+            }));
+          
+          setNavLinks(navPages);
+        } else {
+          // Fallback to default navigation if API fails
+          setNavLinks([
+            { href: '/', label: 'Anasayfa', icon: HomeIcon },
+            { href: '/about', label: 'Hakkımda', icon: UserIcon },
+            { href: '/services', label: 'Hizmetler', icon: WrenchScrewdriverIcon },
+            { href: '/portfolio', label: 'Portfolyo', icon: FolderOpenIcon },
+            { href: '/contact', label: 'İletişim', icon: PhoneIcon },
+          ]);
+        }
+      } catch (error) {
+        console.error('Navigation fetch error:', error);
+        // Fallback to default navigation
+        setNavLinks([
+          { href: '/', label: 'Anasayfa', icon: HomeIcon },
+          { href: '/about', label: 'Hakkımda', icon: UserIcon },
+          { href: '/services', label: 'Hizmetler', icon: WrenchScrewdriverIcon },
+          { href: '/portfolio', label: 'Portfolyo', icon: FolderOpenIcon },
+          { href: '/contact', label: 'İletişim', icon: PhoneIcon },
+        ]);
+      }
+    };
+
+    fetchNavigation();
   }, []);
 
   // Hide header on admin pages
