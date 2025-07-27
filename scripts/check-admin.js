@@ -62,10 +62,10 @@ async function checkAdmin() {
       console.log('🔑 Role:', admin.role);
       console.log('🕒 Oluşturulma:', admin.createdAt);
       
-      // Test şifresi
-      const testPassword = 'admin123456';
+      // Test şifresi - Environment variable'dan al
+      const testPassword = process.env.ADMIN_DEFAULT_PASSWORD || 'SecureAdmin2024!@#';
       const isPasswordValid = await bcrypt.compare(testPassword, admin.password);
-      console.log('🔐 Şifre testi (admin123456):', isPasswordValid ? '✅ Doğru' : '❌ Yanlış');
+      console.log('🔐 Şifre testi:', isPasswordValid ? '✅ Doğru' : '❌ Yanlış');
       
     } else {
       console.log('\n❌ Admin kullanıcısı bulunamadı!');

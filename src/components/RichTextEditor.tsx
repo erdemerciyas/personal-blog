@@ -3,10 +3,9 @@
 import { useState, useEffect } from 'react';
 import dynamic from 'next/dynamic';
 import DOMPurify from 'dompurify';
-import 'react-quill/dist/quill.snow.css';
 
-// Dinamik import ile ReactQuill'i yükleme (SSR problemi için)
-const ReactQuill = dynamic(() => import('react-quill'), {
+// Güvenli markdown editor - react-quill yerine
+const MDEditor = dynamic(() => import('@uiw/react-md-editor'), {
   ssr: false,
   loading: () => (
     <div className="animate-pulse">
@@ -40,31 +39,12 @@ export default function RichTextEditor({
     setMounted(true);
   }, []);
 
-  const modules = {
-    toolbar: [
-      [{ 'header': [1, 2, 3, 4, 5, 6, false] }],
-      ['bold', 'italic', 'underline', 'strike'],
-      [{ 'color': [] }, { 'background': [] }],
-      [{ 'align': [] }],
-      [{ 'list': 'ordered'}, { 'list': 'bullet' }],
-      ['blockquote', 'code-block'],
-      ['link', 'image'],
-      ['clean']
-    ],
-    clipboard: {
-      matchVisual: false,
-    }
+  // Markdown editor ayarları
+  const editorOptions = {
+    hideToolbar: false,
+    visibleDragBar: false,
+    height: 300,
   };
-
-  const formats = [
-    'header',
-    'bold', 'italic', 'underline', 'strike',
-    'color', 'background',
-    'align',
-    'list', 'bullet',
-    'blockquote', 'code-block',
-    'link', 'image'
-  ];
 
   // Güvenli HTML sanitization
   const sanitizeHtml = (html: string): string => {
@@ -103,20 +83,14 @@ export default function RichTextEditor({
 
   return (
     <div className={`rich-text-editor ${className}`}>
-      <ReactQuill
-        theme="snow"
+      <MDEditor
         value={value}
-        onChange={handleChange}
-        modules={modules}
-        formats={formats}
-        placeholder={placeholder}
-        readOnly={disabled}
-        style={{
-          backgroundColor: 'white',
-          border: '1px solid #e2e8f0',
-          borderRadius: '0.75rem',
-          minHeight: '200px'
-        }}
+        onChange={(val) => handleChange(val || '')}
+        data-color-mode="light"
+        height={editorOptions.height}
+        visibleDragBar={editorOptions.visibleDragBar}
+        hideToolbar={editorOptions.hideToolbar}
+        preview="edit"
       />
       
       {/* Karakter sayacı */}
@@ -138,48 +112,30 @@ export default function RichTextEditor({
       )}
 
       <style jsx global>{`
-        .rich-text-editor .ql-container {
-          min-height: 200px;
-          border-bottom-left-radius: 0.75rem;
-          border-bottom-right-radius: 0.75rem;
+        .rich-text-editor .w-md-editor {
+          border-radius: 0.75rem;
+          border: 1px solid #e2e8f0;
         }
         
-        .rich-text-editor .ql-toolbar {
-          border-top-left-radius: 0.75rem;
-          border-top-right-radius: 0.75rem;
+        .rich-text-editor .w-md-editor-text-textarea,
+        .rich-text-editor .w-md-editor-text {
+          font-family: inherit !important;
+          font-size: 14px !important;
+          line-height: 1.5 !important;
+        }
+        
+        .rich-text-editor .w-md-editor-toolbar {
           border-bottom: 1px solid #e2e8f0;
+          background-color: #f8fafc;
         }
         
-        .rich-text-editor .ql-editor {
-          font-family: inherit;
-          font-size: 14px;
-          line-height: 1.5;
-          padding: 12px 16px;
+        .rich-text-editor .w-md-editor-toolbar button {
+          color: #64748b;
         }
         
-        .rich-text-editor .ql-editor.ql-blank::before {
-          color: #9ca3af;
-          font-style: normal;
-        }
-        
-        .rich-text-editor .ql-toolbar .ql-formats {
-          margin-right: 15px;
-        }
-        
-        .rich-text-editor .ql-toolbar button:hover {
+        .rich-text-editor .w-md-editor-toolbar button:hover {
           color: #059669;
-        }
-        
-        .rich-text-editor .ql-toolbar button.ql-active {
-          color: #059669;
-        }
-        
-        .rich-text-editor .ql-snow .ql-picker.ql-expanded .ql-picker-label {
-          color: #059669;
-        }
-        
-        .rich-text-editor .ql-snow .ql-picker.ql-expanded .ql-picker-options {
-          border-color: #d1d5db;
+          background-color: #f0fdf4;
         }
       `}</style>
     </div>

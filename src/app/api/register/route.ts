@@ -12,10 +12,10 @@ export async function POST() {
     await connectDB();
     console.log('MongoDB connected successfully');
 
-    // Sabit kullanıcı bilgileri
-    const email = 'erdem.erciyas@gmail.com';
-    const password = '6026341';
-    const name = 'Erdem';
+    // Güvenli kullanıcı bilgileri - Environment variables'dan al
+    const email = process.env.ADMIN_EMAIL || 'erdem.erciyas@gmail.com';
+    const password = process.env.ADMIN_DEFAULT_PASSWORD || 'SecureAdmin2024!@#';
+    const name = process.env.ADMIN_NAME || 'Erdem';
 
     // Check if user already exists
     console.log('Checking if user exists...');

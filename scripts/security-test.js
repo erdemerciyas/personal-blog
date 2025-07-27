@@ -8,6 +8,9 @@
 const fs = require('fs');
 const path = require('path');
 
+// .env.local dosyasını yükle
+require('dotenv').config({ path: '.env.local' });
+
 console.log('🔒 Personal Blog - Güvenlik Testi Başlatılıyor...\n');
 
 // Test sonuçları

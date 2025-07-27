@@ -8,7 +8,8 @@ export async function POST() {
     await connectDB();
     
     // Admin kullanıcısı zaten var mı kontrol et
-    const existingAdmin = await User.findOne({ email: 'erdem.erciyas@gmail.com' });
+    const adminEmail = process.env.ADMIN_EMAIL || 'erdem.erciyas@gmail.com';
+    const existingAdmin = await User.findOne({ email: adminEmail });
     
     if (existingAdmin) {
       return NextResponse.json({
@@ -21,14 +22,15 @@ export async function POST() {
       });
     }
     
-    // Şifreyi hashle
-    const hashedPassword = await bcrypt.hash('6026341', 12);
+    // Şifreyi hashle - Environment variable'dan güvenli şifre al
+    const adminPassword = process.env.ADMIN_DEFAULT_PASSWORD || 'SecureAdmin2024!@#';
+    const hashedPassword = await bcrypt.hash(adminPassword, 12);
     
     // Admin kullanıcısı oluştur
     const adminUser = await User.create({
-      email: 'erdem.erciyas@gmail.com',
+      email: adminEmail,
       password: hashedPassword,
-      name: 'Erdem Erciyas',
+      name: process.env.ADMIN_NAME || 'Erdem Erciyas',
       role: 'admin'
     });
     
