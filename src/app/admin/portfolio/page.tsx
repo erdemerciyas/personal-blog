@@ -301,13 +301,21 @@ export default function PortfolioManagement() {
                   <div className="flex items-start space-x-4">
                     {/* Image */}
                     <div className="flex-shrink-0">
-                      <Image
-                        src={item.coverImage}
-                        alt={item.title}
-                        width={80}
-                        height={80}
-                        className="rounded-xl object-cover"
-                      />
+                      <div className="w-20 h-20 relative overflow-hidden rounded-xl bg-slate-200">
+                        {item.coverImage ? (
+                          <Image
+                            src={item.coverImage}
+                            alt={item.title}
+                            fill
+                            sizes="80px"
+                            className="object-cover"
+                          />
+                        ) : (
+                          <div className="w-full h-full flex items-center justify-center">
+                            <span className="text-slate-400 text-xs">Görsel Yok</span>
+                          </div>
+                        )}
+                      </div>
                     </div>
                     
                     {/* Content */}

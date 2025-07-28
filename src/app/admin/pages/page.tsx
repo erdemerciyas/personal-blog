@@ -4,7 +4,7 @@ import { useSession } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
 import { PageLoader } from '../../../components/AdminLoader';
 import AdminLayout from '../../../components/admin/AdminLayout';
-import RichTextEditor from '../../../components/RichTextEditor';
+import UniversalEditor from '../../../components/ui/UniversalEditor';
 import {
   DocumentTextIcon,
   EyeIcon,
@@ -300,10 +300,12 @@ export default function AdminPagesManagement() {
                         <label className="block text-sm font-medium text-slate-700 mb-1">
                           Hero Açıklaması
                         </label>
-                        <RichTextEditor
+                        <UniversalEditor
                           value={editForm.description}
                           onChange={(value) => setEditForm(prev => ({ ...prev, description: value }))}
                           placeholder="Sayfa hero açıklaması..."
+                          mode="text"
+                          minHeight="150px"
                         />
                       </div>
                       <div>

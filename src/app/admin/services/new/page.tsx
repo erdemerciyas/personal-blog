@@ -6,7 +6,7 @@ import { useRouter } from 'next/navigation';
 import Image from 'next/image';
 import AdminLayout from '../../../../components/admin/AdminLayout';
 import ImageUpload from '../../../../components/ImageUpload';
-import RichTextEditor from '../../../../components/RichTextEditor';
+import UniversalEditor from '../../../../components/ui/UniversalEditor';
 import { 
   PlusIcon,
   CheckIcon,
@@ -119,7 +119,8 @@ export default function NewServicePage() {
         { label: 'Yeni Servis' }
       ]}
     >
-      <div className="space-y-6">
+      <div className="p-4 sm:p-6 lg:p-8">
+        <div className="w-full space-y-6">
         
         {/* Header Info */}
         <div className="mb-6">
@@ -171,12 +172,12 @@ export default function NewServicePage() {
                 <label className="block text-sm font-medium text-slate-700 mb-2">
                   Servis Açıklaması *
                 </label>
-                <RichTextEditor
+                <UniversalEditor
                   value={serviceDescription}
                   onChange={setServiceDescription}
                   placeholder="Servis hakkında detaylı açıklama yazınız"
-                  required
-                  maxLength={5000}
+                  mode="text"
+                  minHeight="200px"
                 />
               </div>
             </div>
@@ -190,8 +191,21 @@ export default function NewServicePage() {
             </h3>
             
             <ImageUpload
-              onImageUpload={(url) => setServiceImage(Array.isArray(url) ? url[0] : url)}
-              onImageRemove={() => setServiceImage('')}
+              value={serviceImage}
+              onChange={(url) => {
+                const imageUrl = Array.isArray(url) ? url[0] : url;
+                console.log('Image changed:', imageUrl); // Debug log
+                setServiceImage(imageUrl);
+              }}
+              onImageUpload={(url) => {
+                const imageUrl = Array.isArray(url) ? url[0] : url;
+                console.log('Image uploaded:', imageUrl); // Debug log
+                setServiceImage(imageUrl);
+              }}
+              onImageRemove={() => {
+                console.log('Image removed'); // Debug log
+                setServiceImage('');
+              }}
               currentImage={serviceImage}
             />
           </div>
@@ -199,7 +213,7 @@ export default function NewServicePage() {
           {/* Features */}
           <div className="bg-white rounded-xl p-6 shadow-sm border border-slate-200">
             <div className="flex items-center justify-between mb-4">
-              <h3 className="text-lg font-semibold text-slate-900 mb-4 flex items-center space-x-2">
+              <h3 className="text-lg font-semibold text-slate-900 flex items-center space-x-2">
                 <ListBulletIcon className="w-5 h-5 text-teal-600" />
                 <span>Servis Özellikleri</span>
               </h3>
@@ -252,7 +266,13 @@ export default function NewServicePage() {
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div>
                   <h4 className="font-semibold text-slate-900 mb-2">{serviceTitle || 'Servis Başlığı'}</h4>
-                  <p className="text-slate-600 text-sm mb-4">Buraya servis açıklaması gelecek...</p>
+                  <div className="text-slate-600 text-sm mb-4">
+                    {serviceDescription ? (
+                      <div dangerouslySetInnerHTML={{ __html: serviceDescription.substring(0, 150) + (serviceDescription.length > 150 ? '...' : '') }} />
+                    ) : (
+                      <p>Servis açıklaması buraya gelecek...</p>
+                    )}
+                  </div>
                   
                   {features.filter(f => f.trim()).length > 0 && (
                     <div>
@@ -267,18 +287,19 @@ export default function NewServicePage() {
                 </div>
                 
                 <div>
-                  <div className="w-full h-40 bg-slate-200 rounded-xl overflow-hidden flex items-center justify-center">
+                  <div className="w-full h-32 bg-slate-200 rounded-xl overflow-hidden flex items-center justify-center relative">
                     {serviceImage ? (
                       <Image
                         src={serviceImage}
                         alt="Service preview"
                         fill
-                        style={{ objectFit: 'cover' }}
+                        sizes="(max-width: 768px) 100vw, 50vw"
+                        className="object-cover"
                       />
                     ) : (
                       <div className="text-center">
-                        <PhotoIcon className="w-12 h-12 text-slate-400 mx-auto mb-2" />
-                        <p className="text-sm text-slate-500">Görsel yüklenmemiş</p>
+                        <PhotoIcon className="w-8 h-8 text-slate-400 mx-auto mb-1" />
+                        <p className="text-xs text-slate-500">Görsel yüklenmemiş</p>
                       </div>
                     )}
                   </div>
@@ -288,35 +309,37 @@ export default function NewServicePage() {
           </div>
 
           {/* Submit Buttons */}
-          <div className="flex flex-col sm:flex-row gap-4 pt-6 border-t border-slate-200">
-            <button
-              type="submit"
-              disabled={loading}
-              className="flex-1 bg-teal-600 text-white px-6 py-3 rounded-xl font-medium hover:bg-teal-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors flex items-center justify-center space-x-2"
-            >
-              {loading ? (
-                <>
-                  <div className="text-center">
-                    <p className="text-slate-600">Yükleniyor...</p>
-                  </div>
-                </>
-              ) : (
-                <>
-                  <CheckIcon className="w-5 h-5" />
-                  <span>Servis Ekle</span>
-                </>
-              )}
-            </button>
-            
-            <Link
-              href="/admin/services"
-              className="flex-1 bg-slate-100 text-slate-700 px-6 py-3 rounded-xl font-medium hover:bg-slate-200 transition-colors flex items-center justify-center space-x-2"
-            >
-              <ArrowLeftIcon className="w-5 h-5" />
-              <span>Geri Dön</span>
-            </Link>
+          <div className="bg-white rounded-xl p-6 shadow-sm border border-slate-200">
+            <div className="flex flex-col sm:flex-row gap-4">
+              <button
+                type="submit"
+                disabled={loading}
+                className="flex-1 bg-teal-600 text-white px-6 py-3 rounded-xl font-medium hover:bg-teal-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors flex items-center justify-center space-x-2"
+              >
+                {loading ? (
+                  <>
+                    <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-white"></div>
+                    <span>Ekleniyor...</span>
+                  </>
+                ) : (
+                  <>
+                    <CheckIcon className="w-5 h-5" />
+                    <span>Servis Ekle</span>
+                  </>
+                )}
+              </button>
+              
+              <Link
+                href="/admin/services"
+                className="flex-1 sm:flex-none bg-slate-100 text-slate-700 px-6 py-3 rounded-xl font-medium hover:bg-slate-200 transition-colors flex items-center justify-center space-x-2"
+              >
+                <ArrowLeftIcon className="w-5 h-5" />
+                <span>Geri Dön</span>
+              </Link>
+            </div>
           </div>
         </form>
+        </div>
       </div>
     </AdminLayout>
   );

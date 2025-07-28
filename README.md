@@ -32,10 +32,16 @@ Modern, güvenli ve performanslı kişisel blog ve portfolyo platformu. Next.js 
 - **Lazy Loading**: İhtiyaç anında yükleme
 
 ### 🎛️ Admin Panel
-- **Kullanıcı Dostu**: Modern ve sezgisel arayüz
-- **Rol Tabanlı Erişim**: Güvenli yetkilendirme
-- **Medya Yönetimi**: Cloudinary entegrasyonu
-- **Rich Text Editor**: Markdown destekli editör
+- **Universal Editor**: Gelişmiş metin editörü sistemi
+  - Markdown ve HTML desteği
+  - Canlı önizleme özelliği
+  - Syntax highlighting
+  - Auto-save functionality
+- **Full-Width Layout**: Tam genişlik admin arayüzü
+- **Responsive Design**: Mobil uyumlu admin paneli
+- **Service Management**: Gelişmiş servis yönetimi
+- **Footer Settings**: Dinamik footer ayarları
+- **Image Upload**: Drag & drop görsel yükleme
 - **Real-time Preview**: Canlı önizleme
 
 ## 🛠️ Teknoloji Stack
@@ -106,6 +112,27 @@ npm run dev
 ```
 
 Uygulama [http://localhost:3000](http://localhost:3000) adresinde çalışacaktır.
+
+## 🆕 Yeni Özellikler (v2.1.0)
+
+### Universal Editor
+- **Markdown Desteği**: Tam markdown syntax desteği
+- **HTML Mode**: Raw HTML düzenleme imkanı
+- **Live Preview**: Gerçek zamanlı önizleme
+- **Auto-save**: Otomatik kaydetme özelliği
+- **Syntax Highlighting**: Kod vurgulama
+
+### Admin Panel İyileştirmeleri
+- **Full-Width Layout**: Tam genişlik çalışma alanı
+- **Responsive Design**: Mobil uyumlu tasarım
+- **Enhanced Forms**: Gelişmiş form validasyonu
+- **Better UX**: İyileştirilmiş kullanıcı deneyimi
+
+### Service Management
+- **CRUD Operations**: Tam servis yönetimi
+- **Image Upload**: Drag & drop görsel yükleme
+- **Feature Management**: Servis özelliklerini yönetme
+- **Live Preview**: Canlı önizleme sistemi
 
 ## 📁 Proje Yapısı
 

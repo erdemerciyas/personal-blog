@@ -5,6 +5,7 @@ import { useSession } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
 import { PageLoader } from '../../../components/AdminLoader';
 import AdminLayout from '../../../components/admin/AdminLayout';
+import UniversalEditor from '../../../components/ui/UniversalEditor';
 import { 
   CogIcon, 
   PlusIcon,
@@ -122,9 +123,21 @@ export default function FooterSettingsPage() {
         setMessage({ type: 'success', text: 'Ayarlar başarıyla kaydedildi!' });
         setTimeout(() => setMessage(null), 3000);
       } else {
-        throw new Error('Kaydetme başarısız');
+        const errorData = await response.json();
+        console.error('API Error:', errorData);
+        
+        if (response.status === 401) {
+          setMessage({ type: 'error', text: 'Oturum süreniz dolmuş. Lütfen tekrar giriş yapın.' });
+          router.push('/admin/login');
+        } else {
+          setMessage({ 
+            type: 'error', 
+            text: errorData.message || 'Ayarlar kaydedilemedi' 
+          });
+        }
       }
     } catch (error) {
+      console.error('Save error:', error);
       setMessage({ type: 'error', text: 'Ayarlar kaydedilemedi' });
     } finally {
       setSaving(false);
@@ -352,15 +365,14 @@ export default function FooterSettingsPage() {
               <div className="space-y-6">
                 {/* Main Description */}
                 <div>
-                  <label className="block text-sm font-medium text-slate-700 mb-2">
+                  <label className="block text-sm font-medium text-slate-700 mb-4">
                     Ana Açıklama
                   </label>
-                  <textarea
+                  <UniversalEditor
                     value={settings.mainDescription}
-                    onChange={(e) => updateSettings('mainDescription', e.target.value)}
-                    rows={3}
-                    className="w-full border border-slate-300 rounded-xl px-4 py-3 text-slate-900 focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-transparent"
+                    onChange={(value) => updateSettings('mainDescription', value)}
                     placeholder="Sitenizin ana açıklaması..."
+                    rows={4}
                   />
                 </div>
 

@@ -144,6 +144,12 @@ export default function AdminLayout({ children, title, breadcrumbs }: AdminLayou
         { label: 'Genel Ayarlar', href: '/admin/settings' },
         { label: 'Footer Ayarları', href: '/admin/footer' }
       ]
+    },
+    {
+      id: 'editor',
+      label: 'Universal Editor',
+      icon: WrenchScrewdriverIcon,
+      href: '/admin/editor'
     }
   ];
 

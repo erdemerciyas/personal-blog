@@ -4,7 +4,7 @@ import { useState, useEffect } from 'react';
 import { useSession } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
 import AdminLayout from '../../../../components/admin/AdminLayout';
-import RichTextEditor from '../../../../components/RichTextEditor';
+import UniversalEditor from '../../../../components/ui/UniversalEditor';
 import PortfolioImageGallery from '../../../../components/PortfolioImageGallery';
 import {
   PlusIcon,
@@ -306,12 +306,12 @@ export default function NewPortfolioItem() {
                 <label className="block text-sm font-medium text-slate-700 mb-2">
                   Proje Açıklaması *
                 </label>
-                <RichTextEditor
+                <UniversalEditor
                   value={formData.description}
                   onChange={(content) => setFormData(prev => ({ ...prev, description: content }))}
                   placeholder="Proje hakkında detaylı açıklama yazınız"
-                  maxLength={5000}
-                  required
+                  mode="text"
+                  minHeight="200px"
                 />
               </div>
             </div>

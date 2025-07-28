@@ -24,7 +24,7 @@ export { default as PageHero } from './common/PageHero';
 export { default as Version } from './Version';
 export { default as Providers } from './Providers';
 export { default as AdminLayout } from './admin/AdminLayout';
-export { default as RichTextEditor } from './RichTextEditor';
+export { default as UniversalEditor } from './ui/UniversalEditor';
 export { default as HTMLContent } from './HTMLContent';
 export { default as Breadcrumbs } from './Breadcrumbs';
 

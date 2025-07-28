@@ -99,21 +99,22 @@ export default function ServicesPage() {
         { label: 'Servis Yönetimi' }
       ]}
     >
-      <div className="space-y-6">
+      <div className="p-4 sm:p-6 lg:p-8">
+        <div className="w-full space-y-6">
         
         {/* Header Actions */}
-        <div className="flex items-center justify-between">
+        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between space-y-4 sm:space-y-0">
           <div>
             <p className="text-slate-600">Sunduğunuz hizmetleri yönetin</p>
             <div className="flex items-center space-x-4 text-sm text-slate-500 mt-2">
               <span>Toplam: {services.length} servis</span>
-              <span>•</span>
-              <span>Aktif servisler</span>
+              <span className="hidden sm:inline">•</span>
+              <span className="hidden sm:inline">Aktif servisler</span>
             </div>
           </div>
           <Link
             href="/admin/services/new"
-            className="bg-teal-600 hover:bg-teal-700 text-white px-6 py-3 rounded-xl font-semibold transition-all duration-200 flex items-center space-x-2 shadow-sm"
+            className="bg-teal-600 hover:bg-teal-700 text-white px-6 py-3 rounded-xl font-semibold transition-all duration-200 flex items-center justify-center space-x-2 shadow-sm w-full sm:w-auto"
           >
             <PlusIcon className="w-5 h-5" />
             <span>Yeni Servis</span>
@@ -128,12 +129,12 @@ export default function ServicesPage() {
         )}
 
         {/* Quick Actions */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
           <Link
             href="/admin/services/new"
-            className="bg-gradient-to-r from-teal-600 to-blue-600 text-white p-6 rounded-xl hover:shadow-lg transition-all duration-200 group"
+            className="bg-gradient-to-r from-teal-600 to-blue-600 text-white p-4 sm:p-6 rounded-xl hover:shadow-lg transition-all duration-200 group"
           >
-            <div className="flex items-center space-x-3">
+            <div className="flex items-center justify-center sm:justify-start space-x-3">
               <PlusIcon className="w-6 h-6 group-hover:scale-110 transition-transform" />
               <span className="font-semibold">Yeni Servis Ekle</span>
             </div>
@@ -141,16 +142,16 @@ export default function ServicesPage() {
           
           <Link
             href="/admin/portfolio"
-            className="bg-gradient-to-r from-blue-600 to-blue-700 text-white p-6 rounded-xl hover:shadow-lg transition-all duration-200 group"
+            className="bg-gradient-to-r from-blue-600 to-blue-700 text-white p-4 sm:p-6 rounded-xl hover:shadow-lg transition-all duration-200 group"
           >
-            <div className="flex items-center space-x-3">
+            <div className="flex items-center justify-center sm:justify-start space-x-3">
               <FolderOpenIcon className="w-6 h-6 group-hover:scale-110 transition-transform" />
               <span className="font-semibold">Portfolio Yönetimi</span>
             </div>
           </Link>
           
-          <div className="bg-slate-100 p-6 rounded-xl">
-            <div className="flex items-center space-x-3">
+          <div className="bg-slate-100 p-4 sm:p-6 rounded-xl sm:col-span-2 lg:col-span-1">
+            <div className="flex items-center justify-center sm:justify-start space-x-3">
               <WrenchScrewdriverIcon className="w-6 h-6 text-slate-600" />
               <span className="font-semibold text-slate-900">Servis İstatistikleri</span>
             </div>
@@ -172,22 +173,30 @@ export default function ServicesPage() {
               </div>
             ) : (
               services.map((service) => (
-                <div key={service._id} className="p-6 hover:bg-slate-50 transition-colors">
-                  <div className="flex items-start space-x-4">
+                <div key={service._id} className="p-4 sm:p-6 hover:bg-slate-50 transition-colors">
+                  <div className="flex flex-col sm:flex-row items-start space-y-4 sm:space-y-0 sm:space-x-4">
                     {/* Image */}
-                    <div className="flex-shrink-0">
-                      <Image
-                        src={service.image}
-                        alt={service.title}
-                        width={80}
-                        height={80}
-                        className="rounded-xl object-cover"
-                      />
+                    <div className="flex-shrink-0 w-full sm:w-auto">
+                      <div className="w-full h-48 sm:w-20 sm:h-20 relative overflow-hidden rounded-xl bg-slate-200">
+                        {service.image ? (
+                          <Image
+                            src={service.image}
+                            alt={service.title}
+                            fill
+                            sizes="(max-width: 640px) 100vw, 80px"
+                            className="object-cover"
+                          />
+                        ) : (
+                          <div className="w-full h-full flex items-center justify-center">
+                            <span className="text-slate-400 text-xs">Görsel Yok</span>
+                          </div>
+                        )}
+                      </div>
                     </div>
                     
                     {/* Content */}
-                    <div className="flex-1 min-w-0">
-                      <div className="flex items-start justify-between">
+                    <div className="flex-1 min-w-0 w-full">
+                      <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between space-y-4 sm:space-y-0">
                         <div className="flex-1">
                           <h4 className="text-lg font-semibold text-slate-900 mb-2">
                             {service.title}
@@ -208,7 +217,7 @@ export default function ServicesPage() {
                         </div>
                         
                         {/* Actions */}
-                        <div className="flex items-center space-x-2 ml-4">
+                        <div className="flex items-center justify-center sm:justify-start space-x-2 sm:ml-4">
                           <Link
                             href="/services"
                             className="p-2 text-slate-600 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-colors"
@@ -238,6 +247,7 @@ export default function ServicesPage() {
               ))
             )}
           </div>
+        </div>
         </div>
       </div>
     </AdminLayout>

@@ -6,7 +6,7 @@ import { useRouter } from 'next/navigation';
 import Image from 'next/image';
 import AdminLayout from '../../../../../components/admin/AdminLayout';
 import ImageUpload from '../../../../../components/ImageUpload';
-import RichTextEditor from '../../../../../components/RichTextEditor';
+import UniversalEditor from '../../../../../components/ui/UniversalEditor';
 import HTMLContent from '../../../../../components/HTMLContent';
 import { 
   WrenchScrewdriverIcon,
@@ -62,6 +62,7 @@ export default function EditServicePage({ params }: { params: { id: string } }) 
         setServiceTitle(data.title || '');
         setServiceDescription(data.description || '');
         setFeatures(data.features && data.features.length > 0 ? data.features : ['']);
+        console.log('Service loaded:', data); // Debug log
       } catch {
         setError('Servis bilgileri yüklenirken bir hata oluştu');
       } finally {
@@ -90,6 +91,7 @@ export default function EditServicePage({ params }: { params: { id: string } }) 
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+    console.log('Form submit triggered!'); // Debug log
     setError(null);
     setSaving(true);
 
@@ -98,9 +100,11 @@ export default function EditServicePage({ params }: { params: { id: string } }) 
     const data = {
       title: formData.get('title'),
       description: serviceDescription,
-      image: serviceImage || undefined,
+      image: serviceImage || '',
       features: filteredFeatures
     };
+
+    console.log('Submitting data:', data); // Debug log
 
     try {
       const response = await fetch(`/api/services/${params.id}`, {
@@ -112,15 +116,22 @@ export default function EditServicePage({ params }: { params: { id: string } }) 
       });
 
       if (!response.ok) {
-        throw new Error('Servis güncellenirken bir hata oluştu');
+        const errorData = await response.json();
+        console.error('API Error:', errorData);
+        throw new Error(errorData.error || 'Servis güncellenirken bir hata oluştu');
       }
 
+      const result = await response.json();
+      console.log('Update result:', result); // Debug log
+      
       setSuccess(true);
+      // Otomatik yönlendirmeyi kaldır - kullanıcı manuel olarak geri dönebilir
       setTimeout(() => {
-        router.push('/admin/services');
-      }, 1500);
-    } catch {
-      setError('Servis güncellenirken bir hata oluştu');
+        setSuccess(false);
+      }, 3000);
+    } catch (error) {
+      console.error('Submit error:', error);
+      setError(error instanceof Error ? error.message : 'Servis güncellenirken bir hata oluştu');
     } finally {
       setSaving(false);
     }
@@ -155,7 +166,8 @@ export default function EditServicePage({ params }: { params: { id: string } }) 
         { label: 'Düzenle' }
       ]}
     >
-      <div className="space-y-6">
+      <div className="p-4 sm:p-6 lg:p-8">
+        <div className="w-full space-y-6">
         
         {/* Header Info */}
         <div className="mb-6">
@@ -166,7 +178,7 @@ export default function EditServicePage({ params }: { params: { id: string } }) 
         {success && (
           <div className="bg-green-50 border border-green-200 text-green-800 p-4 rounded-xl flex items-center space-x-3">
             <CheckIcon className="w-5 h-5" />
-            <span>Servis başarıyla güncellendi! Yönlendiriliyorsunuz...</span>
+            <span>Servis başarıyla güncellendi!</span>
           </div>
         )}
 
@@ -207,12 +219,12 @@ export default function EditServicePage({ params }: { params: { id: string } }) 
                 <label className="block text-sm font-medium text-slate-700 mb-2">
                   Servis Açıklaması *
                 </label>
-                <RichTextEditor
+                <UniversalEditor
                   value={serviceDescription}
                   onChange={setServiceDescription}
                   placeholder="Servis hakkında detaylı açıklama yazınız"
-                  required
-                  maxLength={5000}
+                  mode="text"
+                  minHeight="200px"
                 />
               </div>
             </div>
@@ -226,8 +238,21 @@ export default function EditServicePage({ params }: { params: { id: string } }) 
             </h3>
             
             <ImageUpload
-              onImageUpload={(url) => setServiceImage(Array.isArray(url) ? url[0] : url)}
-              onImageRemove={() => setServiceImage('')}
+              value={serviceImage}
+              onChange={(url) => {
+                const imageUrl = Array.isArray(url) ? url[0] : url;
+                console.log('Image changed:', imageUrl);
+                setServiceImage(imageUrl);
+              }}
+              onImageUpload={(url) => {
+                const imageUrl = Array.isArray(url) ? url[0] : url;
+                console.log('Image uploaded:', imageUrl);
+                setServiceImage(imageUrl);
+              }}
+              onImageRemove={() => {
+                console.log('Image removed');
+                setServiceImage('');
+              }}
               currentImage={serviceImage}
             />
           </div>
@@ -235,7 +260,7 @@ export default function EditServicePage({ params }: { params: { id: string } }) 
           {/* Features */}
           <div className="bg-white rounded-xl p-6 shadow-sm border border-slate-200">
             <div className="flex items-center justify-between mb-4">
-              <h3 className="text-lg font-semibold text-slate-900 mb-4 flex items-center space-x-2">
+              <h3 className="text-lg font-semibold text-slate-900 flex items-center space-x-2">
                 <ListBulletIcon className="w-5 h-5 text-teal-600" />
                 <span>Servis Özellikleri</span>
               </h3>
@@ -288,7 +313,13 @@ export default function EditServicePage({ params }: { params: { id: string } }) 
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div>
                   <h4 className="font-semibold text-slate-900 mb-2">{serviceTitle || 'Servis Başlığı'}</h4>
-                  <p className="text-slate-600 text-sm mb-4">Buraya servis açıklaması gelecek...</p>
+                  <div className="text-slate-600 text-sm mb-4">
+                    {serviceDescription ? (
+                      <HTMLContent content={serviceDescription} truncate={150} />
+                    ) : (
+                      <p>Servis açıklaması buraya gelecek...</p>
+                    )}
+                  </div>
                   
                   {features.filter(f => f.trim()).length > 0 && (
                     <div>
@@ -303,18 +334,19 @@ export default function EditServicePage({ params }: { params: { id: string } }) 
                 </div>
                 
                 <div>
-                  <div className="w-full h-40 bg-slate-200 rounded-xl overflow-hidden flex items-center justify-center">
+                  <div className="w-full h-32 bg-slate-200 rounded-xl overflow-hidden flex items-center justify-center relative">
                     {serviceImage ? (
                       <Image
                         src={serviceImage}
                         alt="Service preview"
                         fill
-                        style={{ objectFit: 'cover' }}
+                        sizes="(max-width: 768px) 100vw, 50vw"
+                        className="object-cover"
                       />
                     ) : (
                       <div className="text-center">
-                        <PhotoIcon className="w-12 h-12 text-slate-400 mx-auto mb-2" />
-                        <p className="text-sm text-slate-500">Görsel yüklenmemiş</p>
+                        <PhotoIcon className="w-8 h-8 text-slate-400 mx-auto mb-1" />
+                        <p className="text-xs text-slate-500">Görsel yüklenmemiş</p>
                       </div>
                     )}
                   </div>
@@ -324,35 +356,37 @@ export default function EditServicePage({ params }: { params: { id: string } }) 
           </div>
 
           {/* Submit Buttons */}
-          <div className="flex flex-col sm:flex-row gap-4 pt-6 border-t border-slate-200">
-            <button
-              type="submit"
-              disabled={loading}
-              className="flex-1 bg-teal-600 text-white px-6 py-3 rounded-xl font-medium hover:bg-teal-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors flex items-center justify-center space-x-2"
-            >
-              {loading ? (
-                <>
-                  <div className="text-center">
-                    <p className="text-slate-600">Yükleniyor...</p>
-                  </div>
-                </>
-              ) : (
-                <>
-                  <CheckIcon className="w-5 h-5" />
-                  <span>Servis Ekle</span>
-                </>
-              )}
-            </button>
-            
-            <Link
-              href="/admin/services"
-              className="flex-1 bg-slate-100 text-slate-700 px-6 py-3 rounded-xl font-medium hover:bg-slate-200 transition-colors flex items-center justify-center space-x-2"
-            >
-              <ArrowLeftIcon className="w-5 h-5" />
-              <span>Geri Dön</span>
-            </Link>
+          <div className="bg-white rounded-xl p-6 shadow-sm border border-slate-200">
+            <div className="flex flex-col sm:flex-row gap-4">
+              <button
+                type="submit"
+                disabled={saving}
+                className="flex-1 bg-teal-600 text-white px-6 py-3 rounded-xl font-medium hover:bg-teal-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors flex items-center justify-center space-x-2"
+              >
+                {saving ? (
+                  <>
+                    <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-white"></div>
+                    <span>Güncelleniyor...</span>
+                  </>
+                ) : (
+                  <>
+                    <CheckIcon className="w-5 h-5" />
+                    <span>Servisi Güncelle</span>
+                  </>
+                )}
+              </button>
+              
+              <Link
+                href="/admin/services"
+                className="flex-1 sm:flex-none bg-slate-100 text-slate-700 px-6 py-3 rounded-xl font-medium hover:bg-slate-200 transition-colors flex items-center justify-center space-x-2"
+              >
+                <ArrowLeftIcon className="w-5 h-5" />
+                <span>Geri Dön</span>
+              </Link>
+            </div>
           </div>
         </form>
+        </div>
       </div>
     </AdminLayout>
   );

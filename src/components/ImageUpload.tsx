@@ -25,10 +25,10 @@ interface ImageUploadProps {
   className?: string;
   label?: string;
   acceptMultiple?: boolean;
-  maxSize?: number; // MB cinsinden
-  showUrlInput?: boolean; // URL ile görsel ekleme seçeneği
-  pageContext?: string; // Sayfa bağlamı (portfolio, service, etc.)
-  allowMultipleSelect?: boolean; // Çoklu seçim izni
+  maxSize?: number;
+  showUrlInput?: boolean;
+  pageContext?: string;
+  allowMultipleSelect?: boolean;
 }
 
 const ImageUpload: React.FC<ImageUploadProps> = ({
@@ -48,8 +48,8 @@ const ImageUpload: React.FC<ImageUploadProps> = ({
   allowMultipleSelect = false
 }) => {
   const [uploading, setUploading] = useState(false);
-  const [dragOver, setDragOver] = useState(false);
   const [uploadProgress, setUploadProgress] = useState(0);
+  const [dragOver, setDragOver] = useState(false);
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
   const [showMediaBrowser, setShowMediaBrowser] = useState(false);
@@ -61,61 +61,44 @@ const ImageUpload: React.FC<ImageUploadProps> = ({
   const handleOnChange = (url: string | string[]) => {
     const changeHandler = onChange || onImageUpload;
     if (typeof changeHandler === 'function') {
-      // URL validation
       if (Array.isArray(url)) {
         const validUrls = url.filter(u => u && (u.startsWith('/') || u.startsWith('http://') || u.startsWith('https://')));
         if (validUrls.length > 0) {
           changeHandler(validUrls);
         } else {
-          console.error('ImageUpload: No valid URLs provided:', url);
           setError('Geçersiz görsel URL\'leri');
         }
       } else if (url && (url.startsWith('/') || url.startsWith('http://') || url.startsWith('https://'))) {
         changeHandler(url);
       } else {
-        console.error('ImageUpload: Invalid URL provided:', url);
         setError('Geçersiz görsel URL\'i');
       }
-    } else {
-      console.error('ImageUpload: onChange/onImageUpload prop is not a function');
     }
   };
 
+  // File selection handler
   const handleFileSelect = async (files: FileList | null) => {
     if (!files || files.length === 0) return;
-
-    if (allowMultipleSelect) {
-      const fileArray = Array.from(files);
-      await uploadMultipleFiles(fileArray);
-    } else {
-      const file = files[0];
-      await uploadFile(file);
-    }
-  };
-
-  const uploadFile = async (file: File) => {
+    
     setError('');
-    setSuccess('');
     setUploading(true);
     setUploadProgress(0);
 
     try {
-      // Dosya boyutu kontrolü
+      const file = files[0];
+      
       if (file.size > maxSize * 1024 * 1024) {
         throw new Error(`Dosya boyutu ${maxSize}MB'dan büyük olamaz`);
       }
 
-      // Dosya tipi kontrolü
-      const allowedTypes = ['image/jpeg', 'image/jpg', 'image/png', 'image/gif', 'image/webp'];
-      if (!allowedTypes.includes(file.type)) {
-        throw new Error('Sadece JPEG, PNG, GIF ve WebP formatları desteklenir');
+      if (!file.type.startsWith('image/')) {
+        throw new Error('Sadece resim dosyaları yüklenebilir');
       }
 
       const formData = new FormData();
       formData.append('file', file);
-      formData.append('pageContext', pageContext);
+      formData.append('context', pageContext);
 
-      // Upload progress simulation
       const progressInterval = setInterval(() => {
         setUploadProgress(prev => {
           if (prev >= 90) {
@@ -126,7 +109,7 @@ const ImageUpload: React.FC<ImageUploadProps> = ({
         });
       }, 200);
 
-      const response = await fetch('/api/admin/upload', {
+      const response = await fetch('/api/upload', {
         method: 'POST',
         body: formData,
       });
@@ -143,15 +126,11 @@ const ImageUpload: React.FC<ImageUploadProps> = ({
       handleOnChange(data.url);
       setSuccess('Resim başarıyla yüklendi!');
       
-      // Modal'ı kapat
-      setShowMediaBrowser(false);
-      
       setTimeout(() => {
         setSuccess('');
         setUploadProgress(0);
       }, 2000);
     } catch (error) {
-      console.error('Upload error:', error);
       setError(error instanceof Error ? error.message : 'Upload sırasında hata oluştu');
       setUploadProgress(0);
     } finally {
@@ -159,128 +138,19 @@ const ImageUpload: React.FC<ImageUploadProps> = ({
     }
   };
 
-  const uploadMultipleFiles = async (files: File[]) => {
-    setError('');
-    setSuccess('');
-    setUploading(true);
-    setUploadProgress(0);
-
-    try {
-      const uploadPromises = files.map(async (file) => {
-        // Dosya boyutu kontrolü
-        if (file.size > maxSize * 1024 * 1024) {
-          throw new Error(`${file.name} dosya boyutu ${maxSize}MB'dan büyük olamaz`);
-        }
-
-        // Dosya tipi kontrolü
-        const allowedTypes = ['image/jpeg', 'image/jpg', 'image/png', 'image/gif', 'image/webp'];
-        if (!allowedTypes.includes(file.type)) {
-          throw new Error(`${file.name} sadece JPEG, PNG, GIF ve WebP formatları desteklenir`);
-        }
-
-        const formData = new FormData();
-        formData.append('file', file);
-        formData.append('pageContext', pageContext);
-
-        const response = await fetch('/api/admin/upload', {
-          method: 'POST',
-          body: formData,
-        });
-
-        if (!response.ok) {
-          const errorData = await response.json();
-          throw new Error(errorData.error || `${file.name} upload başarısız`);
-        }
-
-        const data = await response.json();
-        return data.url;
-      });
-
-      // Upload progress simulation
-      const progressInterval = setInterval(() => {
-        setUploadProgress(prev => {
-          if (prev >= 90) {
-            clearInterval(progressInterval);
-            return 90;
-          }
-          return prev + 10;
-        });
-      }, 200);
-
-      const urls = await Promise.all(uploadPromises);
-      
-      clearInterval(progressInterval);
-      setUploadProgress(100);
-
-      handleOnChange(urls);
-      setSuccess(`${files.length} resim başarıyla yüklendi!`);
-      
-      // Modal'ı kapat
-      setShowMediaBrowser(false);
-      
-      setTimeout(() => {
-        setSuccess('');
-        setUploadProgress(0);
-      }, 2000);
-    } catch (error) {
-      console.error('Multiple upload error:', error);
-      setError(error instanceof Error ? error.message : 'Upload sırasında hata oluştu');
-      setUploadProgress(0);
-    } finally {
-      setUploading(false);
-    }
-  };
-
-  const handleDragOver = (e: React.DragEvent) => {
-    e.preventDefault();
-    if (!disabled) {
-      setDragOver(true);
-    }
-  };
-
-  const handleDragLeave = (e: React.DragEvent) => {
-    e.preventDefault();
-    setDragOver(false);
-  };
-
-  const handleDrop = (e: React.DragEvent) => {
-    e.preventDefault();
-    setDragOver(false);
-    
-    if (disabled) return;
-    
-    const files = e.dataTransfer.files;
-    handleFileSelect(files);
-  };
-
+  // Remove image handler
   const removeImage = async () => {
-    const removeHandler = onRemove || onImageRemove;
-    const currentImageString = Array.isArray(currentImageValue) ? currentImageValue[0] : currentImageValue;
-    
-    if (!currentImageString || !removeHandler) return;
-
     try {
-      // Only Cloudinary deletion is supported
-      if (currentImageString.includes('cloudinary.com')) {
-        // Cloudinary URL - extract public_id
-        const matches = currentImageString.match(/\/v\d+\/(.+)\./);
-        if (matches) {
-          const publicId = matches[1];
-          await fetch('/api/admin/media', {
-            method: 'DELETE',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ mediaIds: [publicId] })
-          });
-        }
-      }
-      
-      if (typeof removeHandler === 'function') {
-        removeHandler();
+      if (typeof onRemove === 'function') {
+        onRemove();
+      } else if (typeof onImageRemove === 'function') {
+        onImageRemove();
+      } else if (typeof onChange === 'function') {
+        onChange('');
       }
       setSuccess('Resim başarıyla silindi!');
       setTimeout(() => setSuccess(''), 2000);
     } catch (error) {
-      console.error('Delete error:', error);
       setError('Resim silinirken hata oluştu');
     }
   };
@@ -291,7 +161,6 @@ const ImageUpload: React.FC<ImageUploadProps> = ({
   };
 
   const handleUploadNew = () => {
-    // File input'u tetikle ama modal'ı kapatma
     fileInputRef.current?.click();
   };
 
@@ -309,8 +178,6 @@ const ImageUpload: React.FC<ImageUploadProps> = ({
   const handleCloseBrowser = () => {
     setShowMediaBrowser(false);
   };
-
-
 
   // URL Input handlers
   const handleUrlSubmit = () => {
@@ -331,7 +198,7 @@ const ImageUpload: React.FC<ImageUploadProps> = ({
     setTimeout(() => setSuccess(''), 2000);
   };
 
-  // value kontrolü - boş string, undefined veya geçersiz URL ise resim yok kabul et
+  // Check if image exists
   const currentImageValue = value || currentImage;
   const currentImageString = Array.isArray(currentImageValue) ? currentImageValue[0] : currentImageValue;
   const hasImage = currentImageString && 
@@ -369,20 +236,27 @@ const ImageUpload: React.FC<ImageUploadProps> = ({
       {/* Main Upload Area */}
       <div className="border border-gray-200 rounded-lg overflow-hidden bg-white">
         
-        {/* Current Image Display */}
+        {/* Current Image Display - Kompakt Görünüm */}
         {hasImage && !uploading && (
           <div className="p-4 border-b border-gray-100">
-            <div className="relative aspect-video bg-gray-50 rounded-lg overflow-hidden">
-              <Image
-                src={currentImageString!}
-                alt="Uploaded image"
-                fill
-                className="object-cover"
-                onError={(e) => {
-                  console.error('Image load error:', e);
-                  setError('Görsel yüklenirken hata oluştu');
-                }}
-              />
+            <div className="flex items-center space-x-4">
+              <div className="relative w-24 h-24 bg-gray-50 rounded-lg overflow-hidden flex-shrink-0">
+                <Image
+                  src={currentImageString!}
+                  alt="Uploaded image"
+                  fill
+                  className="object-cover"
+                  onError={() => setError('Görsel yüklenirken hata oluştu')}
+                />
+              </div>
+              <div className="flex-1 min-w-0">
+                <p className="text-sm font-medium text-gray-900 truncate">
+                  Görsel yüklendi
+                </p>
+                <p className="text-sm text-gray-500">
+                  Yeni görsel yüklemek için aşağıdaki butonları kullanın
+                </p>
+              </div>
             </div>
           </div>
         )}
@@ -398,7 +272,7 @@ const ImageUpload: React.FC<ImageUploadProps> = ({
                   <span>{uploadProgress}%</span>
                 </div>
                 <div className="w-full bg-gray-200 rounded-full h-2">
-                  <div
+                  <div 
                     className="bg-blue-500 h-2 rounded-full transition-all duration-300"
                     style={{ width: `${uploadProgress}%` }}
                   />
@@ -408,56 +282,29 @@ const ImageUpload: React.FC<ImageUploadProps> = ({
           </div>
         )}
 
-        {/* Upload Zone */}
-        {!hasImage && !uploading && (
-          <div
-            onDrop={handleDrop}
-            onDragOver={handleDragOver}
-            onDragLeave={handleDragLeave}
-            onClick={() => fileInputRef.current?.click()}
-            className={`p-8 text-center cursor-pointer transition-colors ${
-              dragOver 
-                ? 'bg-blue-50 border-blue-300' 
-                : 'bg-gray-50 hover:bg-gray-100'
-            }`}
-          >
-            <PhotoIcon className={`w-8 h-8 mx-auto mb-3 ${
-              dragOver ? 'text-blue-500' : 'text-gray-400'
-            }`} />
-            <p className={`text-sm font-medium mb-1 ${
-              dragOver ? 'text-blue-700' : 'text-gray-700'
-            }`}>
-              {dragOver ? 'Dosyayı bırakın' : 'Dosya seçin veya sürükleyip bırakın'}
-            </p>
-            <p className="text-xs text-gray-500">
-              PNG, JPG, WebP (Maks. {maxSize}MB)
-            </p>
-          </div>
-        )}
-
-        {/* Action Buttons */}
-        <div className="p-3 bg-gray-50 border-t border-gray-100">
+        {/* Upload Actions */}
+        <div className="p-4">
           <div className="flex flex-wrap gap-2">
             {/* Browse Media */}
             <button
               type="button"
               onClick={handleBrowseMedia}
-              disabled={disabled}
-              className="inline-flex items-center px-3 py-1.5 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-1 focus:ring-blue-500 disabled:opacity-50 disabled:cursor-not-allowed"
+              disabled={disabled || uploading}
+              className="flex items-center space-x-2 px-4 py-2 bg-blue-50 text-blue-600 rounded-lg hover:bg-blue-100 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
             >
-              <FolderOpenIcon className="w-4 h-4 mr-1.5" />
-              Gözat
+              <FolderOpenIcon className="w-4 h-4" />
+              <span>Medya Kütüphanesi</span>
             </button>
 
             {/* Upload New */}
             <button
               type="button"
               onClick={() => fileInputRef.current?.click()}
-              disabled={disabled}
-              className="inline-flex items-center px-3 py-1.5 text-sm font-medium text-white bg-blue-600 border border-transparent rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-1 focus:ring-blue-500 disabled:opacity-50 disabled:cursor-not-allowed"
+              disabled={disabled || uploading}
+              className="flex items-center space-x-2 px-4 py-2 bg-green-50 text-green-600 rounded-lg hover:bg-green-100 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
             >
-              <ArrowUpTrayIcon className="w-4 h-4 mr-1.5" />
-              Yükle
+              <ArrowUpTrayIcon className="w-4 h-4" />
+              <span>Yeni Yükle</span>
             </button>
 
             {/* URL Input */}
@@ -465,11 +312,11 @@ const ImageUpload: React.FC<ImageUploadProps> = ({
               <button
                 type="button"
                 onClick={() => setShowUrlModal(true)}
-                disabled={disabled}
-                className="inline-flex items-center px-3 py-1.5 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-1 focus:ring-blue-500 disabled:opacity-50 disabled:cursor-not-allowed"
+                disabled={disabled || uploading}
+                className="flex items-center space-x-2 px-4 py-2 bg-purple-50 text-purple-600 rounded-lg hover:bg-purple-100 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
               >
-                <LinkIcon className="w-4 h-4 mr-1.5" />
-                URL
+                <LinkIcon className="w-4 h-4" />
+                <span>URL ile Ekle</span>
               </button>
             )}
 
@@ -478,10 +325,11 @@ const ImageUpload: React.FC<ImageUploadProps> = ({
               <button
                 type="button"
                 onClick={removeImage}
-                className="inline-flex items-center px-3 py-1.5 text-sm font-medium text-red-700 bg-white border border-red-300 rounded-md hover:bg-red-50 focus:outline-none focus:ring-2 focus:ring-offset-1 focus:ring-red-500"
+                disabled={disabled || uploading}
+                className="flex items-center space-x-2 px-4 py-2 bg-red-50 text-red-600 rounded-lg hover:bg-red-100 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
               >
-                <TrashIcon className="w-4 h-4 mr-1.5" />
-                Sil
+                <TrashIcon className="w-4 h-4" />
+                <span>Kaldır</span>
               </button>
             )}
           </div>
@@ -518,6 +366,7 @@ const ImageUpload: React.FC<ImageUploadProps> = ({
             <div className="flex items-center justify-between p-4 border-b border-gray-200">
               <h3 className="text-lg font-medium text-gray-900">URL ile Görsel Ekle</h3>
               <button
+                type="button"
                 onClick={() => setShowUrlModal(false)}
                 className="p-1 text-gray-400 hover:text-gray-500 rounded-md"
               >
@@ -541,15 +390,17 @@ const ImageUpload: React.FC<ImageUploadProps> = ({
               
               <div className="flex justify-end space-x-3">
                 <button
+                  type="button"
                   onClick={() => setShowUrlModal(false)}
                   className="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md hover:bg-gray-50"
                 >
                   İptal
                 </button>
                 <button
+                  type="button"
                   onClick={handleUrlSubmit}
                   disabled={!urlInput.trim()}
-                  className="px-4 py-2 text-sm font-medium text-white bg-blue-600 border border-transparent rounded-md hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed"
+                  className="px-4 py-2 text-sm font-medium text-white bg-blue-600 rounded-md hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed"
                 >
                   Ekle
                 </button>
@@ -562,4 +413,4 @@ const ImageUpload: React.FC<ImageUploadProps> = ({
   );
 };
 
-export default ImageUpload; 
+export default ImageUpload;
