@@ -30,7 +30,7 @@ export async function POST() {
     const adminUser = await User.create({
       email: adminEmail,
       password: hashedPassword,
-      name: process.env.ADMIN_NAME || 'Erdem Erciyas',
+      name: process.env.ADMIN_NAME || 'FIXRAL Admin',
       role: 'admin'
     });
     

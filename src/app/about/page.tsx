@@ -135,17 +135,7 @@ export default function AboutPage() {
                 </span>
               </div>
               <h1 className="hero-title text-white mb-10 leading-none">
-                {hero.title || (aboutData.heroTitle.includes('Erdem Erciyas') ? (
-                  <>
-                    {aboutData.heroTitle.split('Erdem Erciyas')[0]}
-                    <span className="text-gradient-hero">
-                      Erdem Erciyas
-                    </span>
-                    {aboutData.heroTitle.split('Erdem Erciyas')[1]}
-                  </>
-                ) : (
-                  aboutData.heroTitle
-                ))}
+                {hero.title || aboutData.heroTitle}
               </h1>
               {(hero.description || aboutData.heroDescription) && (
                 <p className="text-lg md:text-xl lg:text-2xl text-slate-200 mb-2 leading-relaxed">
@@ -153,7 +143,7 @@ export default function AboutPage() {
                 </p>
               )}
               <div className="flex flex-col sm:flex-row gap-6 mt-6">
-                <Link href="/contact" className="btn-secondary">
+                <Link href="/contact" className="btn-primary">
                   <EnvelopeIcon className="w-5 h-5 mr-2" />
                   İletişime Geç
                 </Link>
@@ -172,7 +162,7 @@ export default function AboutPage() {
                   <UserIcon className="w-16 h-16 text-white" />
                 </div>
                 <div className="text-center">
-                  <h3 className="text-2xl font-bold text-white mb-2">Erdem Erciyas</h3>
+                  <h3 className="text-2xl font-bold text-white mb-2">FIXRAL</h3>
                   <p className="text-teal-300 font-medium mb-6">{aboutData.heroSubtitle}</p>
                   {/* Quick Stats */}
                   <div className="grid grid-cols-2 gap-3">
@@ -300,18 +290,26 @@ export default function AboutPage() {
   </section>
 
   {/* Contact CTA */}
-  <section className="section bg-gradient-primary text-white">
-        <div className="container-content text-center">
+  <section className="section bg-gradient-primary text-white relative overflow-hidden">
+        {/* Background Pattern */}
+        <div className="absolute inset-0 opacity-10">
+          <div className="absolute top-10 left-10 w-20 h-20 border-2 border-white rounded-full"></div>
+          <div className="absolute top-32 right-20 w-16 h-16 border-2 border-white rotate-45"></div>
+          <div className="absolute bottom-20 left-1/4 w-24 h-24 border-2 border-white rounded-full"></div>
+          <div className="absolute bottom-10 right-10 w-12 h-12 border-2 border-white rotate-12"></div>
+        </div>
+
+        <div className="container-content text-center relative z-10">
           <div className="max-w-3xl mx-auto">
             <h2 className="section-title text-white mb-6">
               {aboutData.contactTitle}
             </h2>
-            <p className="text-xl text-slate-200 mb-12 leading-relaxed">
+            <p className="section-subtitle text-teal-100 mb-12 leading-relaxed">
               {aboutData.contactDescription}
             </p>
             
             <div className="flex flex-col sm:flex-row gap-6 justify-center mb-12">
-              <Link href="/contact" className="btn-secondary">
+              <Link href="/contact" className="btn-primary">
                 <EnvelopeIcon className="w-5 h-5 mr-2" />
                 İletişime Geç
               </Link>
@@ -322,7 +320,7 @@ export default function AboutPage() {
             </div>
             
             {/* Contact Info */}
-            <div className="flex flex-col sm:flex-row gap-8 justify-center text-sm">
+            <div className="flex flex-col sm:flex-row gap-8 justify-center text-sm opacity-90">
               <div className="flex items-center space-x-2">
                 <EnvelopeIcon className="w-4 h-4" />
                 <span>{aboutData.contactEmail}</span>

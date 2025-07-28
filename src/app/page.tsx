@@ -359,7 +359,7 @@ export default function HomePage() {
 
           {/* View All Link */}
           <div className="text-center">
-            <Link href="/services" className="btn-outline">
+            <Link href="/services" className="btn-secondary">
               Tüm Hizmetlerimizi Görüntüle
               <ArrowRightIcon className="w-5 h-5 ml-2" />
             </Link>
@@ -380,6 +380,7 @@ export default function HomePage() {
           <div className="absolute top-10 left-10 w-20 h-20 border-2 border-white rounded-full"></div>
           <div className="absolute top-32 right-20 w-16 h-16 border-2 border-white rotate-45"></div>
           <div className="absolute bottom-20 left-1/4 w-24 h-24 border-2 border-white rounded-full"></div>
+          <div className="absolute bottom-10 right-10 w-12 h-12 border-2 border-white rotate-12"></div>
         </div>
 
         <div className="container-content text-center relative z-10">
@@ -390,7 +391,7 @@ export default function HomePage() {
             Uzman ekibimiz ve modern teknolojilerimizle fikirlerinizi hayata geçirmeye hazırız.
           </p>
           <div className="flex flex-col sm:flex-row gap-6 justify-center">
-            <Link href="/contact" className="btn-secondary">
+            <Link href="/contact" className="btn-primary">
               <SparklesIcon className="w-5 h-5 mr-2" />
               İletişime Geçin
             </Link>

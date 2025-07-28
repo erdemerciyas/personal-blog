@@ -117,8 +117,8 @@ const FooterSettingsSchema = new mongoose.Schema({
   // Copyright Bilgileri
   copyrightInfo: {
     companyName: {
-      en: { type: String, default: 'Erdem Erciyas' },
-      tr: { type: String, default: 'Erdem Erciyas' },
+      en: { type: String, default: 'FIXRAL' },
+      tr: { type: String, default: 'FIXRAL' },
     },
     year: {
       type: Number,

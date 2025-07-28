@@ -247,7 +247,7 @@ function PortfolioDetailPageContent({ params }: { params: { slug: string } }) {
                   />
                   
                   <div className="text-center mt-12">
-                    <Link href="/portfolio" className="btn-outline">
+                    <Link href="/portfolio" className="btn-secondary">
                       Tüm Projeleri Gör
                     </Link>
                   </div>

@@ -9,12 +9,29 @@ module.exports = {
   theme: {
     extend: {
       colors: {
-        primary: '#1a202c',
-        secondary: '#2d3748',
-        accent: '#4a5568',
+        // Fixral Design System Colors
+        fixral: {
+          'night-blue': '#0D1B2A',
+          'turquoise': '#00B4D8',
+          'light-gray': '#F8F9FA',
+          'charcoal': '#3D3D3D',
+          'gray-blue': '#3A506B',
+        },
+        // Backward compatibility
+        primary: '#0D1B2A', // Ana Gece Mavisi
+        secondary: '#3A506B', // Gri Mavi
+        accent: '#00B4D8', // Canlı Turkuaz
       },
       fontFamily: {
-        sans: ['var(--font-inter)'],
+        sans: ['Inter', 'var(--font-inter)', 'system-ui', 'sans-serif'],
+      },
+      borderRadius: {
+        'fixral': '8px',
+        'fixral-lg': '12px',
+      },
+      boxShadow: {
+        'fixral': '0 2px 6px rgba(0, 0, 0, 0.05)',
+        'fixral-lg': '0 4px 12px rgba(0, 0, 0, 0.1)',
       },
     },
   },

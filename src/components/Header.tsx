@@ -278,7 +278,7 @@ E-posta: ${projectForm.email}
               <h1 className={`text-xl font-bold transition-colors duration-300 ${
                 isScrolled ? 'text-slate-900' : 'text-white'
               }`}>
-                {siteSettings?.siteName || 'Erdem Erciyas'}
+                {siteSettings?.siteName || 'FIXRAL'}
               </h1>
               {siteSettings?.slogan && (
                 <p className={`text-sm transition-colors duration-300 ${

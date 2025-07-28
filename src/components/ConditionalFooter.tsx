@@ -89,7 +89,7 @@ const ConditionalFooter: React.FC = () => {
             youtube: ''
           },
           copyrightInfo: {
-            companyName: 'Erdem Erciyas',
+            companyName: 'FIXRAL',
             year: new Date().getFullYear(),
             additionalText: 'Tüm Hakları Saklıdır.'
           },

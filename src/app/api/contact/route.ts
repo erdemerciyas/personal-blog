@@ -130,7 +130,7 @@ export async function POST(request: Request) {
             </div>
             
             <div style="text-align: center; margin-top: 20px; color: #6b7280; font-size: 14px;">
-              Bu mesaj www.erdemerciyas.com.tr sitesinden gönderilmiştir.
+              Bu mesaj www.fixral.com sitesinden gönderilmiştir.
             </div>
           </div>
         `,
@@ -170,7 +170,7 @@ export async function POST(request: Request) {
               </div>
               
               <div style="text-align: center; margin: 30px 0;">
-                <a href="https://www.erdemerciyas.com.tr" 
+                <a href="https://fixral.com" 
                    style="background: linear-gradient(135deg, #0f766e, #0891b2); color: white; padding: 12px 24px; 
                           text-decoration: none; border-radius: 8px; font-weight: bold; display: inline-block;">
                   🌐 Web Sitemizi Ziyaret Edin
@@ -179,9 +179,9 @@ export async function POST(request: Request) {
               
               <p style="color: #6b7280; font-size: 14px; line-height: 1.6; border-top: 1px solid #e2e8f0; padding-top: 20px; margin-bottom: 0;">
                 Saygılarımızla,<br>
-                <strong>Erdem Erciyas</strong><br>
-                📧 erdem.erciyas@gmail.com<br>
-                🌐 www.erdemerciyas.com.tr
+                <strong>FIXRAL Ekibi</strong><br>
+                📧 info@fixral.com<br>
+                🌐 www.fixral.com
               </p>
             </div>
           </div>

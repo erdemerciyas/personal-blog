@@ -216,7 +216,7 @@ export default function ModernProjectCard({
         {/* Action Button */}
         <Link
           href={`/portfolio/${project.slug}`}
-          className="group/btn inline-flex items-center justify-center w-full px-6 py-3 bg-gradient-to-r from-teal-500 to-blue-600 text-white font-semibold rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300 hover:from-teal-600 hover:to-blue-700 transform hover:scale-[1.02] mt-auto"
+          className="btn-primary w-full group/btn mt-auto"
         >
           <span>Detayları Görüntüle</span>
           <ArrowRightIcon className="w-5 h-5 ml-2 transition-transform duration-300 group-hover/btn:translate-x-1" />

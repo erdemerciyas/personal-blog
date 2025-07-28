@@ -77,7 +77,13 @@ export default function PageHero({
             initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8, delay: 0.2 }}
-            className="hero-title text-gradient-hero mb-6 max-w-6xl mx-auto"
+            className="hero-title text-gradient-hero mb-6 max-w-6xl mx-auto prevent-font-clipping"
+            style={{ 
+              overflow: 'visible',
+              lineHeight: '1.1',
+              padding: '0.15em 0',
+              margin: '0.1em 0'
+            }}
           >
             {title}
           </motion.h1>

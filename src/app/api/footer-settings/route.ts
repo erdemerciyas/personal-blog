@@ -35,7 +35,7 @@ export async function GET() {
         youtube: ''
       },
       copyrightInfo: {
-        companyName: 'Erdem Erciyas',
+        companyName: 'FIXRAL',
         year: new Date().getFullYear(),
         additionalText: 'Tüm Hakları Saklıdır.'
       },

@@ -9,7 +9,14 @@ import Providers from '../components/Providers'
 import connectDB from '../lib/mongoose'
 import SiteSettings from '../models/SiteSettings'
 
-const inter = Inter({ subsets: ['latin'] })
+const inter = Inter({ 
+  subsets: ['latin', 'latin-ext'],
+  variable: '--font-inter',
+  display: 'swap',
+  preload: true,
+  fallback: ['system-ui', '-apple-system', 'BlinkMacSystemFont', 'Segoe UI', 'Roboto', 'sans-serif'],
+  adjustFontFallback: true,
+})
 
 // Dynamic metadata function
 export async function generateMetadata(): Promise<Metadata> {
@@ -29,7 +36,7 @@ export async function generateMetadata(): Promise<Metadata> {
       keywords,
       authors: [{ name: 'Erdem Erciyas', url: 'https://www.erdemerciyas.com.tr' }],
       creator: 'Erdem Erciyas',
-      publisher: 'Erdem Erciyas',
+      publisher: 'FIXRAL',
       openGraph: {
         type: 'website',
         locale: 'tr_TR',
@@ -66,7 +73,7 @@ export async function generateMetadata(): Promise<Metadata> {
       keywords: ['nextjs', 'react', 'typescript', 'portfolio', 'blog', 'engineering'],
       authors: [{ name: 'Erdem Erciyas', url: 'https://www.erdemerciyas.com.tr' }],
       creator: 'Erdem Erciyas',
-      publisher: 'Erdem Erciyas',
+      publisher: 'FIXRAL',
       openGraph: {
         type: 'website',
         locale: 'tr_TR',
@@ -129,7 +136,7 @@ export default function RootLayout({
         <link rel="dns-prefetch" href="//fonts.gstatic.com" />
         <link rel="dns-prefetch" href="//res.cloudinary.com" />
       </head>
-      <body className={`${inter.className} min-h-screen bg-slate-50 flex flex-col text-slate-900 antialiased`}>
+      <body className={`${inter.variable} font-sans min-h-screen bg-fixral-light-gray flex flex-col text-fixral-charcoal antialiased`}>
         <LoadingBar />
         <Providers>
           <ClientWrapper>

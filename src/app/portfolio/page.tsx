@@ -2,6 +2,8 @@
 
 import { useState, useEffect, Suspense } from 'react';
 import { motion } from 'framer-motion';
+import Link from 'next/link';
+import { ArrowRightIcon, SparklesIcon } from '@heroicons/react/24/outline';
 import PortfolioHero from '../../components/portfolio/PortfolioHero';
 import PortfolioFilters from '../../components/portfolio/PortfolioFilters';
 import ModernProjectGrid from '../../components/portfolio/ModernProjectGrid';
@@ -191,12 +193,42 @@ function PortfolioPageContent() {
                   sortBy: 'newest',
                   sortOrder: 'desc'
                 })}
-                className="btn-outline"
+                className="btn-secondary"
               >
                 Filtreleri Temizle
               </button>
             </motion.div>
           )}
+        </div>
+      </section>
+
+      {/* CTA Section */}
+      <section className="section bg-gradient-primary text-white relative overflow-hidden">
+        {/* Background Pattern */}
+        <div className="absolute inset-0 opacity-10">
+          <div className="absolute top-10 left-10 w-20 h-20 border-2 border-white rounded-full"></div>
+          <div className="absolute top-32 right-20 w-16 h-16 border-2 border-white rotate-45"></div>
+          <div className="absolute bottom-20 left-1/4 w-24 h-24 border-2 border-white rounded-full"></div>
+          <div className="absolute bottom-10 right-10 w-12 h-12 border-2 border-white rotate-12"></div>
+        </div>
+
+        <div className="container-content text-center relative z-10">
+          <h2 className="section-title text-white mb-6">
+            Projenizi Birlikte Gerçekleştirelim
+          </h2>
+          <p className="section-subtitle text-teal-100 mb-12 max-w-2xl mx-auto">
+            Portföyümüzdeki projeler gibi sizin de fikirlerinizi hayata geçirmeye hazırız.
+          </p>
+          <div className="flex flex-col sm:flex-row gap-6 justify-center">
+            <Link href="/contact" className="btn-primary">
+              <SparklesIcon className="w-5 h-5 mr-2" />
+              Proje Başlatalım
+            </Link>
+            <Link href="/services" className="btn-secondary">
+              Hizmetlerimizi İnceleyin
+              <ArrowRightIcon className="w-5 h-5 ml-2" />
+            </Link>
+          </div>
         </div>
       </section>
     </div>

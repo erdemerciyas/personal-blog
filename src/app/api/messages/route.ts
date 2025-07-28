@@ -193,7 +193,7 @@ export async function POST(request: Request) {
             </div>
             
             <div style="text-align: center; margin-top: 20px; color: #6b7280; font-size: 14px;">
-              Bu proje talebi www.erdemerciyas.com.tr sitesinden gönderilmiştir.
+              Bu proje talebi www.fixral.com sitesinden gönderilmiştir.
             </div>
           </div>
         `,
@@ -246,12 +246,12 @@ export async function POST(request: Request) {
               </div>
               
               <div style="text-align: center; margin: 30px 0;">
-                <a href="https://www.erdemerciyas.com.tr/portfolio" 
+                <a href="https://fixral.com/portfolio" 
                    style="background: linear-gradient(135deg, #0f766e, #0891b2); color: white; padding: 12px 24px; 
                           text-decoration: none; border-radius: 8px; font-weight: bold; display: inline-block; margin-right: 10px;">
                   🎨 Portfolyomuzu İnceleyin
                 </a>
-                <a href="https://www.erdemerciyas.com.tr/services" 
+                <a href="https://fixral.com/services" 
                    style="background: linear-gradient(135deg, #7c3aed, #a855f7); color: white; padding: 12px 24px; 
                           text-decoration: none; border-radius: 8px; font-weight: bold; display: inline-block;">
                   🔧 Hizmetlerimizi Keşfedin
@@ -260,9 +260,9 @@ export async function POST(request: Request) {
               
               <p style="color: #6b7280; font-size: 14px; line-height: 1.6; border-top: 1px solid #e2e8f0; padding-top: 20px; margin-bottom: 0;">
                 Saygılarımızla,<br>
-                <strong>Erdem Erciyas</strong><br>
-                📧 erdem.erciyas@gmail.com<br>
-                🌐 www.erdemerciyas.com.tr
+                <strong>FIXRAL Ekibi</strong><br>
+                📧 info@fixral.com<br>
+                🌐 www.fixral.com
               </p>
             </div>
           </div>
