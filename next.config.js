@@ -64,8 +64,7 @@ const nextConfig = {
     // Vercel optimizations
     optimizePackageImports: ['@heroicons/react', 'framer-motion'],
     serverComponentsExternalPackages: ['mongoose', 'mongodb'],
-    // Edge runtime optimizations
-    runtime: 'nodejs',
+    // Remove deprecated runtime option
   },
   // Performance: Enable compression
   compress: true,

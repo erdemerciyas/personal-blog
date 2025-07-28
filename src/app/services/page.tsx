@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import ContentSkeleton from '../../components/ContentSkeleton';
+import PageHero from '../../components/common/PageHero';
 import Image from 'next/image';
 import HTMLContent from '../../components/HTMLContent';
 import { 
@@ -122,21 +123,18 @@ export default function ServicesPage() {
   return (
     <div className="min-h-screen">
       {/* Hero Section */}
-      <section className="bg-gradient-to-br from-teal-500 to-cyan-600 text-white py-28 md:py-32">
-        <div className="max-w-3xl mx-auto px-4 text-center">
-          <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold mb-10">
-            {hero.title}
-          </h1>
-          {hero.description && (
-            <p className="text-lg md:text-xl lg:text-2xl text-teal-100 max-w-2xl mx-auto mt-0 mb-2 md:mb-0">
-              {hero.description}
-            </p>
-          )}
-        </div>
-      </section>
+      <PageHero
+        title={hero.title || 'Sunduğumuz Hizmetler'}
+        description={hero.description || 'Modern teknoloji çözümleri ve profesyonel hizmetlerimizi keşfedin'}
+        buttonText="Hizmetleri İncele"
+        buttonLink="#services"
+        badge="Profesyonel Hizmetler"
+        backgroundGradient="from-teal-500 via-cyan-600 to-blue-600"
+        showButton={true}
+      />
 
       {/* Main Content */}
-      <section className="py-12 md:py-16 lg:py-20 bg-gray-50">
+      <section id="services" className="py-12 md:py-16 lg:py-20 bg-gray-50">
         <div className="container mx-auto px-4">
           {/* Section Title */}
           <div className="text-center mb-12 md:mb-16">

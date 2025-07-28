@@ -4,7 +4,7 @@ import { useState, useEffect } from 'react';
 import dynamic from 'next/dynamic';
 import DOMPurify from 'dompurify';
 
-// Güvenli markdown editor - react-quill yerine
+// MD Editor'ı dinamik olarak yükle
 const MDEditor = dynamic(() => import('@uiw/react-md-editor'), {
   ssr: false,
   loading: () => (
@@ -22,6 +22,7 @@ interface RichTextEditorProps {
   disabled?: boolean;
   maxLength?: number;
   required?: boolean;
+  height?: number;
 }
 
 export default function RichTextEditor({
@@ -31,20 +32,15 @@ export default function RichTextEditor({
   className = '',
   disabled = false,
   maxLength,
-  required = false
+  required = false,
+  height = 300
 }: RichTextEditorProps) {
   const [mounted, setMounted] = useState(false);
+  const [textLength, setTextLength] = useState(0);
 
   useEffect(() => {
     setMounted(true);
   }, []);
-
-  // Markdown editor ayarları
-  const editorOptions = {
-    hideToolbar: false,
-    visibleDragBar: false,
-    height: 300,
-  };
 
   // Güvenli HTML sanitization
   const sanitizeHtml = (html: string): string => {
@@ -55,23 +51,46 @@ export default function RichTextEditor({
         'p', 'br', 'strong', 'em', 'u', 's', 'ol', 'ul', 'li', 
         'h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'blockquote', 'code', 'pre', 'a', 'span'
       ],
-      ALLOWED_ATTR: ['href', 'target', 'rel', 'class', 'style'],
+      ALLOWED_ATTR: ['href', 'target', 'rel', 'class'],
       FORBID_TAGS: ['script', 'object', 'embed', 'form', 'input', 'button', 'iframe'],
       FORBID_ATTR: ['onclick', 'onload', 'onerror', 'onmouseover'],
       ADD_ATTR: ['target'],
-      ALLOW_DATA_ATTR: false,
+      ADD_DATA_URI_TAGS: [],
+      WHOLE_DOCUMENT: false,
+      RETURN_DOM: false,
+      RETURN_DOM_FRAGMENT: false,
+      RETURN_TRUSTED_TYPE: false
     });
   };
 
-  const handleChange = (content: string) => {
-    if (maxLength && content.length > maxLength) {
+  // Metin uzunluğunu hesapla
+  const calculateTextLength = (html: string): number => {
+    if (typeof window === 'undefined') return 0;
+    const tempDiv = document.createElement('div');
+    tempDiv.innerHTML = html;
+    return tempDiv.textContent?.length || 0;
+  };
+
+  const handleChange = (val?: string) => {
+    const newValue = val || '';
+    const sanitizedValue = sanitizeHtml(newValue);
+    const length = calculateTextLength(sanitizedValue);
+    
+    setTextLength(length);
+    
+    // Maksimum uzunluk kontrolü
+    if (maxLength && length > maxLength) {
       return;
     }
     
-    // Güvenlik: İçeriği sanitize et
-    const sanitizedContent = sanitizeHtml(content);
-    onChange(sanitizedContent);
+    onChange(sanitizedValue);
   };
+
+  useEffect(() => {
+    if (value) {
+      setTextLength(calculateTextLength(value));
+    }
+  }, [value]);
 
   if (!mounted) {
     return (
@@ -83,61 +102,68 @@ export default function RichTextEditor({
 
   return (
     <div className={`rich-text-editor ${className}`}>
-      <MDEditor
-        value={value}
-        onChange={(val) => handleChange(val || '')}
-        data-color-mode="light"
-        height={editorOptions.height}
-        visibleDragBar={editorOptions.visibleDragBar}
-        hideToolbar={editorOptions.hideToolbar}
-        preview="edit"
-      />
+      <div className="relative">
+        <MDEditor
+          value={value}
+          onChange={handleChange}
+          height={height}
+          data-color-mode="light"
+          preview="edit"
+          hideToolbar={disabled}
+          visibleDragBar={false}
+        />
+        
+        {/* Karakter sayacı */}
+        {maxLength && (
+          <div className="flex justify-between items-center mt-2 text-sm">
+            <div className="text-gray-500">
+              Markdown desteklenir
+            </div>
+            <div className={`font-medium ${
+              textLength > maxLength * 0.9 
+                ? textLength > maxLength 
+                  ? 'text-red-600' 
+                  : 'text-yellow-600'
+                : 'text-gray-500'
+            }`}>
+              {textLength}{maxLength ? `/${maxLength}` : ''}
+            </div>
+          </div>
+        )}
+        
+        {/* Hata mesajı */}
+        {required && !value && (
+          <div className="text-red-600 text-sm mt-1">
+            Bu alan zorunludur
+          </div>
+        )}
+        
+        {maxLength && textLength > maxLength && (
+          <div className="text-red-600 text-sm mt-1">
+            Maksimum {maxLength} karakter kullanabilirsiniz
+          </div>
+        )}
+      </div>
       
-      {/* Karakter sayacı */}
-      {maxLength && (
-        <div className="flex justify-end mt-2">
-          <span className={`text-sm ${
-            value.length > maxLength * 0.9 ? 'text-red-600' : 'text-slate-500'
-          }`}>
-            {value.length} / {maxLength}
-          </span>
-        </div>
-      )}
-      
-      {/* Zorunlu alan uyarısı */}
-      {required && !value.trim() && (
-        <div className="text-red-600 text-sm mt-1">
-          Bu alan zorunludur
-        </div>
-      )}
-
       <style jsx global>{`
-        .rich-text-editor .w-md-editor {
-          border-radius: 0.75rem;
-          border: 1px solid #e2e8f0;
+        .w-md-editor {
+          background-color: white !important;
         }
-        
-        .rich-text-editor .w-md-editor-text-textarea,
-        .rich-text-editor .w-md-editor-text {
-          font-family: inherit !important;
+        .w-md-editor-text-container {
           font-size: 14px !important;
-          line-height: 1.5 !important;
         }
-        
-        .rich-text-editor .w-md-editor-toolbar {
-          border-bottom: 1px solid #e2e8f0;
-          background-color: #f8fafc;
+        .w-md-editor-text {
+          font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif !important;
+          line-height: 1.6 !important;
         }
-        
-        .rich-text-editor .w-md-editor-toolbar button {
-          color: #64748b;
+        .w-md-editor-text-container .w-md-editor-text-area {
+          font-size: 14px !important;
+          color: #374151 !important;
         }
-        
-        .rich-text-editor .w-md-editor-toolbar button:hover {
-          color: #059669;
-          background-color: #f0fdf4;
+        .w-md-editor-text-container .w-md-editor-text-area::placeholder {
+          color: #9CA3AF !important;
         }
       `}</style>
     </div>
   );
-} 
+}

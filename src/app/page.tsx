@@ -2,9 +2,9 @@
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
-import ProjectGrid from '../components/ProjectGrid';
 import HTMLContent from '../components/HTMLContent';
 import ContentSkeleton from '../components/ContentSkeleton';
+import HomePortfolioSection from '../components/portfolio/HomePortfolioSection';
 import { useSliderItems, usePortfolioItems, useServices } from '../hooks/useApi';
 import { 
   ArrowRightIcon,
@@ -368,57 +368,10 @@ export default function HomePage() {
       </section>
 
       {/* Portfolio Section */}
-      <section className="section bg-white">
-        <div className="container-main">
-          {/* Header */}
-          <div className="text-center mb-20">
-            <h2 className="section-title text-gradient mb-6">
-              Öne Çıkan Projelerimiz
-            </h2>
-            <p className="section-subtitle max-w-3xl mx-auto">
-              Tamamladığımız başarılı projelerden örnekler. Kalite ve yenilik odaklı 
-              çalışmalarımızı keşfedin.
-            </p>
-          </div>
-          
-          {/* Projects */}
-          {portfolioLoading ? (
-            <ContentSkeleton type="card" count={6} className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8" />
-          ) : portfolioItems.length > 0 ? (
-            <>
-              <ProjectGrid 
-                projects={portfolioItems.map(item => ({
-                  id: item._id,
-                  slug: item.slug,
-                  title: item.title,
-                  description: item.description,
-                  coverImage: item.coverImage,
-                  category: item.category?.name || 'Genel',
-                }))} 
-                limit={6} 
-              />
-              <div className="text-center mt-16">
-                <Link href="/portfolio" className="btn-outline">
-                  Tüm Projeleri Görüntüle
-                  <ArrowRightIcon className="w-5 h-5 ml-2" />
-                </Link>
-              </div>
-            </>
-          ) : (
-            <div className="text-center py-20">
-              <div className="w-24 h-24 bg-slate-100 rounded-full flex items-center justify-center mx-auto mb-6">
-                <CubeTransparentIcon className="w-12 h-12 text-slate-400" />
-              </div>
-              <h3 className="text-2xl font-semibold text-slate-800 mb-4">
-                Projeler Yükleniyor
-              </h3>
-              <p className="text-slate-600">
-                Yakında burada örnek projelerimizi görebileceksiniz.
-              </p>
-            </div>
-          )}
-        </div>
-      </section>
+      <HomePortfolioSection 
+        portfolioItems={portfolioItems}
+        isLoading={portfolioLoading}
+      />
 
       {/* CTA Section */}
       <section className="section bg-gradient-primary text-white relative overflow-hidden">

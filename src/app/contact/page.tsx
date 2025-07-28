@@ -3,6 +3,7 @@
 import { useState, useEffect, Suspense } from 'react';
 import { EnvelopeIcon, PhoneIcon, MapPinIcon, PaperAirplaneIcon, CheckCircleIcon, ExclamationCircleIcon, ClockIcon } from '@heroicons/react/24/outline';
 import ContentSkeleton from '../../components/ContentSkeleton';
+import PageHero from '../../components/common/PageHero';
 
 interface ContactInfo {
   email: string;
@@ -112,21 +113,18 @@ function ContactPageContent() {
   return (
     <div className="min-h-screen">
       {/* Hero Section */}
-      <section className="bg-gradient-to-br from-teal-500 to-cyan-600 text-white py-28 md:py-32">
-        <div className="max-w-3xl mx-auto px-4 text-center">
-          <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold mb-10">
-            {hero.title}
-          </h1>
-          {hero.description && (
-            <p className="text-lg md:text-xl lg:text-2xl text-teal-100 max-w-2xl mx-auto mt-0 mb-2 md:mb-0">
-              {hero.description}
-            </p>
-          )}
-        </div>
-      </section>
+      <PageHero
+        title={hero.title || 'İletişim'}
+        description={hero.description || 'Bizimle iletişime geçin ve projelerinizi konuşalım'}
+        buttonText="İletişim Formu"
+        buttonLink="#contact-form"
+        badge="İletişim"
+        backgroundGradient="from-teal-500 via-cyan-600 to-blue-600"
+        showButton={true}
+      />
 
       {/* Main Content */}
-      <section className="py-12 md:py-16 lg:py-20 bg-gray-50">
+      <section id="contact-form" className="py-12 md:py-16 lg:py-20 bg-gray-50">
         <div className="container mx-auto px-4">
           
           {/* Contact Form and Info Section */}

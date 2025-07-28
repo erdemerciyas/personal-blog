@@ -17,6 +17,14 @@ const pageSettingsSchema = new mongoose.Schema({
   description: {
     type: String,
   },
+  buttonText: {
+    type: String,
+    default: '',
+  },
+  buttonLink: {
+    type: String,
+    default: '',
+  },
   isActive: {
     type: Boolean,
     default: true,
