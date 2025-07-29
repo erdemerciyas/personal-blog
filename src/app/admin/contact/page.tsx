@@ -3,6 +3,8 @@ import { useState, useEffect } from 'react';
 import { useSession } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
 import AdminLayout from '../../../components/admin/AdminLayout';
+import Toast from '../../../components/admin/Toast';
+import { useToast } from '../../../hooks/useToast';
 import { 
   EnvelopeIcon, 
   PhoneIcon, 
@@ -17,6 +19,7 @@ import {
 export default function AdminContactPage() {
   const { data: session, status } = useSession();
   const router = useRouter();
+  const { toasts, removeToast, success, error } = useToast();
   const [contactData, setContactData] = useState({
     email: '',
     phone: '',
@@ -31,8 +34,6 @@ export default function AdminContactPage() {
   });
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
-  const [success, setSuccess] = useState(false);
-  const [error, setError] = useState('');
 
   // Auth check
   useEffect(() => {
@@ -56,9 +57,9 @@ export default function AdminContactPage() {
         } else {
           throw new Error('İletişim bilgileri yüklenirken hata oluştu');
         }
-      } catch (error) {
-        console.error('Contact data fetch error:', error);
-        setError('İletişim bilgileri yüklenirken hata oluştu');
+      } catch (fetchError) {
+        console.error('Contact data fetch error:', fetchError);
+        error('Yükleme Hatası', 'İletişim bilgileri yüklenirken hata oluştu');
       } finally {
         setLoading(false);
       }
@@ -92,29 +93,60 @@ export default function AdminContactPage() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setSaving(true);
-    setError('');
-    setSuccess(false);
+
+    // Client-side validation
+    if (!contactData.email || !contactData.phone || !contactData.address) {
+      error('Doğrulama Hatası', 'E-posta, telefon ve adres alanları zorunludur');
+      setSaving(false);
+      return;
+    }
+
+    // Email validation
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(contactData.email)) {
+      error('Doğrulama Hatası', 'Geçerli bir e-posta adresi giriniz');
+      setSaving(false);
+      return;
+    }
 
     try {
+      // Add timeout to fetch request
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), 15000); // 15 second timeout
+
       const response = await fetch('/api/contact-info', {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify(contactData),
+        signal: controller.signal,
       });
 
+      clearTimeout(timeoutId);
+
       if (!response.ok) {
-        throw new Error('İletişim bilgileri güncellenirken hata oluştu');
+        const errorData = await response.json().catch(() => ({ error: 'Bilinmeyen hata' }));
+        throw new Error(errorData.error || `HTTP ${response.status}: İletişim bilgileri güncellenirken hata oluştu`);
       }
 
-      setSuccess(true);
-      setTimeout(() => {
-        setSuccess(false);
-      }, 3000);
-    } catch (error) {
-      console.error('Update error:', error);
-      setError('İletişim bilgileri güncellenirken hata oluştu');
+      const result = await response.json();
+      console.log('Update successful:', result);
+
+      success('Başarılı!', 'İletişim bilgileri başarıyla güncellendi');
+
+    } catch (updateError) {
+      console.error('Update error:', updateError);
+      
+      if (updateError instanceof Error) {
+        if (updateError.name === 'AbortError') {
+          error('Zaman Aşımı', 'İstek zaman aşımına uğradı. Lütfen tekrar deneyin.');
+        } else {
+          error('Güncelleme Hatası', updateError.message || 'İletişim bilgileri güncellenirken hata oluştu');
+        }
+      } else {
+        error('Güncelleme Hatası', 'İletişim bilgileri güncellenirken hata oluştu');
+      }
     } finally {
       setSaving(false);
     }
@@ -177,18 +209,14 @@ export default function AdminContactPage() {
           </button>
         </div>
 
-        {/* Success/Error Messages */}
-        {success && (
-          <div className="bg-green-50 border border-green-200 text-green-800 p-4 rounded-xl">
-            İletişim bilgileri başarıyla güncellendi!
-          </div>
-        )}
-
-        {error && (
-          <div className="bg-red-50 border border-red-200 text-red-800 p-4 rounded-xl">
-            {error}
-          </div>
-        )}
+        {/* Toast Notifications */}
+        {toasts.map((toast) => (
+          <Toast
+            key={toast.id}
+            {...toast}
+            onClose={removeToast}
+          />
+        ))}
 
         {/* Form */}
         <form onSubmit={handleSubmit} className="space-y-6">

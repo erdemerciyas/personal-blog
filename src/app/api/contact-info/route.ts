@@ -42,39 +42,113 @@ export async function GET() {
 // PUT /api/contact-info - İletişim bilgilerini güncelle
 export async function PUT(request: Request) {
   try {
+    // Authentication check with better error handling
     const session = await getServerSession(authOptions);
     if (!session?.user) {
+      console.error('Unauthorized access attempt to contact-info PUT');
       return NextResponse.json(
         { error: 'Bu işlem için yetkiniz yok' },
         { status: 401 }
       );
     }
 
-    const body = await request.json();
-    await connectDB();
+    // Parse request body with validation
+    let body;
+    try {
+      body = await request.json();
+    } catch (parseError) {
+      console.error('JSON parse error:', parseError);
+      return NextResponse.json(
+        { error: 'Geçersiz veri formatı' },
+        { status: 400 }
+      );
+    }
 
-    // Mevcut contact kaydını bul ve güncelle, yoksa oluştur
-    const contact = await Contact.findOneAndUpdate(
-      { isActive: true },
-      {
-        ...body,
-        updatedAt: new Date(),
+    // Validate required fields
+    if (!body.email || !body.phone || !body.address) {
+      return NextResponse.json(
+        { error: 'E-posta, telefon ve adres alanları zorunludur' },
+        { status: 400 }
+      );
+    }
+
+    // Database connection with timeout
+    await Promise.race([
+      connectDB(),
+      new Promise((_, reject) => 
+        setTimeout(() => reject(new Error('Database connection timeout')), 10000)
+      )
+    ]);
+
+    // Prepare update data
+    const updateData = {
+      email: body.email,
+      phone: body.phone,
+      address: body.address,
+      workingHours: body.workingHours || 'Pazartesi - Cuma: 09:00 - 18:00',
+      socialLinks: {
+        linkedin: body.socialLinks?.linkedin || '',
+        twitter: body.socialLinks?.twitter || '',
+        instagram: body.socialLinks?.instagram || '',
+        facebook: body.socialLinks?.facebook || '',
       },
-      { 
-        new: true, 
-        upsert: true, // Eğer kayıt yoksa oluştur
-        setDefaultsOnInsert: true 
-      }
+      isActive: true,
+      updatedAt: new Date(),
+    };
+
+    // Try to update existing record first
+    let contact = await Contact.findOneAndUpdate(
+      { isActive: true },
+      updateData,
+      { new: true }
     );
+
+    // If no existing record, create new one
+    if (!contact) {
+      contact = await Contact.create(updateData);
+    }
+
+    console.log('Contact info updated successfully:', contact._id);
 
     return NextResponse.json({
       message: 'İletişim bilgileri başarıyla güncellendi',
       contact
     });
+
   } catch (error) {
-    console.error('İletişim bilgileri güncellenirken hata:', error);
+    console.error('Contact info update error:', {
+      error: error instanceof Error ? error.message : 'Unknown error',
+      stack: error instanceof Error ? error.stack : undefined,
+      timestamp: new Date().toISOString()
+    });
+
+    // Return specific error messages based on error type
+    if (error instanceof Error) {
+      if (error.message.includes('timeout')) {
+        return NextResponse.json(
+          { error: 'Veritabanı bağlantı zaman aşımı' },
+          { status: 504 }
+        );
+      }
+      if (error.message.includes('validation')) {
+        return NextResponse.json(
+          { error: 'Veri doğrulama hatası' },
+          { status: 400 }
+        );
+      }
+      if (error.message.includes('connection')) {
+        return NextResponse.json(
+          { error: 'Veritabanı bağlantı hatası' },
+          { status: 503 }
+        );
+      }
+    }
+
     return NextResponse.json(
-      { error: 'İletişim bilgileri güncellenirken bir hata oluştu' },
+      { 
+        error: 'İletişim bilgileri güncellenirken bir hata oluştu',
+        details: process.env.NODE_ENV === 'development' ? error instanceof Error ? error.message : 'Unknown error' : undefined
+      },
       { status: 500 }
     );
   }

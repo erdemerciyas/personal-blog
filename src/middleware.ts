@@ -158,12 +158,14 @@ export async function middleware(request: NextRequest) {
     return new NextResponse('Forbidden', { status: 403 });
   }
 
-  // 2. Apply rate limiting (temporarily disabled for debugging)
+  // 2. Apply rate limiting - Portfolio API'leri için özel handling
   const rateLimitType = getRateLimitType(pathname);
   const isAuthEndpoint = ['LOGIN', 'REGISTER', 'PASSWORD_RESET', 'AUTH'].includes(rateLimitType);
+  const isPortfolioAPI = pathname.includes('/api/portfolio');
   
-  // TEMPORARY: Bypass rate limiting for all endpoints except critical auth
-  const shouldBypassRateLimit = true; // Geçici olarak tüm rate limiting'i devre dışı bırak
+  // Portfolio ve Contact API'leri için çok gevşek rate limiting
+  const isContactAPI = pathname.includes('/api/contact');
+  const shouldBypassRateLimit = isPortfolioAPI || isContactAPI || process.env.NODE_ENV === 'development';
   
   let rateLimitResult = { allowed: true, remaining: 1000, resetTime: Date.now() + 60000 };
   

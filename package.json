@@ -1,6 +1,6 @@
 {
   "name": "personal-blog",
-  "version": "2.1.0",
+  "version": "2.1.1",
   "private": true,
   "author": {
     "name": "Erdem Erciyas",
@@ -40,11 +40,12 @@
     "format": "prettier --write .",
     "precommit": "npm run lint",
     "postinstall": "node -e \"if (process.env.NODE_ENV !== 'production' && !process.env.VERCEL && !process.env.CI) { try { require('husky').install() } catch (e) { console.log('Husky not available, skipping...') } } else { console.log('Production environment, skipping husky install') }\"",
-    "version:patch": "npm version patch --no-git-tag-version",
-    "version:minor": "npm version minor --no-git-tag-version",
-    "version:major": "npm version major --no-git-tag-version",
+    "version:patch": "node scripts/update-version.js patch",
+    "version:minor": "node scripts/update-version.js minor",
+    "version:major": "node scripts/update-version.js major",
     "version:release": "standard-version",
     "version:auto": "node scripts/auto-version.js",
+    "version:update": "node scripts/update-version.js",
     "prepare": "node -e \"if (process.env.NODE_ENV !== 'production' && process.env.VERCEL !== '1') { try { require('husky').install() } catch (e) { console.log('Husky not available, skipping...') } }\"",
     "migrate:portfolio-categories": "node scripts/migrate-portfolio-categories.js",
     "migrate:portfolio-categories:dry-run": "node scripts/migrate-portfolio-categories.js --dry-run",

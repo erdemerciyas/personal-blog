@@ -18,18 +18,21 @@ Modern, güvenli ve performanslı kişisel blog ve portfolyo platformu. Next.js 
 - **SEO Optimized**: Slug-based URL yapısı
 
 ### 🛡️ Güvenlik Özellikleri
-- **Rate Limiting**: API endpoint koruması
+- **Rate Limiting**: API endpoint koruması (akıllı bypass sistemi)
 - **CSRF Protection**: Cross-site request forgery koruması
 - **XSS Prevention**: HTML sanitization
 - **Security Headers**: Kapsamlı güvenlik başlıkları
 - **Input Validation**: Tüm girişlerde doğrulama
+- **Database Security**: MongoDB injection koruması
 
 ### ⚡ Performans Optimizasyonları
 - **Server-Side Rendering**: Hızlı sayfa yükleme
 - **Image Optimization**: Next.js Image component
 - **Bundle Optimization**: Code splitting ve tree shaking
-- **Caching Strategies**: Akıllı önbellekleme
+- **Client-Side Caching**: Akıllı API önbellekleme sistemi
 - **Lazy Loading**: İhtiyaç anında yükleme
+- **Error Boundaries**: Hata yakalama ve kurtarma
+- **Retry Logic**: Otomatik yeniden deneme mekanizması
 
 ### 🎛️ Admin Panel
 - **Universal Editor**: Gelişmiş metin editörü sistemi
@@ -113,7 +116,7 @@ npm run dev
 
 Uygulama [http://localhost:3000](http://localhost:3000) adresinde çalışacaktır.
 
-## 🆕 Yeni Özellikler (v2.1.0)
+## 🆕 Yeni Özellikler (v2.1.1)
 
 ### Universal Editor
 - **Markdown Desteği**: Tam markdown syntax desteği
@@ -126,6 +129,7 @@ Uygulama [http://localhost:3000](http://localhost:3000) adresinde çalışacakt�
 - **Full-Width Layout**: Tam genişlik çalışma alanı
 - **Responsive Design**: Mobil uyumlu tasarım
 - **Enhanced Forms**: Gelişmiş form validasyonu
+- **Toast Notifications**: Kullanıcı dostu bildirim sistemi
 - **Better UX**: İyileştirilmiş kullanıcı deneyimi
 
 ### Service Management
@@ -133,6 +137,12 @@ Uygulama [http://localhost:3000](http://localhost:3000) adresinde çalışacakt�
 - **Image Upload**: Drag & drop görsel yükleme
 - **Feature Management**: Servis özelliklerini yönetme
 - **Live Preview**: Canlı önizleme sistemi
+
+### Contact Management
+- **Dynamic Contact Info**: Gerçek zamanlı iletişim bilgisi güncelleme
+- **Form Validation**: Kapsamlı form doğrulama
+- **Social Media Links**: Sosyal medya hesap yönetimi
+- **Error Handling**: Gelişmiş hata yönetimi
 
 ## 📁 Proje Yapısı
 

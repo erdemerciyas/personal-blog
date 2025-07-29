@@ -395,7 +395,7 @@ function LoginForm() {
         {/* Footer */}
         <div className="text-center mt-8">
           <p className="text-slate-500 dark:text-slate-400 text-sm">
-            © 2025 Erciyas Engineering. Tüm hakları saklıdır.
+            © {new Date().getFullYear()} Erciyas Engineering. Tüm hakları saklıdır.
           </p>
         </div>
       </div>

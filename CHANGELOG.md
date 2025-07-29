@@ -2,60 +2,83 @@
 
 All notable changes to this project will be documented in this file.
 
-## [2.1.0] - 2025-07-28
+The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
+and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-### ✨ New Features
-- **Universal Editor**: Yeni gelişmiş metin editörü sistemi
-  - Markdown ve HTML desteği
-  - Canlı önizleme
-  - Syntax highlighting
-  - Auto-save özelliği
-- **Admin Panel Improvements**: Admin paneli geliştirmeleri
-  - Full-width layout desteği
-  - Responsive tasarım iyileştirmeleri
-  - Gelişmiş form validasyonu
+## [2.1.1] - 2025-01-29
 
-### 🔧 Improvements
-- **Service Management**: Servis yönetimi sistemi tamamen yenilendi
-  - Yeni servis ekleme sayfası
-  - Servis düzenleme sayfası
-  - Gelişmiş servis listesi
-  - Responsive kart tasarımı
-- **Footer Settings**: Footer ayarları sistemi eklendi
-  - Dinamik footer yönetimi
-  - Sosyal medya linkleri
-  - İletişim bilgileri yönetimi
-- **Image Upload**: Görsel yükleme sistemi iyileştirildi
-  - Drag & drop desteği
-  - Önizleme özelliği
-  - Cloudinary entegrasyonu
+### Added
+- Dynamic version display across the application
+- Version update script for automated version management
+- Client-side cache system for better API performance
+- Portfolio error boundary for better error handling
+- Retry logic for API calls with exponential backoff
+- Toast notification system for admin panel
+- Enhanced contact info management system
 
-### 🐛 Bug Fixes
-- Admin layout responsive sorunları düzeltildi
-- Form validasyon hataları giderildi
-- Image upload component stabilize edildi
-- TypeScript tip hataları düzeltildi
+### Changed
+- Admin dashboard now shows dynamic version from package.json
+- Footer copyright year is now dynamic
+- Admin login/reset pages now use dynamic year
+- Portfolio API endpoints optimized for better performance
+- Rate limiting bypassed for portfolio and contact APIs
+- Contact info update system completely redesigned
 
-### 🗑️ Removed
-- Eski RichTextEditor bileşenleri kaldırıldı
-- ImprovedRichTextEditor deprecated edildi
+### Fixed
+- Portfolio detail page 401/500 errors resolved
+- Contact info update errors resolved
+- Database connection stability improved
+- API timeout issues addressed
+- Middleware rate limiting conflicts resolved
+- Form validation issues in admin panel
 
-### 📚 Documentation
-- Universal Editor kullanım kılavuzu eklendi
-- Font clipping fix rehberi güncellendi
-- Fixral implementation guide eklendi
+### Technical Improvements
+- Enhanced error handling in portfolio slug API
+- Better database connection management
+- Improved client-side caching mechanism
+- More robust retry logic for failed requests
+- Toast notification system for better UX
+- Contact model validation improvements
+- Admin panel error handling enhancements
 
-## [2.0.0] - 2025-07-02
+## [2.1.0] - 2025-01-28
 
-### Changes
-- Major version release with comprehensive updates
+### Added
+- Universal Editor with Markdown and HTML support
+- Full-width admin layout
+- Service management system
+- Real-time preview functionality
+- Enhanced portfolio system with multiple categories
 
-## [1.1.1] - 2025-07-02
+### Changed
+- Admin panel redesigned with modern UI
+- Improved responsive design
+- Better user experience across all devices
 
-### Changes
-- chore: Auto-bump version to 1.1.0
+### Fixed
+- Various bug fixes and performance improvements
+- Security enhancements
+- Database optimization
 
-## [1.1.0] - 2025-07-02
+## [2.0.0] - 2025-01-15
 
-### Changes  
-- feat: Add automatic version management system
+### Added
+- Next.js 14 App Router implementation
+- TypeScript integration
+- Modern portfolio system
+- Admin panel
+- Security features (rate limiting, CSRF protection)
+- Performance optimizations
+
+### Changed
+- Complete rewrite using modern technologies
+- Improved architecture and code organization
+- Enhanced security measures
+
+## [1.0.0] - 2024-12-01
+
+### Added
+- Initial release
+- Basic portfolio functionality
+- Contact system
+- Service pages

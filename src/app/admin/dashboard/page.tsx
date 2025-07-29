@@ -223,7 +223,7 @@ function AdminDashboardContent() {
                 <span>Son giriş: Bugün 17:23</span>
               </div>
               <div className="px-3 py-1 bg-teal-100 text-teal-700 rounded-full text-sm font-medium">
-                v1.3.0
+                v{require('../../../../package.json').version}
               </div>
             </div>
           </div>

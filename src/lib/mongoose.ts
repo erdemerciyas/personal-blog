@@ -37,7 +37,16 @@ if (!cached) {
 
 async function connectDB() {
   if (cached!.conn) {
-    return cached!.conn;
+    // Bağlantının hala aktif olup olmadığını kontrol et
+    try {
+      if (cached!.conn.connection.readyState === 1) {
+        return cached!.conn;
+      }
+    } catch (error) {
+      console.warn('Cached connection check failed, reconnecting...', error);
+      cached!.conn = null;
+      cached!.promise = null;
+    }
   }
 
   if (!cached!.promise) {
@@ -45,7 +54,7 @@ async function connectDB() {
     const opts = {
       bufferCommands: false,
       maxPoolSize: process.env.VERCEL ? 1 : 5, // Vercel serverless için tek connection
-      serverSelectionTimeoutMS: 5000,
+      serverSelectionTimeoutMS: 8000, // Biraz daha uzun timeout
       socketTimeoutMS: 45000, // Vercel function timeout'a uygun
       maxIdleTimeMS: 30000,
       // Vercel için connection maintenance
@@ -53,6 +62,12 @@ async function connectDB() {
       maxStalenessSeconds: 90,
       // Vercel serverless optimizations
       retryWrites: true,
+      // Connection retry settings
+      retryReads: true,
+      maxConnecting: 2,
+      // Stability improvements
+      connectTimeoutMS: 10000,
+      family: 4, // IPv4 kullan
     };
 
     cached!.promise = mongoose.connect(mongoUri, opts);
@@ -63,6 +78,7 @@ async function connectDB() {
     console.log('✅ MongoDB (Mongoose) bağlantısı başarılı');
   } catch (e) {
     cached!.promise = null;
+    cached!.conn = null;
     console.error('❌ MongoDB (Mongoose) bağlantı hatası:', e);
     throw e;
   }

@@ -1,11 +1,17 @@
 import { NextResponse } from 'next/server';
 import connectDB from '@/lib/mongoose';
 import Portfolio from '@/models/Portfolio';
-import Category from '@/models/Category'; // Kategori bilgilerini populate etmek için
+import Category from '@/models/Category';
 
 export async function GET(request: Request, { params }: { params: { slug: string } }) {
   try {
-    await connectDB();
+    // Veritabanı bağlantısını timeout ile koru
+    const dbConnection = await Promise.race([
+      connectDB(),
+      new Promise((_, reject) =>
+        setTimeout(() => reject(new Error('Database connection timeout')), 10000)
+      )
+    ]);
 
     const { slug } = params;
 
@@ -13,31 +19,102 @@ export async function GET(request: Request, { params }: { params: { slug: string
       return NextResponse.json({ error: 'Slug gerekli' }, { status: 400 });
     }
 
-    const portfolioItem = await Portfolio.findOne({ slug })
-      .populate('categoryIds')
-      .populate('categoryId'); // Geriye uyumluluk için
+    // Slug'ı decode et (URL encoding sorunları için)
+    const decodedSlug = decodeURIComponent(slug);
+
+    // Portfolio öğesini bul - populate işlemini try-catch ile koru
+    let portfolioItem;
+    try {
+      portfolioItem = await Portfolio.findOne({ slug: decodedSlug })
+        .populate('categoryIds')
+        .populate('categoryId')
+        .lean(); // Performance için lean() kullan
+    } catch (populateError) {
+      console.warn('Populate error, trying without populate:', populateError);
+      // Populate başarısız olursa, populate olmadan dene
+      portfolioItem = await Portfolio.findOne({ slug: decodedSlug }).lean();
+    }
 
     if (!portfolioItem) {
       return NextResponse.json({ error: 'Portfolyo öğesi bulunamadı' }, { status: 404 });
     }
 
-    // Kategori bilgisini normalize et
+    // Kategori bilgisini güvenli şekilde normalize et
     let category = null;
-    if (portfolioItem.categoryIds && portfolioItem.categoryIds.length > 0) {
-      category = portfolioItem.categoryIds[0]; // İlk kategoriyi al
-    } else if (portfolioItem.categoryId) {
-      category = portfolioItem.categoryId;
+    try {
+      if (portfolioItem.categoryIds && portfolioItem.categoryIds.length > 0) {
+        // Eğer populate edilmişse
+        if (typeof portfolioItem.categoryIds[0] === 'object') {
+          category = portfolioItem.categoryIds[0];
+        } else {
+          // Populate edilmemişse, manuel olarak kategoriyi getir
+          category = await Category.findById(portfolioItem.categoryIds[0]).lean();
+        }
+      } else if (portfolioItem.categoryId) {
+        // Geriye uyumluluk için
+        if (typeof portfolioItem.categoryId === 'object') {
+          category = portfolioItem.categoryId;
+        } else {
+          category = await Category.findById(portfolioItem.categoryId).lean();
+        }
+      }
+    } catch (categoryError) {
+      console.warn('Category fetch error:', categoryError);
+      // Kategori hatası olursa null bırak
+      category = null;
     }
 
-    // Response'a category bilgisini ekle
+    // Response'ı güvenli şekilde oluştur
     const response = {
-      ...portfolioItem.toObject(),
-      category: category
+      _id: portfolioItem._id,
+      title: portfolioItem.title,
+      slug: portfolioItem.slug,
+      description: portfolioItem.description,
+      client: portfolioItem.client,
+      completionDate: portfolioItem.completionDate,
+      technologies: portfolioItem.technologies || [],
+      coverImage: portfolioItem.coverImage,
+      images: portfolioItem.images || [],
+      featured: portfolioItem.featured || false,
+      order: portfolioItem.order || 0,
+      createdAt: portfolioItem.createdAt,
+      updatedAt: portfolioItem.updatedAt,
+      category: category,
+      // Geriye uyumluluk için
+      categoryId: portfolioItem.categoryId,
+      categoryIds: portfolioItem.categoryIds
     };
 
-    return NextResponse.json(response);
+    // Cache headers ekle
+    const headers = new Headers();
+    headers.set('Cache-Control', 'public, s-maxage=300, stale-while-revalidate=600');
+
+    return NextResponse.json(response, { headers });
+
   } catch (error) {
-    console.error('Slug ile portfolyo öğesi getirilirken hata:', error);
-    return NextResponse.json({ error: 'Dahili Sunucu Hatası' }, { status: 500 });
+    console.error('Portfolio slug API error:', {
+      slug: params.slug,
+      error: error instanceof Error ? error.message : 'Unknown error',
+      stack: error instanceof Error ? error.stack : undefined
+    });
+
+    // Hata türüne göre farklı status kodları
+    if (error instanceof Error) {
+      if (error.message.includes('timeout')) {
+        return NextResponse.json({
+          error: 'Veritabanı bağlantı zaman aşımı'
+        }, { status: 504 });
+      }
+      if (error.message.includes('connection')) {
+        return NextResponse.json({
+          error: 'Veritabanı bağlantı hatası'
+        }, { status: 503 });
+      }
+    }
+
+    return NextResponse.json({
+      error: 'Dahili Sunucu Hatası',
+      details: process.env.NODE_ENV === 'development' ? error instanceof Error ? error.message : 'Unknown error' : undefined
+    }, { status: 500 });
   }
 }

@@ -9,6 +9,7 @@ import PortfolioImageGallery from '../../../components/portfolio/PortfolioImageG
 import ModernProjectGrid from '../../../components/portfolio/ModernProjectGrid';
 import HTMLContent from '../../../components/HTMLContent';
 import ContentSkeleton from '../../../components/ContentSkeleton';
+import { cachedFetch } from '../../../lib/client-cache';
 
 import type { Metadata } from 'next';
 
@@ -23,52 +24,119 @@ function PortfolioDetailPageContent({ params }: { params: { slug: string } }) {
     const fetchPortfolioData = async () => {
       setLoading(true);
       setError(null);
-    try {
-      const response = await fetch(`/api/portfolio/slug/${params.slug}`);
-        if (!response.ok) {
-          const errorData = await response.json();
-          throw new Error(errorData.error || 'Proje detayları getirilemedi.');
-        }
-        const data: PortfolioItem = await response.json();
-        setPortfolioItem(data);
       
-      // Benzer projeleri getir - kategori bilgisi varsa
-      if (data.category?.slug) {
-        try {
-          const relatedResponse = await fetch(`/api/portfolio?category=${data.category.slug}`);
-          if (relatedResponse.ok) {
-            const relatedData: PortfolioItem[] = await relatedResponse.json();
-            const filteredProjects = relatedData
-              .filter((project) => project.slug !== params.slug)
-              .slice(0, 3);
-            setRelatedProjects(filteredProjects);
+      try {
+        // Retry logic ile API çağrısı
+        let retryCount = 0;
+        const maxRetries = 3;
+        let data: PortfolioItem | null = null;
+        
+        while (retryCount < maxRetries) {
+          try {
+            // Timeout ile fetch
+            const controller = new AbortController();
+            const timeoutId = setTimeout(() => controller.abort(), 15000); // 15 saniye timeout
+            
+            // Use cached fetch for better performance
+            data = await cachedFetch(
+              `/api/portfolio/slug/${encodeURIComponent(params.slug)}`,
+              {
+                signal: controller.signal,
+                headers: {
+                  'Cache-Control': 'no-cache',
+                }
+              },
+              2 * 60 * 1000 // 2 minutes cache
+            );
+            
+            clearTimeout(timeoutId);
+            break; // Başarılı olursa döngüden çık
+            
+          } catch (fetchError) {
+            console.error(`Portfolio fetch attempt ${retryCount + 1} failed:`, fetchError);
+            
+            if (fetchError instanceof Error && fetchError.name === 'AbortError') {
+              if (retryCount < maxRetries - 1) {
+                retryCount++;
+                await new Promise(resolve => setTimeout(resolve, 2000 * retryCount));
+                continue;
+              } else {
+                throw new Error('İstek zaman aşımına uğradı. Lütfen sayfayı yenileyin.');
+              }
+            }
+            
+            if (retryCount < maxRetries - 1) {
+              retryCount++;
+              await new Promise(resolve => setTimeout(resolve, 1000 * retryCount));
+              continue;
+            } else {
+              throw fetchError;
+            }
           }
-        } catch (relatedError) {
-          console.error('Benzer projeler yüklenirken hata:', relatedError);
         }
-      } else {
-        // Kategori bilgisi yoksa tüm projelerden rastgele 3 tane al
-        try {
-          const allProjectsResponse = await fetch('/api/portfolio');
-          if (allProjectsResponse.ok) {
-            const allProjects: PortfolioItem[] = await allProjectsResponse.json();
-            const filteredProjects = allProjects
-              .filter((project) => project.slug !== params.slug)
-              .sort(() => 0.5 - Math.random()) // Rastgele sırala
-              .slice(0, 3);
-            setRelatedProjects(filteredProjects);
+
+        if (!data) {
+          throw new Error('Proje verisi alınamadı');
+        }
+
+        setPortfolioItem(data);
+        
+        // Benzer projeleri getir - kategori bilgisi varsa
+        if (data.category?.slug) {
+          try {
+            const relatedController = new AbortController();
+            const relatedTimeoutId = setTimeout(() => relatedController.abort(), 10000);
+            
+            const relatedResponse = await fetch(`/api/portfolio?category=${data.category.slug}`, {
+              signal: relatedController.signal
+            });
+            
+            clearTimeout(relatedTimeoutId);
+            
+            if (relatedResponse.ok) {
+              const relatedData: PortfolioItem[] = await relatedResponse.json();
+              const filteredProjects = relatedData
+                .filter((project) => project.slug !== params.slug)
+                .slice(0, 3);
+              setRelatedProjects(filteredProjects);
+            }
+          } catch (relatedError) {
+            console.error('Benzer projeler yüklenirken hata:', relatedError);
+            // Benzer proje hatası ana hatayı etkilemesin
           }
-        } catch (relatedError) {
-          console.error('Rastgele projeler yüklenirken hata:', relatedError);
+        } else {
+          // Kategori bilgisi yoksa tüm projelerden rastgele 3 tane al
+          try {
+            const allProjectsController = new AbortController();
+            const allProjectsTimeoutId = setTimeout(() => allProjectsController.abort(), 10000);
+            
+            const allProjectsResponse = await fetch('/api/portfolio', {
+              signal: allProjectsController.signal
+            });
+            
+            clearTimeout(allProjectsTimeoutId);
+            
+            if (allProjectsResponse.ok) {
+              const allProjects: PortfolioItem[] = await allProjectsResponse.json();
+              const filteredProjects = allProjects
+                .filter((project) => project.slug !== params.slug)
+                .sort(() => 0.5 - Math.random()) // Rastgele sırala
+                .slice(0, 3);
+              setRelatedProjects(filteredProjects);
+            }
+          } catch (relatedError) {
+            console.error('Rastgele projeler yüklenirken hata:', relatedError);
+            // Benzer proje hatası ana hatayı etkilemesin
+          }
         }
-      }
-    } catch (err) {
+        
+      } catch (err) {
         setError(err instanceof Error ? err.message : 'Bir hata oluştu.');
-      console.error(err);
-    } finally {
-      setLoading(false);
-    }
-  };
+        console.error('Portfolio detail fetch error:', err);
+      } finally {
+        setLoading(false);
+      }
+    };
 
     if (params.slug) {
       fetchPortfolioData();
@@ -257,13 +325,17 @@ function PortfolioDetailPageContent({ params }: { params: { slug: string } }) {
           </div>
         </div>
       </section>
-
-
     </div>
   );
 }
 
-// Wrap with Suspense for useSearchParams if it were used, not strictly needed here but good practice if params were dynamic from client
+// Wrap with Error Boundary for better error handling
+import PortfolioErrorBoundary from '../../../components/portfolio/PortfolioErrorBoundary';
+
 export default function PortfolioDetailPage({ params }: { params: { slug: string } }) {
-  return <PortfolioDetailPageContent params={params} />;
+  return (
+    <PortfolioErrorBoundary>
+      <PortfolioDetailPageContent params={params} />
+    </PortfolioErrorBoundary>
+  );
 }
