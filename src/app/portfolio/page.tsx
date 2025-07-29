@@ -178,7 +178,7 @@ function PortfolioPageContent() {
                   // Eğer categoryId string ise (populate edilmemiş)
                   if (item.categoryId && typeof item.categoryId === 'string') {
                     // Kategoriler listesinden ismi bul
-                    const foundCategory = categories.find(cat => cat._id === item.categoryId);
+                    const foundCategory = categories.find(cat => cat._id === (item.categoryId as unknown as string));
                     return foundCategory?.name || 'Genel';
                   }
                   // Legacy: categories alanını kontrol et

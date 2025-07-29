@@ -175,9 +175,9 @@ export default function EditPortfolioItem({ params }: { params: { id: string } }
   const handleCategoryToggle = (categoryId: string) => {
     setFormData(prev => ({
       ...prev,
-      categoryIds: prev.categoryIds?.includes(categoryId)
-        ? prev.categoryIds.filter(id => id !== categoryId)
-        : [...(prev.categoryIds || []), categoryId]
+      categoryIds: (prev.categoryIds as any)?.includes(categoryId)
+        ? (prev.categoryIds as any).filter((id: any) => id !== categoryId)
+        : [...((prev.categoryIds as any) || []), categoryId]
     }));
   };
 
@@ -374,17 +374,17 @@ export default function EditPortfolioItem({ params }: { params: { id: string } }
                     Seçili Kategoriler ({formData.categoryIds.length}):
                   </p>
                   <div className="flex flex-wrap gap-2">
-                    {formData.categoryIds.map(categoryId => {
-                      const category = categories.find(cat => cat._id === categoryId);
+                    {(formData.categoryIds as any)?.map((categoryId: any) => {
+                      const category = categories.find(cat => cat._id === (categoryId as string));
                       return category ? (
                         <span
-                          key={categoryId}
+                          key={categoryId as string}
                           className="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-teal-100 text-teal-800"
                         >
                           {category.name}
                           <button
                             type="button"
-                            onClick={() => handleCategoryToggle(categoryId)}
+                            onClick={() => handleCategoryToggle(categoryId as string)}
                             className="ml-2 hover:text-teal-600"
                           >
                             <XMarkIcon className="h-4 w-4" />
@@ -403,7 +403,7 @@ export default function EditPortfolioItem({ params }: { params: { id: string } }
                 <div
                   key={category._id}
                   className={`relative rounded-lg border-2 transition-all cursor-pointer ${
-                    formData.categoryIds?.includes(category._id)
+                    (formData.categoryIds as any)?.includes(category._id)
                       ? 'border-teal-500 bg-teal-50'
                       : 'border-slate-200 hover:border-slate-300 bg-white'
                   }`}
@@ -413,16 +413,16 @@ export default function EditPortfolioItem({ params }: { params: { id: string } }
                     <div className="flex items-center justify-between">
                       <div className="flex items-center space-x-3">
                         <div className={`w-4 h-4 rounded border-2 transition-all ${
-                          formData.categoryIds?.includes(category._id)
+                          (formData.categoryIds as any)?.includes(category._id)
                             ? 'border-teal-500 bg-teal-500'
                             : 'border-slate-300'
                         }`}>
-                          {formData.categoryIds?.includes(category._id) && (
+                          {(formData.categoryIds as any)?.includes(category._id) && (
                             <CheckIcon className="w-3 h-3 text-white" />
                           )}
                         </div>
                         <span className={`font-medium ${
-                          formData.categoryIds?.includes(category._id)
+                          (formData.categoryIds as any)?.includes(category._id)
                             ? 'text-teal-800'
                             : 'text-slate-700'
                         }`}>
@@ -432,7 +432,7 @@ export default function EditPortfolioItem({ params }: { params: { id: string } }
                     </div>
                     {category.description && (
                       <p className={`mt-2 text-sm ${
-                        formData.categoryIds?.includes(category._id)
+                        (formData.categoryIds as any)?.includes(category._id)
                           ? 'text-teal-600'
                           : 'text-slate-500'
                       }`}>

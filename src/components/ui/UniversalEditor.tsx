@@ -23,6 +23,7 @@ interface UniversalEditorProps {
   disabled?: boolean;
   mode?: 'text' | 'markdown';
   showPreview?: boolean;
+  rows?: number;
 }
 
 interface ToolbarButtonProps {

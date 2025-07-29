@@ -20,7 +20,7 @@ interface ModernProjectCardProps {
     featured?: boolean;
   };
   index: number;
-  layout?: 'grid' | 'masonry';
+  layout?: 'grid' | 'masonry' | 'list';
 }
 
 export default function ModernProjectCard({ 
@@ -47,8 +47,7 @@ export default function ModernProjectCard({
       scale: 1,
       transition: {
         duration: 0.6,
-        delay: index * 0.1,
-        ease: [0.25, 0.46, 0.45, 0.94]
+        delay: index * 0.1
       }
     }
   };
@@ -58,7 +57,7 @@ export default function ModernProjectCard({
     visible: { 
       scale: 1, 
       opacity: 1,
-      transition: { duration: 0.8, ease: "easeOut" }
+      transition: { duration: 0.8 }
     }
   };
 
