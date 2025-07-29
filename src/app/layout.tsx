@@ -104,6 +104,7 @@ export async function generateMetadata(): Promise<Metadata> {
   }
 }
 
+import { ThemeProvider } from '../context/ThemeContext';
 import LoadingBar from '../components/LoadingBar';
 
 export default function RootLayout({
@@ -137,19 +138,21 @@ export default function RootLayout({
         <link rel="dns-prefetch" href="//res.cloudinary.com" />
       </head>
       <body className={`${inter.variable} font-sans min-h-screen bg-fixral-light-gray flex flex-col text-fixral-charcoal antialiased`}>
-        <LoadingBar />
-        <Providers>
-          <ClientWrapper>
-            <Header />
+        <ThemeProvider>
+          <LoadingBar />
+          <Providers>
+            <ClientWrapper>
+              <Header />
 
-            {/* Main content area with consistent container */}
-            <main className="flex-grow">
-              <div>{children}</div>
-            </main>
+              {/* Main content area with consistent container */}
+              <main className="flex-grow">
+                <div>{children}</div>
+              </main>
 
-            <ConditionalFooter />
-          </ClientWrapper>
-        </Providers>
+              <ConditionalFooter />
+            </ClientWrapper>
+          </Providers>
+        </ThemeProvider>
         
         {/* Development tools */}
         {config.isDevelopment && (

@@ -36,10 +36,10 @@ export interface PortfolioItem {
   slug: string;
   description: string;
   // Geriye uyumluluk için eski alanları koruyoruz
-  categoryId?: string;
+  categoryId?: Category;
   category?: Category;
   // Yeni çoklu kategori desteği
-  categoryIds?: string[];
+  categoryIds?: Category[];
   categories?: Category[];
   client: string;
   completionDate: string;

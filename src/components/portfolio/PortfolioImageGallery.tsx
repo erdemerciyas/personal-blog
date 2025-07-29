@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react';
 import { createPortal } from 'react-dom';
 import Image from 'next/image';
-import { motion, AnimatePresence } from 'framer-motion';
+import { motion } from 'framer-motion';
 import { 
   MagnifyingGlassIcon,
   XMarkIcon,
@@ -35,10 +35,12 @@ export default function PortfolioImageGallery({
 
   useEffect(() => {
     setMounted(true);
-    if (allImages.length > 0) {
+    if (allImages.length > 0 && !selectedImage) {
       setSelectedImage(allImages[0]);
     }
-  }, [allImages]);
+  }, [allImages, selectedImage]);
+
+
 
   // Keyboard navigation for lightbox and body scroll lock
   useEffect(() => {
@@ -104,15 +106,21 @@ export default function PortfolioImageGallery({
       <div className="space-y-6">
         {/* Main Image */}
         <motion.div 
+          key={`main-image-${selectedImage}`}
           initial={{ opacity: 0, scale: 0.95 }}
           animate={{ opacity: 1, scale: 1 }}
           transition={{ duration: 0.6 }}
           className="relative aspect-[16/10] rounded-3xl overflow-hidden shadow-2xl border border-slate-200 bg-white group cursor-pointer"
-          onClick={() => openLightbox(allImages.findIndex(img => img === selectedImage))}
+          onClick={(e) => {
+            e.preventDefault();
+            const currentIndex = allImages.findIndex(img => img === selectedImage);
+            openLightbox(currentIndex >= 0 ? currentIndex : 0);
+          }}
         >
           {selectedImage ? (
             <>
               <Image
+                key={`selected-${selectedImage}`}
                 src={selectedImage}
                 alt={`${title} - Seçili Görsel`}
                 fill
@@ -159,31 +167,36 @@ export default function PortfolioImageGallery({
             <div className="grid grid-cols-4 sm:grid-cols-6 md:grid-cols-8 lg:grid-cols-10 gap-4">
               {allImages.map((image, index) => (
                 <motion.button
-                  key={index}
+                  key={`thumb-${index}-${image}`}
                   whileHover={{ scale: 1.05 }}
                   whileTap={{ scale: 0.95 }}
-                  onClick={() => setSelectedImage(image)}
-                  className={`relative aspect-square rounded-xl overflow-hidden border-3 transition-all duration-300 focus-ring ${
+                  onClick={(e) => {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    setSelectedImage(image);
+                  }}
+                  className={`relative aspect-square rounded-xl overflow-hidden border-3 transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-teal-500 focus:ring-offset-2 ${
                     selectedImage === image
                       ? 'border-teal-500 shadow-lg ring-4 ring-teal-200 scale-105'
                       : 'border-slate-200 hover:border-teal-300 hover:shadow-md'
                   }`}
+                  type="button"
                 >
                   <Image
                     src={image}
                     alt={`Proje görseli ${index + 1}`}
                     fill
-                    className="object-cover"
+                    className="object-cover pointer-events-none"
                     sizes="(max-width: 640px) 25vw, (max-width: 768px) 16vw, (max-width: 1024px) 12vw, 10vw"
                   />
                   {selectedImage === image && (
-                    <div className="absolute inset-0 bg-teal-500/20 flex items-center justify-center">
+                    <div className="absolute inset-0 bg-teal-500/20 flex items-center justify-center pointer-events-none">
                       <div className="w-4 h-4 bg-white rounded-full shadow-lg"></div>
                     </div>
                   )}
                   
                   {/* Image number overlay */}
-                  <div className="absolute top-1 right-1 bg-black/50 text-white text-xs px-2 py-1 rounded-full">
+                  <div className="absolute top-1 right-1 bg-black/50 text-white text-xs px-2 py-1 rounded-full pointer-events-none">
                     {index + 1}
                   </div>
                 </motion.button>

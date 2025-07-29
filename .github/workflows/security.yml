@@ -1,0 +1,69 @@
+name: 🔒 Security Scan
+
+on:
+  schedule:
+    # Run security scan daily at 2 AM UTC
+    - cron: '0 2 * * *'
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  security:
+    name: 🔒 Security Analysis
+    runs-on: ubuntu-latest
+    
+    permissions:
+      actions: read
+      contents: read
+      security-events: write
+      
+    steps:
+    - name: 📥 Checkout code
+      uses: actions/checkout@v4
+      
+    - name: 📦 Setup Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: '18'
+        cache: 'npm'
+        
+    - name: 📥 Install dependencies
+      run: npm ci
+      
+    - name: 🔒 Run npm audit
+      run: npm audit --audit-level moderate
+      continue-on-error: true
+      
+    - name: 🔍 CodeQL Analysis
+      uses: github/codeql-action/init@v3
+      with:
+        languages: javascript, typescript
+        
+    - name: 🏗️ Autobuild
+      uses: github/codeql-action/autobuild@v3
+      
+    - name: 📊 Perform CodeQL Analysis
+      uses: github/codeql-action/analyze@v3
+      
+    - name: 🔒 Security test
+      run: npm run security:test
+      continue-on-error: true
+      
+    - name: 📝 Create security report
+      if: always()
+      run: |
+        echo "# 🔒 Security Scan Report" > security-report.md
+        echo "Date: $(date)" >> security-report.md
+        echo "" >> security-report.md
+        echo "## NPM Audit Results" >> security-report.md
+        npm audit --json >> security-report.md || true
+        
+    - name: 📤 Upload security report
+      uses: actions/upload-artifact@v4
+      if: always()
+      with:
+        name: security-report
+        path: security-report.md
+        retention-days: 30

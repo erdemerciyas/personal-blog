@@ -79,6 +79,20 @@ function PortfolioPageContent() {
           throw new Error('Portfolyo projeleri yüklenemedi.');
         }
         const portfolioData = await portfolioResponse.json();
+        console.log('Fetched Portfolio Data:', portfolioData);
+        console.log('Categories Data:', catData);
+        
+        // Debug: Her portfolyo öğesinin kategori bilgilerini kontrol et
+        portfolioData.forEach((item: any, index: number) => {
+          console.log(`Portfolio ${index}:`, {
+            title: item.title,
+            categoryId: item.categoryId,
+            categoryIds: item.categoryIds,
+            categories: item.categories,
+            category: item.category
+          });
+        });
+        
         setPortfolioItems(portfolioData);
 
       } catch (err) {
@@ -152,9 +166,32 @@ function PortfolioPageContent() {
                 title: item.title,
                 description: item.description,
                 coverImage: item.coverImage,
-                category: item.categories && item.categories.length > 0 
-                  ? item.categories.map(cat => cat.name).join(', ')
-                  : item.category?.name || 'Genel',
+                category: (() => {
+                  // Önce yeni çoklu kategori sistemini kontrol et (categoryIds)
+                  if (item.categoryIds && Array.isArray(item.categoryIds) && item.categoryIds.length > 0) {
+                    return item.categoryIds.map((cat: any) => cat.name || cat).join(', ');
+                  }
+                  // Sonra eski tekli kategori sistemini kontrol et (categoryId)
+                  if (item.categoryId && typeof item.categoryId === 'object' && 'name' in item.categoryId) {
+                    return (item.categoryId as any).name;
+                  }
+                  // Eğer categoryId string ise (populate edilmemiş)
+                  if (item.categoryId && typeof item.categoryId === 'string') {
+                    // Kategoriler listesinden ismi bul
+                    const foundCategory = categories.find(cat => cat._id === item.categoryId);
+                    return foundCategory?.name || 'Genel';
+                  }
+                  // Legacy: categories alanını kontrol et
+                  if (item.categories && Array.isArray(item.categories) && item.categories.length > 0) {
+                    return item.categories.map((cat: any) => cat.name || cat).join(', ');
+                  }
+                  // Legacy: category alanını kontrol et
+                  if (item.category?.name) {
+                    return item.category.name;
+                  }
+                  // Son çare olarak "Genel" döndür
+                  return 'Genel';
+                })(),
                 client: item.client,
                 completionDate: item.completionDate,
                 technologies: item.technologies,

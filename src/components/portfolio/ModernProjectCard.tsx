@@ -6,11 +6,7 @@ import Link from 'next/link';
 import { motion } from 'framer-motion';
 import { 
   ArrowRightIcon,
-  CalendarIcon,
-  TagIcon,
-  UserIcon,
   EyeIcon,
-  CodeBracketIcon,
   PhotoIcon
 } from '@heroicons/react/24/outline';
 import { ProjectSummary } from '@/types/portfolio';
@@ -116,10 +112,9 @@ export default function ModernProjectCard({
           </>
         ) : (
           <div className="absolute inset-0 bg-gradient-to-br from-teal-100 to-blue-100 flex flex-col items-center justify-center">
-            <div className="w-16 h-16 bg-teal-200 rounded-full flex items-center justify-center mb-4">
+            <div className="w-16 h-16 bg-teal-200 rounded-full flex items-center justify-center">
               <PhotoIcon className="w-8 h-8 text-teal-600" />
             </div>
-            <span className="text-sm font-medium text-teal-700">{project.category}</span>
           </div>
         )}
 
@@ -136,13 +131,7 @@ export default function ModernProjectCard({
           </Link>
         </div>
 
-        {/* Category Badge */}
-        <div className="absolute bottom-4 left-4">
-          <span className="inline-flex items-center px-3 py-1 bg-white/90 backdrop-blur-sm text-slate-800 text-sm font-semibold rounded-full shadow-lg">
-            <TagIcon className="w-4 h-4 mr-1" />
-            {project.category}
-          </span>
-        </div>
+
       </div>
 
       {/* Content */}
@@ -163,52 +152,7 @@ export default function ModernProjectCard({
           </div>
         )}
 
-        {/* Meta Information */}
-        <div className="space-y-2 mb-4">
-          {project.client && (
-            <div className="flex items-center text-sm text-slate-500">
-              <UserIcon className="w-4 h-4 mr-2 text-slate-400" />
-              <span className="font-medium">{project.client}</span>
-            </div>
-          )}
-          
-          {project.completionDate && (
-            <div className="flex items-center text-sm text-slate-500">
-              <CalendarIcon className="w-4 h-4 mr-2 text-slate-400" />
-              <span>
-                {new Date(project.completionDate).toLocaleDateString('tr-TR', {
-                  year: 'numeric',
-                  month: 'long'
-                })}
-              </span>
-            </div>
-          )}
-        </div>
 
-        {/* Technologies */}
-        {project.technologies && project.technologies.length > 0 && (
-          <div className="mb-6">
-            <div className="flex items-center mb-2">
-              <CodeBracketIcon className="w-4 h-4 mr-2 text-slate-400" />
-              <span className="text-sm font-medium text-slate-600">Teknolojiler</span>
-            </div>
-            <div className="flex flex-wrap gap-2">
-              {project.technologies.slice(0, 3).map((tech, techIndex) => (
-                <span
-                  key={techIndex}
-                  className="px-2 py-1 bg-slate-100 text-slate-700 text-xs font-medium rounded-lg"
-                >
-                  {tech}
-                </span>
-              ))}
-              {project.technologies.length > 3 && (
-                <span className="px-2 py-1 bg-slate-100 text-slate-500 text-xs font-medium rounded-lg">
-                  +{project.technologies.length - 3}
-                </span>
-              )}
-            </div>
-          </div>
-        )}
 
         {/* Spacer to push button to bottom */}
         <div className="flex-grow"></div>

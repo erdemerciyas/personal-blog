@@ -26,41 +26,40 @@ export async function GET(request: Request) {
       const categories = await Category.find({ slug: { $in: slugArray } });
       if (categories.length > 0) {
         const categoryIds = categories.map(cat => cat._id);
-        // Hem eski categoryId hem de yeni categoryIds alanlarını kontrol et
         query = {
           $or: [
             { categoryId: { $in: categoryIds } },
             { categoryIds: { $in: categoryIds } }
           ]
         };
-      } else {
-        // Geçersiz kategori slug'ları durumunda boş array döndür
-        return NextResponse.json([]);
-      }
+      } 
     }
     // Tekli kategori filtreleme (geriye uyumluluk)
     else if (categorySlug) {
       const category = await Category.findOne({ slug: categorySlug });
       if (category) {
-        // Hem eski categoryId hem de yeni categoryIds alanlarını kontrol et
         query = {
           $or: [
             { categoryId: category._id },
             { categoryIds: category._id }
           ]
         };
-      } else {
-        // Geçersiz kategori slug'ı durumunda boş array döndür
-        return NextResponse.json([]);
       }
     }
     
-    const portfolios = await Portfolio.find(query)
-      .populate('categoryIds') // Yeni çoklu kategori alanı
-      .populate('categoryId')  // Geriye uyumluluk için eski tekli kategori alanı
-      .sort({ createdAt: -1 });
+    const portfolios = await Portfolio.find({ ...query })
+      .populate('categoryId', 'name slug') // Eski tekli kategori alanı
+      .populate('categoryIds', 'name slug') // Yeni çoklu kategori alanı
+      .sort({ order: 1 });
     
-    
+    console.log('Portfolio API - Found portfolios:', portfolios.length);
+    portfolios.forEach((portfolio, index) => {
+      console.log(`Portfolio ${index}:`, {
+        title: portfolio.title,
+        categoryId: portfolio.categoryId,
+        categoryIds: portfolio.categoryIds
+      });
+    });
     
     return NextResponse.json(portfolios);
   } catch (error) {
