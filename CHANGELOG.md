@@ -1,3 +1,15 @@
+
+## [2.1.2] - 2025-07-29
+
+### Added
+- Version update to 2.1.2
+
+### Changed
+- Dynamic version display across the application
+
+### Fixed
+- Version consistency issues
+
 # Changelog
 
 All notable changes to this project will be documented in this file.

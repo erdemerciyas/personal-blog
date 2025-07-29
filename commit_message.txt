@@ -1,3 +1,0 @@
-docs: Anonymize personal information in README.md
-
-Replaced personal URLs, email addresses, and names with generic placeholders in README.md to enhance privacy and reusability.

@@ -15,7 +15,7 @@ Modern, güvenli ve performanslı kişisel blog ve portfolyo platformu. Next.js 
 
 **🚀 [Live Site](https://erdemerciyas-7i0biarkh-erdem-erciyas-projects.vercel.app)** | **🔧 [Admin Panel](https://erdemerciyas-7i0biarkh-erdem-erciyas-projects.vercel.app/admin)** | **📊 [API Health](https://erdemerciyas-7i0biarkh-erdem-erciyas-projects.vercel.app/api/health)**
 
-> **Status**: ✅ **LIVE** | **Last Deploy**: 2025-07-29 | **Version**: v2.1.1
+> **Status**: ✅ **LIVE** | **Last Deploy**: 2025-07-30 | **Version**: v2.1.2
 
 ## ✨ Özellikler
 
@@ -125,7 +125,13 @@ npm run dev
 
 Uygulama [http://localhost:3000](http://localhost:3000) adresinde çalışacaktır.
 
-## 🆕 Yeni Özellikler (v2.1.1)
+## 🆕 Yeni Özellikler (v2.1.2)
+
+### 🧹 Proje Temizliği ve Optimizasyon
+- **Dosya Temizliği**: 31 gereksiz dosya kaldırıldı (MD, JS, backup dosyaları)
+- **Dokümantasyon Düzenleme**: Gereksiz rehber dosyaları temizlendi
+- **Proje Yapısı**: Daha temiz ve düzenli dosya organizasyonu
+- **Performans**: Azaltılmış dosya sayısı ile daha hızlı build
 
 ### Universal Editor
 - **Markdown Desteği**: Tam markdown syntax desteği
@@ -428,18 +434,18 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 ## 📈 Project Status
 
 - **Status**: ✅ **PRODUCTION READY**
-- **Version**: v2.1.1
-- **Last Updated**: 2025-07-29
+- **Version**: v2.1.2
+- **Last Updated**: 2025-07-30
 - **Security Level**: 🔒 HIGH
 - **Performance**: ⚡ OPTIMIZED
 - **Documentation**: 📚 COMPLETE
 
-### Recent Updates
-- ✅ Production deployment completed
-- ✅ Security hardening implemented
-- ✅ Performance optimization done
-- ✅ CI/CD pipeline active
-- ✅ Comprehensive documentation added
+### Recent Updates (v2.1.2)
+- ✅ **Project Cleanup**: 31 gereksiz dosya temizlendi
+- ✅ **Documentation**: Gereksiz MD dosyaları kaldırıldı
+- ✅ **File Structure**: Daha temiz proje organizasyonu
+- ✅ **Performance**: Optimize edilmiş dosya yapısı
+- ✅ **Maintenance**: Kod kalitesi iyileştirmeleri
 
 ## 🔗 Useful Links
 
