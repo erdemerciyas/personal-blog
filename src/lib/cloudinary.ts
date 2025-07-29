@@ -14,7 +14,7 @@ export const uploadImage = async (file: string): Promise<string> => {
 
     return result.secure_url;
   } catch (error) {
-    console.error('Resim yükleme hatası:', error);
+    // Image upload error
     throw new Error('Resim yüklenemedi');
   }
 };
@@ -23,7 +23,7 @@ export const deleteImage = async (publicId: string): Promise<void> => {
   try {
     await cloudinary.uploader.destroy(publicId);
   } catch (error) {
-    console.error('Resim silme hatası:', error);
+    // Image delete error
     throw new Error('Resim silinemedi');
   }
 }; 

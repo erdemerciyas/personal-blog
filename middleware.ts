@@ -51,7 +51,7 @@ export function middleware(request: NextRequest) {
   );
   
   if (isSuspicious && !pathname.startsWith('/api/')) {
-    console.warn(`Suspicious request detected: ${userAgent} -> ${pathname}`);
+    // Log suspicious activity without revealing details
     response.headers.set('X-Security-Warning', 'Suspicious activity detected');
   }
   

@@ -71,7 +71,7 @@ export const authOptions: NextAuthOptions = {
           try {
             SecurityEvents.loginAttempt(clientIP, email, userAgent);
           } catch (secError) {
-            console.log('⚠️ Security logging error:', secError);
+            // Security logging error - silently continue
           }
           
           // Add timing attack protection
@@ -91,7 +91,7 @@ export const authOptions: NextAuthOptions = {
             try {
               SecurityEvents.loginFailure(clientIP, email, userAgent, 'user_not_found');
             } catch (secError) {
-              console.log('⚠️ Security logging error:', secError);
+              // Security logging error - silently continue
             }
             return null;
           }
@@ -103,7 +103,7 @@ export const authOptions: NextAuthOptions = {
             try {
               SecurityEvents.loginFailure(clientIP, email, userAgent, 'invalid_password');
             } catch (secError) {
-              console.log('⚠️ Security logging error:', secError);
+              // Security logging error - silently continue
             }
             
             const elapsed = Date.now() - startTime;
@@ -117,7 +117,7 @@ export const authOptions: NextAuthOptions = {
           try {
             SecurityEvents.loginSuccess(clientIP, email, userAgent);
           } catch (secError) {
-            console.log('⚠️ Security logging error:', secError);
+            // Security logging error - silently continue
           }
 
           return {
@@ -127,8 +127,7 @@ export const authOptions: NextAuthOptions = {
             role: user.role,
           };
         } catch (error) {
-          console.error('Auth error:', error);
-          // Don't reveal internal errors to client
+          // Auth error - don't reveal internal errors to client
           return null;
         }
       }
@@ -195,7 +194,7 @@ export const authOptions: NextAuthOptions = {
     async redirect({ url, baseUrl }) {
       const finalBaseUrl = getBaseUrl();
       
-      console.log('🔄 NextAuth redirect:', { url, baseUrl, finalBaseUrl });
+      // Redirect logging removed for security
       
       // Eğer callbackUrl dashboard ise direkt oraya git
       if (url.includes('/admin/dashboard')) {
@@ -224,11 +223,11 @@ export const authOptions: NextAuthOptions = {
           return `${finalBaseUrl}/admin/dashboard`;
         }
       } catch (error) {
-        console.error('Redirect URL parse error:', error);
+        // Redirect URL parse error - silently handle
         return `${finalBaseUrl}/admin/dashboard`;
       }
     }
   },
   secret: process.env.NEXTAUTH_SECRET,
-  debug: process.env.NODE_ENV === 'development',
+  debug: false, // Debug mode disabled for security
 }; 

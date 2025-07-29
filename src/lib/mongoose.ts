@@ -43,7 +43,7 @@ async function connectDB() {
         return cached!.conn;
       }
     } catch (error) {
-      console.warn('Cached connection check failed, reconnecting...', error);
+      // Cached connection check failed, reconnecting
       cached!.conn = null;
       cached!.promise = null;
     }
@@ -75,11 +75,11 @@ async function connectDB() {
 
   try {
     cached!.conn = await cached!.promise;
-    console.log('✅ MongoDB (Mongoose) bağlantısı başarılı');
+    // MongoDB (Mongoose) connection successful
   } catch (e) {
     cached!.promise = null;
     cached!.conn = null;
-    console.error('❌ MongoDB (Mongoose) bağlantı hatası:', e);
+    // MongoDB (Mongoose) connection error
     throw e;
   }
 
@@ -112,11 +112,11 @@ export async function connectToDatabase() {
 
   try {
     clientCached!.client = await clientCached!.promise;
-    console.log('✅ MongoDB (Client) bağlantısı başarılı');
+    // MongoDB (Client) connection successful
     return { client: clientCached!.client, db: clientCached!.client.db() };
   } catch (e) {
     clientCached!.promise = null;
-    console.error('❌ MongoDB (Client) bağlantı hatası:', e);
+    // MongoDB (Client) connection error
     throw e;
   }
 }
@@ -126,14 +126,14 @@ process.on('SIGINT', async () => {
   try {
     if (cached!.conn) {
       await cached!.conn.disconnect();
-      console.log('MongoDB Mongoose connection closed.');
+      // MongoDB Mongoose connection closed
     }
     if (clientCached!.client) {
       await clientCached!.client.close();
-      console.log('MongoDB Client connection closed.');
+      // MongoDB Client connection closed
     }
   } catch (err) {
-    console.error('Error closing MongoDB connections:', err);
+    // Error closing MongoDB connections
   }
   process.exit(0);
 });

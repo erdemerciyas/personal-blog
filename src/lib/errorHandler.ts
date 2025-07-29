@@ -218,6 +218,6 @@ export function setupGlobalErrorHandlers() {
     globalHandlersSetup = true;
     logger.debug('Global error handlers setup complete', 'ERROR_HANDLER');
   } catch (error) {
-    console.error('Failed to setup global error handlers:', error);
+    // Failed to setup global error handlers
   }
 } 

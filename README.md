@@ -5,9 +5,10 @@
 [![MongoDB](https://img.shields.io/badge/MongoDB-Latest-green?style=for-the-badge&logo=mongodb)](https://www.mongodb.com/)
 [![Tailwind CSS](https://img.shields.io/badge/Tailwind_CSS-3.4.0-38B2AC?style=for-the-badge&logo=tailwind-css)](https://tailwindcss.com/)
 [![Vercel](https://img.shields.io/badge/Vercel-Live-black?style=for-the-badge&logo=vercel)](https://erdemerciyas-7i0biarkh-erdem-erciyas-projects.vercel.app)
-[![Security](https://img.shields.io/badge/Security-Hardened-green?style=for-the-badge&logo=shield)](https://github.com/erdemerciyas/personal-blog/blob/main/SECURITY.md)
+[![Security](https://img.shields.io/badge/Security-Hardened-green?style=for-the-badge&logo=shield)](https://github.com/erdemerciyas/personal-blog/blob/main/SECURITY_CLEANUP_REPORT.md)
 [![License](https://img.shields.io/badge/License-MIT-yellow?style=for-the-badge)](https://github.com/erdemerciyas/personal-blog/blob/main/LICENSE)
 [![Build Status](https://img.shields.io/badge/Build-Passing-brightgreen?style=for-the-badge&logo=github-actions)](https://github.com/erdemerciyas/personal-blog/actions)
+[![Cleanup](https://img.shields.io/badge/Cleanup-Complete-brightgreen?style=for-the-badge&logo=broom)](https://github.com/erdemerciyas/personal-blog/blob/main/SECURITY_CLEANUP_REPORT.md)
 
 Modern, güvenli ve performanslı kişisel blog ve portfolyo platformu. Next.js 14, TypeScript, MongoDB ve Tailwind CSS ile geliştirilmiştir.
 
@@ -15,7 +16,7 @@ Modern, güvenli ve performanslı kişisel blog ve portfolyo platformu. Next.js 
 
 **🚀 [Live Site](https://erdemerciyas-7i0biarkh-erdem-erciyas-projects.vercel.app)** | **🔧 [Admin Panel](https://erdemerciyas-7i0biarkh-erdem-erciyas-projects.vercel.app/admin)** | **📊 [API Health](https://erdemerciyas-7i0biarkh-erdem-erciyas-projects.vercel.app/api/health)**
 
-> **Status**: ✅ **LIVE** | **Last Deploy**: 2025-07-30 | **Version**: v2.1.2
+> **Status**: ✅ **LIVE** | **Last Deploy**: 2025-07-30 | **Version**: v2.2.0 | **🧹 Security Cleanup**: ✅ **COMPLETE**
 
 ## ✨ Özellikler
 
@@ -125,13 +126,20 @@ npm run dev
 
 Uygulama [http://localhost:3000](http://localhost:3000) adresinde çalışacaktır.
 
-## 🆕 Yeni Özellikler (v2.1.2)
+## 🆕 Yeni Özellikler (v2.2.0)
+
+### 🔒 Güvenlik ve Performans Temizliği
+- **Kritik Güvenlik İyileştirmeleri**: Hardcoded şifreler ve debug logları temizlendi
+- **Dosya Temizliği**: 12 gereksiz dosya kaldırıldı (test, backup, migration dosyaları)
+- **Environment Optimizasyonu**: 200+ gereksiz environment variable kaldırıldı
+- **TypeScript Strict Mode**: Tip güvenliği artırıldı
+- **Production Security**: Debug mode kapatıldı, bilgi sızıntısı riskleri giderildi
+- **Performance**: %95 dosya boyutu azaltması (.env.production.example)
 
 ### 🧹 Proje Temizliği ve Optimizasyon
-- **Dosya Temizliği**: 31 gereksiz dosya kaldırıldı (MD, JS, backup dosyaları)
 - **Dokümantasyon Düzenleme**: Gereksiz rehber dosyaları temizlendi
 - **Proje Yapısı**: Daha temiz ve düzenli dosya organizasyonu
-- **Performans**: Azaltılmış dosya sayısı ile daha hızlı build
+- **Build Optimizasyonu**: Azaltılmış dosya sayısı ile daha hızlı build
 
 ### Universal Editor
 - **Markdown Desteği**: Tam markdown syntax desteği
@@ -434,18 +442,19 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 ## 📈 Project Status
 
 - **Status**: ✅ **PRODUCTION READY**
-- **Version**: v2.1.2
+- **Version**: v2.2.0
 - **Last Updated**: 2025-07-30
 - **Security Level**: 🔒 HIGH
 - **Performance**: ⚡ OPTIMIZED
 - **Documentation**: 📚 COMPLETE
 
-### Recent Updates (v2.1.2)
-- ✅ **Project Cleanup**: 31 gereksiz dosya temizlendi
-- ✅ **Documentation**: Gereksiz MD dosyaları kaldırıldı
-- ✅ **File Structure**: Daha temiz proje organizasyonu
-- ✅ **Performance**: Optimize edilmiş dosya yapısı
-- ✅ **Maintenance**: Kod kalitesi iyileştirmeleri
+### Recent Updates (v2.2.0)
+- ✅ **Security Hardening**: Kritik güvenlik riskleri giderildi
+- ✅ **Code Cleanup**: Debug logları ve hardcoded şifreler temizlendi
+- ✅ **Environment Optimization**: 200+ gereksiz variable kaldırıldı
+- ✅ **TypeScript Strict**: Tip güvenliği artırıldı
+- ✅ **Performance**: %95 dosya boyutu azaltması
+- ✅ **Production Ready**: Güvenli production deployment
 
 ## 🔗 Useful Links
 

@@ -1,6 +1,6 @@
 {
   "name": "personal-blog",
-  "version": "2.1.2",
+  "version": "2.2.0",
   "private": true,
   "author": {
     "name": "Erdem Erciyas",
@@ -36,7 +36,7 @@
     "type-check": "tsc --noEmit",
     "test:config": "node -e \"require('./src/lib/config').config.getSafeConfig() && console.log('✅ Configuration valid')\"",
     "clean": "rimraf .next out dist",
-    "clean:cloudinary": "node scripts/clean-invalid-cloudinary-urls.js",
+
     "format": "prettier --write .",
     "precommit": "npm run lint",
     "postinstall": "node -e \"if (process.env.NODE_ENV !== 'production' && !process.env.VERCEL && !process.env.CI) { try { require('husky').install() } catch (e) { console.log('Husky not available, skipping...') } } else { console.log('Production environment, skipping husky install') }\"",
@@ -47,9 +47,7 @@
     "version:auto": "node scripts/auto-version.js",
     "version:update": "node scripts/update-version.js",
     "prepare": "node -e \"if (process.env.NODE_ENV !== 'production' && process.env.VERCEL !== '1') { try { require('husky').install() } catch (e) { console.log('Husky not available, skipping...') } }\"",
-    "migrate:portfolio-categories": "node scripts/migrate-portfolio-categories.js",
-    "migrate:portfolio-categories:dry-run": "node scripts/migrate-portfolio-categories.js --dry-run",
-    "migrate:slugs": "ts-node -r tsconfig-paths/register scripts/migrate-portfolio-slugs.ts",
+
     "security:test": "node scripts/security-test.js",
     "security:audit": "npm audit --audit-level moderate",
     "security:check": "npm run security:test && npm run security:audit",

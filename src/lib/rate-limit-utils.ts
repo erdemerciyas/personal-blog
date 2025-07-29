@@ -8,7 +8,7 @@ import { getRateLimitStatus } from './rate-limit';
 // Rate limit cache'ini temizle (sadece development)
 export function clearRateLimitCache(): void {
   if (process.env.NODE_ENV !== 'development') {
-    console.warn('Rate limit cache can only be cleared in development mode');
+    // Rate limit cache can only be cleared in development mode
     return;
   }
 
@@ -23,11 +23,11 @@ export function clearRateLimitCache(): void {
           localStorage.removeItem(key);
         }
       });
-      console.log('✅ Rate limit cache cleared');
+      // Rate limit cache cleared
       window.location.reload();
     };
     
-    console.log('🔧 Rate limit cache clear function available: __clearRateLimit()');
+    // Rate limit cache clear function available
   }
 }
 
@@ -38,16 +38,7 @@ export function checkRateLimitStatus(ip: string): void {
   }
 
   const status = getRateLimitStatus(ip);
-  if (status) {
-    console.log(`🚦 Rate Limit Status for ${ip}:`, {
-      count: status.count,
-      blocked: status.blocked,
-      resetTime: new Date(status.resetTime).toLocaleString(),
-      blockUntil: status.blockUntil ? new Date(status.blockUntil).toLocaleString() : 'Not blocked'
-    });
-  } else {
-    console.log(`✅ No rate limit data for ${ip}`);
-  }
+  // Rate limit status checked for IP (logging removed for security)
 }
 
 // Development modunda rate limit'i bypass et

@@ -151,9 +151,7 @@ export const CacheTTL = {
 if (typeof window === 'undefined') { // Server-side only
   setInterval(() => {
     const cleaned = cache.cleanup();
-    if (cleaned > 0) {
-      console.log(`Cache cleanup: removed ${cleaned} expired items`);
-    }
+    // Cache cleanup completed
   }, 10 * 60 * 1000);
 }
 
