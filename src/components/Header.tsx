@@ -116,11 +116,21 @@ const Header: React.FC = () => {
     fetchSiteSettings();
   }, []);
 
-  // Fetch dynamic navigation from page settings
+  // Fetch dynamic navigation from page settings with cache busting
   useEffect(() => {
     const fetchNavigation = async () => {
       try {
-        const response = await fetch('/api/admin/page-settings');
+        // Add cache busting parameter to force fresh data
+        const timestamp = Date.now();
+        const response = await fetch(`/api/admin/page-settings?t=${timestamp}&r=${Math.random()}`, {
+          cache: 'no-store', // Prevent caching
+          headers: {
+            'Cache-Control': 'no-cache, no-store, must-revalidate',
+            'Pragma': 'no-cache',
+            'Expires': '0'
+          }
+        });
+        
         if (response.ok) {
           const pages = await response.json();
           
@@ -159,6 +169,21 @@ const Header: React.FC = () => {
     };
 
     fetchNavigation();
+
+    // Set up periodic refresh to catch page setting changes
+    const refreshInterval = setInterval(fetchNavigation, 30000); // Refresh every 30 seconds
+    
+    // Listen for page settings changes from admin panel
+    const handlePageSettingsChange = () => {
+      fetchNavigation();
+    };
+    
+    window.addEventListener('pageSettingsChanged', handlePageSettingsChange);
+
+    return () => {
+      clearInterval(refreshInterval);
+      window.removeEventListener('pageSettingsChanged', handlePageSettingsChange);
+    };
   }, []);
 
   // Hide header on admin pages

@@ -6,10 +6,16 @@ import PageSetting from '../../../../models/PageSetting';
 
 export async function GET(request: NextRequest) {
   try {
-    const session = await getServerSession(authOptions);
+    // Allow public access for navigation data (no auth check for public navigation)
+    const url = new URL(request.url);
+    const isPublicAccess = !request.headers.get('authorization');
     
-    if (!session?.user || session.user.role !== 'admin') {
-      return NextResponse.json({ message: 'Yetkisiz erişim' }, { status: 401 });
+    // Only require auth for admin panel access
+    if (!isPublicAccess) {
+      const session = await getServerSession(authOptions);
+      if (!session?.user || session.user.role !== 'admin') {
+        return NextResponse.json({ message: 'Yetkisiz erişim' }, { status: 401 });
+      }
     }
 
     await connectDB();
@@ -69,13 +75,28 @@ export async function GET(request: NextRequest) {
       pages = await PageSetting.insertMany(defaultPages);
     }
 
-    return NextResponse.json(pages);
+    const response = NextResponse.json(pages);
+    
+    // Add cache control headers to prevent caching
+    response.headers.set('Cache-Control', 'no-store, no-cache, must-revalidate, proxy-revalidate');
+    response.headers.set('Pragma', 'no-cache');
+    response.headers.set('Expires', '0');
+    response.headers.set('Surrogate-Control', 'no-store');
+    
+    return response;
   } catch (error) {
     console.error('Page settings fetch error:', error);
-    return NextResponse.json(
+    const errorResponse = NextResponse.json(
       { message: 'Sayfa ayarları yüklenirken hata oluştu' },
       { status: 500 }
     );
+    
+    // Add cache control headers to error response too
+    errorResponse.headers.set('Cache-Control', 'no-store, no-cache, must-revalidate');
+    errorResponse.headers.set('Pragma', 'no-cache');
+    errorResponse.headers.set('Expires', '0');
+    
+    return errorResponse;
   }
 }
 

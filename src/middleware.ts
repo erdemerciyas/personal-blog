@@ -5,9 +5,14 @@ import { SecurityHeaders, getPageType } from './lib/security-headers';
 // import { CSRFProtection } from './lib/csrf';
 import { logger } from './lib/logger';
 
-// Cache for page settings (5 minutes cache)
+// Cache for page settings (reduced cache duration)
 let pageSettingsCache: { data: any[], timestamp: number } | null = null;
-const CACHE_DURATION = 5 * 60 * 1000; // 5 minutes
+const CACHE_DURATION = 30 * 1000; // 30 seconds (reduced from 5 minutes)
+
+// Function to clear cache (can be called from API)
+export function clearPageSettingsCache() {
+  pageSettingsCache = null;
+}
 
 // Suspicious patterns to detect
 const SUSPICIOUS_PATTERNS = [
@@ -23,10 +28,42 @@ const SUSPICIOUS_PATTERNS = [
   /eval\(/i,                 // Code evaluation
 ];
 
-// Get page settings with caching (disabled for now to prevent circular calls)
+// Get page settings with short-term caching
 async function getPageSettings(): Promise<any[]> {
-  // Temporarily return empty array to prevent API calls from middleware
-  return [];
+  const now = Date.now();
+  
+  // Check if cache is valid
+  if (pageSettingsCache && (now - pageSettingsCache.timestamp) < CACHE_DURATION) {
+    return pageSettingsCache.data;
+  }
+  
+  try {
+    // Use API route instead of direct database access in middleware
+    const response = await fetch(`${process.env.NEXTAUTH_URL || 'http://localhost:3000'}/api/page-settings`, {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    });
+    
+    if (!response.ok) {
+      throw new Error('Failed to fetch page settings');
+    }
+    
+    const pages = await response.json();
+    
+    // Update cache
+    pageSettingsCache = {
+      data: pages || [],
+      timestamp: now
+    };
+    
+    return pages || [];
+  } catch (error) {
+    console.error('Middleware page settings fetch error:', error);
+    // Return cached data if available, otherwise empty array
+    return pageSettingsCache?.data || [];
+  }
 }
 
 // Check for suspicious activity
@@ -125,9 +162,14 @@ async function checkPageAccess(path: string): Promise<boolean> {
       page.pageId === pageId || page.path === path
     );
     
-    // Sayfa ayarı bulunamazsa veya aktifse erişime izin ver
-    return !pageSetting || pageSetting.isActive !== false;
-  } catch {
+    // Sayfa ayarı bulunamazsa erişime izin ver, aktif değilse erişimi engelle
+    if (!pageSetting) {
+      return true; // Sayfa ayarı yoksa erişime izin ver
+    }
+    
+    return pageSetting.isActive === true; // Sadece aktif sayfalar erişilebilir
+  } catch (error) {
+    console.error('Page access check error:', error);
     // Hata durumunda varsayılan olarak erişime izin ver
     return true;
   }

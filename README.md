@@ -449,6 +449,10 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 - **Documentation**: 📚 COMPLETE
 
 ### Recent Updates (v2.2.0)
+- ✅ **Edge Runtime Compatibility**: Middleware Edge Runtime uyumluluğu sağlandı
+- ✅ **Build Optimization**: Production build sorunları çözüldü
+- ✅ **Database Integration**: MongoDB bağlantı optimizasyonu
+- ✅ **API Endpoints**: Page settings API endpoint eklendi
 - ✅ **Security Hardening**: Kritik güvenlik riskleri giderildi
 - ✅ **Code Cleanup**: Debug logları ve hardcoded şifreler temizlendi
 - ✅ **Environment Optimization**: 200+ gereksiz variable kaldırıldı

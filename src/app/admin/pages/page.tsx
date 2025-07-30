@@ -102,6 +102,10 @@ export default function AdminPagesManagement() {
 
       setSuccess('Sayfa ayarları başarıyla güncellendi!');
       setTimeout(() => setSuccess(''), 3000);
+      
+      // Clear cache and force refresh navigation
+      await fetch('/api/admin/clear-cache', { method: 'POST' }).catch(() => {});
+      window.dispatchEvent(new CustomEvent('pageSettingsChanged'));
     } catch (err) {
       setError('Güncelleme sırasında bir hata oluştu');
       setTimeout(() => setError(''), 3000);
@@ -140,6 +144,10 @@ export default function AdminPagesManagement() {
       setPages(newPages);
       setSuccess('Sayfa sıralaması güncellendi!');
       setTimeout(() => setSuccess(''), 3000);
+      
+      // Clear cache and force refresh navigation
+      await fetch('/api/admin/clear-cache', { method: 'POST' }).catch(() => {});
+      window.dispatchEvent(new CustomEvent('pageSettingsChanged'));
     } catch (err) {
       setError('Sıralama güncellenirken bir hata oluştu');
       setTimeout(() => setError(''), 3000);
@@ -193,6 +201,10 @@ export default function AdminPagesManagement() {
       setSuccess('Hero alanı başarıyla güncellendi!');
       setTimeout(() => setSuccess(''), 3000);
       cancelEditing();
+      
+      // Clear cache and force refresh navigation
+      await fetch('/api/admin/clear-cache', { method: 'POST' }).catch(() => {});
+      window.dispatchEvent(new CustomEvent('pageSettingsChanged'));
     } catch (err) {
       setError('Güncelleme sırasında bir hata oluştu');
       setTimeout(() => setError(''), 3000);
