@@ -14,9 +14,9 @@ Modern, güvenli ve performanslı kişisel blog ve portfolyo platformu. Next.js 
 
 ## 🌐 Live Demo
 
-**🚀 [Live Site](https://erdemerciyas-iufztnw7w-erdem-erciyas-projects.vercel.app)** | **🔧 [Admin Panel](https://erdemerciyas-iufztnw7w-erdem-erciyas-projects.vercel.app/admin)** | **📊 [API Health](https://erdemerciyas-iufztnw7w-erdem-erciyas-projects.vercel.app/api/health)**
+**🚀 [Live Site](https://fixral-newe77cjz-erdem-erciyas-projects.vercel.app)** | **🔧 [Admin Panel](https://fixral-newe77cjz-erdem-erciyas-projects.vercel.app/admin)** | **📊 [API Health](https://fixral-newe77cjz-erdem-erciyas-projects.vercel.app/api/health)**
 
-> **Status**: ✅ **LIVE** | **Last Deploy**: 2025-07-30 | **Version**: v2.2.0 | **🧹 Security Cleanup**: ✅ **COMPLETE**
+> **Status**: ✅ **LIVE** | **Last Deploy**: 2025-07-30 23:50 UTC | **Version**: v2.2.0 | **🧹 Security Cleanup**: ✅ **COMPLETE**
 
 ## ✨ Özellikler
 
@@ -273,9 +273,9 @@ Permissions-Policy: camera=(), microphone=(), geolocation=()
 ### ✅ Production Deployment (Vercel)
 
 **Current Status**: 🟢 **LIVE** on Vercel  
-**Deployment URL**: https://erdemerciyas-iufztnw7w-erdem-erciyas-projects.vercel.app  
-**Last Deploy**: 2025-07-30 01:42 UTC  
-**Build Time**: ~1 minute  
+**Deployment URL**: https://fixral-newe77cjz-erdem-erciyas-projects.vercel.app  
+**Last Deploy**: 2025-07-30 23:50 UTC  
+**Build Time**: ~58 seconds  
 
 #### Quick Deploy
 ```bash
@@ -462,11 +462,11 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 ## 🔗 Useful Links
 
-- 🌐 **Live Demo**: [erdemerciyas-iufztnw7w-erdem-erciyas-projects.vercel.app](https://erdemerciyas-iufztnw7w-erdem-erciyas-projects.vercel.app)
-- 🔧 **Admin Panel**: [/admin](https://erdemerciyas-iufztnw7w-erdem-erciyas-projects.vercel.app/admin)
-- 📊 **API Health**: [/api/health](https://erdemerciyas-iufztnw7w-erdem-erciyas-projects.vercel.app/api/health)
-- 🗺️ **Sitemap**: [/sitemap.xml](https://erdemerciyas-7i0biarkh-erdem-erciyas-projects.vercel.app/sitemap.xml)
-- 🤖 **Robots**: [/robots.txt](https://erdemerciyas-7i0biarkh-erdem-erciyas-projects.vercel.app/robots.txt)
+- 🌐 **Live Demo**: [fixral-newe77cjz-erdem-erciyas-projects.vercel.app](https://fixral-newe77cjz-erdem-erciyas-projects.vercel.app)
+- 🔧 **Admin Panel**: [/admin](https://fixral-newe77cjz-erdem-erciyas-projects.vercel.app/admin)
+- 📊 **API Health**: [/api/health](https://fixral-newe77cjz-erdem-erciyas-projects.vercel.app/api/health)
+- 🗺️ **Sitemap**: [/sitemap.xml](https://fixral-newe77cjz-erdem-erciyas-projects.vercel.app/sitemap.xml)
+- 🤖 **Robots**: [/robots.txt](https://fixral-newe77cjz-erdem-erciyas-projects.vercel.app/robots.txt)
 
 ## 📞 Support
 
