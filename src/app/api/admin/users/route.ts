@@ -5,7 +5,7 @@ import connectDB from '../../../../lib/mongoose';
 import User from '../../../../models/User';
 import bcrypt from 'bcryptjs';
 
-export async function GET(request: NextRequest) {
+export async function GET() {
   try {
     const session = await getServerSession(authOptions);
     

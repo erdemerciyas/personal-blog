@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useRef, useCallback } from 'react';
+import React, { useState, useRef, useCallback, useMemo } from 'react';
 import {
   BoldIcon,
   ItalicIcon,
@@ -115,7 +115,7 @@ const UniversalEditor: React.FC<UniversalEditorProps> = ({
   }, [value, onChange, disabled, sanitizeText]);
 
   // Toolbar aksiyonları
-  const actions = {
+  const actions = useMemo(() => ({
     bold: () => {
       if (mode === 'markdown') {
         insertText('**', '**', 'kalın metin');
@@ -147,7 +147,7 @@ const UniversalEditor: React.FC<UniversalEditorProps> = ({
         insertText('<a href="https://">', '</a>', 'link metni');
       }
     }
-  };
+  }), [mode, insertText]);
 
   // Güvenli HTML render (sadece temel formatlar)
   const renderSafeHTML = useCallback((text: string): string => {

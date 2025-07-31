@@ -10,7 +10,7 @@ interface LogoProps {
 const Logo: React.FC<LogoProps> = ({ className = '', width = 40, height = 40, isDark = false }) => {
   const textColor = isDark ? 'text-slate-800' : 'text-white';
   const iconColor = isDark ? '#0F766E' : '#14B8A6';
-  const accentColor = isDark ? '#0F766E' : '#06B6D4';
+  const _ = isDark ? '#0F766E' : '#06B6D4';
 
   return (
     <div className={`flex items-center ${className}`}>

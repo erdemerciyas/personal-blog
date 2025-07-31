@@ -20,12 +20,12 @@ export const SmartLink: React.FC<SmartLinkProps> = ({
   prefetch = true,
   replace = false,
   scroll = true,
-  shallow = false,
+  shallow: _ = false,
   onClick
 }) => {
-  const router = useRouter();
+  const {} = useRouter();
 
-  const handleClick = (e: React.MouseEvent) => {
+  const handleClick = () => {
     onClick?.();
     
     // Add loading state or analytics here if needed

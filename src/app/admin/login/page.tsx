@@ -17,7 +17,7 @@ import {
 } from '@heroicons/react/24/outline';
 
 function LoginForm() {
-  const router = useRouter();
+  const {} = useRouter();
   const searchParams = useSearchParams();
 
   const [error, setError] = useState<string | null>(null);

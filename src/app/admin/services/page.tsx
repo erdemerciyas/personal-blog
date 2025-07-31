@@ -26,7 +26,7 @@ interface Service {
 }
 
 export default function ServicesPage() {
-  const { data: session, status } = useSession();
+  const { status } = useSession();
   const router = useRouter();
   const [services, setServices] = useState<Service[]>([]);
   const [loading, setLoading] = useState(true);
@@ -169,7 +169,7 @@ export default function ServicesPage() {
               <div className="p-12 text-center">
                 <WrenchScrewdriverIcon className="w-12 h-12 text-slate-400 mx-auto mb-4" />
                 <p className="text-slate-600 text-lg">Henüz servis eklenmemiş</p>
-                <p className="text-slate-500 mt-2">İlk servisinizi eklemek için "Yeni Servis" butonuna tıklayın</p>
+                <p className="text-slate-500 mt-2">İlk servisinizi eklemek için &quot;Yeni Servis&quot; butonuna tıklayın</p>
               </div>
             ) : (
               services.map((service) => (

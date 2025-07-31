@@ -6,11 +6,9 @@ import { useRouter } from 'next/navigation';
 import { PageLoader } from '../../../components/AdminLoader';
 import AdminLayout from '../../../components/admin/AdminLayout';
 import {
-  UserIcon,
   PlusIcon,
   TrashIcon,
   CheckIcon,
-  ExclamationTriangleIcon,
   SparklesIcon,
   EyeIcon
 } from '@heroicons/react/24/outline';
@@ -46,7 +44,7 @@ interface AboutData {
 }
 
 export default function AdminAboutPage() {
-  const { data: session, status } = useSession();
+  const { status } = useSession();
   const router = useRouter();
   
   const [aboutData, setAboutData] = useState<AboutData>({
@@ -77,7 +75,7 @@ export default function AdminAboutPage() {
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [message, setMessage] = useState<{ type: 'success' | 'error'; text: string } | null>(null);
-  const [messageType, setMessageType] = useState<'success' | 'error'>('success');
+  const [, setMessageType] = useState<'success' | 'error'>('success');
 
   // Authentication check
   useEffect(() => {

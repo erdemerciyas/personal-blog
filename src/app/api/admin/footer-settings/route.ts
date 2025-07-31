@@ -84,7 +84,7 @@ export async function PUT(request: Request) {
       console.log('📝 Updating existing footer settings');
       try {
         // Deep merge for nested objects
-        const mergeDeep = (target: any, source: any) => {
+        const mergeDeep = (target: Record<string, unknown>, source: Record<string, unknown>) => {
           for (const key in source) {
             if (source[key] && typeof source[key] === 'object' && !Array.isArray(source[key])) {
               if (!target[key]) target[key] = {};

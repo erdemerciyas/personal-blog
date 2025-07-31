@@ -8,13 +8,9 @@ import UniversalEditor from '../../../../components/ui/UniversalEditor';
 import PortfolioImageGallery from '../../../../components/PortfolioImageGallery';
 import {
   PlusIcon,
-  FolderOpenIcon,
   TagIcon,
-  ClockIcon,
   CheckIcon,
   XMarkIcon,
-  CalendarIcon,
-  UserGroupIcon,
   DocumentTextIcon,
   StarIcon,
   HashtagIcon,
@@ -22,7 +18,6 @@ import {
   ExclamationTriangleIcon,
   TrashIcon,
   ArrowLeftIcon,
-  Bars3Icon,
   PencilIcon
 } from '@heroicons/react/24/outline';
 import Link from 'next/link';

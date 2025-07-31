@@ -9,7 +9,7 @@ import Service from '../../../../models/Service';
 import Message from '../../../../models/Message';
 import User from '../../../../models/User';
 
-export async function GET(request: NextRequest) {
+export async function GET() {
   try {
     const session = await getServerSession(authOptions);
     
@@ -32,7 +32,7 @@ export async function GET(request: NextRequest) {
     // Medya sayısını Cloudinary'den al
     let mediaCount = 0;
     try {
-      const { v2: cloudinary } = require('cloudinary');
+      const cloudinary = await import('cloudinary').then(m => m.v2);
       
       // Cloudinary config
       cloudinary.config({

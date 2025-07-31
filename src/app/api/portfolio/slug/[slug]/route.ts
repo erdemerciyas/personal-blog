@@ -48,14 +48,14 @@ export async function GET(request: Request, { params }: { params: { slug: string
           category = portfolioItem.categoryIds[0];
         } else {
           // Populate edilmemişse, manuel olarak kategoriyi getir
-          category = await Category.findById(portfolioItem.categoryIds[0]).lean() as any;
+          category = await Category.findById(portfolioItem.categoryIds[0]).lean() as { _id: string; name: string; slug: string } | null;
         }
       } else if (portfolioItem.categoryId) {
         // Geriye uyumluluk için
         if (typeof portfolioItem.categoryId === 'object') {
           category = portfolioItem.categoryId;
         } else {
-          category = await Category.findById(portfolioItem.categoryId).lean() as any;
+          category = await Category.findById(portfolioItem.categoryId).lean() as { _id: string; name: string; slug: string } | null;
         }
       }
     } catch (categoryError) {

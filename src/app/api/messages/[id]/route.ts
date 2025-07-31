@@ -126,7 +126,7 @@ export async function PATCH(
     const body = await request.json();
     const { status } = body;
     
-    const updateData: any = { status };
+    const updateData: { status: string; isRead?: boolean; repliedAt?: Date; readAt?: Date } = { status };
     
     // Status'a göre otomatik isRead ve timestamp güncellemeleri
     if (status === 'replied') {

@@ -89,11 +89,11 @@ export async function POST(request: NextRequest) {
     }
 
     // Admin role kontrolü
-    if ((session.user as any).role !== 'admin') {
+    if ((session.user as { role?: string }).role !== 'admin') {
       logger.warn('Non-admin file upload attempt', 'SECURITY', {
         ip: clientIP,
-        userId: (session.user as any).id,
-        role: (session.user as any).role
+        userId: (session.user as { id?: string }).id,
+        role: (session.user as { role?: string }).role
       });
       return NextResponse.json(
         { error: 'Admin yetkisi gerekli' },
@@ -180,7 +180,7 @@ export async function POST(request: NextRequest) {
 
     // Cloudinary'e güvenli yükleme
     const folder = `personal-blog/${pageContext}`;
-    const uploadResult = await new Promise<any>((resolve, reject) => {
+    const uploadResult = await new Promise<{ secure_url: string; public_id: string; width: number; height: number; format: string; resource_type: string; bytes: number }>((resolve, reject) => {
       cloudinary.uploader.upload_stream(
         {
           resource_type: 'image',
@@ -219,7 +219,7 @@ export async function POST(request: NextRequest) {
     // Log successful upload
     logger.info('File uploaded successfully', 'UPLOAD', {
       ip: clientIP,
-      userId: (session.user as any).id,
+      userId: (session.user as { id?: string }).id,
       fileName: file.name,
       fileSize: file.size,
       fileType: file.type,

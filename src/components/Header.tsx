@@ -99,7 +99,7 @@ const Header: React.FC = () => {
           const data = await response.json();
           setSiteSettings(data);
         }
-      } catch (error) {
+      } catch {
         setSiteSettings({
           siteName: '',
           slogan: '',

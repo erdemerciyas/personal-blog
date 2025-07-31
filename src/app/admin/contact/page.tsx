@@ -11,7 +11,6 @@ import {
   MapPinIcon, 
   ClockIcon,
   CheckIcon,
-  ExclamationTriangleIcon,
   DocumentTextIcon,
   GlobeAltIcon
 } from '@heroicons/react/24/outline';
@@ -68,7 +67,7 @@ export default function AdminContactPage() {
     if (status === 'authenticated') {
       fetchContactData();
     }
-  }, [status]);
+  }, [status, error]);
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target;

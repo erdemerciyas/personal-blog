@@ -11,7 +11,7 @@ const openai = new OpenAI({
   apiKey: process.env.OPENAI_API_KEY,
 });
 
-export async function GET(request: NextRequest) {
+export async function GET() {
   try {
     // Auth kontrolü
     const session = await getServerSession(authOptions);

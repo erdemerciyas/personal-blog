@@ -32,16 +32,13 @@ import {
   GlobeAltIcon,
   PresentationChartBarIcon,
   CloudIcon,
-  CalendarDaysIcon,
   UsersIcon,
   ViewColumnsIcon,
   ClockIcon,
   ServerIcon,
   AdjustmentsHorizontalIcon,
-  CloudArrowUpIcon,
-  ChatBubbleLeftRightIcon
+  CloudArrowUpIcon
 } from '@heroicons/react/24/outline';
-import { PageLoader } from '../../../components/AdminLoader';
 
 // Vercel için client-side only component
 function AdminDashboardContent() {
@@ -58,7 +55,7 @@ function AdminDashboardContent() {
     usersCount: 0
   });
 
-  const [recentActivity, setRecentActivity] = useState([
+  const [recentActivity] = useState([
     {
       id: 1,
       type: 'portfolio',
@@ -89,7 +86,7 @@ function AdminDashboardContent() {
     }
   ]);
 
-  const [loading, setLoading] = useState(true);
+  const [, setLoading] = useState(true);
   const [mounted, setMounted] = useState(false);
 
   // Client-side mounting check for Vercel
@@ -223,7 +220,7 @@ function AdminDashboardContent() {
                 <span>Son giriş: Bugün 17:23</span>
               </div>
               <div className="px-3 py-1 bg-teal-100 text-teal-700 rounded-full text-sm font-medium">
-                v{require('../../../../package.json').version}
+                v2.2.0
               </div>
             </div>
           </div>

@@ -5,19 +5,13 @@ import { useSession } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
 import AdminLayout from '../../../components/admin/AdminLayout';
 import {
-  UsersIcon,
-  PlusIcon,
   PencilIcon,
   TrashIcon,
-  EyeIcon,
-  EyeSlashIcon,
   KeyIcon,
   MagnifyingGlassIcon,
   UserPlusIcon,
   ShieldCheckIcon,
   UserIcon,
-  EnvelopeIcon,
-  CalendarIcon,
   CheckCircleIcon,
   XCircleIcon
 } from '@heroicons/react/24/outline';

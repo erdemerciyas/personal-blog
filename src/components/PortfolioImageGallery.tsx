@@ -1,18 +1,15 @@
 'use client';
 
-import { useState, useRef, useCallback } from 'react';
+import { useState, useRef } from 'react';
 import Image from 'next/image';
 import { InlineLoader } from './AdminLoader';
 import {
-  PhotoIcon,
   ArrowUpTrayIcon,
   ExclamationTriangleIcon,
   CheckIcon,
   TrashIcon,
   StarIcon,
-  PlusIcon,
-  Bars3Icon,
-  XMarkIcon
+  Bars3Icon
 } from '@heroicons/react/24/outline';
 import { StarIcon as StarIconSolid } from '@heroicons/react/24/solid';
 import MediaBrowser from './MediaBrowser';

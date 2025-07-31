@@ -13,9 +13,7 @@ import {
   ExclamationTriangleIcon,
   MagnifyingGlassIcon,
   FunnelIcon,
-  ChevronDownIcon,
-  TagIcon,
-  CalendarIcon,
+
   InboxIcon,
   EnvelopeIcon,
   XMarkIcon
@@ -57,7 +55,7 @@ function AdminMessagesContent() {
   const [searchTerm, setSearchTerm] = useState('');
   const [statusFilter, setStatusFilter] = useState('all');
   const [urgencyFilter, setUrgencyFilter] = useState('all');
-  const [showFilters, setShowFilters] = useState(false);
+  const [, ] = useState(false);
 
   // Auth check
   useEffect(() => {

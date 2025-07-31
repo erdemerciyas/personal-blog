@@ -72,12 +72,14 @@ export default Loader;
 export const PageLoader = memo(({ text = 'Sayfa yükleniyor...' }: { text?: string }) => (
   <Loader text={text} size="lg" variant="spinner" className="min-h-[400px]" />
 ));
+PageLoader.displayName = 'PageLoader';
 
 export const CardLoader = memo(({ text = 'Veriler yükleniyor...' }: { text?: string }) => (
   <div className="bg-white dark:bg-slate-800 rounded-xl shadow-sm border border-slate-200 dark:border-slate-700 p-8">
     <Loader text={text} size="md" variant="spinner" />
   </div>
 ));
+CardLoader.displayName = 'CardLoader';
 
 export const InlineLoader = memo(({ text = 'Yükleniyor...' }: { text?: string }) => (
   <div className="flex items-center justify-center space-x-3 py-4">
@@ -85,3 +87,4 @@ export const InlineLoader = memo(({ text = 'Yükleniyor...' }: { text?: string }
     <span className="text-slate-600 dark:text-slate-300 text-sm">{text}</span>
   </div>
 ));
+InlineLoader.displayName = 'InlineLoader';

@@ -2,12 +2,9 @@
 import { useState, useEffect } from 'react';
 import { useSession } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
-import Link from 'next/link';
 import Image from 'next/image';
 import AdminLayout from '../../../components/admin/AdminLayout';
 import {
-  ArrowLeftIcon,
-  CubeTransparentIcon,
   PhotoIcon,
   CloudArrowUpIcon,
   XMarkIcon,
@@ -36,7 +33,7 @@ interface MediaItem {
 }
 
 export default function AdminMediaPage() {
-  const { data: session, status } = useSession();
+  const { status } = useSession();
   const router = useRouter();
 
   // Media Management States
@@ -202,7 +199,7 @@ export default function AdminMediaPage() {
       });
 
       if (response.ok) {
-        const data = await response.json();
+        await response.json();
         setMessage({ type: 'success', text: 'Dosya başarıyla silindi!' });
         setSelectedMedia(prev => prev.filter(id => id !== mediaId));
         loadMedia(); // Refresh media list
@@ -602,7 +599,7 @@ export default function AdminMediaPage() {
                 </h4>
                 <ul className="text-blue-200 text-sm space-y-1">
                   <li>• Aynı anda birden fazla dosya seçebilirsiniz</li>
-                  <li>• Dosyalar otomatik olarak Cloudinary'ye yüklenecek</li>
+                  <li>• Dosyalar otomatik olarak Cloudinary&apos;ye yüklenecek</li>
                   <li>• Yüklenen dosyalar anında görünecek</li>
                   <li>• Büyük dosyalar için sabırlı olun</li>
                 </ul>
@@ -741,7 +738,7 @@ export default function AdminMediaPage() {
                           className="w-full bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg font-medium transition-colors flex items-center justify-center space-x-2"
                         >
                           <LinkIcon className="w-4 h-4" />
-                          <span>URL'yi Kopyala</span>
+                          <span>URL&apos;yi Kopyala</span>
                         </button>
 
                         {/* Download */}

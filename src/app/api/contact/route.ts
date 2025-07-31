@@ -11,7 +11,7 @@ export const dynamic = 'force-dynamic';
 
 export async function POST(request: Request) {
   const startTime = Date.now();
-  const clientIP = getClientIP(request as any);
+  const clientIP = getClientIP(request as Request & { headers: Headers });
   
   try {
     // Rate limiting - contact form specific

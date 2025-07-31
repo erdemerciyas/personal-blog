@@ -83,7 +83,7 @@ export default function HomePage() {
   const { data: servicesData, loading: servicesLoading } = useServices();
 
   // Process slider data
-  const sliderItems = (sliderData as any[])?.filter((item: any) => item.isActive)?.map((item: any) => ({
+  const sliderItems = (sliderData as Array<{ _id: string; title: string; subtitle: string; description: string; isActive: boolean; buttonText?: string; buttonLink?: string; backgroundImage?: string }>)?.filter((item) => item.isActive)?.map((item) => ({
     _id: item._id,
     title: item.title,
     subtitle: item.subtitle,
@@ -96,10 +96,10 @@ export default function HomePage() {
   })) || defaultSlider;
 
   // Process portfolio data
-  const portfolioItems = (portfolioData as any[])?.slice(0, 6) || [];
+  const portfolioItems = (portfolioData as Array<{ _id: string; title: string; description: string; coverImage: string; slug: string }>)?.slice(0, 6) || [];
 
   // Process services data
-  const services = (servicesData as any[])?.length > 0 ? (servicesData as any[]).slice(-6) : defaultServices;
+  const services = (servicesData as Array<{ _id: string; title: string; description: string; image: string }>)?.length > 0 ? (servicesData as Array<{ _id: string; title: string; description: string; image: string }>).slice(-6) : defaultServices;
 
   // Slider states
   const [currentSlideIndex, setCurrentSlideIndex] = useState(0);

@@ -11,7 +11,7 @@ export async function GET(request: NextRequest) {
     const session = await getServerSession(authOptions);
     
     // Admin kontrolü
-    if (!session?.user?.email || (session.user as any).role !== 'admin') {
+    if (!session?.user?.email || (session.user as { role?: string }).role !== 'admin') {
       return NextResponse.json(
         { error: 'Bu işlem için admin yetkisi gerekli' },
         { status: 403 }
@@ -90,7 +90,7 @@ export async function POST(request: NextRequest) {
     const session = await getServerSession(authOptions);
     
     // Admin kontrolü
-    if (!session?.user?.email || (session.user as any).role !== 'admin') {
+    if (!session?.user?.email || (session.user as { role?: string }).role !== 'admin') {
       return NextResponse.json(
         { error: 'Bu işlem için admin yetkisi gerekli' },
         { status: 403 }
@@ -151,8 +151,8 @@ export async function POST(request: NextRequest) {
 
 // Generate security recommendations based on current data
 function generateSecurityRecommendations(
-  summary: any, 
-  suspiciousEvents: any[], 
+  summary: Record<string, number>, 
+  suspiciousEvents: Array<Record<string, unknown>>, 
   blockedIPs: string[]
 ): string[] {
   const recommendations: string[] = [];

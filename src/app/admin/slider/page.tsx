@@ -16,10 +16,8 @@ import {
   PauseIcon,
   XMarkIcon,
 
-  EyeIcon,
   ClockIcon,
   LinkIcon,
-  AdjustmentsHorizontalIcon,
   ArrowsUpDownIcon
 } from '@heroicons/react/24/outline';
 
@@ -212,7 +210,7 @@ export default function AdminSliderPage() {
       resetForm();
       
       setTimeout(() => setSuccess(''), 3000);
-    } catch (error) {
+    } catch {
       setError('İşlem başarısız oldu');
     } finally {
       setSubmitting(false);
@@ -234,7 +232,7 @@ export default function AdminSliderPage() {
       setSliders(prev => prev.filter(s => s._id !== id));
       setSuccess('Slider başarıyla silindi!');
       setTimeout(() => setSuccess(''), 3000);
-    } catch (error) {
+    } catch {
       setError('Silme işlemi başarısız oldu');
     }
   };
@@ -259,7 +257,7 @@ export default function AdminSliderPage() {
       const data = await response.json();
       setSliders(prev => prev.map(s => s._id === slider._id ? data : s));
       
-    } catch (error) {
+    } catch {
       setError('Durum güncellenemedi');
     }
   };
@@ -377,7 +375,7 @@ export default function AdminSliderPage() {
             <div className="text-center py-12">
               <PhotoIcon className="w-12 h-12 text-slate-400 mx-auto mb-4" />
               <p className="text-slate-600">Henüz slider eklenmemiş</p>
-              <p className="text-sm text-slate-500 mt-1">İlk slider'ınızı eklemek için yukarıdaki butonu kullanın</p>
+              <p className="text-sm text-slate-500 mt-1">İlk slider&apos;ınızı eklemek için yukarıdaki butonu kullanın</p>
             </div>
           ) : (
             <div className="divide-y divide-slate-200">

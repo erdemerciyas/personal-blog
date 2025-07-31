@@ -141,7 +141,7 @@ export async function PUT(request: NextRequest) {
     await connectDB();
 
     // Update all pages with new order
-    const updatePromises = pages.map((page: any) =>
+    const updatePromises = pages.map((page: { pageId: string; order: number }) =>
       PageSetting.findOneAndUpdate(
         { pageId: page.pageId },
         { order: page.order },

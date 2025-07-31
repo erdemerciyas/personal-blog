@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { createPortal } from 'react-dom';
 import Image from 'next/image';
 import { motion } from 'framer-motion';
@@ -29,9 +29,11 @@ export default function PortfolioImageGallery({
   const [mounted, setMounted] = useState(false);
 
   // Combine cover image with other images, avoiding duplicates
-  const allImages = coverImage
-    ? [coverImage, ...images.filter(img => img !== coverImage)]
-    : images;
+  const allImages = useMemo(() => {
+    return coverImage
+      ? [coverImage, ...images.filter(img => img !== coverImage)]
+      : images;
+  }, [coverImage, images]);
 
   useEffect(() => {
     setMounted(true);

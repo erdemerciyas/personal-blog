@@ -21,7 +21,6 @@ import {
 } from '@heroicons/react/24/outline';
 
 import ContentSkeleton from '../../components/ContentSkeleton';
-import PageHero from '../../components/common/PageHero';
 
 interface Value {
   text: string;

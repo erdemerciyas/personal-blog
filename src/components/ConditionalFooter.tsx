@@ -121,7 +121,7 @@ const ConditionalFooter: React.FC = () => {
     return null;
   }
 
-  const activeSocialLinks = Object.entries(settings.socialLinks).filter(([_, url]) => url.trim() !== '');
+  const _ = Object.entries(settings.socialLinks).filter(([, url]) => url.trim() !== '');
 
   return (
     <footer className="bg-slate-900 text-white relative overflow-hidden">

@@ -4,7 +4,6 @@ import { useState, useRef } from 'react';
 import Image from 'next/image';
 import MediaBrowser from './MediaBrowser';
 import {
-  PhotoIcon,
   ArrowUpTrayIcon,
   ExclamationTriangleIcon,
   CheckIcon,
@@ -49,7 +48,7 @@ const ImageUpload: React.FC<ImageUploadProps> = ({
 }) => {
   const [uploading, setUploading] = useState(false);
   const [uploadProgress, setUploadProgress] = useState(0);
-  const [dragOver, setDragOver] = useState(false);
+  const [, ] = useState(false);
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
   const [showMediaBrowser, setShowMediaBrowser] = useState(false);

@@ -51,7 +51,7 @@ class ConfigManager {
 
   private loadEnvironmentVariables(): EnvironmentConfig {
     return {
-      NODE_ENV: (process.env.NODE_ENV as any) || 'development',
+      NODE_ENV: (process.env.NODE_ENV as 'development' | 'production' | 'test') || 'development',
       NEXTAUTH_URL: process.env.NEXTAUTH_URL || '',
       NEXTAUTH_SECRET: process.env.NEXTAUTH_SECRET || '',
       MONGODB_URI: process.env.MONGODB_URI || '',
@@ -140,7 +140,7 @@ class ConfigManager {
   private getClientSideConfig(): EnvironmentConfig {
     // Client-side: use safe defaults, no environment validation
     return {
-      NODE_ENV: 'production' as any, // Assume production on client
+      NODE_ENV: 'production' as 'development' | 'production' | 'test', // Assume production on client
       NEXTAUTH_URL: typeof window !== 'undefined' ? window.location.origin : '',
       NEXTAUTH_SECRET: '', // Not available on client-side
       MONGODB_URI: '', // Not available on client-side

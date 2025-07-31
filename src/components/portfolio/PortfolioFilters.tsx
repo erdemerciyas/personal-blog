@@ -54,7 +54,7 @@ export default function PortfolioFilters({
       onFiltersChange({ ...filters, search: searchValue });
     }, 300);
     return () => clearTimeout(timer);
-  }, [searchValue]);
+  }, [searchValue, filters, onFiltersChange]);
 
   // Active filters count
   const activeFiltersCount = useMemo(() => {

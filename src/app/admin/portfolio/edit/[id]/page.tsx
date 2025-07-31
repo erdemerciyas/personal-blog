@@ -8,12 +8,9 @@ import UniversalEditor from '../../../../../components/ui/UniversalEditor';
 import PortfolioImageGallery from '../../../../../components/PortfolioImageGallery';
 import { 
   PencilIcon,
-  FolderOpenIcon,
   TagIcon,
   CheckIcon,
   XMarkIcon,
-  CalendarIcon,
-  UserGroupIcon,
   DocumentTextIcon,
   StarIcon,
   HashtagIcon,
@@ -21,8 +18,7 @@ import {
   ExclamationTriangleIcon,
   TrashIcon,
   PlusIcon,
-  ArrowLeftIcon,
-  Bars3Icon
+  ArrowLeftIcon
 } from '@heroicons/react/24/outline';
 import Link from 'next/link';
 import { Category, PortfolioItem } from '../../../../../types/portfolio';
@@ -175,9 +171,9 @@ export default function EditPortfolioItem({ params }: { params: { id: string } }
   const handleCategoryToggle = (categoryId: string) => {
     setFormData(prev => ({
       ...prev,
-      categoryIds: (prev.categoryIds as any)?.includes(categoryId)
-        ? (prev.categoryIds as any).filter((id: any) => id !== categoryId)
-        : [...((prev.categoryIds as any) || []), categoryId]
+      categoryIds: (prev.categoryIds as string[])?.includes(categoryId)
+        ? (prev.categoryIds as string[]).filter((id: string) => id !== categoryId)
+        : [...((prev.categoryIds as string[]) || []), categoryId]
     }));
   };
 

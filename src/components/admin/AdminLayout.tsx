@@ -43,7 +43,7 @@ interface AdminLayoutProps {
 interface MenuItem {
   id: string;
   label: string;
-  icon: any;
+  icon: React.ComponentType<{ className?: string }>;
   href: string;
   badge?: string | number;
   subItems?: Array<{ label: string; href: string }>;
@@ -74,7 +74,7 @@ export default function AdminLayout({ children, title, breadcrumbs }: AdminLayou
     mediaCount: 0,
     usersCount: 0
   });
-  const [notifications, setNotifications] = useState<any[]>([]);
+  const [notifications, setNotifications] = useState<Array<{ id: string; title: string; message: string; time: string; type: string }>>([]);
 
   // Menu items
   const menuItems: MenuItem[] = [
@@ -127,7 +127,7 @@ export default function AdminLayout({ children, title, breadcrumbs }: AdminLayou
       label: 'Kullanıcı Yönetimi',
       icon: UsersIcon,
       href: '/admin/users',
-      badge: (stats as any).usersCount
+      badge: (stats as { usersCount: number }).usersCount
     },
     {
       id: 'contact',
@@ -222,7 +222,7 @@ export default function AdminLayout({ children, title, breadcrumbs }: AdminLayou
 
           // Convert recent messages to notifications
           const recentMessages = statsData.recentMessages || [];
-          const unreadMessages = recentMessages.filter((message: any) => message.status === 'pending' || message.status === 'new');
+          const unreadMessages = recentMessages.filter((message: { status?: string }) => message.status === 'pending' || message.status === 'new');
 
           setStats(prev => ({
             ...prev,
@@ -241,7 +241,7 @@ export default function AdminLayout({ children, title, breadcrumbs }: AdminLayou
           const mediaData = mediaRes.ok ? await mediaRes.json() : [];
 
           const unreadMessages = Array.isArray(messagesData) && messagesData.length > 0
-            ? messagesData.filter((message: any) => !message.isRead || message.status === 'new')
+            ? messagesData.filter((message: { isRead?: boolean; status?: string }) => !message.isRead || message.status === 'new')
             : [];
 
           setStats({
@@ -252,7 +252,7 @@ export default function AdminLayout({ children, title, breadcrumbs }: AdminLayou
           });
 
           const recentNotifications = messagesData && messagesData.length > 0
-            ? messagesData.filter((msg: any) => msg.status === 'pending' || !msg.status).slice(0, 5).map((message: any) => ({
+            ? messagesData.filter((msg: { status?: string }) => msg.status === 'pending' || !msg.status).slice(0, 5).map((message: { _id: string; name?: string; message?: string; createdAt: string }) => ({
               title: `${message.name || 'Anonim'} adlı kişiden yeni mesaj`,
               message: message.message ? message.message.substring(0, 50) + '...' : 'Mesaj içeriği yok',
               time: new Date(message.createdAt || Date.now()).toLocaleDateString('tr-TR', {

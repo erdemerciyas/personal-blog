@@ -14,9 +14,9 @@ export async function GET() {
       hasSession: !!session,
       session: session ? {
         user: {
-          id: (session.user as any)?.id,
+          id: (session.user as { id?: string })?.id,
           email: session.user?.email,
-          role: (session.user as any)?.role,
+          role: (session.user as { role?: string })?.role,
         }
       } : null,
       message: 'Session check'

@@ -5,7 +5,7 @@ import { getServerSession } from 'next-auth';
 import { authOptions } from '../../../../lib/auth';
 import connectDB from '../../../../lib/mongoose';
 
-export async function GET(request: NextRequest) {
+export async function GET() {
   try {
     const session = await getServerSession(authOptions);
     
@@ -58,7 +58,7 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    const body = await request.json();
+    await request.json();
     await connectDB();
 
     // TODO: Implement page creation when Page model is ready

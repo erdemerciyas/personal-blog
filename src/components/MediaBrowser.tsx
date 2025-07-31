@@ -118,7 +118,7 @@ const MediaBrowser: React.FC<MediaBrowserProps> = ({
     if (isOpen) {
       fetchMediaItems();
     }
-  }, [isOpen, pageFilter]);
+  }, [isOpen, pageFilter, fetchMediaItems]);
 
   const fetchMediaItems = async () => {
     setLoading(true);

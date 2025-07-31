@@ -100,7 +100,7 @@ export const POST = asyncHandler(async (request: Request) => {
     });
 
     return NextResponse.json(newService, { status: 201 });
-  } catch (error: any) {
+  } catch (error: { code?: number }) {
     if (error.code === 11000) {
       // Duplicate key error
       throw createError.validation('Bu başlıkta bir servis zaten mevcut');

@@ -5,8 +5,8 @@ import { useSession } from 'next-auth/react';
 
 export default function AdminDebugPage() {
   const { data: session, status } = useSession();
-  const [debugInfo, setDebugInfo] = useState<any>({});
-  const [apiTests, setApiTests] = useState<any>({});
+  const [debugInfo, setDebugInfo] = useState<Record<string, unknown>>({});
+  const [apiTests, setApiTests] = useState<Record<string, { status: string; data?: unknown; error?: string }>>({});
 
   useEffect(() => {
     // Collect debug information
@@ -95,12 +95,12 @@ export default function AdminDebugPage() {
               onClick={runAllTests}
               className="px-4 py-2 bg-teal-600 text-white rounded hover:bg-teal-700 transition-colors"
             >
-              Tüm API'leri Test Et
+              Tüm API&apos;leri Test Et
             </button>
           </div>
           
           <div className="space-y-4">
-            {Object.entries(apiTests).map(([endpoint, result]: [string, any]) => (
+            {Object.entries(apiTests).map(([endpoint, result]: [string, { status: string; data?: unknown; error?: string }]) => (
               <div key={endpoint} className="border border-slate-200 rounded p-4">
                 <div className="flex items-center justify-between mb-2">
                   <span className="font-mono text-sm">{endpoint}</span>

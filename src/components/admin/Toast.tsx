@@ -27,7 +27,7 @@ export default function Toast({ id, type, title, message, duration = 5000, onClo
     }, duration);
 
     return () => clearTimeout(timer);
-  }, [duration]);
+  }, [duration, handleClose]);
 
   const handleClose = () => {
     setIsLeaving(true);

@@ -293,7 +293,7 @@ export default function PortfolioManagement() {
               <div className="p-12 text-center">
                 <FolderOpenIcon className="w-12 h-12 text-slate-400 mx-auto mb-4" />
                 <p className="text-slate-600 text-lg">Henüz proje eklenmemiş</p>
-                <p className="text-slate-500 mt-2">İlk projenizi eklemek için "Yeni Proje" butonuna tıklayın</p>
+                <p className="text-slate-500 mt-2">İlk projenizi eklemek için &quot;Yeni Proje&quot; butonuna tıklayın</p>
               </div>
             ) : (
               portfolioItems.map((item) => (

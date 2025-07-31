@@ -135,7 +135,18 @@ export async function PUT(
     }
 
     // Update object'ini hazırla
-    const updateData: any = {
+    const updateData: {
+      title: string;
+      description: string;
+      client: string;
+      completionDate: Date;
+      technologies: string[];
+      coverImage: string;
+      images: string[];
+      categoryIds?: string[];
+      categoryId?: string;
+      slug: string;
+    } = {
       title: data.title,
       description: data.description,
       client: data.client,

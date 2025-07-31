@@ -83,7 +83,7 @@ function PortfolioPageContent() {
         console.log('Categories Data:', catData);
         
         // Debug: Her portfolyo öğesinin kategori bilgilerini kontrol et
-        portfolioData.forEach((item: any, index: number) => {
+        portfolioData.forEach((item: { title: string; categoryId?: string; categoryIds?: string[] }, index: number) => {
           console.log(`Portfolio ${index}:`, {
             title: item.title,
             categoryId: item.categoryId,
@@ -169,11 +169,11 @@ function PortfolioPageContent() {
                 category: (() => {
                   // Önce yeni çoklu kategori sistemini kontrol et (categoryIds)
                   if (item.categoryIds && Array.isArray(item.categoryIds) && item.categoryIds.length > 0) {
-                    return item.categoryIds.map((cat: any) => cat.name || cat).join(', ');
+                    return item.categoryIds.map((cat: { name?: string } | string) => (typeof cat === 'object' ? cat.name : cat) || cat).join(', ');
                   }
                   // Sonra eski tekli kategori sistemini kontrol et (categoryId)
                   if (item.categoryId && typeof item.categoryId === 'object' && 'name' in item.categoryId) {
-                    return (item.categoryId as any).name;
+                    return (item.categoryId as { name: string }).name;
                   }
                   // Eğer categoryId string ise (populate edilmemiş)
                   if (item.categoryId && typeof item.categoryId === 'string') {
@@ -183,7 +183,7 @@ function PortfolioPageContent() {
                   }
                   // Legacy: categories alanını kontrol et
                   if (item.categories && Array.isArray(item.categories) && item.categories.length > 0) {
-                    return item.categories.map((cat: any) => cat.name || cat).join(', ');
+                    return item.categories.map((cat: { name?: string } | string) => (typeof cat === 'object' ? cat.name : cat) || cat).join(', ');
                   }
                   // Legacy: category alanını kontrol et
                   if (item.category?.name) {

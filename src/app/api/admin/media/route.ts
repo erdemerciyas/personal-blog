@@ -65,7 +65,7 @@ export async function GET(request: NextRequest) {
       
       try {
         // Admin API ile görselleri çek
-        let resourceOptions: any = {
+        const resourceOptions: { resource_type: string; max_results: number; type: string; prefix?: string } = {
           resource_type: 'image',
           max_results: 100,
           type: 'upload'

@@ -7,23 +7,16 @@ import { PageLoader } from '../../../components/AdminLoader';
 import AdminLayout from '../../../components/admin/AdminLayout';
 import UniversalEditor from '../../../components/ui/UniversalEditor';
 import { 
-  CogIcon, 
   PlusIcon,
   TrashIcon,
   CheckIcon,
   ArrowPathIcon,
-  ExclamationTriangleIcon,
   LinkIcon,
   ArrowUpIcon,
   ArrowDownIcon,
   PencilIcon,
-  EyeIcon,
-  EyeSlashIcon,
   GlobeAltIcon,
-  UserIcon,
-  PhoneIcon,
   EnvelopeIcon,
-  MapPinIcon,
   PaintBrushIcon
 } from '@heroicons/react/24/outline';
 
@@ -163,7 +156,7 @@ export default function FooterSettingsPage() {
       } else {
         throw new Error('Sıfırlama başarısız');
       }
-    } catch (error) {
+    } catch {
       setMessage({ type: 'error', text: 'Ayarlar sıfırlanamadı' });
     } finally {
       setResetting(false);
@@ -219,7 +212,7 @@ export default function FooterSettingsPage() {
     });
   };
 
-  const updateSettings = (field: string, value: any) => {
+  const updateSettings = (field: string, value: string | boolean | number) => {
     if (!settings) return;
     
     if (field.includes('.')) {
@@ -345,7 +338,7 @@ export default function FooterSettingsPage() {
               ].map((tab) => (
                 <button
                   key={tab.id}
-                  onClick={() => setActiveTab(tab.id as any)}
+                  onClick={() => setActiveTab(tab.id as 'general' | 'social' | 'copyright' | 'visibility')}
                   className={`flex items-center space-x-2 py-4 px-1 border-b-2 font-medium text-sm transition-colors ${
                     activeTab === tab.id
                       ? 'border-teal-500 text-teal-600'

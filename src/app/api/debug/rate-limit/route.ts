@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { getClientIP, getRateLimitStatus, RATE_LIMITS } from '../../../../lib/rate-limit';
 
-export async function GET(request: NextRequest) {
+export async function GET() {
   // Only allow in development
   if (process.env.NODE_ENV !== 'development') {
     return NextResponse.json({ error: 'Not available in production' }, { status: 404 });

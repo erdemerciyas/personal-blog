@@ -21,7 +21,7 @@ const Breadcrumbs: React.FC = () => {
 
   pathSegments.forEach((segment, index) => {
     currentPath += `/${segment}`;
-    const isLast = index === pathSegments.length - 1;
+    const _ = index === pathSegments.length - 1;
 
     // Basic title mapping (can be expanded for more complex cases)
     let label = segment.replace(/-/g, ' ');

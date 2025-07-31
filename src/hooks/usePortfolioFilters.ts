@@ -158,7 +158,7 @@ export function usePortfolioFilters(
           console.log('Category match:', match);
           return match;
         } else if (project.categoryId && typeof project.categoryId === 'object' && 'slug' in project.categoryId) {
-          const categoryObj = project.categoryId as any;
+          const categoryObj = project.categoryId as { slug: string; name: string };
           const match = filters.categories.includes(categoryObj.slug) || filters.categories.includes(categoryObj.name);
           console.log('CategoryId match:', match);
           return match;
