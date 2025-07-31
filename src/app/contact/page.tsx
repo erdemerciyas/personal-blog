@@ -119,7 +119,7 @@ function ContactPageContent() {
         buttonText="İletişim Formu"
         buttonLink="#contact-form"
         badge="İletişim"
-        backgroundGradient="from-teal-500 via-cyan-600 to-blue-600"
+        backgroundGradient="from-brand-primary-700 via-brand-primary-800 to-brand-primary-900"
         showButton={true}
       />
 
@@ -208,7 +208,7 @@ function ContactPageContent() {
                   </button>
                   
                   {submitStatus === 'success' && submitMessage && (
-                    <div className="flex items-center p-4 mt-4 text-sm text-green-700 bg-green-50 border border-green-200 rounded-lg">
+                    <div className="flex items-center p-4 mt-4 text-sm text-brand-primary-800 bg-brand-primary-50 border border-brand-primary-200 rounded-lg">
                       <CheckCircleIcon className="h-5 w-5 mr-2 flex-shrink-0" />
                       <span>{submitMessage}</span>
                     </div>
@@ -232,25 +232,25 @@ function ContactPageContent() {
                   ) : (
                     <div className="space-y-6">
                       <div className="flex items-start">
-                        <EnvelopeIcon className="h-6 w-6 text-teal-600 mr-4 mt-1 flex-shrink-0" />
+                        <EnvelopeIcon className="h-6 w-6 text-brand-primary-700 mr-4 mt-1 flex-shrink-0" />
                         <div>
                           <h3 className="text-slate-800 font-semibold mb-1">E-posta</h3>
-                          <a href={`mailto:${contactInfo.email}`} className="text-slate-600 hover:text-teal-600 transition-colors focus-ring rounded px-1 py-0.5">
+                          <a href={`mailto:${contactInfo.email}`} className="text-slate-600 hover:text-brand-primary-700 transition-colors focus-ring rounded px-1 py-0.5">
                             {contactInfo.email}
                           </a>
                         </div>
                       </div>
                       <div className="flex items-start">
-                        <PhoneIcon className="h-6 w-6 text-teal-600 mr-4 mt-1 flex-shrink-0" />
+                        <PhoneIcon className="h-6 w-6 text-brand-primary-700 mr-4 mt-1 flex-shrink-0" />
                         <div>
                           <h3 className="text-slate-800 font-semibold mb-1">Telefon</h3>
-                          <a href={`tel:${contactInfo.phone.replace(/\s/g, '')}`} className="text-slate-600 hover:text-teal-600 transition-colors focus-ring rounded px-1 py-0.5">
+                          <a href={`tel:${contactInfo.phone.replace(/\s/g, '')}`} className="text-slate-600 hover:text-brand-primary-700 transition-colors focus-ring rounded px-1 py-0.5">
                             {contactInfo.phone}
                           </a>
                         </div>
                       </div>
                       <div className="flex items-start">
-                        <MapPinIcon className="h-6 w-6 text-teal-600 mr-4 mt-1 flex-shrink-0" />
+                        <MapPinIcon className="h-6 w-6 text-brand-primary-700 mr-4 mt-1 flex-shrink-0" />
                         <div>
                           <h3 className="text-slate-800 font-semibold mb-1">Adres</h3>
                           <p className="text-slate-600">
@@ -260,7 +260,7 @@ function ContactPageContent() {
                       </div>
                       {contactInfo.workingHours && (
                         <div className="flex items-start">
-                          <ClockIcon className="h-6 w-6 text-teal-600 mr-4 mt-1 flex-shrink-0" />
+                          <ClockIcon className="h-6 w-6 text-brand-primary-700 mr-4 mt-1 flex-shrink-0" />
                           <div>
                             <h3 className="text-slate-800 font-semibold mb-1">Çalışma Saatleri</h3>
                             <p className="text-slate-600">
@@ -355,7 +355,7 @@ function ContactPageContent() {
                   {/* Address summary */}
                   <div className="flex items-center justify-between p-4 bg-slate-50 rounded-lg">
                     <div className="flex items-center space-x-3">
-                      <div className="w-10 h-10 bg-teal-600 rounded-lg flex items-center justify-center">
+                      <div className="w-10 h-10 bg-brand-primary-700 rounded-lg flex items-center justify-center">
                         <MapPinIcon className="w-5 h-5 text-white" />
                       </div>
                       <div>
@@ -368,7 +368,7 @@ function ContactPageContent() {
                         href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(contactInfo.address)}`}
                         target="_blank"
                         rel="noopener noreferrer"
-                        className="inline-flex items-center px-3 py-2 text-sm font-medium text-teal-600 hover:text-teal-700 border border-teal-200 hover:border-teal-300 rounded-lg transition-colors"
+                        className="inline-flex items-center px-3 py-2 text-sm font-medium text-brand-primary-700 hover:text-brand-primary-800 border border-brand-primary-200 hover:border-brand-primary-300 rounded-lg transition-colors"
                       >
                         <svg className="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
@@ -379,7 +379,7 @@ function ContactPageContent() {
                         href={`https://www.google.com/maps/dir/?api=1&destination=${encodeURIComponent(contactInfo.address)}`}
                         target="_blank"
                         rel="noopener noreferrer"
-                        className="inline-flex items-center px-3 py-2 text-sm font-medium text-white bg-teal-600 hover:bg-teal-700 rounded-lg transition-colors"
+                        className="inline-flex items-center px-3 py-2 text-sm font-medium text-white bg-brand-primary-700 hover:bg-brand-primary-800 rounded-lg transition-colors"
                       >
                         <svg className="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 20l-5.447-2.724A1 1 0 013 16.382V5.618a1 1 0 011.447-.894L9 7m0 13l6-3m-6 3V7m6 10l4.553 2.276A1 1 0 0021 18.382V7.618a1 1 0 00-1.447-.894L15 4m0 13V4m-6 3l6-3" />
@@ -414,7 +414,7 @@ function ContactPageContent() {
                         if (loadingOverlay) {
                           loadingOverlay.innerHTML = `
                             <div class="text-center">
-                              <div class="w-12 h-12 bg-teal-600 rounded-lg flex items-center justify-center mx-auto mb-4">
+                              <div class="w-12 h-12 bg-brand-primary-700 rounded-lg flex items-center justify-center mx-auto mb-4">
                                 <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"></path>
                                 </svg>
@@ -422,7 +422,7 @@ function ContactPageContent() {
                               <p class="text-slate-700 font-medium mb-2">Harita yüklenemedi</p>
                               <p class="text-slate-500 text-sm mb-4">Konumumuzu görüntülemek için aşağıdaki bağlantıları kullanabilirsiniz</p>
                               <div class="flex flex-col space-y-2">
-                                <a href="https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(contactInfo.address)}" target="_blank" rel="noopener noreferrer" class="inline-flex items-center justify-center px-4 py-2 text-sm font-medium text-white bg-teal-600 hover:bg-teal-700 rounded-lg transition-colors">
+                                <a href="https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(contactInfo.address)}" target="_blank" rel="noopener noreferrer" class="inline-flex items-center justify-center px-4 py-2 text-sm font-medium text-white bg-brand-primary-700 hover:bg-brand-primary-800 rounded-lg transition-colors">
                                   <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"></path>
                                   </svg>
@@ -438,7 +438,7 @@ function ContactPageContent() {
                     {/* Map loading overlay */}
                     <div className="absolute inset-0 bg-slate-100 flex items-center justify-center pointer-events-none opacity-100 transition-opacity duration-300" id="map-loading">
                       <div className="text-center">
-                        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-teal-600 mx-auto mb-2"></div>
+                        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-brand-primary-700 mx-auto mb-2"></div>
                         <span className="text-slate-600">Harita yükleniyor...</span>
                       </div>
                     </div>
@@ -485,9 +485,9 @@ function ContactPageContent() {
                       </div>
                     </div>
                     
-                    <div className="p-4 bg-teal-50 rounded-lg">
-                      <h4 className="font-semibold text-teal-800 mb-2">Ulaşım Bilgileri</h4>
-                      <div className="space-y-2 text-sm text-teal-700">
+                    <div className="p-4 bg-brand-primary-50 rounded-lg">
+                      <h4 className="font-semibold text-brand-primary-800 mb-2">Ulaşım Bilgileri</h4>
+                      <div className="space-y-2 text-sm text-brand-primary-700">
                         <div className="flex items-center">
                           <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
@@ -524,7 +524,7 @@ export default function ContactPage() {
   return (
     <Suspense fallback={
       <div className="min-h-screen bg-gray-50">
-        <div className="bg-gradient-to-br from-teal-500 to-cyan-600 py-28">
+        <div className="bg-gradient-to-br from-brand-primary-700 to-brand-primary-800 py-28">
           <div className="max-w-3xl mx-auto px-4 text-center">
             <div className="w-16 h-16 border-4 border-white/30 border-t-white rounded-full animate-spin mx-auto mb-4"></div>
             <p className="text-white text-lg">İletişim sayfası yükleniyor...</p>

@@ -9,26 +9,53 @@ module.exports = {
   theme: {
     extend: {
       colors: {
-        // Fixral Design System Colors
+        // Fixral Design System Colors - Updated to match brand primary
         fixral: {
-          'night-blue': '#0D1B2A',
-          'turquoise': '#00B4D8',
+          'night-blue': '#003450', // Updated to match brand primary
+          'primary': '#003450', // Main brand color
           'light-gray': '#F8F9FA',
           'charcoal': '#3D3D3D',
           'gray-blue': '#3A506B',
           // Extended palette for better design flexibility
-          'deep-blue': '#041E42',
-          'ocean-blue': '#0077BE',
-          'sky-blue': '#87CEEB',
-          'mint': '#40E0D0',
+          'deep-blue': '#002235',
+          'ocean-blue': '#0369a1',
+          'sky-blue': '#7dd3fc',
+          'mint': '#38bdf8',
           'slate': '#2F4F4F',
           'pearl': '#F5F5F5',
           'graphite': '#2C2C2C',
         },
         // Backward compatibility
-        primary: '#0D1B2A', // Ana Gece Mavisi
+        primary: '#003450', // Ana Brand Rengi
         secondary: '#3A506B', // Gri Mavi
-        accent: '#00B4D8', // Canlı Turkuaz
+        accent: '#003450', // Brand Primary
+        // Primary brand colors based on #003450
+        'brand-primary': {
+          50: '#f0f9ff',
+          100: '#e0f2fe',
+          200: '#bae6fd',
+          300: '#7dd3fc',
+          400: '#38bdf8',
+          500: '#0ea5e9',
+          600: '#0284c7',
+          700: '#0369a1',
+          800: '#075985',
+          900: '#003450', // Main brand color
+          950: '#002235',
+        },
+        // Accessibility-focused colors
+        'accessible-brand': {
+          50: '#f0f9ff',
+          100: '#e0f2fe',
+          200: '#bae6fd',
+          300: '#7dd3fc',
+          400: '#38bdf8',
+          500: '#0ea5e9',
+          600: '#0284c7',
+          700: '#0369a1', // WCAG AA compliant
+          800: '#075985', // WCAG AAA compliant
+          900: '#003450',
+        }
       },
       fontFamily: {
         sans: ['Inter', 'var(--font-inter)', 'system-ui', 'sans-serif'],
@@ -68,11 +95,25 @@ module.exports = {
         'fixral-2xl': '4rem',
       },
       animation: {
+        'fade-in': 'fadeIn 0.5s ease-in-out',
+        'slide-up': 'slideUp 0.6s ease-out',
+        'slide-down': 'slideDown 0.6s ease-out',
+        'scale': 'scale 0.3s ease-in-out',
         'fixral-fade-in': 'fadeIn 0.5s ease-in-out',
         'fixral-slide-up': 'slideUp 0.6s ease-out',
         'fixral-slide-down': 'slideDown 0.6s ease-out',
         'fixral-scale': 'scale 0.3s ease-in-out',
         'fixral-pulse': 'pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite',
+        'smooth-bounce': 'bounce 1s ease-in-out infinite',
+      },
+      transitionProperty: {
+        'transform-opacity': 'transform, opacity',
+        'colors-transform': 'color, background-color, border-color, transform',
+      },
+      backgroundImage: {
+        'fixral-gradient': 'linear-gradient(135deg, #0D1B2A 0%, #3A506B 100%)',
+        'fixral-gradient-light': 'linear-gradient(135deg, #F8F9FA 0%, #E9ECEF 100%)',
+        'fixral-gradient-turquoise': 'linear-gradient(135deg, #00B4D8 0%, #0077BE 100%)',
       },
       keyframes: {
         fadeIn: {
@@ -92,12 +133,11 @@ module.exports = {
           '100%': { transform: 'scale(1)', opacity: '1' },
         },
       },
-      backgroundImage: {
-        'fixral-gradient': 'linear-gradient(135deg, #0D1B2A 0%, #3A506B 100%)',
-        'fixral-gradient-light': 'linear-gradient(135deg, #F8F9FA 0%, #E9ECEF 100%)',
-        'fixral-gradient-turquoise': 'linear-gradient(135deg, #00B4D8 0%, #0077BE 100%)',
-      },
     },
   },
-  plugins: [],
+  plugins: [
+    require('@tailwindcss/typography'),
+    require('@tailwindcss/forms'),
+    require('@tailwindcss/aspect-ratio'),
+  ],
 } 

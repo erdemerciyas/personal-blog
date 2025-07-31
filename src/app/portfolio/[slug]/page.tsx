@@ -147,7 +147,7 @@ function PortfolioDetailPageContent({ params }: { params: { slug: string } }) {
     return (
       <div className="min-h-screen bg-gray-50">
         {/* Hero Skeleton */}
-        <section className="bg-gradient-to-br from-slate-900 via-teal-900 to-blue-900 py-32">
+        <section className="bg-gradient-to-br from-slate-900 via-brand-primary-900 to-blue-900 py-32">
           <div className="container mx-auto px-4 text-center">
             <div className="w-16 h-16 border-4 border-white/30 border-t-white rounded-full animate-spin mx-auto mb-4"></div>
             <p className="text-white text-lg">Proje detayları yükleniyor...</p>
@@ -238,7 +238,7 @@ function PortfolioDetailPageContent({ params }: { params: { slug: string } }) {
                           {portfolioItem.technologies.map((tech, index) => (
                             <span
                               key={index}
-                              className="px-3 py-1 bg-teal-100 text-teal-800 rounded-full text-sm font-medium"
+                              className="px-3 py-1 bg-brand-primary-100 text-brand-primary-800 rounded-full text-sm font-medium"
                             >
                               {tech}
                             </span>
@@ -251,7 +251,7 @@ function PortfolioDetailPageContent({ params }: { params: { slug: string } }) {
                     <div className="space-y-4">
                       <div className="flex justify-between items-center py-2 border-b border-slate-100">
                         <span className="text-slate-600">Durum</span>
-                        <span className="text-green-600 font-semibold">✓ Tamamlandı</span>
+                        <span className="text-brand-primary-700 font-semibold">✓ Tamamlandı</span>
                       </div>
                       
                       <div className="flex justify-between items-center py-2 border-b border-slate-100">

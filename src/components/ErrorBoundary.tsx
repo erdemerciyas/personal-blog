@@ -39,7 +39,7 @@ class ErrorBoundary extends Component<Props, State> {
             <div className="space-y-3">
               <button
                 onClick={() => window.location.reload()}
-                className="w-full bg-teal-600 hover:bg-teal-700 text-white px-4 py-2 rounded-lg font-medium transition-colors"
+                className="w-full bg-brand-primary-700 hover:bg-brand-primary-800 text-white px-4 py-2 rounded-lg font-medium transition-colors"
               >
                 Sayfayı Yenile
               </button>

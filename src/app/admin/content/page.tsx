@@ -82,7 +82,7 @@ export default function ContentManagement() {
       icon: WrenchScrewdriverIcon,
       href: '/admin/services',
       stat: `${stats.servicesCount} hizmet`,
-      color: 'bg-green-500',
+      color: 'bg-brand-primary-600',
       actions: [
         { label: 'Listele', href: '/admin/services', icon: EyeIcon },
         { label: 'Yeni Ekle', href: '/admin/services/new', icon: PlusIcon }
@@ -126,7 +126,7 @@ export default function ContentManagement() {
       <AdminLayout title="İçerik Yönetimi" breadcrumbs={breadcrumbs}>
         <div className="flex items-center justify-center min-h-[400px]">
           <div className="flex flex-col items-center space-y-4">
-            <div className="animate-spin rounded-full h-12 w-12 border-4 border-slate-200 dark:border-slate-700 border-t-teal-500"></div>
+            <div className="animate-spin rounded-full h-12 w-12 border-4 border-slate-200 dark:border-slate-700 border-t-brand-primary-600"></div>
             <p className="text-slate-600 dark:text-slate-300 font-medium text-lg">
               İçerik yükleniyor...
             </p>
@@ -221,10 +221,10 @@ export default function ContentManagement() {
             </Link>
             <Link
               href="/admin/services/new"
-              className="flex items-center space-x-2 p-3 bg-green-50 rounded-lg hover:bg-green-100 transition-colors"
+              className="flex items-center space-x-2 p-3 bg-brand-primary-50 rounded-lg hover:bg-brand-primary-100 transition-colors"
             >
-              <PlusIcon className="h-5 w-5 text-green-500" />
-              <span className="text-sm font-medium text-green-700">Yeni Hizmet Ekle</span>
+              <PlusIcon className="h-5 w-5 text-brand-primary-600" />
+              <span className="text-sm font-medium text-brand-primary-800">Yeni Hizmet Ekle</span>
             </Link>
             <Link
               href="/admin/pages/new"

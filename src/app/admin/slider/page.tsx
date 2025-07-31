@@ -268,7 +268,7 @@ export default function AdminSliderPage() {
         <div className="flex items-center justify-center min-h-[400px]">
           <div className="flex flex-col items-center space-y-4">
             <div className="flex flex-col items-center space-y-4">
-              <div className="w-12 h-12 border-4 border-teal-600 border-t-transparent rounded-full animate-spin"></div>
+              <div className="w-12 h-12 border-4 border-brand-primary-700 border-t-transparent rounded-full animate-spin"></div>
               <p className="text-slate-600">Slider yükleniyor...</p>
             </div>
           </div>
@@ -298,7 +298,7 @@ export default function AdminSliderPage() {
           </div>
           <button
             onClick={openCreateModal}
-            className="flex items-center space-x-2 px-6 py-3 bg-teal-600 hover:bg-teal-700 text-white rounded-xl font-semibold transition-all duration-200 shadow-sm"
+            className="flex items-center space-x-2 px-6 py-3 bg-brand-primary-700 hover:bg-brand-primary-800 text-white rounded-xl font-semibold transition-all duration-200 shadow-sm"
           >
             <PlusIcon className="w-4 h-4" />
             <span>Yeni Slider</span>
@@ -307,7 +307,7 @@ export default function AdminSliderPage() {
 
         {/* Success/Error Messages */}
         {success && (
-          <div key="success-message" className="bg-green-50 border border-green-200 text-green-800 p-4 rounded-xl flex items-center space-x-3">
+          <div key="success-message" className="bg-brand-primary-50 border border-brand-primary-200 text-brand-primary-900 p-4 rounded-xl flex items-center space-x-3">
             <CheckIcon className="w-5 h-5" />
             <span>{success}</span>
           </div>
@@ -328,7 +328,7 @@ export default function AdminSliderPage() {
                 <p className="text-sm font-medium text-slate-600">Toplam Slider</p>
                 <p className="text-2xl font-bold text-slate-900">{sliders.length}</p>
               </div>
-              <PhotoIcon className="w-8 h-8 text-teal-600" />
+              <PhotoIcon className="w-8 h-8 text-brand-primary-700" />
             </div>
           </div>
           
@@ -338,7 +338,7 @@ export default function AdminSliderPage() {
                 <p className="text-sm font-medium text-slate-600">Aktif Slider</p>
                 <p className="text-2xl font-bold text-slate-900">{sliders.filter(s => s.isActive).length}</p>
               </div>
-              <PlayIcon className="w-8 h-8 text-green-600" />
+              <PlayIcon className="w-8 h-8 text-brand-primary-700" />
             </div>
           </div>
           
@@ -410,7 +410,7 @@ export default function AdminSliderPage() {
                           <div className="flex items-center space-x-2 mb-1">
                             <h4 className="text-lg font-semibold text-slate-900">{slider.title}</h4>
                             {slider.badge && (
-                              <span key={`badge-${slider._id}`} className="bg-teal-100 text-teal-800 px-2 py-1 rounded-full text-xs font-medium">
+                              <span key={`badge-${slider._id}`} className="bg-brand-primary-100 text-brand-primary-900 px-2 py-1 rounded-full text-xs font-medium">
                                 {slider.badge}
                               </span>
                             )}
@@ -443,7 +443,7 @@ export default function AdminSliderPage() {
                             key={`toggle-${slider._id}`}
                             onClick={() => toggleActive(slider)}
                             className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors ${
-                              slider.isActive ? 'bg-teal-600' : 'bg-slate-200'
+                              slider.isActive ? 'bg-brand-primary-700' : 'bg-slate-200'
                             }`}
                           >
                             <span
@@ -510,7 +510,7 @@ export default function AdminSliderPage() {
                       name="title"
                       value={formData.title}
                       onChange={handleFormChange}
-                      className="w-full border border-slate-300 rounded-xl px-4 py-3 text-slate-900 focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-transparent"
+                      className="w-full border border-slate-300 rounded-xl px-4 py-3 text-slate-900 focus:outline-none focus:ring-2 focus:ring-brand-primary-600 focus:border-transparent"
                       placeholder="Slider başlığı"
                       required
                     />
@@ -525,7 +525,7 @@ export default function AdminSliderPage() {
                       name="subtitle"
                       value={formData.subtitle}
                       onChange={handleFormChange}
-                      className="w-full border border-slate-300 rounded-xl px-4 py-3 text-slate-900 focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-transparent"
+                      className="w-full border border-slate-300 rounded-xl px-4 py-3 text-slate-900 focus:outline-none focus:ring-2 focus:ring-brand-primary-600 focus:border-transparent"
                       placeholder="Alt başlık"
                     />
                   </div>
@@ -539,7 +539,7 @@ export default function AdminSliderPage() {
                       name="badge"
                       value={formData.badge}
                       onChange={handleFormChange}
-                      className="w-full border border-slate-300 rounded-xl px-4 py-3 text-slate-900 focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-transparent"
+                      className="w-full border border-slate-300 rounded-xl px-4 py-3 text-slate-900 focus:outline-none focus:ring-2 focus:ring-brand-primary-600 focus:border-transparent"
                       placeholder="Rozet metni"
                     />
                   </div>
@@ -552,7 +552,7 @@ export default function AdminSliderPage() {
                       type="number"
                       value={formData.duration / 1000}
                       onChange={handleDurationChange}
-                      className="w-full border border-slate-300 rounded-xl px-4 py-3 text-slate-900 focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-transparent"
+                      className="w-full border border-slate-300 rounded-xl px-4 py-3 text-slate-900 focus:outline-none focus:ring-2 focus:ring-brand-primary-600 focus:border-transparent"
                       min="1"
                       max="60"
                     />
@@ -568,7 +568,7 @@ export default function AdminSliderPage() {
                     value={formData.description}
                     onChange={handleFormChange}
                     rows={3}
-                    className="w-full border border-slate-300 rounded-xl px-4 py-3 text-slate-900 focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-transparent"
+                    className="w-full border border-slate-300 rounded-xl px-4 py-3 text-slate-900 focus:outline-none focus:ring-2 focus:ring-brand-primary-600 focus:border-transparent"
                     placeholder="Slider açıklaması"
                   />
                 </div>
@@ -584,7 +584,7 @@ export default function AdminSliderPage() {
                       name="buttonText"
                       value={formData.buttonText}
                       onChange={handleFormChange}
-                      className="w-full border border-slate-300 rounded-xl px-4 py-3 text-slate-900 focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-transparent"
+                      className="w-full border border-slate-300 rounded-xl px-4 py-3 text-slate-900 focus:outline-none focus:ring-2 focus:ring-brand-primary-600 focus:border-transparent"
                       placeholder="Buton metni"
                     />
                   </div>
@@ -598,7 +598,7 @@ export default function AdminSliderPage() {
                       name="buttonLink"
                       value={formData.buttonLink}
                       onChange={handleFormChange}
-                      className="w-full border border-slate-300 rounded-xl px-4 py-3 text-slate-900 focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-transparent"
+                      className="w-full border border-slate-300 rounded-xl px-4 py-3 text-slate-900 focus:outline-none focus:ring-2 focus:ring-brand-primary-600 focus:border-transparent"
                       placeholder="/contact"
                     />
                   </div>
@@ -624,7 +624,7 @@ export default function AdminSliderPage() {
                     name="isActive"
                     checked={formData.isActive}
                     onChange={handleFormChange}
-                    className="w-5 h-5 text-teal-600 border-slate-300 rounded focus:ring-teal-500"
+                    className="w-5 h-5 text-brand-primary-700 border-slate-300 rounded focus:ring-brand-primary-600"
                   />
                   <label htmlFor="isActive" className="text-sm font-medium text-slate-700">
                     Aktif slider
@@ -648,7 +648,7 @@ export default function AdminSliderPage() {
                     className={`flex items-center space-x-2 px-6 py-3 rounded-xl font-semibold transition-all duration-200 ${
                       submitting
                         ? 'bg-slate-400 cursor-not-allowed text-white'
-                        : 'bg-teal-600 hover:bg-teal-700 text-white shadow-sm'
+                        : 'bg-brand-primary-700 hover:bg-brand-primary-800 text-white shadow-sm'
                     }`}
                   >
                     {submitting ? (

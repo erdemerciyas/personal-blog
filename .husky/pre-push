@@ -3,7 +3,7 @@
 
 echo "🚀 Pre-push hook çalıştırılıyor..."
 
-# Otomatik versiyon güncelleme
-npm run version:auto
+# Build test
+npm run build
 
 echo "✅ Pre-push hook tamamlandı!" 

@@ -262,8 +262,8 @@ const MediaBrowser: React.FC<MediaBrowserProps> = ({
       ? 'bg-slate-800 border-slate-600' 
       : 'bg-white/5 border-white/10',
     cardSelected: theme === 'dark' 
-      ? 'border-teal-500 bg-teal-500/10' 
-      : 'border-teal-400 bg-teal-400/20',
+      ? 'border-brand-primary-600 bg-brand-primary-600/10' 
+      : 'border-brand-primary-500 bg-brand-primary-500/20',
     footer: theme === 'dark' 
       ? 'bg-slate-800/50 border-slate-700' 
       : 'bg-white/5 border-white/10'
@@ -282,7 +282,7 @@ const MediaBrowser: React.FC<MediaBrowserProps> = ({
         <div className={`${themeStyles.header} p-6 flex-shrink-0`}>
           <div className="flex items-center justify-between">
             <div className="flex items-center space-x-3">
-              <div className="w-10 h-10 bg-gradient-to-r from-teal-500 to-blue-500 rounded-xl flex items-center justify-center">
+              <div className="w-10 h-10 bg-gradient-to-r from-brand-primary-600 to-blue-500 rounded-xl flex items-center justify-center">
                 <PhotoIcon className="w-6 h-6 text-white" />
               </div>
               <div>
@@ -308,7 +308,7 @@ const MediaBrowser: React.FC<MediaBrowserProps> = ({
                 placeholder="Görsel ara..."
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
-                className={`${themeStyles.input} w-full rounded-xl pl-10 pr-4 py-2 focus:outline-none focus:ring-2 focus:ring-teal-500`}
+                className={`${themeStyles.input} w-full rounded-xl pl-10 pr-4 py-2 focus:outline-none focus:ring-2 focus:ring-brand-primary-600`}
               />
             </div>
 
@@ -316,7 +316,7 @@ const MediaBrowser: React.FC<MediaBrowserProps> = ({
             <select
               value={filter}
               onChange={(e) => setFilter(e.target.value)}
-              className={`${themeStyles.select} rounded-xl px-4 py-2 focus:outline-none focus:ring-2 focus:ring-teal-500`}
+              className={`${themeStyles.select} rounded-xl px-4 py-2 focus:outline-none focus:ring-2 focus:ring-brand-primary-600`}
             >
               <option value="all" style={{ color: '#1e293b', backgroundColor: '#ffffff' }}>
                 Tüm Dosyalar
@@ -330,7 +330,7 @@ const MediaBrowser: React.FC<MediaBrowserProps> = ({
             <select
               value={pageFilter}
               onChange={(e) => setPageFilter(e.target.value)}
-              className={`${themeStyles.select} rounded-xl px-4 py-2 focus:outline-none focus:ring-2 focus:ring-teal-500`}
+              className={`${themeStyles.select} rounded-xl px-4 py-2 focus:outline-none focus:ring-2 focus:ring-brand-primary-600`}
             >
               <option value="all" style={{ color: '#1e293b', backgroundColor: '#ffffff' }}>
                 Tüm Sayfalar
@@ -359,7 +359,7 @@ const MediaBrowser: React.FC<MediaBrowserProps> = ({
                 e.stopPropagation();
                 handleUploadNew(e);
               }}
-              className="flex items-center space-x-2 px-4 py-2 bg-gradient-to-r from-teal-600 to-blue-600 hover:from-teal-700 hover:to-blue-700 text-white rounded-xl font-medium transition-all duration-200"
+              className="flex items-center space-x-2 px-4 py-2 bg-gradient-to-r from-brand-primary-700 to-blue-600 hover:from-brand-primary-800 hover:to-blue-700 text-white rounded-xl font-medium transition-all duration-200"
             >
               <ArrowUpTrayIcon className="w-4 h-4" />
               <span>Yeni Yükle</span>
@@ -385,7 +385,7 @@ const MediaBrowser: React.FC<MediaBrowserProps> = ({
                   e.stopPropagation();
                   handleUploadNew(e);
                 }}
-                className="px-6 py-3 bg-gradient-to-r from-teal-600 to-blue-600 hover:from-teal-700 hover:to-blue-700 text-white rounded-xl font-medium transition-all duration-200"
+                className="px-6 py-3 bg-gradient-to-r from-brand-primary-700 to-blue-600 hover:from-brand-primary-800 hover:to-blue-700 text-white rounded-xl font-medium transition-all duration-200"
               >
                 İlk Görselinizi Yükleyin
               </button>
@@ -440,7 +440,7 @@ const MediaBrowser: React.FC<MediaBrowserProps> = ({
                     {/* Seçim butonu */}
                     <button
                       onClick={(e) => { e.stopPropagation(); handleItemClick(item._id); }}
-                      className={`w-full mt-1 py-1 rounded bg-teal-600 hover:bg-teal-700 text-white text-xs font-semibold transition-colors ${isSelected ? 'ring-2 ring-teal-400' : ''}`}
+                      className={`w-full mt-1 py-1 rounded bg-brand-primary-700 hover:bg-brand-primary-800 text-white text-xs font-semibold transition-colors ${isSelected ? 'ring-2 ring-brand-primary-500' : ''}`}
                       tabIndex={0}
                     >
                       {isSelected ? 'Seçili' : 'Seç'}
@@ -482,7 +482,7 @@ const MediaBrowser: React.FC<MediaBrowserProps> = ({
                   {filteredItems.length} dosya bulundu
                 </p>
                 {allowMultipleSelect && selectedItems.length > 0 ? (
-                  <p className={`${themeStyles.text} font-medium text-teal-400`}>
+                  <p className={`${themeStyles.text} font-medium text-brand-primary-400`}>
                     {selectedItems.length} görsel seçildi
                   </p>
                 ) : selectedItem ? (
@@ -512,7 +512,7 @@ const MediaBrowser: React.FC<MediaBrowserProps> = ({
                   disabled={allowMultipleSelect ? selectedItems.length === 0 : !selectedItem}
                   className={`px-6 py-2 rounded-xl font-medium transition-all duration-200 ${
                     (allowMultipleSelect ? selectedItems.length > 0 : selectedItem)
-                      ? 'bg-gradient-to-r from-teal-600 to-blue-600 hover:from-teal-700 hover:to-blue-700 text-white'
+                      ? 'bg-gradient-to-r from-brand-primary-700 to-blue-600 hover:from-brand-primary-800 hover:to-blue-700 text-white'
                       : 'bg-slate-700 text-slate-400 cursor-not-allowed'
                   }`}
                 >

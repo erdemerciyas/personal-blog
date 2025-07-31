@@ -36,8 +36,8 @@ const Select: React.FC<SelectProps> = ({
   };
 
   const variantClasses = {
-    default: 'bg-white border-slate-300 text-slate-700 focus:border-teal-500 focus:ring-teal-500',
-    dark: 'bg-slate-800 border-slate-600 text-white focus:border-teal-500 focus:ring-teal-500'
+    default: 'bg-white border-slate-300 text-slate-700 focus:border-brand-primary-600 focus:ring-brand-primary-600',
+    dark: 'bg-slate-800 border-slate-600 text-white focus:border-brand-primary-600 focus:ring-brand-primary-600'
   };
 
   const baseClasses = `

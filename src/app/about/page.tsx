@@ -91,7 +91,7 @@ export default function AboutPage() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-teal-500 to-cyan-600">
+      <div className="min-h-screen bg-gradient-to-br from-brand-primary-600 to-cyan-600">
         <div className="container mx-auto px-4 py-20">
           <ContentSkeleton type="profile" count={1} className="mb-8" />
           <ContentSkeleton type="article" count={2} />
@@ -122,14 +122,14 @@ export default function AboutPage() {
   return (
     <div className="min-h-screen">
       {/* Hero Section */}
-      <section className="bg-gradient-to-br from-teal-500 to-cyan-600 text-white py-28 md:py-32">
+      <section className="bg-gradient-to-br from-brand-primary-600 to-cyan-600 text-white py-28 md:py-32">
         <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
             {/* Left Content */}
             <div>
               <div className="flex items-center space-x-3 mb-8">
-                <div className="w-4 h-4 bg-teal-400 rounded-full animate-pulse"></div>
-                <span className="text-teal-300 font-semibold text-sm uppercase tracking-wider">
+                <div className="w-4 h-4 bg-brand-primary-400 rounded-full animate-pulse"></div>
+                <span className="text-brand-primary-300 font-semibold text-sm uppercase tracking-wider">
                   {aboutData.heroSubtitle}
                 </span>
               </div>
@@ -157,12 +157,12 @@ export default function AboutPage() {
             <div className="lg:flex lg:justify-center">
               <div className="card-glass relative p-8 max-w-sm mx-auto">
                 {/* Profile Image */}
-                <div className="w-32 h-32 bg-gradient-to-br from-teal-400 to-blue-400 rounded-full flex items-center justify-center mx-auto mb-6 shadow-2xl">
+                <div className="w-32 h-32 bg-gradient-to-br from-brand-primary-400 to-blue-400 rounded-full flex items-center justify-center mx-auto mb-6 shadow-2xl">
                   <UserIcon className="w-16 h-16 text-white" />
                 </div>
                 <div className="text-center">
                   <h3 className="text-2xl font-bold text-white mb-2">FIXRAL</h3>
-                  <p className="text-teal-300 font-medium mb-6">{aboutData.heroSubtitle}</p>
+                  <p className="text-brand-primary-300 font-medium mb-6">{aboutData.heroSubtitle}</p>
                   {/* Quick Stats */}
                   <div className="grid grid-cols-2 gap-3">
                     {aboutData.achievements.slice(0, 4).map((achievement, index) => (
@@ -178,7 +178,7 @@ export default function AboutPage() {
                   </div>
                 </div>
                 {/* Floating Elements */}
-                <div className="absolute -top-4 -right-4 w-8 h-8 bg-teal-400 rounded-full animate-bounce"></div>
+                <div className="absolute -top-4 -right-4 w-8 h-8 bg-brand-primary-400 rounded-full animate-bounce"></div>
                 <div className="absolute -bottom-4 -left-4 w-6 h-6 bg-blue-400 rounded-full animate-pulse"></div>
               </div>
             </div>
@@ -211,14 +211,14 @@ export default function AboutPage() {
               {/* Skills */}
               <div>
                 <h3 className="text-2xl font-bold text-slate-800 mb-6 flex items-center">
-                  <CodeBracketIcon className="w-6 h-6 mr-3 text-teal-600" />
+                  <CodeBracketIcon className="w-6 h-6 mr-3 text-brand-primary-700" />
                   Uzmanlık Alanları
                 </h3>
                 <div className="flex flex-wrap gap-3">
                   {aboutData.skills.map((skill, index) => (
                     <span 
                       key={index} 
-                      className="px-4 py-2 bg-teal-100 text-teal-700 rounded-xl font-medium text-sm"
+                      className="px-4 py-2 bg-brand-primary-100 text-brand-primary-800 rounded-xl font-medium text-sm"
                     >
                       {skill}
                     </span>
@@ -229,7 +229,7 @@ export default function AboutPage() {
               {/* Values */}
               <div>
                 <h3 className="text-2xl font-bold text-slate-800 mb-6 flex items-center">
-                  <HeartIcon className="w-6 h-6 mr-3 text-teal-600" />
+                  <HeartIcon className="w-6 h-6 mr-3 text-brand-primary-700" />
                   Değerlerim
                 </h3>
                 <div className="space-y-4">
@@ -237,8 +237,8 @@ export default function AboutPage() {
                     const IconComponent = iconMap[value.iconName as keyof typeof iconMap] || SparklesIcon;
                     return (
                       <div key={index} className="flex items-start space-x-3">
-                        <div className="w-8 h-8 bg-teal-100 rounded-lg flex items-center justify-center mt-1">
-                          <IconComponent className="w-5 h-5 text-teal-600" />
+                        <div className="w-8 h-8 bg-brand-primary-100 rounded-lg flex items-center justify-center mt-1">
+                          <IconComponent className="w-5 h-5 text-brand-primary-700" />
                         </div>
                         <p className="text-body">{value.text}</p>
                       </div>
@@ -270,7 +270,7 @@ export default function AboutPage() {
                     <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-4">
                       <div>
                         <h3 className="text-xl font-bold text-slate-800">{exp.title}</h3>
-                        <p className="text-teal-600 font-medium">{exp.company}</p>
+                        <p className="text-brand-primary-700 font-medium">{exp.company}</p>
                       </div>
                       <div className="flex items-center text-slate-500 text-sm mt-2 sm:mt-0">
                         <CalendarIcon className="w-4 h-4 mr-2" />
@@ -303,7 +303,7 @@ export default function AboutPage() {
             <h2 className="section-title text-white mb-6">
               {aboutData.contactTitle}
             </h2>
-            <p className="section-subtitle text-teal-100 mb-12 leading-relaxed">
+            <p className="section-subtitle text-brand-primary-100 mb-12 leading-relaxed">
               {aboutData.contactDescription}
             </p>
             

@@ -228,7 +228,7 @@ export default function AdminMediaPage() {
           <div className="flex flex-col items-center space-y-4">
             <div className="flex flex-col items-center space-y-4">
               <div className="w-full max-w-xs mx-auto bg-white/20 rounded-full h-2">
-                <div className="bg-gradient-to-r from-teal-500 to-blue-500 h-2 rounded-full animate-pulse"></div>
+                <div className="bg-gradient-to-r from-brand-primary-600 to-blue-500 h-2 rounded-full animate-pulse"></div>
               </div>
             </div>
           </div>
@@ -269,7 +269,7 @@ export default function AdminMediaPage() {
               setShowUploadModal(true);
               console.log('showUploadModal true olarak ayarlandı');
             }}
-            className="bg-teal-600 hover:bg-teal-700 text-white px-6 py-3 rounded-xl font-semibold transition-all duration-200 flex items-center space-x-2 shadow-sm"
+            className="bg-brand-primary-700 hover:bg-brand-primary-800 text-white px-6 py-3 rounded-xl font-semibold transition-all duration-200 flex items-center space-x-2 shadow-sm"
           >
             <PlusIcon className="w-5 h-5" />
             <span>Dosya Yükle</span>
@@ -280,7 +280,7 @@ export default function AdminMediaPage() {
         {message && (
           <div className={`p-4 rounded-xl border ${
             message.type === 'success' 
-              ? 'bg-green-50 border-green-200 text-green-800' 
+              ? 'bg-brand-primary-50 border-brand-primary-200 text-brand-primary-900' 
               : 'bg-red-50 border-red-200 text-red-800'
           }`}>
             {message.text}
@@ -300,7 +300,7 @@ export default function AdminMediaPage() {
                   placeholder="Dosya ara..."
                   value={mediaSearch}
                   onChange={(e) => setMediaSearch(e.target.value)}
-                  className="w-full bg-slate-50 border border-slate-200 rounded-xl pl-10 pr-4 py-3 text-slate-900 placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-transparent"
+                  className="w-full bg-slate-50 border border-slate-200 rounded-xl pl-10 pr-4 py-3 text-slate-900 placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-brand-primary-600 focus:border-transparent"
                 />
               </div>
             </div>
@@ -312,7 +312,7 @@ export default function AdminMediaPage() {
                 <select
                   value={mediaFilter}
                   onChange={(e) => setMediaFilter(e.target.value)}
-                  className="bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-slate-900 focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-transparent"
+                  className="bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-slate-900 focus:outline-none focus:ring-2 focus:ring-brand-primary-600 focus:border-transparent"
                 >
                   <option value="all">Tüm Dosyalar</option>
                   <option value="images">Sadece Resimler</option>
@@ -333,7 +333,7 @@ export default function AdminMediaPage() {
             <div className="mt-6 pt-6 border-t border-slate-200">
               <div className="flex items-center justify-between bg-red-50 border border-red-200 rounded-xl p-4">
                 <div className="flex items-center space-x-3">
-                  <CheckCircleIcon className="w-5 h-5 text-teal-600" />
+                  <CheckCircleIcon className="w-5 h-5 text-brand-primary-700" />
                   <span className="text-slate-900 font-semibold">
                     {selectedMedia.length} dosya seçildi
                   </span>
@@ -363,7 +363,7 @@ export default function AdminMediaPage() {
           <div className="flex items-center justify-center py-16">
             <div className="flex flex-col items-center space-y-4">
               <div className="w-full max-w-xs mx-auto bg-white/20 rounded-full h-2">
-                <div className="bg-gradient-to-r from-teal-500 to-blue-500 h-2 rounded-full animate-pulse"></div>
+                <div className="bg-gradient-to-r from-brand-primary-600 to-blue-500 h-2 rounded-full animate-pulse"></div>
               </div>
             </div>
           </div>
@@ -373,9 +373,9 @@ export default function AdminMediaPage() {
             {getFilteredMediaItems().length > 0 && (
               <div
                 onClick={selectAllMedia}
-                className="bg-white/10 border-2 border-dashed border-white/30 rounded-xl p-6 cursor-pointer hover:bg-white/20 hover:border-teal-500 transition-all duration-200 flex flex-col items-center justify-center min-h-[180px] group"
+                className="bg-white/10 border-2 border-dashed border-white/30 rounded-xl p-6 cursor-pointer hover:bg-white/20 hover:border-brand-primary-600 transition-all duration-200 flex flex-col items-center justify-center min-h-[180px] group"
               >
-                <CheckCircleIcon className="w-8 h-8 text-teal-400 mb-2 group-hover:scale-110 transition-transform" />
+                <CheckCircleIcon className="w-8 h-8 text-brand-primary-400 mb-2 group-hover:scale-110 transition-transform" />
                 <span className="text-sm text-slate-300 text-center font-medium">Tümünü Seç</span>
                 <span className="text-xs text-slate-500 mt-1">{getFilteredMediaItems().length} dosya</span>
               </div>
@@ -387,8 +387,8 @@ export default function AdminMediaPage() {
                 key={item._id}
                 className={`relative bg-white/5 border-2 rounded-xl overflow-hidden cursor-pointer transition-all duration-200 hover:bg-white/10 group ${
                   selectedMedia.includes(item._id) 
-                    ? 'border-teal-500 bg-teal-500/10 shadow-lg shadow-teal-500/20' 
-                    : 'border-white/20 hover:border-teal-500/50'
+                    ? 'border-brand-primary-600 bg-brand-primary-600/10 shadow-lg shadow-brand-primary-600/20' 
+                    : 'border-white/20 hover:border-brand-primary-600/50'
                 }`}
                 onClick={() => openPreview(item)}
               >
@@ -397,7 +397,7 @@ export default function AdminMediaPage() {
                   <span className={`text-xs px-2 py-1 rounded-full text-white font-semibold ${
                     item.source === 'cloudinary' 
                       ? 'bg-blue-600' 
-                      : 'bg-green-600'
+                      : 'bg-brand-primary-700'
                   }`}>
                     {item.source === 'cloudinary' ? '☁️' : '💾'}
                   </span>
@@ -408,8 +408,8 @@ export default function AdminMediaPage() {
                   <div 
                     className={`w-6 h-6 rounded border-2 flex items-center justify-center cursor-pointer transition-all duration-200 ${
                       selectedMedia.includes(item._id)
-                        ? 'bg-teal-500 border-teal-500'
-                        : 'bg-black/30 border-white/50 hover:border-teal-400'
+                        ? 'bg-brand-primary-600 border-brand-primary-600'
+                        : 'bg-black/30 border-white/50 hover:border-brand-primary-400'
                     }`}
                     onClick={(e) => {
                       e.stopPropagation();
@@ -474,7 +474,7 @@ export default function AdminMediaPage() {
                 {mediaFilter === 'all' && (
                   <button
                     onClick={() => setShowUploadModal(true)}
-                    className="bg-teal-600 hover:bg-teal-700 text-white px-8 py-4 rounded-xl font-semibold transition-all duration-200 flex items-center space-x-2 mx-auto"
+                    className="bg-brand-primary-700 hover:bg-brand-primary-800 text-white px-8 py-4 rounded-xl font-semibold transition-all duration-200 flex items-center space-x-2 mx-auto"
                   >
                     <PlusIcon className="w-5 h-5" />
                     <span>İlk Dosyayı Yükle</span>
@@ -491,7 +491,7 @@ export default function AdminMediaPage() {
             <div className="bg-white rounded-3xl max-w-2xl w-full shadow-2xl p-6">
                           <div className="flex items-center justify-between mb-6">
                 <h3 className="text-lg font-semibold text-slate-900 flex items-center space-x-2">
-                  <CloudArrowUpIcon className="w-5 h-5 text-teal-600" />
+                  <CloudArrowUpIcon className="w-5 h-5 text-brand-primary-700" />
                   <span>Dosya Yükle</span>
                 </h3>
                 <button
@@ -508,8 +508,8 @@ export default function AdminMediaPage() {
               <div
                 className={`border-2 border-dashed rounded-xl p-8 text-center transition-all duration-200 ${
                   uploadingMedia
-                    ? 'border-teal-500 bg-teal-500/10'
-                    : 'border-white/30 hover:border-teal-500 hover:bg-white/5'
+                    ? 'border-brand-primary-600 bg-brand-primary-600/10'
+                    : 'border-white/30 hover:border-brand-primary-600 hover:bg-white/5'
                 }`}
                 onDragOver={(e) => e.preventDefault()}
                 onDrop={(e) => {
@@ -536,13 +536,13 @@ export default function AdminMediaPage() {
                 
                 {uploadingMedia ? (
                   <div className="space-y-4">
-                    <CloudArrowUpIcon className="w-16 h-16 mx-auto text-teal-400 animate-pulse" />
+                    <CloudArrowUpIcon className="w-16 h-16 mx-auto text-brand-primary-400 animate-pulse" />
                     <div>
-                      <p className="text-teal-300 font-semibold text-lg">Dosyalar yükleniyor...</p>
+                      <p className="text-brand-primary-300 font-semibold text-lg">Dosyalar yükleniyor...</p>
                       <p className="text-slate-400 text-sm mt-1">Lütfen bekleyin</p>
                     </div>
                     <div className="w-full max-w-xs mx-auto bg-white/20 rounded-full h-2">
-                      <div className="bg-gradient-to-r from-teal-500 to-blue-500 h-2 rounded-full animate-pulse"></div>
+                      <div className="bg-gradient-to-r from-brand-primary-600 to-blue-500 h-2 rounded-full animate-pulse"></div>
                     </div>
                   </div>
                 ) : (
@@ -577,7 +577,7 @@ export default function AdminMediaPage() {
                     {/* Dosya Seç butonu */}
                     <button
                       type="button"
-                      className="bg-gradient-to-r from-teal-600 to-blue-600 hover:from-teal-700 hover:to-blue-700 text-white px-6 py-3 rounded-xl font-semibold transition-all duration-200"
+                      className="bg-gradient-to-r from-brand-primary-700 to-blue-600 hover:from-brand-primary-800 hover:to-blue-700 text-white px-6 py-3 rounded-xl font-semibold transition-all duration-200"
                       onClick={() => {
                         console.log('Dosya Seç butonuna tıklandı');
                         const fileInput = document.getElementById('media-upload');
@@ -628,7 +628,7 @@ export default function AdminMediaPage() {
               {/* Modal Header */}
               <div className="flex items-center justify-between p-6 border-b border-slate-200">
                 <div className="flex items-center space-x-3">
-                  <div className="w-10 h-10 bg-gradient-to-r from-teal-500 to-blue-500 rounded-xl flex items-center justify-center">
+                  <div className="w-10 h-10 bg-gradient-to-r from-brand-primary-600 to-blue-500 rounded-xl flex items-center justify-center">
                     <PhotoIcon className="w-6 h-6 text-white" />
                   </div>
                   <div>
@@ -708,7 +708,7 @@ export default function AdminMediaPage() {
                           <label className="text-sm font-medium text-slate-600">Kaynak</label>
                           <div className="flex items-center space-x-2">
                             <span className={`text-xs px-2 py-1 rounded-full text-white font-semibold ${
-                              previewItem.source === 'cloudinary' ? 'bg-blue-600' : 'bg-green-600'
+                              previewItem.source === 'cloudinary' ? 'bg-blue-600' : 'bg-brand-primary-700'
                             }`}>
                               {previewItem.source === 'cloudinary' ? '☁️ Cloudinary' : '💾 Yerel'}
                             </span>
@@ -745,7 +745,7 @@ export default function AdminMediaPage() {
                         <a
                           href={previewItem.url}
                           download={previewItem.originalName}
-                          className="w-full bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg font-medium transition-colors flex items-center justify-center space-x-2"
+                          className="w-full bg-brand-primary-700 hover:bg-brand-primary-800 text-white px-4 py-2 rounded-lg font-medium transition-colors flex items-center justify-center space-x-2"
                         >
                           <ArrowDownTrayIcon className="w-4 h-4" />
                           <span>İndir</span>

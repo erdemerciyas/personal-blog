@@ -114,7 +114,7 @@ export default function HomePortfolioSection({
     <section className="section bg-white relative overflow-hidden">
       {/* Background Pattern */}
       <div className="absolute inset-0 opacity-5">
-        <div className="absolute top-20 left-20 w-32 h-32 border-2 border-teal-500 rounded-full"></div>
+        <div className="absolute top-20 left-20 w-32 h-32 border-2 border-brand-primary-600 rounded-full"></div>
         <div className="absolute bottom-32 right-32 w-24 h-24 border-2 border-blue-500 rotate-45"></div>
         <div className="absolute top-1/2 left-1/4 w-40 h-40 border-2 border-purple-500 rounded-full"></div>
       </div>
@@ -128,7 +128,7 @@ export default function HomePortfolioSection({
           viewport={{ once: true }}
           className="text-center mb-20"
         >
-          <div className="inline-flex items-center px-6 py-3 bg-gradient-to-r from-teal-100 to-blue-100 rounded-2xl text-teal-700 font-semibold mb-6">
+          <div className="inline-flex items-center px-6 py-3 bg-gradient-to-r from-brand-primary-100 to-blue-100 rounded-2xl text-brand-primary-800 font-semibold mb-6">
             <SparklesIcon className="w-5 h-5 mr-2" />
             Başarılı Projeler
           </div>
@@ -226,7 +226,7 @@ export default function HomePortfolioSection({
                   onClick={() => goToSlide(index)}
                   className={`w-3 h-3 rounded-full transition-all duration-300 ${
                     index === currentSlide 
-                      ? 'bg-teal-500 scale-125' 
+                      ? 'bg-brand-primary-600 scale-125' 
                       : 'bg-slate-300 hover:bg-slate-400'
                   }`}
                 />
@@ -259,7 +259,7 @@ export default function HomePortfolioSection({
           className="grid grid-cols-1 sm:grid-cols-3 gap-8 mt-20 pt-16 border-t border-slate-200"
         >
           <div className="text-center">
-            <div className="text-4xl font-bold text-teal-600 mb-2">
+            <div className="text-4xl font-bold text-brand-primary-700 mb-2">
               {portfolioItems.length}+
             </div>
             <div className="text-slate-600 font-medium">Tamamlanan Proje</div>

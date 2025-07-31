@@ -83,17 +83,17 @@ const SiteSettingsSchema = new mongoose.Schema<ISiteSettings>({
     primary: {
       type: String,
       required: false,
-      default: '#0f766e' // teal-700
+      default: '#003450' // brand-primary-900
     },
     secondary: {
       type: String,
       required: false,
-      default: '#1e40af' // blue-700
+      default: '#075985' // brand-primary-800
     },
     accent: {
       type: String,
       required: false,
-      default: '#db2777' // pink-600
+      default: '#0369a1' // brand-primary-700
     }
   },
   socialMedia: {

@@ -297,7 +297,7 @@ export default function FooterSettingsPage() {
               className={`flex items-center space-x-2 px-6 py-3 rounded-xl font-semibold transition-all duration-200 ${
                 saving
                   ? 'bg-slate-400 cursor-not-allowed text-white'
-                  : 'bg-teal-600 hover:bg-teal-700 text-white shadow-sm'
+                  : 'bg-brand-primary-700 hover:bg-brand-primary-800 text-white shadow-sm'
               }`}
             >
               {saving ? (
@@ -319,7 +319,7 @@ export default function FooterSettingsPage() {
         {message && (
           <div className={`p-4 rounded-xl ${
             message.type === 'success' 
-              ? 'bg-green-50 border border-green-200 text-green-800' 
+              ? 'bg-brand-primary-50 border border-brand-primary-200 text-brand-primary-900' 
               : 'bg-red-50 border border-red-200 text-red-800'
           }`}>
             {message.text}
@@ -341,7 +341,7 @@ export default function FooterSettingsPage() {
                   onClick={() => setActiveTab(tab.id as 'general' | 'social' | 'copyright' | 'visibility')}
                   className={`flex items-center space-x-2 py-4 px-1 border-b-2 font-medium text-sm transition-colors ${
                     activeTab === tab.id
-                      ? 'border-teal-500 text-teal-600'
+                      ? 'border-brand-primary-600 text-brand-primary-700'
                       : 'border-transparent text-slate-500 hover:text-slate-700 hover:border-slate-300'
                   }`}
                 >
@@ -372,7 +372,7 @@ export default function FooterSettingsPage() {
                 {/* Contact Information */}
                 <div>
                   <h3 className="text-lg font-semibold text-slate-900 mb-4 flex items-center space-x-2">
-                    <EnvelopeIcon className="w-5 h-5 text-teal-600" />
+                    <EnvelopeIcon className="w-5 h-5 text-brand-primary-700" />
                     <span>İletişim Bilgileri</span>
                   </h3>
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -384,7 +384,7 @@ export default function FooterSettingsPage() {
                         type="email"
                         value={settings.contactInfo.email}
                         onChange={(e) => updateSettings('contactInfo.email', e.target.value)}
-                        className="w-full border border-slate-300 rounded-xl px-4 py-3 text-slate-900 focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-transparent"
+                        className="w-full border border-slate-300 rounded-xl px-4 py-3 text-slate-900 focus:outline-none focus:ring-2 focus:ring-brand-primary-600 focus:border-transparent"
                         placeholder="info@example.com"
                       />
                     </div>
@@ -396,7 +396,7 @@ export default function FooterSettingsPage() {
                         type="tel"
                         value={settings.contactInfo.phone}
                         onChange={(e) => updateSettings('contactInfo.phone', e.target.value)}
-                        className="w-full border border-slate-300 rounded-xl px-4 py-3 text-slate-900 focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-transparent"
+                        className="w-full border border-slate-300 rounded-xl px-4 py-3 text-slate-900 focus:outline-none focus:ring-2 focus:ring-brand-primary-600 focus:border-transparent"
                         placeholder="+90 555 000 00 00"
                       />
                     </div>
@@ -408,7 +408,7 @@ export default function FooterSettingsPage() {
                         type="text"
                         value={settings.contactInfo.address}
                         onChange={(e) => updateSettings('contactInfo.address', e.target.value)}
-                        className="w-full border border-slate-300 rounded-xl px-4 py-3 text-slate-900 focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-transparent"
+                        className="w-full border border-slate-300 rounded-xl px-4 py-3 text-slate-900 focus:outline-none focus:ring-2 focus:ring-brand-primary-600 focus:border-transparent"
                         placeholder="Tam adres..."
                       />
                     </div>
@@ -429,7 +429,7 @@ export default function FooterSettingsPage() {
                         type="text"
                         value={settings.copyrightInfo.companyName}
                         onChange={(e) => updateSettings('copyrightInfo.companyName', e.target.value)}
-                        className="w-full border border-slate-300 rounded-xl px-4 py-3 text-slate-900 focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-transparent"
+                        className="w-full border border-slate-300 rounded-xl px-4 py-3 text-slate-900 focus:outline-none focus:ring-2 focus:ring-brand-primary-600 focus:border-transparent"
                         placeholder="Şirket adı..."
                       />
                     </div>
@@ -441,7 +441,7 @@ export default function FooterSettingsPage() {
                         type="number"
                         value={settings.copyrightInfo.year}
                         onChange={(e) => updateSettings('copyrightInfo.year', parseInt(e.target.value))}
-                        className="w-full border border-slate-300 rounded-xl px-4 py-3 text-slate-900 focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-transparent"
+                        className="w-full border border-slate-300 rounded-xl px-4 py-3 text-slate-900 focus:outline-none focus:ring-2 focus:ring-brand-primary-600 focus:border-transparent"
                         placeholder="2024"
                       />
                     </div>
@@ -453,7 +453,7 @@ export default function FooterSettingsPage() {
                         type="text"
                         value={settings.copyrightInfo.additionalText}
                         onChange={(e) => updateSettings('copyrightInfo.additionalText', e.target.value)}
-                        className="w-full border border-slate-300 rounded-xl px-4 py-3 text-slate-900 focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-transparent"
+                        className="w-full border border-slate-300 rounded-xl px-4 py-3 text-slate-900 focus:outline-none focus:ring-2 focus:ring-brand-primary-600 focus:border-transparent"
                         placeholder="Tüm hakları saklıdır."
                       />
                     </div>
@@ -478,7 +478,7 @@ export default function FooterSettingsPage() {
                           id={item.key}
                           checked={settings.visibility[item.key as keyof typeof settings.visibility]}
                           onChange={(e) => updateSettings(`visibility.${item.key}`, e.target.checked)}
-                          className="w-5 h-5 text-teal-600 border-slate-300 rounded focus:ring-teal-500"
+                          className="w-5 h-5 text-brand-primary-700 border-slate-300 rounded focus:ring-brand-primary-600"
                         />
                         <label htmlFor={item.key} className="text-sm font-medium text-slate-700">
                           {item.label}
@@ -499,7 +499,7 @@ export default function FooterSettingsPage() {
                   </h3>
                   <button
                     onClick={addQuickLink}
-                    className="flex items-center space-x-2 px-4 py-2 bg-teal-600 hover:bg-teal-700 text-white rounded-xl text-sm font-medium transition-colors"
+                    className="flex items-center space-x-2 px-4 py-2 bg-brand-primary-700 hover:bg-brand-primary-800 text-white rounded-xl text-sm font-medium transition-colors"
                   >
                     <PlusIcon className="w-4 h-4" />
                     <span>Bağlantı Ekle</span>
@@ -518,7 +518,7 @@ export default function FooterSettingsPage() {
                             type="text"
                             value={link.title}
                             onChange={(e) => updateQuickLink(index, 'title', e.target.value)}
-                            className="w-full border border-slate-300 rounded-xl px-4 py-3 text-slate-900 focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-transparent"
+                            className="w-full border border-slate-300 rounded-xl px-4 py-3 text-slate-900 focus:outline-none focus:ring-2 focus:ring-brand-primary-600 focus:border-transparent"
                             placeholder="Bağlantı başlığı..."
                           />
                         </div>
@@ -530,7 +530,7 @@ export default function FooterSettingsPage() {
                             type="url"
                             value={link.url}
                             onChange={(e) => updateQuickLink(index, 'url', e.target.value)}
-                            className="w-full border border-slate-300 rounded-xl px-4 py-3 text-slate-900 focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-transparent"
+                            className="w-full border border-slate-300 rounded-xl px-4 py-3 text-slate-900 focus:outline-none focus:ring-2 focus:ring-brand-primary-600 focus:border-transparent"
                             placeholder="https://example.com"
                           />
                         </div>
@@ -542,7 +542,7 @@ export default function FooterSettingsPage() {
                             id={`external-${index}`}
                             checked={link.isExternal}
                             onChange={(e) => updateQuickLink(index, 'isExternal', e.target.checked)}
-                            className="w-5 h-5 text-teal-600 border-slate-300 rounded focus:ring-teal-500"
+                            className="w-5 h-5 text-brand-primary-700 border-slate-300 rounded focus:ring-brand-primary-600"
                           />
                           <label htmlFor={`external-${index}`} className="text-sm font-medium text-slate-700">
                             Yeni sekmede aç
@@ -593,7 +593,7 @@ export default function FooterSettingsPage() {
                         type="url"
                         value={url}
                         onChange={(e) => updateSettings(`socialLinks.${platform}`, e.target.value)}
-                        className="w-full border border-slate-300 rounded-xl px-4 py-3 text-slate-900 focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-transparent"
+                        className="w-full border border-slate-300 rounded-xl px-4 py-3 text-slate-900 focus:outline-none focus:ring-2 focus:ring-brand-primary-600 focus:border-transparent"
                         placeholder={`https://${platform}.com/...`}
                       />
                     </div>

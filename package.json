@@ -36,29 +36,21 @@
     "type-check": "tsc --noEmit",
     "test:config": "node scripts/validate-env.js",
     "clean": "rimraf .next out dist",
-
     "format": "prettier --write .",
     "precommit": "npm run lint",
     "postinstall": "node -e \"if (process.env.NODE_ENV !== 'production' && !process.env.VERCEL && !process.env.CI) { try { require('husky').install() } catch (e) { console.log('Husky not available, skipping...') } } else { console.log('Production environment, skipping husky install') }\"",
-    "version:patch": "node scripts/update-version.js patch",
-    "version:minor": "node scripts/update-version.js minor",
-    "version:major": "node scripts/update-version.js major",
-    "version:release": "standard-version",
-    "version:auto": "node scripts/auto-version.js",
-    "version:update": "node scripts/update-version.js",
+    "version:patch": "npm version patch",
+    "version:minor": "npm version minor",
+    "version:major": "npm version major",
     "prepare": "node -e \"if (process.env.NODE_ENV !== 'production' && process.env.VERCEL !== '1') { try { require('husky').install() } catch (e) { console.log('Husky not available, skipping...') } }\"",
 
-    "security:test": "node scripts/security-test.js",
-    "security:audit": "npm audit --audit-level moderate",
-    "security:check": "npm run security:test && npm run security:audit",
-    "deploy": "node scripts/deploy-to-vercel.js",
+    "test:security": "node scripts/security-test.js",
+    "test:accessibility": "node scripts/accessibility-test.js",
+    "test:performance": "node scripts/performance-test.js",
+    "audit": "npm audit --audit-level moderate",
+    "deploy": "vercel --prod",
     "deploy:preview": "vercel",
-    "deploy:production": "vercel --prod",
-    "perf:test": "node scripts/performance-test.js",
-    "perf:analyze": "cross-env ANALYZE=true npm run build",
-    "perf:lighthouse": "lighthouse http://localhost:3000 --output=html --output-path=./lighthouse-report.html",
-    "perf:bundle": "npm run build && npx @next/bundle-analyzer",
-    "perf:check": "npm run perf:test && npm run build"
+    "analyze": "cross-env ANALYZE=true npm run build"
   },
   "dependencies": {
     "@heroicons/react": "^2.2.0",
@@ -72,21 +64,21 @@
     "@types/nodemailer": "^6.4.17",
     "@types/react": "^18.2.45",
     "@types/react-dom": "^18.2.18",
-    "@uiw/react-md-editor": "^4.0.8",
+
     "autoprefixer": "^10.4.16",
     "bcryptjs": "^3.0.2",
-    "class-variance-authority": "^0.7.1",
+
     "cloudinary": "^2.6.1",
     "clsx": "^2.1.1",
-    "critters": "^0.0.23",
+
     "dompurify": "^3.2.6",
-    "dotenv": "^16.5.0",
+
     "eslint": "^8.56.0",
     "eslint-config-next": "^14.0.4",
     "framer-motion": "^12.23.6",
-    "jose": "^6.0.11",
+
     "jsdom": "^26.1.0",
-    "jsonwebtoken": "^9.0.2",
+
     "mongodb": "^6.16.0",
     "mongoose": "^8.15.1",
     "multer": "^2.0.0",
@@ -101,12 +93,12 @@
     "react-i18next": "^15.6.0",
     "rimraf": "^3.0.2",
     "slugify": "^1.6.6",
-    "tailwind-merge": "^3.3.1",
+
     "tailwindcss": "^3.4.0"
   },
   "devDependencies": {
     "@next/bundle-analyzer": "^15.4.1",
-    "@types/jsonwebtoken": "^9.0.6",
+
     "@types/node": "^24.0.13",
     "cross-env": "^7.0.3",
     "husky": "^9.1.7",

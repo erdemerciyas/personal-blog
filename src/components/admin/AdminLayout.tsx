@@ -352,7 +352,7 @@ export default function AdminLayout({ children, title, breadcrumbs }: AdminLayou
     return (
       <div className="min-h-screen bg-slate-50 dark:bg-slate-900 flex items-center justify-center">
         <div className="text-center space-y-4">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-teal-600 mx-auto"></div>
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-brand-primary-700 mx-auto"></div>
           <p className="text-slate-600 dark:text-slate-400">Yükleniyor...</p>
         </div>
       </div>
@@ -436,19 +436,19 @@ export default function AdminLayout({ children, title, breadcrumbs }: AdminLayou
                   <Link
                     href={item.href}
                     className={`flex items-center ${sidebarCollapsed ? 'justify-center' : 'justify-between'} px-3 py-2 rounded-xl transition-all duration-200 group ${isActive || hasActiveSub
-                      ? 'bg-teal-50 text-teal-700 shadow-sm dark:bg-teal-900/50 dark:text-teal-300'
+                      ? 'bg-brand-primary-50 text-brand-primary-800 shadow-sm dark:bg-brand-primary-900/50 dark:text-brand-primary-300'
                       : 'text-slate-700 hover:bg-slate-100 hover:text-slate-900 dark:text-slate-300 dark:hover:bg-slate-700 dark:hover:text-slate-100'
                       }`}
                   >
                     <div className="flex items-center space-x-3">
-                      <item.icon className={`w-5 h-5 ${isActive || hasActiveSub ? 'text-teal-600 dark:text-teal-400' : 'text-slate-500 dark:text-slate-400'}`} />
+                      <item.icon className={`w-5 h-5 ${isActive || hasActiveSub ? 'text-brand-primary-700 dark:text-brand-primary-400' : 'text-slate-500 dark:text-slate-400'}`} />
                       {!sidebarCollapsed && (
                         <span className="font-medium">{item.label}</span>
                       )}
                     </div>
 
                     {!sidebarCollapsed && item.badge && (
-                      <span className="px-2 py-1 text-xs bg-teal-100 text-teal-700 rounded-full">
+                      <span className="px-2 py-1 text-xs bg-brand-primary-100 text-brand-primary-800 rounded-full">
                         {item.badge}
                       </span>
                     )}
@@ -462,7 +462,7 @@ export default function AdminLayout({ children, title, breadcrumbs }: AdminLayou
                           key={subItem.href}
                           href={subItem.href}
                           className={`block px-3 py-2 text-sm rounded-lg transition-colors ${isActiveRoute(subItem.href)
-                            ? 'bg-teal-50 text-teal-700 dark:bg-teal-900/50 dark:text-teal-300'
+                            ? 'bg-brand-primary-50 text-brand-primary-800 dark:bg-brand-primary-900/50 dark:text-brand-primary-300'
                             : 'text-slate-600 hover:bg-slate-50 hover:text-slate-900 dark:text-slate-400 dark:hover:bg-slate-700 dark:hover:text-slate-100'
                             }`}
                         >
@@ -483,7 +483,7 @@ export default function AdminLayout({ children, title, breadcrumbs }: AdminLayou
                 onClick={() => setProfileDropdownOpen(!profileDropdownOpen)}
                 className={`flex items-center w-full ${sidebarCollapsed ? 'justify-center' : 'space-x-3'} p-3 rounded-xl hover:bg-slate-100 dark:hover:bg-slate-700 transition-colors`}
               >
-                <div className="w-8 h-8 bg-gradient-to-br from-teal-500 to-cyan-600 rounded-full flex items-center justify-center">
+                <div className="w-8 h-8 bg-gradient-to-br from-brand-primary-600 to-cyan-600 rounded-full flex items-center justify-center">
                   <UserIcon className="w-4 h-4 text-white" />
                 </div>
                 {!sidebarCollapsed && (
@@ -559,12 +559,12 @@ export default function AdminLayout({ children, title, breadcrumbs }: AdminLayou
                         {crumb.href ? (
                           <Link
                             href={crumb.href}
-                            className="text-sm font-medium text-slate-600 hover:text-teal-600 dark:text-slate-400 dark:hover:text-teal-400 transition-colors px-2 py-1 rounded hover:bg-white/50 dark:hover:bg-slate-700/50"
+                            className="text-sm font-medium text-slate-600 hover:text-brand-primary-700 dark:text-slate-400 dark:hover:text-brand-primary-400 transition-colors px-2 py-1 rounded hover:bg-white/50 dark:hover:bg-slate-700/50"
                           >
                             {crumb.label}
                           </Link>
                         ) : (
-                          <span className="text-sm font-semibold text-slate-900 dark:text-slate-100 px-2 py-1 bg-teal-50 dark:bg-teal-900/30 text-teal-700 dark:text-teal-300 rounded">
+                          <span className="text-sm font-semibold text-slate-900 dark:text-slate-100 px-2 py-1 bg-brand-primary-50 dark:bg-brand-primary-900/30 text-brand-primary-800 dark:text-brand-primary-300 rounded">
                             {crumb.label}
                           </span>
                         )}
@@ -582,7 +582,7 @@ export default function AdminLayout({ children, title, breadcrumbs }: AdminLayou
                     onClick={() => setNotificationDropdownOpen(!notificationDropdownOpen)}
                     className="relative p-3 rounded-xl bg-white/50 dark:bg-slate-700/50 hover:bg-white dark:hover:bg-slate-700 transition-all duration-200 shadow-sm hover:shadow-md group"
                   >
-                    <BellIcon className="w-5 h-5 text-slate-600 dark:text-slate-300 group-hover:text-teal-600 dark:group-hover:text-teal-400 transition-colors" />
+                    <BellIcon className="w-5 h-5 text-slate-600 dark:text-slate-300 group-hover:text-brand-primary-700 dark:group-hover:text-brand-primary-400 transition-colors" />
                     {notifications.length > 0 && (
                       <span className="absolute -top-1 -right-1 w-5 h-5 bg-gradient-to-r from-red-500 to-red-600 text-white text-xs rounded-full flex items-center justify-center font-medium shadow-md animate-pulse">
                         {notifications.length}
@@ -628,7 +628,7 @@ export default function AdminLayout({ children, title, breadcrumbs }: AdminLayou
                               >
                                 <div className="flex items-start space-x-3">
                                   <div className="flex-shrink-0">
-                                    <div className="w-2 h-2 bg-teal-500 rounded-full mt-2"></div>
+                                    <div className="w-2 h-2 bg-brand-primary-600 rounded-full mt-2"></div>
                                   </div>
                                   <div className="flex-1">
                                     <p className="text-sm font-medium text-slate-900 dark:text-slate-100">
@@ -653,7 +653,7 @@ export default function AdminLayout({ children, title, breadcrumbs }: AdminLayou
                               router.push('/admin/messages');
                               setNotificationDropdownOpen(false);
                             }}
-                            className="w-full text-sm text-teal-600 dark:text-teal-400 hover:text-teal-700 dark:hover:text-teal-300 font-medium"
+                            className="w-full text-sm text-brand-primary-700 dark:text-brand-primary-400 hover:text-brand-primary-800 dark:hover:text-brand-primary-300 font-medium"
                           >
                             Tüm Mesajları Görüntüle
                           </button>
@@ -681,7 +681,7 @@ export default function AdminLayout({ children, title, breadcrumbs }: AdminLayou
                 <Link
                   href="/"
                   target="_blank"
-                  className="px-4 py-2.5 text-sm font-semibold text-white bg-gradient-to-r from-teal-500 to-cyan-600 hover:from-teal-600 hover:to-cyan-700 rounded-xl shadow-md hover:shadow-lg transition-all duration-200 transform hover:scale-105"
+                  className="px-4 py-2.5 text-sm font-semibold text-white bg-gradient-to-r from-brand-primary-600 to-cyan-600 hover:from-brand-primary-700 hover:to-cyan-700 rounded-xl shadow-md hover:shadow-lg transition-all duration-200 transform hover:scale-105"
                 >
                   <span className="flex items-center space-x-2">
                     <span>Siteyi Görüntüle</span>
@@ -717,7 +717,7 @@ export default function AdminLayout({ children, title, breadcrumbs }: AdminLayou
                 {/* Quick Stats */}
                 <div className="hidden lg:flex items-center space-x-6">
                   <div className="text-center">
-                    <div className="text-2xl font-bold text-teal-600 dark:text-teal-400">
+                    <div className="text-2xl font-bold text-brand-primary-700 dark:text-brand-primary-400">
                       {stats.portfolioCount}
                     </div>
                     <div className="text-xs text-slate-500 dark:text-slate-400">Projeler</div>

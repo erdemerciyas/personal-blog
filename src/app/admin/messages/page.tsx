@@ -221,7 +221,7 @@ function AdminMessagesContent() {
     switch (status) {
       case 'new': return 'bg-blue-100 text-blue-800';
       case 'read': return 'bg-yellow-100 text-yellow-800';
-      case 'replied': return 'bg-green-100 text-green-800';
+      case 'replied': return 'bg-brand-primary-100 text-brand-primary-900';
       case 'closed': return 'bg-gray-100 text-gray-800';
       default: return 'bg-gray-100 text-gray-800';
     }
@@ -229,7 +229,7 @@ function AdminMessagesContent() {
 
   const getUrgencyColor = (urgency: string) => {
     switch (urgency) {
-      case 'low': return 'bg-green-100 text-green-800';
+      case 'low': return 'bg-brand-primary-100 text-brand-primary-900';
       case 'medium': return 'bg-yellow-100 text-yellow-800';
       case 'high': return 'bg-red-100 text-red-800';
       default: return 'bg-gray-100 text-gray-800';
@@ -252,7 +252,7 @@ function AdminMessagesContent() {
         <div className="flex items-center justify-center min-h-[400px]">
           <div className="flex flex-col items-center space-y-4">
             <div className="flex flex-col items-center space-y-4">
-              <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-teal-500"></div>
+              <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-brand-primary-600"></div>
               <p className="text-slate-600 dark:text-slate-400">Mesajlar yükleniyor...</p>
             </div>
           </div>
@@ -291,7 +291,7 @@ function AdminMessagesContent() {
 
         {/* Success/Error Messages */}
         {success && (
-          <div className="bg-green-50 dark:bg-green-900/20 border border-green-200/60 dark:border-green-800/60 text-green-800 dark:text-green-400 p-4 rounded-xl shadow-sm">
+          <div className="bg-brand-primary-50 dark:bg-brand-primary-900/20 border border-brand-primary-200/60 dark:border-brand-primary-900/60 text-brand-primary-900 dark:text-brand-primary-400 p-4 rounded-xl shadow-sm">
             {success}
           </div>
         )}
@@ -328,9 +328,9 @@ function AdminMessagesContent() {
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-sm font-medium text-slate-600 dark:text-slate-400">Yanıtlanan</p>
-                <p className="text-2xl font-bold text-green-600 dark:text-green-400">{messages.filter(m => m.status === 'replied').length}</p>
+                <p className="text-2xl font-bold text-brand-primary-700 dark:text-brand-primary-400">{messages.filter(m => m.status === 'replied').length}</p>
               </div>
-              <CheckIcon className="w-8 h-8 text-green-400 dark:text-green-500" />
+              <CheckIcon className="w-8 h-8 text-brand-primary-400 dark:text-brand-primary-600" />
             </div>
           </div>
           
@@ -358,7 +358,7 @@ function AdminMessagesContent() {
                   placeholder="Mesaj ara..."
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
-                  className="w-full bg-slate-50/80 dark:bg-slate-700/80 border border-slate-200/60 dark:border-slate-600/60 rounded-xl pl-10 pr-4 py-3 text-slate-900 dark:text-slate-100 placeholder-slate-500 dark:placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-transparent transition-all duration-200"
+                  className="w-full bg-slate-50/80 dark:bg-slate-700/80 border border-slate-200/60 dark:border-slate-600/60 rounded-xl pl-10 pr-4 py-3 text-slate-900 dark:text-slate-100 placeholder-slate-500 dark:placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-brand-primary-600 focus:border-transparent transition-all duration-200"
                 />
               </div>
             </div>
@@ -370,7 +370,7 @@ function AdminMessagesContent() {
                 <select
                   value={statusFilter}
                   onChange={(e) => setStatusFilter(e.target.value)}
-                  className="bg-slate-50/80 dark:bg-slate-700/80 border border-slate-200/60 dark:border-slate-600/60 rounded-xl px-4 py-3 text-slate-900 dark:text-slate-100 focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-transparent transition-all duration-200"
+                  className="bg-slate-50/80 dark:bg-slate-700/80 border border-slate-200/60 dark:border-slate-600/60 rounded-xl px-4 py-3 text-slate-900 dark:text-slate-100 focus:outline-none focus:ring-2 focus:ring-brand-primary-600 focus:border-transparent transition-all duration-200"
                 >
                   <option value="all">Tüm Durumlar</option>
                   <option value="new">Yeni</option>
@@ -383,7 +383,7 @@ function AdminMessagesContent() {
               <select
                 value={urgencyFilter}
                 onChange={(e) => setUrgencyFilter(e.target.value)}
-                className="bg-slate-50/80 dark:bg-slate-700/80 border border-slate-200/60 dark:border-slate-600/60 rounded-xl px-4 py-3 text-slate-900 dark:text-slate-100 focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-transparent transition-all duration-200"
+                className="bg-slate-50/80 dark:bg-slate-700/80 border border-slate-200/60 dark:border-slate-600/60 rounded-xl px-4 py-3 text-slate-900 dark:text-slate-100 focus:outline-none focus:ring-2 focus:ring-brand-primary-600 focus:border-transparent transition-all duration-200"
               >
                 <option value="all">Tüm Aciliyetler</option>
                 <option value="low">Düşük</option>
@@ -568,7 +568,7 @@ function AdminMessagesContent() {
                 <div className="flex space-x-2">
                   <button
                     onClick={() => handleUpdateStatus(selectedMessage._id, 'replied')}
-                    className="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors"
+                    className="bg-brand-primary-700 hover:bg-brand-primary-800 text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors"
                   >
                     Yanıtlandı Olarak İşaretle
                   </button>
@@ -599,7 +599,7 @@ export default function AdminMessagesPage() {
     <Suspense fallback={
       <div className="min-h-screen bg-slate-50 dark:bg-slate-900 flex items-center justify-center">
         <div className="text-center">
-          <div className="w-16 h-16 border-4 border-teal-500/30 border-t-teal-500 rounded-full animate-spin mx-auto mb-4"></div>
+          <div className="w-16 h-16 border-4 border-brand-primary-600/30 border-t-brand-primary-600 rounded-full animate-spin mx-auto mb-4"></div>
           <p className="text-slate-600 dark:text-slate-400 text-lg">Mesajlar yükleniyor...</p>
         </div>
       </div>

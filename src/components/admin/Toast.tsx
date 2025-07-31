@@ -42,7 +42,7 @@ export default function Toast({ id, type, title, message, duration = 5000, onClo
   const getIcon = () => {
     switch (type) {
       case 'success':
-        return <CheckCircleIcon className="w-6 h-6 text-green-500" />;
+        return <CheckCircleIcon className="w-6 h-6 text-brand-primary-600" />;
       case 'error':
         return <ExclamationTriangleIcon className="w-6 h-6 text-red-500" />;
       case 'warning':
@@ -57,7 +57,7 @@ export default function Toast({ id, type, title, message, duration = 5000, onClo
   const getBackgroundColor = () => {
     switch (type) {
       case 'success':
-        return 'bg-green-50 border-green-200';
+        return 'bg-brand-primary-50 border-brand-primary-200';
       case 'error':
         return 'bg-red-50 border-red-200';
       case 'warning':
@@ -72,7 +72,7 @@ export default function Toast({ id, type, title, message, duration = 5000, onClo
   const getTextColor = () => {
     switch (type) {
       case 'success':
-        return 'text-green-800';
+        return 'text-brand-primary-800';
       case 'error':
         return 'text-red-800';
       case 'warning':

@@ -156,11 +156,11 @@ export default function HomePage() {
   }
 
   return (
-    <div className="min-h-screen">
+    <>
       {/* Hero Slider Section */}
-      <section className={`relative overflow-hidden min-h-screen flex items-center justify-center ${
-        sliderLoading ? 'bg-gradient-to-br from-slate-900 to-blue-900' : ''
-      }`}>
+      <header className={`relative overflow-hidden min-h-screen flex items-center justify-center ${
+        sliderLoading ? 'bg-gradient-to-br from-brand-primary-900 to-brand-primary-800' : ''
+      }`} role="banner" aria-label="Ana hero bölümü">
         {sliderLoading ? (
           <div className="absolute inset-0 flex items-center justify-center">
             <div className="text-center text-white">
@@ -188,7 +188,7 @@ export default function HomePage() {
                     className="object-cover"
                     priority={index === 0}
                   />
-                  <div className="absolute inset-0 bg-gradient-to-br from-slate-900/90 via-slate-800/80 to-blue-900/90"></div>
+                  <div className="absolute inset-0 bg-gradient-to-br from-brand-primary-900/90 via-brand-primary-800/80 to-brand-primary-700/90"></div>
                 </div>
               ))}
             </div>
@@ -199,16 +199,18 @@ export default function HomePage() {
                 {/* Navigation Arrows */}
                 <button
                   onClick={prevSlide}
-                  className="absolute left-4 top-1/2 -translate-y-1/2 z-20 p-3 bg-white/10 hover:bg-white/20 backdrop-blur-sm rounded-full transition-all duration-200"
+                  className="absolute left-4 top-1/2 transform -translate-y-1/2 z-20 p-3 bg-white/10 hover:bg-white/20 backdrop-blur-sm rounded-full transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-white/50"
                   disabled={isTransitioning}
+                  aria-label="Önceki slayt"
                 >
                   <ChevronLeftIcon className="w-6 h-6 text-white" />
                 </button>
                 
                 <button
                   onClick={nextSlide}
-                  className="absolute right-4 top-1/2 -translate-y-1/2 z-20 p-3 bg-white/10 hover:bg-white/20 backdrop-blur-sm rounded-full transition-all duration-200"
+                  className="absolute right-4 top-1/2 transform -translate-y-1/2 z-20 p-3 bg-white/10 hover:bg-white/20 backdrop-blur-sm rounded-full transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-white/50"
                   disabled={isTransitioning}
+                  aria-label="Sonraki slayt"
                 >
                   <ChevronRightIcon className="w-6 h-6 text-white" />
                 </button>
@@ -216,7 +218,8 @@ export default function HomePage() {
                 {/* Play/Pause Button */}
                 <button
                   onClick={() => setIsPlaying(!isPlaying)}
-                  className="absolute bottom-20 right-4 z-20 p-3 bg-white/10 hover:bg-white/20 backdrop-blur-sm rounded-full transition-all duration-200"
+                  className="absolute bottom-20 right-4 z-20 p-3 bg-white/10 hover:bg-white/20 backdrop-blur-sm rounded-full transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-white/50"
+                  aria-label={isPlaying ? 'Otomatik geçişi durdur' : 'Otomatik geçişi başlat'}
                 >
                   {isPlaying ? (
                     <PauseIcon className="w-5 h-5 text-white" />
@@ -226,16 +229,17 @@ export default function HomePage() {
                 </button>
                 
                 {/* Dots Indicator */}
-                <div className="absolute bottom-8 left-1/2 -translate-x-1/2 z-20 flex space-x-2">
+                <div className="absolute bottom-8 left-1/2 transform -translate-x-1/2 z-20 flex space-x-2">
                   {sliderItems.map((_, index) => (
                     <button
                       key={index}
                       onClick={() => goToSlide(index)}
-                      className={`w-3 h-3 rounded-full transition-all duration-300 ${
+                      className={`w-3 h-3 rounded-full transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-white/50 ${
                         index === currentSlideIndex 
-                          ? 'bg-white scale-125' 
+                          ? 'bg-white transform scale-125' 
                           : 'bg-white/50 hover:bg-white/75'
                       }`}
+                      aria-label={`Slayt ${index + 1}'e git`}
                     />
                   ))}
                 </div>
@@ -246,8 +250,8 @@ export default function HomePage() {
             <div className="section-hero relative z-10">
               <div className="container-content text-center text-white">
                 {/* Badge */}
-                <div className="mb-8 animate-fade-in">
-                  <span className="inline-flex items-center px-6 py-3 bg-glass rounded-2xl text-sm font-semibold">
+                <div className="mb-8 animate-fade-in" style={{ animationDelay: '0.2s' }}>
+                  <span className="inline-flex items-center px-6 py-3 bg-glass rounded-2xl text-sm font-semibold backdrop-blur-md">
                     <SparklesIcon className="w-4 h-4 mr-2" />
                     {currentSlide.badge}
                   </span>
@@ -258,24 +262,24 @@ export default function HomePage() {
                   currentSlide.title.length > 30 ? 'hero-title-compact' : 
                   currentSlide.title.length > 20 ? 'hero-title-responsive' : 
                   'hero-title'
-                } text-gradient-hero mb-6 animate-slide-in-left max-w-6xl mx-auto`}>
+                } text-gradient-hero mb-6 animate-slide-in-left max-w-6xl mx-auto`} style={{ animationDelay: '0.4s' }}>
                   {currentSlide.title}
                 </h1>
                 
                 {/* Subtitle */}
                 {currentSlide.subtitle && (
-                  <p className="text-2xl sm:text-3xl font-semibold text-teal-200 mb-8 animate-slide-in-right">
+                  <p className="text-2xl sm:text-3xl font-semibold text-brand-primary-200 mb-8 animate-slide-in-right" style={{ animationDelay: '0.6s' }}>
                     {currentSlide.subtitle}
                   </p>
                 )}
                 
                 {/* Description */}
-                <p className="text-xl leading-relaxed text-slate-200 max-w-4xl mx-auto mb-12 animate-fade-in">
+                <p className="text-xl leading-relaxed text-slate-200 max-w-4xl mx-auto mb-12 animate-fade-in" style={{ animationDelay: '0.8s' }}>
                   {currentSlide.description}
                 </p>
                 
                 {/* CTAs */}
-                <div className="flex flex-col sm:flex-row gap-6 justify-center items-center animate-fade-in">
+                <nav className="flex flex-col sm:flex-row gap-6 justify-center items-center animate-fade-in" style={{ animationDelay: '1s' }} aria-label="Hero eylem navigasyonu">
                   <Link href={currentSlide.buttonLink || '/portfolio'} className="btn-primary">
                     <RocketLaunchIcon className="w-5 h-5 mr-2" />
                     {currentSlide.buttonText}
@@ -284,15 +288,16 @@ export default function HomePage() {
                   <Link href="/contact" className="btn-secondary">
                     İletişime Geçin
                   </Link>
-                </div>
+                </nav>
               </div>
             </div>
           </>
         )}
-      </section>
+      </header>
 
-      {/* Services Section */}
-      <section className="section bg-gradient-subtle">
+      <main className="min-h-screen">
+        {/* Services Section */}
+        <section className="section bg-gradient-subtle" aria-label="Hizmetlerimiz">
         <div className="container-main">
           {/* Header */}
           <div className="text-center mb-20">
@@ -311,20 +316,24 @@ export default function HomePage() {
           ) : (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mb-16">
               {services.map((service, index) => (
-                <div key={service._id} className="card-modern group h-full flex flex-col">
+                <article 
+                  key={service._id} 
+                  className="card-modern group h-full flex flex-col transform-gpu hover:scale-105 transition-all duration-300"
+                  style={{ animationDelay: `${index * 0.1}s` }}
+                >
                   {/* Icon or Image */}
                   <div className="mb-8 flex justify-center">
                     {service.image ? (
-                      <div className="relative w-full h-48 rounded-2xl overflow-hidden">
+                      <div className="relative w-full h-48 rounded-2xl overflow-hidden group-hover:shadow-lg transition-shadow duration-300">
                         <Image
                           src={service.image}
                           alt={service.title}
                           fill
-                          className="object-cover transition-transform duration-500"
+                          className="object-cover transition-transform duration-500 group-hover:scale-110"
                         />
                       </div>
                     ) : (
-                      <div className="w-16 h-16 bg-gradient-primary rounded-2xl flex items-center justify-center transition-transform duration-300">
+                      <div className="w-16 h-16 bg-gradient-primary rounded-2xl flex items-center justify-center transition-all duration-300 group-hover:scale-110 group-hover:shadow-lg">
                         {service.icon && (
                           <service.icon className="w-8 h-8 text-white" />
                         )}
@@ -334,7 +343,7 @@ export default function HomePage() {
 
                   {/* Content */}
                   <div className="text-center flex-1 flex flex-col">
-                    <h3 className="text-2xl font-bold text-slate-800 mb-4 group-hover:text-teal-600 transition-colors duration-300">
+                    <h3 className="text-2xl font-bold text-slate-900 mb-4 group-hover:text-brand-primary-800 transition-colors duration-300">
                       {service.title}
                     </h3>
                     <div className="text-body mb-6 flex-1">
@@ -346,24 +355,24 @@ export default function HomePage() {
                     </div>
                     <Link
                       href={`/services#${service.title.toLowerCase().replace(/\s+/g, '-').replace(/&/g, '')}`}
-                      className="inline-flex items-center text-teal-600 hover:text-teal-700 font-semibold transition-colors duration-200 mt-auto"
+                      className="inline-flex items-center text-brand-primary-800 hover:text-brand-primary-900 font-semibold transition-colors duration-200 mt-auto focus:outline-none focus:ring-2 focus:ring-brand-primary-600/50 rounded-md px-2 py-1"
                     >
                       Detayları Gör
                       <ArrowRightIcon className="w-4 h-4 ml-2" />
                     </Link>
                   </div>
-                </div>
+                </article>
               ))}
             </div>
           )}
 
           {/* View All Link */}
-          <div className="text-center">
+          <nav className="text-center" aria-label="Hizmetler navigasyonu">
             <Link href="/services" className="btn-secondary">
               Tüm Hizmetlerimizi Görüntüle
               <ArrowRightIcon className="w-5 h-5 ml-2" />
             </Link>
-          </div>
+          </nav>
         </div>
       </section>
 
@@ -374,34 +383,35 @@ export default function HomePage() {
       />
 
       {/* CTA Section */}
-      <section className="section bg-gradient-primary text-white relative overflow-hidden">
+      <footer className="section bg-gradient-primary text-white relative overflow-hidden" role="contentinfo" aria-label="Proje çağrısı bölümü">
         {/* Background Pattern */}
         <div className="absolute inset-0 opacity-10">
-          <div className="absolute top-10 left-10 w-20 h-20 border-2 border-white rounded-full"></div>
-          <div className="absolute top-32 right-20 w-16 h-16 border-2 border-white rotate-45"></div>
-          <div className="absolute bottom-20 left-1/4 w-24 h-24 border-2 border-white rounded-full"></div>
-          <div className="absolute bottom-10 right-10 w-12 h-12 border-2 border-white rotate-12"></div>
+          <div className="absolute top-10 left-10 w-20 h-20 border-2 border-white rounded-full animate-pulse"></div>
+          <div className="absolute top-32 right-20 w-16 h-16 border-2 border-white transform rotate-45 animate-pulse" style={{ animationDelay: '0.5s' }}></div>
+          <div className="absolute bottom-20 left-1/4 w-24 h-24 border-2 border-white rounded-full animate-pulse" style={{ animationDelay: '1s' }}></div>
+          <div className="absolute bottom-10 right-10 w-12 h-12 border-2 border-white transform rotate-12 animate-pulse" style={{ animationDelay: '1.5s' }}></div>
         </div>
 
         <div className="container-content text-center relative z-10">
-          <h2 className="section-title text-white mb-6">
+          <h2 className="section-title text-white mb-6 animate-fade-in">
             Projenizi Gerçeğe Dönüştürün
           </h2>
-          <p className="section-subtitle text-teal-100 mb-12 max-w-2xl mx-auto">
+          <p className="section-subtitle text-brand-primary-100 mb-12 max-w-2xl mx-auto animate-fade-in" style={{ animationDelay: '0.2s' }}>
             Uzman ekibimiz ve modern teknolojilerimizle fikirlerinizi hayata geçirmeye hazırız.
           </p>
-          <div className="flex flex-col sm:flex-row gap-6 justify-center">
-            <Link href="/contact" className="btn-primary">
+          <nav className="flex flex-col sm:flex-row gap-6 justify-center animate-fade-in" style={{ animationDelay: '0.4s' }} aria-label="Ana eylem navigasyonu">
+            <Link href="/contact" className="btn-primary transform-gpu hover:scale-105 active:scale-95">
               <SparklesIcon className="w-5 h-5 mr-2" />
               İletişime Geçin
             </Link>
-            <Link href="/portfolio" className="btn-secondary">
+            <Link href="/portfolio" className="btn-secondary transform-gpu hover:scale-105 active:scale-95">
               Projelerimizi İnceleyin
               <ArrowRightIcon className="w-5 h-5 ml-2" />
             </Link>
-          </div>
+          </nav>
         </div>
-      </section>
-    </div>
+      </footer>
+      </main>
+    </>
   );
 }

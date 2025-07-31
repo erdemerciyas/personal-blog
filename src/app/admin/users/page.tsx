@@ -214,7 +214,7 @@ export default function AdminUsersPage() {
       <AdminLayout>
         <div className="flex items-center justify-center min-h-[400px]">
           <div className="flex flex-col items-center space-y-4">
-            <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-teal-500"></div>
+            <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-brand-primary-600"></div>
             <p className="text-lg text-slate-700">Kullanıcılar yükleniyor...</p>
           </div>
         </div>
@@ -235,7 +235,7 @@ export default function AdminUsersPage() {
         {message && (
           <div className={`p-4 rounded-xl border ${
             message.type === 'success' 
-              ? 'bg-green-50 border-green-200 text-green-800' 
+              ? 'bg-brand-primary-50 border-brand-primary-200 text-brand-primary-900' 
               : 'bg-red-50 border-red-200 text-red-800'
           }`}>
             {message.text}
@@ -250,7 +250,7 @@ export default function AdminUsersPage() {
           </div>
           <button
             onClick={() => setShowAddModal(true)}
-            className="inline-flex items-center space-x-2 bg-teal-600 hover:bg-teal-700 text-white px-4 py-2 rounded-lg font-medium transition-colors"
+            className="inline-flex items-center space-x-2 bg-brand-primary-700 hover:bg-brand-primary-800 text-white px-4 py-2 rounded-lg font-medium transition-colors"
           >
             <UserPlusIcon className="w-4 h-4" />
             <span>Yeni Kullanıcı</span>
@@ -266,7 +266,7 @@ export default function AdminUsersPage() {
               placeholder="Kullanıcı ara..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              className="w-full pl-10 pr-4 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-teal-500"
+              className="w-full pl-10 pr-4 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-brand-primary-600"
             />
           </div>
         </div>
@@ -338,7 +338,7 @@ export default function AdminUsersPage() {
                     <td className="px-6 py-4 whitespace-nowrap">
                       <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
                         user.isActive 
-                          ? 'bg-green-100 text-green-800' 
+                          ? 'bg-brand-primary-100 text-brand-primary-900' 
                           : 'bg-red-100 text-red-800'
                       }`}>
                         {user.isActive ? (
@@ -411,7 +411,7 @@ export default function AdminUsersPage() {
                   type="text"
                   value={newUser.name}
                   onChange={(e) => setNewUser(prev => ({ ...prev, name: e.target.value }))}
-                  className="w-full border border-slate-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-teal-500"
+                  className="w-full border border-slate-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-brand-primary-600"
                 />
               </div>
               
@@ -421,7 +421,7 @@ export default function AdminUsersPage() {
                   type="email"
                   value={newUser.email}
                   onChange={(e) => setNewUser(prev => ({ ...prev, email: e.target.value }))}
-                  className="w-full border border-slate-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-teal-500"
+                  className="w-full border border-slate-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-brand-primary-600"
                 />
               </div>
               
@@ -431,7 +431,7 @@ export default function AdminUsersPage() {
                   type="password"
                   value={newUser.password}
                   onChange={(e) => setNewUser(prev => ({ ...prev, password: e.target.value }))}
-                  className="w-full border border-slate-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-teal-500"
+                  className="w-full border border-slate-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-brand-primary-600"
                 />
               </div>
               
@@ -440,7 +440,7 @@ export default function AdminUsersPage() {
                 <select
                   value={newUser.role}
                   onChange={(e) => setNewUser(prev => ({ ...prev, role: e.target.value as 'admin' | 'user' }))}
-                  className="w-full border border-slate-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-teal-500"
+                  className="w-full border border-slate-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-brand-primary-600"
                 >
                   <option value="user">Kullanıcı</option>
                   <option value="admin">Admin</option>
@@ -453,7 +453,7 @@ export default function AdminUsersPage() {
                   id="isActive"
                   checked={newUser.isActive}
                   onChange={(e) => setNewUser(prev => ({ ...prev, isActive: e.target.checked }))}
-                  className="w-4 h-4 text-teal-600 bg-gray-100 border-gray-300 rounded focus:ring-teal-500"
+                  className="w-4 h-4 text-brand-primary-700 bg-gray-100 border-gray-300 rounded focus:ring-brand-primary-600"
                 />
                 <label htmlFor="isActive" className="ml-2 text-sm text-slate-700">Aktif kullanıcı</label>
               </div>
@@ -471,7 +471,7 @@ export default function AdminUsersPage() {
               </button>
               <button
                 onClick={handleAddUser}
-                className="px-4 py-2 bg-teal-600 hover:bg-teal-700 text-white rounded-lg transition-colors"
+                className="px-4 py-2 bg-brand-primary-700 hover:bg-brand-primary-800 text-white rounded-lg transition-colors"
               >
                 Kullanıcı Ekle
               </button>
@@ -493,7 +493,7 @@ export default function AdminUsersPage() {
                   type="text"
                   value={selectedUser.name || ''}
                   onChange={(e) => setSelectedUser(prev => prev ? ({ ...prev, name: e.target.value }) : null)}
-                  className="w-full border border-slate-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-teal-500"
+                  className="w-full border border-slate-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-brand-primary-600"
                 />
               </div>
               
@@ -503,7 +503,7 @@ export default function AdminUsersPage() {
                   type="email"
                   value={selectedUser.email || ''}
                   onChange={(e) => setSelectedUser(prev => prev ? ({ ...prev, email: e.target.value }) : null)}
-                  className="w-full border border-slate-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-teal-500"
+                  className="w-full border border-slate-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-brand-primary-600"
                 />
               </div>
               
@@ -512,7 +512,7 @@ export default function AdminUsersPage() {
                 <select
                   value={selectedUser.role}
                   onChange={(e) => setSelectedUser(prev => prev ? ({ ...prev, role: e.target.value as 'admin' | 'user' }) : null)}
-                  className="w-full border border-slate-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-teal-500"
+                  className="w-full border border-slate-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-brand-primary-600"
                 >
                   <option value="user">Kullanıcı</option>
                   <option value="admin">Admin</option>
@@ -525,7 +525,7 @@ export default function AdminUsersPage() {
                   id="editIsActive"
                   checked={selectedUser.isActive || false}
                   onChange={(e) => setSelectedUser(prev => prev ? ({ ...prev, isActive: e.target.checked }) : null)}
-                  className="w-4 h-4 text-teal-600 bg-gray-100 border-gray-300 rounded focus:ring-teal-500"
+                  className="w-4 h-4 text-brand-primary-700 bg-gray-100 border-gray-300 rounded focus:ring-brand-primary-600"
                 />
                 <label htmlFor="editIsActive" className="ml-2 text-sm text-slate-700">Aktif kullanıcı</label>
               </div>
@@ -543,7 +543,7 @@ export default function AdminUsersPage() {
               </button>
               <button
                 onClick={handleEditUser}
-                className="px-4 py-2 bg-teal-600 hover:bg-teal-700 text-white rounded-lg transition-colors"
+                className="px-4 py-2 bg-brand-primary-700 hover:bg-brand-primary-800 text-white rounded-lg transition-colors"
               >
                 Güncelle
               </button>
@@ -567,7 +567,7 @@ export default function AdminUsersPage() {
                   type="password"
                   value={passwordData.newPassword}
                   onChange={(e) => setPasswordData(prev => ({ ...prev, newPassword: e.target.value }))}
-                  className="w-full border border-slate-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-teal-500"
+                  className="w-full border border-slate-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-brand-primary-600"
                 />
               </div>
               
@@ -577,7 +577,7 @@ export default function AdminUsersPage() {
                   type="password"
                   value={passwordData.confirmPassword}
                   onChange={(e) => setPasswordData(prev => ({ ...prev, confirmPassword: e.target.value }))}
-                  className="w-full border border-slate-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-teal-500"
+                  className="w-full border border-slate-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-brand-primary-600"
                 />
               </div>
             </div>
@@ -595,7 +595,7 @@ export default function AdminUsersPage() {
               </button>
               <button
                 onClick={handleChangePassword}
-                className="px-4 py-2 bg-teal-600 hover:bg-teal-700 text-white rounded-lg transition-colors"
+                className="px-4 py-2 bg-brand-primary-700 hover:bg-brand-primary-800 text-white rounded-lg transition-colors"
               >
                 Şifre Değiştir
               </button>

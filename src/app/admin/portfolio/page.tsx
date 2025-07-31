@@ -228,7 +228,7 @@ export default function PortfolioManagement() {
               onClick={() => handleTabChange('projects')}
               className={`flex-1 px-6 py-4 text-sm font-semibold transition-all duration-200 ${
                 activeTab === 'projects'
-                  ? 'bg-teal-50 text-teal-700 border-b-2 border-teal-600'
+                  ? 'bg-brand-primary-50 text-brand-primary-800 border-b-2 border-brand-primary-700'
                   : 'text-slate-600 hover:text-slate-900 hover:bg-slate-50'
               }`}
             >
@@ -275,7 +275,7 @@ export default function PortfolioManagement() {
               </div>
               <Link
                 href="/admin/portfolio/new"
-                className="bg-teal-600 hover:bg-teal-700 text-white px-6 py-3 rounded-xl font-semibold transition-all duration-200 flex items-center space-x-2 shadow-sm"
+                className="bg-brand-primary-700 hover:bg-brand-primary-800 text-white px-6 py-3 rounded-xl font-semibold transition-all duration-200 flex items-center space-x-2 shadow-sm"
               >
                 <PlusIcon className="w-5 h-5" />
                 <span>Yeni Proje</span>
@@ -361,7 +361,7 @@ export default function PortfolioManagement() {
                           </Link>
                           <Link
                             href={`/admin/portfolio/edit/${item._id}`}
-                            className="p-2 text-slate-600 hover:text-teal-600 hover:bg-teal-50 rounded-lg transition-colors"
+                            className="p-2 text-slate-600 hover:text-brand-primary-700 hover:bg-brand-primary-50 rounded-lg transition-colors"
                             title="Düzenle"
                           >
                             <PencilIcon className="w-5 h-5" />
@@ -475,7 +475,7 @@ export default function PortfolioManagement() {
                           <div className="flex space-x-2">
                             <button
                               onClick={handleUpdateCategory}
-                              className="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg font-medium transition-colors flex items-center space-x-1"
+                              className="bg-brand-primary-700 hover:bg-brand-primary-800 text-white px-4 py-2 rounded-lg font-medium transition-colors flex items-center space-x-1"
                             >
                               <CheckIcon className="w-4 h-4" />
                               <span>Kaydet</span>
@@ -503,7 +503,7 @@ export default function PortfolioManagement() {
                           <div className="flex space-x-2">
                             <button
                               onClick={() => setEditingCategory(category)}
-                              className="p-2 text-slate-600 hover:text-teal-600 hover:bg-teal-50 rounded-lg transition-colors"
+                              className="p-2 text-slate-600 hover:text-brand-primary-700 hover:bg-brand-primary-50 rounded-lg transition-colors"
                               title="Düzenle"
                             >
                               <PencilIcon className="w-4 h-4" />

@@ -8,9 +8,9 @@ interface LogoProps {
 }
 
 const Logo: React.FC<LogoProps> = ({ className = '', width = 40, height = 40, isDark = false }) => {
-  const textColor = isDark ? 'text-slate-800' : 'text-white';
-  const iconColor = isDark ? '#0F766E' : '#14B8A6';
-  const _ = isDark ? '#0F766E' : '#06B6D4';
+  const textColor = isDark ? 'text-fixral-night-blue' : 'text-white';
+  const iconColor = isDark ? '#003450' : '#38bdf8';
+  const accentColor = isDark ? '#0369a1' : '#7dd3fc';
 
   return (
     <div className={`flex items-center ${className}`}>
@@ -22,28 +22,41 @@ const Logo: React.FC<LogoProps> = ({ className = '', width = 40, height = 40, is
         xmlns="http://www.w3.org/2000/svg"
         className="mr-3"
       >
-        {/* 3D Cube Base */}
+        {/* FIXRAL Logo - 3D Engineering Symbol */}
         <path
           d="M20 5L35 13V27L20 35L5 27V13L20 5Z"
           fill="none"
           stroke={iconColor}
-          strokeWidth="1.5"
+          strokeWidth="2"
         />
-        {/* Front Face Lines */}
+        {/* Engineering Grid Lines */}
         <path
           d="M20 35L20 20L35 13M20 20L5 13"
           stroke={iconColor}
           strokeWidth="1.5"
           strokeLinecap="round"
         />
-        
+        {/* Center Engineering Point */}
+        <circle
+          cx="20"
+          cy="20"
+          r="2"
+          fill={accentColor}
+        />
+        {/* Technical Lines */}
+        <path
+          d="M12 16L28 16M12 24L28 24"
+          stroke={accentColor}
+          strokeWidth="1"
+          strokeLinecap="round"
+        />
       </svg>
       <div className="flex flex-col">
         <span className={`text-xl font-bold ${textColor} transition-colors duration-300`}>
-          Site
+          FIXRAL
         </span>
-        <span className={`text-sm font-medium transition-colors duration-300 ${isDark ? 'text-teal-600' : 'text-teal-300'}`}>
-          Logo
+        <span className={`text-sm font-medium transition-colors duration-300 ${isDark ? 'text-fixral-gray-blue' : 'text-brand-primary-300'}`}>
+          Engineering
         </span>
       </div>
     </div>

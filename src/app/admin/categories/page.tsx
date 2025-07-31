@@ -190,7 +190,7 @@ export default function Categories() {
 
         {/* Success/Error Messages */}
         {success && (
-          <div className="bg-green-50 border border-green-200 text-green-800 p-4 rounded-xl">
+          <div className="bg-brand-primary-50 border border-brand-primary-200 text-brand-primary-900 p-4 rounded-xl">
             {success}
           </div>
         )}
@@ -203,7 +203,7 @@ export default function Categories() {
 
         {/* Quick Actions */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-          <div className="bg-gradient-to-r from-teal-600 to-blue-600 text-white p-6 rounded-xl">
+          <div className="bg-gradient-to-r from-brand-primary-700 to-blue-600 text-white p-6 rounded-xl">
             <div className="flex items-center space-x-3">
               <TagIcon className="w-6 h-6" />
               <span className="font-semibold">Kategori Yönetimi</span>
@@ -224,7 +224,7 @@ export default function Categories() {
             href="/"
             target="_blank"
             rel="noopener noreferrer"
-            className="bg-gradient-to-r from-teal-600 to-teal-700 text-white p-6 rounded-xl hover:shadow-lg transition-all duration-200 group"
+            className="bg-gradient-to-r from-brand-primary-700 to-brand-primary-800 text-white p-6 rounded-xl hover:shadow-lg transition-all duration-200 group"
           >
             <div className="flex items-center space-x-3">
               <EyeIcon className="w-6 h-6 group-hover:scale-110 transition-transform" />
@@ -247,7 +247,7 @@ export default function Categories() {
                   type="text"
                   value={formData.name}
                   onChange={(e) => setFormData(prev => ({ ...prev, name: e.target.value }))}
-                  className="w-full border border-slate-300 rounded-xl px-4 py-3 text-slate-900 focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-transparent"
+                  className="w-full border border-slate-300 rounded-xl px-4 py-3 text-slate-900 focus:outline-none focus:ring-2 focus:ring-brand-primary-600 focus:border-transparent"
                   placeholder="Kategori adı"
                   required
                 />
@@ -259,7 +259,7 @@ export default function Categories() {
                   type="text"
                   value={formData.slug}
                   onChange={(e) => setFormData(prev => ({ ...prev, slug: e.target.value }))}
-                  className="w-full border border-slate-300 rounded-xl px-4 py-3 text-slate-900 focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-transparent"
+                  className="w-full border border-slate-300 rounded-xl px-4 py-3 text-slate-900 focus:outline-none focus:ring-2 focus:ring-brand-primary-600 focus:border-transparent"
                   placeholder="kategori-slug"
                   required
                 />
@@ -272,7 +272,7 @@ export default function Categories() {
                 value={formData.description}
                 onChange={(e) => setFormData(prev => ({ ...prev, description: e.target.value }))}
                 rows={3}
-                className="w-full border border-slate-300 rounded-xl px-4 py-3 text-slate-900 focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-transparent"
+                className="w-full border border-slate-300 rounded-xl px-4 py-3 text-slate-900 focus:outline-none focus:ring-2 focus:ring-brand-primary-600 focus:border-transparent"
                 placeholder="Kategori açıklaması (opsiyonel)"
               />
             </div>
@@ -281,7 +281,7 @@ export default function Categories() {
               <button
                 type="submit"
                 disabled={loading}
-                className="bg-teal-600 hover:bg-teal-700 text-white px-6 py-3 rounded-xl font-semibold transition-all duration-200 flex items-center space-x-2 shadow-sm"
+                className="bg-brand-primary-700 hover:bg-brand-primary-800 text-white px-6 py-3 rounded-xl font-semibold transition-all duration-200 flex items-center space-x-2 shadow-sm"
               >
                 {editingCategory ? (
                   <>
@@ -351,7 +351,7 @@ export default function Categories() {
                     <div className="flex items-center space-x-2 ml-4">
                       <button
                         onClick={() => startEdit(category)}
-                        className="p-2 text-slate-600 hover:text-teal-600 hover:bg-teal-50 rounded-lg transition-colors"
+                        className="p-2 text-slate-600 hover:text-brand-primary-700 hover:bg-brand-primary-50 rounded-lg transition-colors"
                         title="Düzenle"
                       >
                         <PencilIcon className="w-5 h-5" />

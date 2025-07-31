@@ -176,7 +176,7 @@ export default function HTMLContent({
       {truncate && textLength > truncate && onToggle && (
         <button
           onClick={onToggle}
-          className="text-teal-600 hover:text-teal-700 font-medium text-sm mt-2 inline-flex items-center transition-colors"
+          className="text-brand-primary-700 hover:text-brand-primary-800 font-medium text-sm mt-2 inline-flex items-center transition-colors"
         >
           {showMore ? 'Daha Az' : 'Daha Fazla'}
           <svg 

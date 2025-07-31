@@ -178,7 +178,7 @@ const FooterSettingsSchema = new mongoose.Schema({
     },
     accentColor: {
       type: String,
-      default: 'text-teal-400'
+      default: 'text-brand-primary-400'
     }
   }
 }, {

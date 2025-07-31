@@ -185,7 +185,7 @@ function LoginForm() {
 
         {/* Logo and Title */}
         <div className="text-center mb-8">
-          <div className="inline-flex items-center justify-center w-16 h-16 bg-gradient-to-br from-teal-500 to-blue-600 rounded-2xl mb-6 shadow-lg">
+          <div className="inline-flex items-center justify-center w-16 h-16 bg-gradient-to-br from-brand-primary-600 to-blue-600 rounded-2xl mb-6 shadow-lg">
             <CubeTransparentIcon className="w-8 h-8 text-white" />
           </div>
           <h1 className="text-3xl font-bold text-slate-900 dark:text-white mb-2">Admin Panel</h1>
@@ -227,7 +227,7 @@ function LoginForm() {
                   required
                   value={formData.email}
                   onChange={handleChange}
-                  className="w-full bg-slate-50 dark:bg-slate-700 border border-slate-200 dark:border-slate-600 rounded-xl pl-12 pr-4 py-3 text-slate-900 dark:text-white placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-transparent transition-all duration-200"
+                  className="w-full bg-slate-50 dark:bg-slate-700 border border-slate-200 dark:border-slate-600 rounded-xl pl-12 pr-4 py-3 text-slate-900 dark:text-white placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-brand-primary-600 focus:border-transparent transition-all duration-200"
                   placeholder="admin@example.com"
                 />
               </div>
@@ -250,7 +250,7 @@ function LoginForm() {
                   required
                   value={formData.password}
                   onChange={handleChange}
-                  className="w-full bg-slate-50 dark:bg-slate-700 border border-slate-200 dark:border-slate-600 rounded-xl pl-12 pr-12 py-3 text-slate-900 dark:text-white placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-transparent transition-all duration-200"
+                  className="w-full bg-slate-50 dark:bg-slate-700 border border-slate-200 dark:border-slate-600 rounded-xl pl-12 pr-12 py-3 text-slate-900 dark:text-white placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-brand-primary-600 focus:border-transparent transition-all duration-200"
                   placeholder="••••••••"
                 />
                 <button
@@ -272,8 +272,8 @@ function LoginForm() {
               type="submit"
               disabled={loading}
               className={`w-full flex items-center justify-center space-x-3 py-3 px-6 rounded-xl font-medium transition-all duration-200 ${loading
-                ? 'cursor-not-allowed bg-teal-400 text-white opacity-50'
-                : 'bg-gradient-to-r from-teal-500 to-blue-600 hover:from-teal-600 hover:to-blue-700 text-white shadow-sm hover:shadow-md'
+                ? 'cursor-not-allowed bg-brand-primary-400 text-white opacity-50'
+                : 'bg-gradient-to-r from-brand-primary-600 to-blue-600 hover:from-brand-primary-700 hover:to-blue-700 text-white shadow-sm hover:shadow-md'
                 }`}
             >
               {loading ? (
@@ -294,7 +294,7 @@ function LoginForm() {
           <div className="mt-6 text-center">
             <button
               onClick={() => setShowForgotPassword(true)}
-              className="text-slate-500 dark:text-slate-400 hover:text-teal-600 dark:hover:text-teal-400 transition-colors text-sm font-medium"
+              className="text-slate-500 dark:text-slate-400 hover:text-brand-primary-700 dark:hover:text-brand-primary-400 transition-colors text-sm font-medium"
             >
               Şifremi unuttum
             </button>
@@ -306,7 +306,7 @@ function LoginForm() {
           <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 p-4">
             <div className="bg-white dark:bg-slate-800 rounded-2xl p-8 border border-slate-200 dark:border-slate-700 shadow-xl max-w-md w-full">
               <div className="text-center mb-6">
-                <div className="inline-flex items-center justify-center w-12 h-12 bg-gradient-to-br from-teal-500 to-blue-600 rounded-xl mb-4">
+                <div className="inline-flex items-center justify-center w-12 h-12 bg-gradient-to-br from-brand-primary-600 to-blue-600 rounded-xl mb-4">
                   <EnvelopeIcon className="w-6 h-6 text-white" />
                 </div>
                 <h2 className="text-2xl font-bold text-slate-900 dark:text-white mb-2">Şifremi Unuttum</h2>
@@ -316,8 +316,8 @@ function LoginForm() {
               {/* Success Message */}
               {forgotPasswordMessage && (
                 <div className="mb-6">
-                  <div className="bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800 text-green-700 dark:text-green-300 p-4 rounded-xl flex items-center space-x-3">
-                    <CheckCircleIcon className="w-5 h-5 text-green-500 flex-shrink-0" />
+                  <div className="bg-brand-primary-50 dark:bg-brand-primary-900/20 border border-brand-primary-200 dark:border-brand-primary-900 text-brand-primary-800 dark:text-brand-primary-300 p-4 rounded-xl flex items-center space-x-3">
+                    <CheckCircleIcon className="w-5 h-5 text-brand-primary-600 flex-shrink-0" />
                     <span className="text-sm">{forgotPasswordMessage}</span>
                   </div>
                 </div>
@@ -350,7 +350,7 @@ function LoginForm() {
                       required
                       value={forgotPasswordEmail}
                       onChange={(e) => setForgotPasswordEmail(e.target.value)}
-                      className="w-full bg-slate-50 dark:bg-slate-700 border border-slate-200 dark:border-slate-600 rounded-xl pl-12 pr-4 py-3 text-slate-900 dark:text-white placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-transparent transition-all duration-200"
+                      className="w-full bg-slate-50 dark:bg-slate-700 border border-slate-200 dark:border-slate-600 rounded-xl pl-12 pr-4 py-3 text-slate-900 dark:text-white placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-brand-primary-600 focus:border-transparent transition-all duration-200"
                       placeholder="admin@example.com"
                     />
                   </div>
@@ -373,8 +373,8 @@ function LoginForm() {
                     type="submit"
                     disabled={forgotPasswordLoading}
                     className={`flex-1 flex items-center justify-center space-x-2 py-3 px-4 rounded-xl font-medium transition-all duration-200 ${forgotPasswordLoading
-                      ? 'bg-teal-400 cursor-not-allowed text-white opacity-50'
-                      : 'bg-gradient-to-r from-teal-500 to-blue-600 hover:from-teal-600 hover:to-blue-700 text-white shadow-sm hover:shadow-md'
+                      ? 'bg-brand-primary-400 cursor-not-allowed text-white opacity-50'
+                      : 'bg-gradient-to-r from-brand-primary-600 to-blue-600 hover:from-brand-primary-700 hover:to-blue-700 text-white shadow-sm hover:shadow-md'
                       }`}
                   >
                     {forgotPasswordLoading ? (
@@ -408,7 +408,7 @@ export default function LoginPage() {
     <Suspense fallback={
       <div className="min-h-screen bg-slate-50 dark:bg-slate-900 flex items-center justify-center">
         <div className="text-center">
-          <div className="w-16 h-16 border-4 border-slate-200 dark:border-slate-700 border-t-teal-500 rounded-full animate-spin mx-auto mb-4"></div>
+          <div className="w-16 h-16 border-4 border-slate-200 dark:border-slate-700 border-t-brand-primary-600 rounded-full animate-spin mx-auto mb-4"></div>
           <p className="text-lg text-slate-600 dark:text-slate-300">Giriş sayfası yükleniyor...</p>
         </div>
       </div>

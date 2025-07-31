@@ -19,7 +19,7 @@ interface PortfolioDetailHeroProps {
 
 export default function PortfolioDetailHero({ project }: PortfolioDetailHeroProps) {
   return (
-    <section className="relative overflow-hidden bg-gradient-to-br from-slate-900 via-teal-900 to-blue-900 text-white">
+    <section className="relative overflow-hidden bg-gradient-to-br from-slate-900 via-brand-primary-900 to-blue-900 text-white">
       {/* Background Pattern */}
       <div className="absolute inset-0 opacity-10">
         <div className="absolute top-20 left-20 w-32 h-32 border-2 border-white rounded-full animate-pulse"></div>
@@ -39,7 +39,7 @@ export default function PortfolioDetailHero({ project }: PortfolioDetailHeroProp
           >
             <Link 
               href="/portfolio" 
-              className="inline-flex items-center text-teal-100 hover:text-white text-sm group transition-all duration-300 bg-white/10 backdrop-blur-xl border border-white/20 rounded-2xl px-6 py-3"
+              className="inline-flex items-center text-brand-primary-100 hover:text-white text-sm group transition-all duration-300 bg-white/10 backdrop-blur-xl border border-white/20 rounded-2xl px-6 py-3"
             >
               <ArrowLeftIcon className="h-5 w-5 mr-2 transition-transform duration-200 group-hover:-translate-x-1" />
               Tüm Projeler
@@ -85,8 +85,8 @@ export default function PortfolioDetailHero({ project }: PortfolioDetailHeroProp
                   className="mb-8"
                 >
                   <div className="flex items-center mb-4">
-                    <CodeBracketIcon className="w-6 h-6 mr-3 text-teal-400" />
-                    <span className="text-lg font-semibold text-teal-100">Kullanılan Teknolojiler</span>
+                    <CodeBracketIcon className="w-6 h-6 mr-3 text-brand-primary-400" />
+                    <span className="text-lg font-semibold text-brand-primary-100">Kullanılan Teknolojiler</span>
                   </div>
                   <div className="flex flex-wrap gap-3">
                     {project.technologies.map((tech, index) => (
@@ -116,11 +116,11 @@ export default function PortfolioDetailHero({ project }: PortfolioDetailHeroProp
 
                 {/* Client */}
                 <div className="flex items-start">
-                  <div className="p-3 bg-teal-500/20 rounded-2xl mr-4 flex-shrink-0">
-                    <UserIcon className="w-6 h-6 text-teal-300" />
+                  <div className="p-3 bg-brand-primary-500/20 rounded-2xl mr-4 flex-shrink-0">
+                    <UserIcon className="w-6 h-6 text-brand-primary-300" />
                   </div>
                   <div className="flex-1">
-                    <h4 className="text-sm font-semibold text-teal-200 uppercase tracking-wide mb-1">
+                    <h4 className="text-sm font-semibold text-brand-primary-200 uppercase tracking-wide mb-1">
                       Müşteri
                     </h4>
                     <p className="text-lg font-semibold text-white">{project.client}</p>
@@ -168,7 +168,7 @@ export default function PortfolioDetailHero({ project }: PortfolioDetailHeroProp
                 <div className="pt-4 border-t border-white/20">
                   <div className="flex items-center justify-between">
                     <span className="text-sm font-medium text-slate-300">Proje Durumu</span>
-                    <span className="inline-flex items-center px-3 py-1 bg-green-500/20 text-green-300 rounded-full text-sm font-semibold">
+                    <span className="inline-flex items-center px-3 py-1 bg-brand-primary-500/20 text-brand-primary-300 rounded-full text-sm font-semibold">
                       ✓ Tamamlandı
                     </span>
                   </div>

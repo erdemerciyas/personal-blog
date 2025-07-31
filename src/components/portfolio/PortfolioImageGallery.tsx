@@ -162,7 +162,7 @@ export default function PortfolioImageGallery({
             className="bg-white/80 backdrop-blur-xl rounded-3xl p-6 shadow-xl border border-white/20"
           >
             <h3 className="text-xl font-bold text-slate-800 mb-6 flex items-center">
-              <PhotoIcon className="w-6 h-6 mr-3 text-teal-600" />
+              <PhotoIcon className="w-6 h-6 mr-3 text-brand-primary-700" />
               Proje Görselleri ({allImages.length})
             </h3>
             
@@ -177,10 +177,10 @@ export default function PortfolioImageGallery({
                     e.stopPropagation();
                     setSelectedImage(image);
                   }}
-                  className={`relative aspect-square rounded-xl overflow-hidden border-3 transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-teal-500 focus:ring-offset-2 ${
+                  className={`relative aspect-square rounded-xl overflow-hidden border-3 transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-brand-primary-600 focus:ring-offset-2 ${
                     selectedImage === image
-                      ? 'border-teal-500 shadow-lg ring-4 ring-teal-200 scale-105'
-                      : 'border-slate-200 hover:border-teal-300 hover:shadow-md'
+                      ? 'border-brand-primary-600 shadow-lg ring-4 ring-brand-primary-200 scale-105'
+                      : 'border-slate-200 hover:border-brand-primary-300 hover:shadow-md'
                   }`}
                   type="button"
                 >
@@ -192,7 +192,7 @@ export default function PortfolioImageGallery({
                     sizes="(max-width: 640px) 25vw, (max-width: 768px) 16vw, (max-width: 1024px) 12vw, 10vw"
                   />
                   {selectedImage === image && (
-                    <div className="absolute inset-0 bg-teal-500/20 flex items-center justify-center pointer-events-none">
+                    <div className="absolute inset-0 bg-brand-primary-600/20 flex items-center justify-center pointer-events-none">
                       <div className="w-4 h-4 bg-white rounded-full shadow-lg"></div>
                     </div>
                   )}
@@ -322,7 +322,7 @@ export default function PortfolioImageGallery({
                         onClick={() => setLightboxImageIndex(index)}
                         className={`relative flex-shrink-0 w-20 h-20 rounded-xl overflow-hidden border-3 transition-all duration-200 hover:scale-105 ${
                           lightboxImageIndex === index
-                            ? 'border-teal-400 shadow-lg shadow-teal-400/50'
+                            ? 'border-brand-primary-500 shadow-lg shadow-brand-primary-500/50'
                             : 'border-white/30 hover:border-white/60'
                         }`}
                       >
@@ -334,7 +334,7 @@ export default function PortfolioImageGallery({
                           sizes="80px"
                         />
                         {lightboxImageIndex === index && (
-                          <div className="absolute inset-0 bg-teal-400/20 flex items-center justify-center">
+                          <div className="absolute inset-0 bg-brand-primary-500/20 flex items-center justify-center">
                             <div className="w-3 h-3 bg-white rounded-full"></div>
                           </div>
                         )}

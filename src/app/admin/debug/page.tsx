@@ -93,7 +93,7 @@ export default function AdminDebugPage() {
             <h2 className="text-lg font-semibold text-slate-900">API Endpoint Testleri</h2>
             <button
               onClick={runAllTests}
-              className="px-4 py-2 bg-teal-600 text-white rounded hover:bg-teal-700 transition-colors"
+              className="px-4 py-2 bg-brand-primary-700 text-white rounded hover:bg-brand-primary-800 transition-colors"
             >
               Tüm API&apos;leri Test Et
             </button>
@@ -105,7 +105,7 @@ export default function AdminDebugPage() {
                 <div className="flex items-center justify-between mb-2">
                   <span className="font-mono text-sm">{endpoint}</span>
                   <span className={`px-2 py-1 rounded text-xs font-medium ${
-                    result.ok ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'
+                    result.ok ? 'bg-brand-primary-100 text-brand-primary-900' : 'bg-red-100 text-red-800'
                   }`}>
                     {result.status}
                   </span>

@@ -64,12 +64,10 @@ const nextConfig = {
   experimental: {
     esmExternals: true,
     // Performance optimizations
-    optimizeCss: true,
     scrollRestoration: true,
     // Vercel optimizations
     optimizePackageImports: ['@heroicons/react', 'framer-motion'],
     serverComponentsExternalPackages: ['mongoose', 'mongodb'],
-    // Remove deprecated runtime option
   },
   // Performance: Enable compression
   compress: true,

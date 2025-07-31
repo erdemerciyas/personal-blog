@@ -253,7 +253,7 @@ function PortfolioPageContent() {
           <h2 className="section-title text-white mb-6">
             Projenizi Birlikte Gerçekleştirelim
           </h2>
-          <p className="section-subtitle text-teal-100 mb-12 max-w-2xl mx-auto">
+          <p className="section-subtitle text-brand-primary-100 mb-12 max-w-2xl mx-auto">
             Portföyümüzdeki projeler gibi sizin de fikirlerinizi hayata geçirmeye hazırız.
           </p>
           <div className="flex flex-col sm:flex-row gap-6 justify-center">
@@ -277,7 +277,7 @@ export default function PortfolioPage() {
     <Suspense fallback={
       <div className="min-h-screen bg-gray-50">
         {/* Hero Skeleton */}
-        <section className="bg-gradient-to-br from-slate-900 via-teal-900 to-blue-900 py-32">
+        <section className="bg-gradient-to-br from-slate-900 via-brand-primary-900 to-blue-900 py-32">
           <div className="container mx-auto px-4 text-center">
             <div className="w-16 h-16 border-4 border-white/30 border-t-white rounded-full animate-spin mx-auto mb-4"></div>
             <p className="text-white text-lg">Portfolio yükleniyor...</p>

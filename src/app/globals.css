@@ -6,24 +6,43 @@
 
 
 :root {
-  /* Fixral Design System Variables */
-  --fixral-night-blue: 13, 27, 42; /* #0D1B2A */
-  --fixral-turquoise: 0, 180, 216; /* #00B4D8 */
+  /* Fixral Design System Variables - Updated to Brand Primary */
+  --fixral-night-blue: 0, 52, 80; /* #003450 */
+  --fixral-primary: 0, 52, 80; /* #003450 */
   --fixral-light-gray: 248, 249, 250; /* #F8F9FA */
   --fixral-charcoal: 61, 61, 61; /* #3D3D3D */
   --fixral-gray-blue: 58, 80, 107; /* #3A506B */
+  
+  /* Brand Color System - CSS Custom Properties */
+  --brand-primary-50: #f0f9ff;
+  --brand-primary-100: #e0f2fe;
+  --brand-primary-200: #bae6fd;
+  --brand-primary-300: #7dd3fc;
+  --brand-primary-400: #38bdf8;
+  --brand-primary-500: #0ea5e9;
+  --brand-primary-600: #0284c7;
+  --brand-primary-700: #0369a1;
+  --brand-primary-800: #075985;
+  --brand-primary-900: #003450;
+  --brand-primary: var(--brand-primary-900);
   
   /* Semantic color mappings */
   --foreground-rgb: var(--fixral-charcoal);
   --background-start-rgb: var(--fixral-light-gray);
   --background-end-rgb: var(--fixral-light-gray);
-  --primary-color: var(--fixral-turquoise);
+  --primary-color: var(--fixral-primary);
   --primary-dark: var(--fixral-night-blue);
   --secondary-color: var(--fixral-gray-blue);
-  --accent-color: var(--fixral-turquoise);
+  --accent-color: var(--fixral-primary);
   --text-primary: var(--fixral-night-blue);
   --text-secondary: var(--fixral-charcoal);
   --text-muted: var(--fixral-gray-blue);
+  
+  /* Semantic colors */
+  --color-success: #10b981;
+  --color-warning: #f59e0b;
+  --color-error: #ef4444;
+  --color-info: var(--brand-primary-600);
   
   /* Font variables */
   --font-inter: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
@@ -35,6 +54,14 @@
 
 html {
   scroll-behavior: smooth;
+  scroll-padding-top: 80px; /* Header yüksekliği için */
+}
+
+/* Smooth scrolling for anchor links */
+@media (prefers-reduced-motion: no-preference) {
+  html {
+    scroll-behavior: smooth;
+  }
 }
 
 body {
@@ -76,49 +103,49 @@ h1, h2, h3, h4, h5, h6 {
 
 
 
-/* Fixral Design System Components */
+/* Design System Components */
 @layer components {
   /* Fixral Buttons */
   .btn {
-    @apply inline-flex items-center justify-center px-6 py-3 rounded-fixral text-base font-medium cursor-pointer transition-all duration-300 focus:outline-none;
+    @apply inline-flex items-center justify-center px-6 py-3 rounded-fixral text-base font-medium cursor-pointer transition-all duration-300 focus:outline-none transform-gpu;
   }
 
   .btn-primary {
-    @apply btn bg-fixral-turquoise text-white border-none hover:bg-fixral-turquoise/90 focus:ring-2 focus:ring-fixral-turquoise/25;
+    @apply btn bg-brand-primary-900 text-white border-none hover:bg-brand-primary-800 hover:scale-105 focus:ring-2 focus:ring-brand-primary-600/25 active:scale-95;
   }
   
   .btn-secondary {
-    @apply btn bg-fixral-gray-blue text-white border-none hover:bg-fixral-gray-blue/90 focus:ring-2 focus:ring-fixral-gray-blue/25;
+    @apply btn bg-slate-700 text-white border-none hover:bg-slate-800 hover:scale-105 focus:ring-2 focus:ring-slate-500/25 active:scale-95;
   }
 
   .btn-outline {
-    @apply inline-flex items-center justify-center px-8 py-4 bg-transparent border-2 border-teal-500 text-teal-600 font-semibold rounded-2xl hover:bg-teal-500 hover:text-white transition-all duration-300 focus:outline-none focus:ring-4 focus:ring-teal-500/30;
+    @apply inline-flex items-center justify-center px-8 py-4 bg-transparent border-2 border-brand-primary-600 text-brand-primary-700 font-semibold rounded-2xl hover:bg-brand-primary-600 hover:text-white hover:scale-105 transition-all duration-300 focus:outline-none focus:ring-4 focus:ring-brand-primary-500/30 active:scale-95 transform-gpu;
   }
 
   .btn-ghost {
-    @apply inline-flex items-center justify-center px-6 py-3 bg-transparent text-slate-600 hover:text-teal-600 hover:bg-slate-100 font-medium rounded-xl transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-slate-400/50;
+    @apply inline-flex items-center justify-center px-6 py-3 bg-transparent text-slate-600 hover:text-brand-primary-700 hover:bg-slate-100 hover:scale-105 font-medium rounded-xl transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-slate-400/50 active:scale-95 transform-gpu;
   }
   
-  /* Fixral Cards */
+  /* Cards */
   .card {
-    @apply bg-white border border-gray-200 rounded-fixral-lg shadow-fixral p-6 transition-shadow duration-300 hover:shadow-fixral-lg;
+    @apply bg-white border border-gray-200 rounded-lg shadow-md p-6 transition-shadow duration-300 hover:shadow-lg;
   }
 
   .card-modern {
-    @apply card bg-white border border-gray-100;
+    @apply card bg-white border border-gray-100 hover:shadow-xl hover:-translate-y-1 transform-gpu;
   }
 
   .card-glass {
-    @apply bg-white/90 backdrop-blur-sm rounded-fixral-lg border border-white/20 shadow-fixral hover:bg-white/95 transition-all duration-300;
+    @apply bg-white/90 backdrop-blur-sm rounded-lg border border-white/20 shadow-md hover:bg-white/95 hover:shadow-xl hover:-translate-y-1 transition-all duration-300 transform-gpu;
   }
 
   /* Fixral Form Elements */
   .input-field {
-    @apply w-full bg-white border border-gray-300 rounded-fixral px-3 py-3 text-fixral-charcoal placeholder-gray-400 focus:ring-2 focus:ring-fixral-turquoise/25 focus:border-fixral-turquoise outline-none transition-all duration-200 font-sans text-base;
+    @apply w-full bg-white border border-gray-300 rounded-lg px-3 py-3 text-slate-800 placeholder-gray-400 focus:ring-2 focus:ring-brand-primary-600/25 focus:border-brand-primary-600 outline-none transition-all duration-200 font-sans text-base;
   }
 
   .label-text {
-    @apply block text-sm font-medium text-fixral-charcoal mb-2 font-sans;
+    @apply block text-sm font-medium text-slate-800 mb-2 font-sans;
   }
 
   .textarea-field {
@@ -190,15 +217,15 @@ h1, h2, h3, h4, h5, h6 {
   }
 
   .text-body {
-    @apply text-base sm:text-lg leading-relaxed text-slate-700;
+    @apply text-base sm:text-lg leading-relaxed text-slate-900;
   }
 
   .text-small {
-    @apply text-sm leading-relaxed text-slate-600;
+    @apply text-sm leading-relaxed text-slate-700;
   }
 
   .text-gradient {
-    @apply bg-gradient-to-r from-teal-600 via-blue-600 to-purple-600 bg-clip-text text-transparent;
+    @apply bg-gradient-to-r from-brand-primary-700 via-brand-primary-600 to-brand-primary-800 bg-clip-text text-transparent;
     line-height: 1.2;
     padding: 0.1em 0;
     -webkit-text-stroke: 0.5px transparent;
@@ -206,7 +233,7 @@ h1, h2, h3, h4, h5, h6 {
   }
 
   .text-gradient-hero {
-    @apply bg-gradient-to-r from-white via-teal-100 to-blue-100 bg-clip-text text-transparent drop-shadow-2xl;
+    @apply bg-gradient-to-r from-white via-brand-primary-100 to-brand-primary-200 bg-clip-text text-transparent drop-shadow-2xl;
     line-height: 1.2;
     padding: 0.1em 0;
     -webkit-text-stroke: 0.5px transparent;
@@ -247,11 +274,11 @@ h1, h2, h3, h4, h5, h6 {
 
   /* Backgrounds */
   .bg-gradient-primary {
-    @apply bg-gradient-to-br from-teal-500 via-blue-600 to-purple-600;
+    @apply bg-gradient-to-br from-brand-primary-700 via-brand-primary-800 to-brand-primary-900;
   }
 
   .bg-gradient-subtle {
-    @apply bg-gradient-to-br from-slate-50 via-white to-blue-50/30;
+    @apply bg-gradient-to-br from-slate-50 via-white to-brand-primary-50/30;
   }
 
   .bg-glass {
@@ -262,11 +289,78 @@ h1, h2, h3, h4, h5, h6 {
 /* Add better focus states */
 @layer utilities {
   .focus-ring {
-    @apply focus:outline-none focus:ring-2 focus:ring-teal-500 focus:ring-opacity-75;
+    @apply focus:outline-none focus:ring-2 focus:ring-brand-primary-600 focus:ring-opacity-75;
   }
 
   .transition-smooth {
     @apply transition-all duration-300 ease-in-out;
+  }
+
+  /* Transform utilities for better browser compatibility */
+  .transform-gpu {
+    transform: translateZ(0);
+    will-change: transform;
+    backface-visibility: hidden;
+  }
+  
+  /* Additional transform utilities */
+  .transform-3d {
+    transform-style: preserve-3d;
+  }
+  
+  .transform-smooth {
+    transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+  
+  .transform-hardware {
+    transform: translate3d(0, 0, 0);
+    will-change: transform, opacity;
+  }
+
+  .translate-center {
+    transform: translate(-50%, -50%);
+  }
+
+  .translate-x-center {
+    transform: translateX(-50%);
+  }
+
+  .translate-y-center {
+    transform: translateY(-50%);
+  }
+
+  /* Intersection Observer utilities */
+  .fade-in-on-scroll {
+    opacity: 0;
+    transform: translateY(30px);
+    transition: opacity 0.6s ease-out, transform 0.6s ease-out;
+  }
+
+  .fade-in-on-scroll.visible {
+    opacity: 1;
+    transform: translateY(0);
+  }
+
+  .slide-in-left-on-scroll {
+    opacity: 0;
+    transform: translateX(-30px);
+    transition: opacity 0.6s ease-out, transform 0.6s ease-out;
+  }
+
+  .slide-in-left-on-scroll.visible {
+    opacity: 1;
+    transform: translateX(0);
+  }
+
+  .slide-in-right-on-scroll {
+    opacity: 0;
+    transform: translateX(30px);
+    transition: opacity 0.6s ease-out, transform 0.6s ease-out;
+  }
+
+  .slide-in-right-on-scroll.visible {
+    opacity: 1;
+    transform: translateX(0);
   }
 }
 
@@ -369,50 +463,56 @@ select::-webkit-scrollbar-thumb:hover {
   background: rgb(100 116 139);
 }
 
-/* Animation utilities */
+/* Animation utilities - GPU accelerated */
 @keyframes fadeIn {
   from {
     opacity: 0;
-    transform: translateY(20px);
+    transform: translate3d(0, 20px, 0);
   }
   to {
     opacity: 1;
-    transform: translateY(0);
+    transform: translate3d(0, 0, 0);
   }
 }
 
 .animate-fade-in {
   animation: fadeIn 0.6s ease-out forwards;
+  opacity: 0;
+  will-change: transform, opacity;
 }
 
 @keyframes slideInFromLeft {
   from {
     opacity: 0;
-    transform: translateX(-30px);
+    transform: translate3d(-30px, 0, 0);
   }
   to {
     opacity: 1;
-    transform: translateX(0);
+    transform: translate3d(0, 0, 0);
   }
 }
 
 .animate-slide-in-left {
   animation: slideInFromLeft 0.6s ease-out forwards;
+  opacity: 0;
+  will-change: transform, opacity;
 }
 
 @keyframes slideInFromRight {
   from {
     opacity: 0;
-    transform: translateX(30px);
+    transform: translate3d(30px, 0, 0);
   }
   to {
     opacity: 1;
-    transform: translateX(0);
+    transform: translate3d(0, 0, 0);
   }
 }
 
 .animate-slide-in-right {
   animation: slideInFromRight 0.6s ease-out forwards;
+  opacity: 0;
+  will-change: transform, opacity;
 }
 
 /* Glassmorphism effect */
@@ -430,7 +530,7 @@ select::-webkit-scrollbar-thumb:hover {
 
 /* Focus visible styles */
 .focus-ring {
-  @apply focus:outline-none focus:ring-2 focus:ring-teal-500 focus:ring-offset-2;
+  @apply focus:outline-none focus:ring-2 focus:ring-brand-primary-600 focus:ring-offset-2;
 }
 
 /* Card styles */
@@ -460,10 +560,25 @@ select::-webkit-scrollbar-thumb:hover {
 /* Loading states */
 .skeleton {
   @apply animate-pulse bg-slate-200 rounded;
+  background: linear-gradient(90deg, #f1f5f9 25%, #e2e8f0 50%, #f1f5f9 75%);
+  background-size: 200% 100%;
+  animation: shimmer 1.5s infinite;
 }
 
 .skeleton-dark {
   @apply animate-pulse bg-slate-700 rounded;
+  background: linear-gradient(90deg, #334155 25%, #475569 50%, #334155 75%);
+  background-size: 200% 100%;
+  animation: shimmer 1.5s infinite;
+}
+
+@keyframes shimmer {
+  0% {
+    background-position: -200% 0;
+  }
+  100% {
+    background-position: 200% 0;
+  }
 }
 
 /* Print styles */
@@ -491,6 +606,23 @@ select::-webkit-scrollbar-thumb:hover {
   .btn {
     min-height: 44px;
     min-width: 44px;
+    padding: 0.75rem 1rem;
+  }
+
+  /* Mobile navigation fixes */
+  .absolute.left-4,
+  .absolute.right-4 {
+    left: 1rem !important;
+    right: 1rem !important;
+  }
+
+  /* Mobile slider controls */
+  .absolute.bottom-8 {
+    bottom: 2rem !important;
+  }
+
+  .absolute.bottom-20 {
+    bottom: 5rem !important;
   }
 
   /* Fixral mobile typography */
@@ -582,6 +714,79 @@ select::-webkit-scrollbar-thumb:hover {
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+}
+
+/* Performance optimizations */
+.will-change-transform {
+  will-change: transform;
+}
+
+.will-change-opacity {
+  will-change: opacity;
+}
+
+.will-change-auto {
+  will-change: auto;
+}
+
+/* Reduce motion for users who prefer it */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+  
+  .animate-fade-in,
+  .animate-slide-in-left,
+  .animate-slide-in-right {
+    animation: none !important;
+    opacity: 1 !important;
+    transform: none !important;
+  }
+}
+
+/* Accessibility utilities */
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+.focus-visible {
+  outline: 2px solid #003450;
+  outline-offset: 2px;
+}
+
+/* High contrast mode support */
+@media (prefers-contrast: high) {
+  .text-brand-primary-800,
+  .text-brand-primary-900 {
+    color: #000000 !important;
+  }
+  
+  .text-slate-300 {
+    color: #ffffff !important;
+  }
+  
+  .bg-brand-primary-900,
+  .bg-brand-primary-800 {
+    background-color: #000000 !important;
+  }
+  
+  .border-brand-primary-600,
+  .border-brand-primary-500 {
+    border-color: #000000 !important;
+  }
 }
 
 /* Fix for WebKit font clipping */

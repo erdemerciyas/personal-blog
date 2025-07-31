@@ -141,7 +141,7 @@ export default function PortfolioFilters({
               onChange={(e) => setSearchValue(e.target.value)}
               onFocus={() => setSearchFocused(true)}
               onBlur={() => setSearchFocused(false)}
-              className="w-full pl-12 pr-4 py-4 bg-white border-2 border-slate-200 rounded-2xl text-slate-700 placeholder-slate-400 focus:border-teal-500 focus:ring-4 focus:ring-teal-500/20 outline-none transition-all duration-300 shadow-sm focus:shadow-lg"
+              className="w-full pl-12 pr-4 py-4 bg-white border-2 border-slate-200 rounded-2xl text-slate-700 placeholder-slate-400 focus:border-brand-primary-600 focus:ring-4 focus:ring-brand-primary-600/20 outline-none transition-all duration-300 shadow-sm focus:shadow-lg"
             />
             {searchValue && (
               <button
@@ -164,7 +164,7 @@ export default function PortfolioFilters({
                 const [sortBy, sortOrder] = e.target.value.split('-') as [FilterState['sortBy'], FilterState['sortOrder']];
                 onFiltersChange({ ...filters, sortBy, sortOrder });
               }}
-              className="appearance-none bg-white border-2 border-slate-200 rounded-2xl px-4 py-4 pr-10 text-slate-700 focus:border-teal-500 focus:ring-4 focus:ring-teal-500/20 outline-none transition-all duration-300 shadow-sm focus:shadow-lg cursor-pointer"
+              className="appearance-none bg-white border-2 border-slate-200 rounded-2xl px-4 py-4 pr-10 text-slate-700 focus:border-brand-primary-600 focus:ring-4 focus:ring-brand-primary-600/20 outline-none transition-all duration-300 shadow-sm focus:shadow-lg cursor-pointer"
             >
               <option value="newest-desc">En Yeni</option>
               <option value="oldest-asc">En Eski</option>
@@ -180,8 +180,8 @@ export default function PortfolioFilters({
             onClick={() => setShowAdvanced(!showAdvanced)}
             className={`flex items-center px-6 py-4 rounded-2xl font-semibold transition-all duration-300 shadow-sm hover:shadow-lg ${
               showAdvanced || activeFiltersCount > 0
-                ? 'bg-teal-500 text-white'
-                : 'bg-white border-2 border-slate-200 text-slate-700 hover:border-teal-300'
+                ? 'bg-brand-primary-600 text-white'
+                : 'bg-white border-2 border-slate-200 text-slate-700 hover:border-brand-primary-300'
             }`}
           >
             <AdjustmentsHorizontalIcon className="w-5 h-5 mr-2" />
@@ -209,12 +209,12 @@ export default function PortfolioFilters({
               
               {/* Search Filter */}
               {filters.search && (
-                <span className="inline-flex items-center px-3 py-1 bg-teal-100 text-teal-800 rounded-full text-sm font-medium">
+                <span className="inline-flex items-center px-3 py-1 bg-brand-primary-100 text-brand-primary-800 rounded-full text-sm font-medium">
                   <MagnifyingGlassIcon className="w-4 h-4 mr-1" />
                   "{filters.search}"
                   <button
                     onClick={() => clearFilter('search')}
-                    className="ml-2 hover:text-teal-600"
+                    className="ml-2 hover:text-brand-primary-700"
                   >
                     <XMarkIcon className="w-3 h-3" />
                   </button>
@@ -301,7 +301,7 @@ export default function PortfolioFilters({
               {/* Categories */}
               <div>
                 <h3 className="text-lg font-semibold text-slate-800 mb-4 flex items-center">
-                  <TagIcon className="w-5 h-5 mr-2 text-teal-600" />
+                  <TagIcon className="w-5 h-5 mr-2 text-brand-primary-700" />
                   Kategoriler
                 </h3>
                 <div className="space-y-2 max-h-48 overflow-y-auto scrollbar-thin">
@@ -314,7 +314,7 @@ export default function PortfolioFilters({
                         type="checkbox"
                         checked={filters.categories.includes(category.slug)}
                         onChange={() => handleCategoryToggle(category.slug)}
-                        className="w-4 h-4 text-teal-600 border-slate-300 rounded focus:ring-teal-500 focus:ring-2"
+                        className="w-4 h-4 text-brand-primary-700 border-slate-300 rounded focus:ring-brand-primary-600 focus:ring-2"
                       />
                       <span className="ml-3 text-slate-700 font-medium">{category.name}</span>
                     </label>
@@ -407,7 +407,7 @@ export default function PortfolioFilters({
         {activeFiltersCount > 0 && (
           <button
             onClick={clearAllFilters}
-            className="text-sm text-teal-600 hover:text-teal-700 font-semibold transition-colors duration-200"
+            className="text-sm text-brand-primary-700 hover:text-brand-primary-800 font-semibold transition-colors duration-200"
           >
             Filtreleri Temizle
           </button>

@@ -48,7 +48,7 @@ const ToolbarButton: React.FC<ToolbarButtonProps> = ({
     title={title}
     className={`p-2 rounded-lg transition-colors ${
       isActive
-        ? 'bg-teal-100 text-teal-700 border border-teal-200'
+        ? 'bg-brand-primary-100 text-brand-primary-800 border border-brand-primary-200'
         : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100'
     } ${disabled ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer'}`}
   >
@@ -337,7 +337,7 @@ const UniversalEditor: React.FC<UniversalEditorProps> = ({
             className="p-2 rounded-lg transition-colors text-slate-600 hover:text-slate-900 hover:bg-slate-100"
           >
             {copied ? (
-              <CheckIcon className="w-4 h-4 text-green-600" />
+              <CheckIcon className="w-4 h-4 text-brand-primary-700" />
             ) : (
               <DocumentDuplicateIcon className="w-4 h-4" />
             )}
@@ -349,7 +349,7 @@ const UniversalEditor: React.FC<UniversalEditorProps> = ({
               onClick={() => setIsPreview(!isPreview)}
               className={`flex items-center gap-2 px-3 py-1.5 rounded-lg text-sm font-medium transition-colors ${
                 isPreview
-                  ? 'bg-teal-100 text-teal-700 border border-teal-200'
+                  ? 'bg-brand-primary-100 text-brand-primary-800 border border-brand-primary-200'
                   : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100'
               }`}
             >

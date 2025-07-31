@@ -25,7 +25,7 @@ export default function PageHero({
   buttonText = "Keşfet",
   buttonLink = "#content",
   badge = "Yaratıcı Çözümler",
-  backgroundGradient = "from-slate-900 via-teal-900 to-blue-900",
+  backgroundGradient = "from-slate-900 via-brand-primary-900 to-blue-900",
   showButton = true
 }: PageHeroProps) {
   const [mounted, setMounted] = useState(false);

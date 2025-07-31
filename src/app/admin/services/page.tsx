@@ -114,7 +114,7 @@ export default function ServicesPage() {
           </div>
           <Link
             href="/admin/services/new"
-            className="bg-teal-600 hover:bg-teal-700 text-white px-6 py-3 rounded-xl font-semibold transition-all duration-200 flex items-center justify-center space-x-2 shadow-sm w-full sm:w-auto"
+            className="bg-brand-primary-700 hover:bg-brand-primary-800 text-white px-6 py-3 rounded-xl font-semibold transition-all duration-200 flex items-center justify-center space-x-2 shadow-sm w-full sm:w-auto"
           >
             <PlusIcon className="w-5 h-5" />
             <span>Yeni Servis</span>
@@ -132,7 +132,7 @@ export default function ServicesPage() {
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
           <Link
             href="/admin/services/new"
-            className="bg-gradient-to-r from-teal-600 to-blue-600 text-white p-4 sm:p-6 rounded-xl hover:shadow-lg transition-all duration-200 group"
+            className="bg-gradient-to-r from-brand-primary-700 to-blue-600 text-white p-4 sm:p-6 rounded-xl hover:shadow-lg transition-all duration-200 group"
           >
             <div className="flex items-center justify-center sm:justify-start space-x-3">
               <PlusIcon className="w-6 h-6 group-hover:scale-110 transition-transform" />
@@ -227,7 +227,7 @@ export default function ServicesPage() {
                           </Link>
                           <Link
                             href={`/admin/services/edit/${service._id}`}
-                            className="p-2 text-slate-600 hover:text-teal-600 hover:bg-teal-50 rounded-lg transition-colors"
+                            className="p-2 text-slate-600 hover:text-brand-primary-700 hover:bg-brand-primary-50 rounded-lg transition-colors"
                             title="Düzenle"
                           >
                             <PencilIcon className="w-5 h-5" />

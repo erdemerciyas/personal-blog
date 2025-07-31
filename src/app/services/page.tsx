@@ -83,7 +83,7 @@ export default function ServicesPage() {
   if (loading) {
     return (
       <div className="min-h-screen bg-gray-50">
-        <div className="bg-gradient-to-br from-teal-500 to-cyan-600 py-28">
+        <div className="bg-gradient-to-br from-brand-primary-700 to-brand-primary-800 py-28">
           <div className="max-w-3xl mx-auto px-4 text-center">
             <div className="w-16 h-16 border-4 border-white/30 border-t-white rounded-full animate-spin mx-auto mb-4"></div>
             <p className="text-white text-lg">Hizmetler yükleniyor...</p>
@@ -129,7 +129,7 @@ export default function ServicesPage() {
         buttonText="Hizmetleri İncele"
         buttonLink="#services"
         badge="Profesyonel Hizmetler"
-        backgroundGradient="from-teal-500 via-cyan-600 to-blue-600"
+        backgroundGradient="from-brand-primary-700 via-brand-primary-800 to-blue-600"
         showButton={true}
       />
 
@@ -177,7 +177,7 @@ export default function ServicesPage() {
                           className="object-cover"
                         />
                       ) : (
-                        <div className="bg-gradient-to-br from-teal-500 to-blue-600 h-full flex items-center justify-center">
+                        <div className="bg-gradient-to-br from-brand-primary-600 to-blue-600 h-full flex items-center justify-center">
                           <div className="text-white text-6xl md:text-7xl lg:text-8xl font-bold opacity-30">
                             {service.title.charAt(0)}
                           </div>
@@ -189,8 +189,8 @@ export default function ServicesPage() {
                   {/* Service Info */}
                   <div className={`${index % 2 === 1 ? 'lg:order-1' : ''}`}>
                     {/* Service Badge - Outside container for perfect alignment */}
-                    <div className="inline-flex items-center bg-teal-100 text-teal-600 px-4 py-2 rounded-full text-sm font-medium mb-4">
-                      <div className="w-8 h-8 bg-teal-500 rounded-full flex items-center justify-center text-white text-sm font-bold mr-3">
+                    <div className="inline-flex items-center bg-brand-primary-100 text-brand-primary-700 px-4 py-2 rounded-full text-sm font-medium mb-4">
+                      <div className="w-8 h-8 bg-brand-primary-600 rounded-full flex items-center justify-center text-white text-sm font-bold mr-3">
                         {service.title.charAt(0)}
                       </div>
                       {service.title}
@@ -217,13 +217,13 @@ export default function ServicesPage() {
                       {service.features && service.features.length > 0 && (
                         <div className="mb-6">
                           <h4 className="text-base md:text-lg font-semibold text-gray-800 mb-3 flex items-center">
-                            <CheckCircleIcon className="w-5 h-5 text-teal-500 mr-2" />
+                            <CheckCircleIcon className="w-5 h-5 text-brand-primary-600 mr-2" />
                             Öne Çıkan Özellikler
                           </h4>
                           <ul className="space-y-2">
                             {service.features.map((feature, idx) => (
                               <li key={idx} className="flex items-start text-gray-700 text-sm md:text-base">
-                                <div className="w-2 h-2 bg-teal-500 rounded-full mt-2 mr-3 flex-shrink-0"></div>
+                                <div className="w-2 h-2 bg-brand-primary-600 rounded-full mt-2 mr-3 flex-shrink-0"></div>
                                 <span>{feature}</span>
                               </li>
                             ))}
@@ -248,7 +248,7 @@ export default function ServicesPage() {
                         )}
 
                         {service.price && (
-                          <div className="text-teal-600 font-semibold text-sm md:text-base">
+                          <div className="text-brand-primary-700 font-semibold text-sm md:text-base">
                             {service.price}
                           </div>
                         )}
@@ -285,7 +285,7 @@ export default function ServicesPage() {
           <h2 className="section-title text-white mb-6">
             Özel Bir Projeniz mi Var?
           </h2>
-          <p className="section-subtitle text-teal-100 mb-12 max-w-2xl mx-auto">
+          <p className="section-subtitle text-brand-primary-100 mb-12 max-w-2xl mx-auto">
             Size özel çözümler geliştirmek için buradayız. Projenizi birlikte değerlendirelim.
           </p>
           <div className="flex flex-col sm:flex-row gap-6 justify-center">

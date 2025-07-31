@@ -36,7 +36,7 @@ export default function DashboardError({
         <div className="flex flex-col sm:flex-row gap-3 justify-center">
           <button
             onClick={reset}
-            className="px-6 py-3 bg-teal-600 text-white rounded-lg hover:bg-teal-700 transition-colors font-medium"
+            className="px-6 py-3 bg-brand-primary-700 text-white rounded-lg hover:bg-brand-primary-800 transition-colors font-medium"
           >
             Tekrar Dene
           </button>

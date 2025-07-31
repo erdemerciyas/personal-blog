@@ -142,14 +142,14 @@ const ConditionalFooter: React.FC = () => {
               </div>
               <h3 className="text-xl font-bold">Hakkımızda</h3>
             </div>
-            <p className="text-slate-400 leading-relaxed text-lg">
+            <p className="text-slate-300 leading-relaxed text-lg">
               {settings.mainDescription}
             </p>
           </div>
           
           {/* Quick Links */}
           {settings.visibility.showQuickLinks && settings.quickLinks.length > 0 && (
-            <div>
+            <nav aria-label="Footer navigation">
               <h3 className="text-lg font-semibold mb-6">Hızlı Bağlantılar</h3>
               <ul className="space-y-3">
                 {settings.quickLinks.map((link, index) => (
@@ -159,14 +159,14 @@ const ConditionalFooter: React.FC = () => {
                         href={link.url}
                         target="_blank"
                         rel="noopener noreferrer"
-                        className="text-slate-400 hover:text-teal-400 transition-colors duration-200 text-base"
+                        className="text-slate-300 hover:text-brand-primary-300 transition-colors duration-200 text-base focus:outline-none focus:ring-2 focus:ring-brand-primary-500/50 rounded-md px-2 py-1"
                       >
                         {link.title}
                       </a>
                     ) : (
                       <Link
                         href={link.url}
-                        className="text-slate-400 hover:text-teal-400 transition-colors duration-200 text-base"
+                        className="text-slate-300 hover:text-brand-primary-300 transition-colors duration-200 text-base focus:outline-none focus:ring-2 focus:ring-brand-primary-500/50 rounded-md px-2 py-1"
                       >
                         {link.title}
                       </Link>
@@ -174,7 +174,7 @@ const ConditionalFooter: React.FC = () => {
                   </li>
                 ))}
               </ul>
-            </div>
+            </nav>
           )}
           
           {/* Contact Info */}
@@ -183,26 +183,26 @@ const ConditionalFooter: React.FC = () => {
               <h3 className="text-lg font-semibold mb-6">İletişim</h3>
               <div className="space-y-4">
                 <div className="flex items-center space-x-3">
-                  <EnvelopeIcon className="w-5 h-5 text-teal-400" />
+                  <EnvelopeIcon className="w-5 h-5 text-brand-primary-400" />
                   <a 
                     href={`mailto:${settings.contactInfo.email}`} 
-                    className="text-slate-400 hover:text-teal-400 transition-colors duration-200 text-base"
+                    className="text-slate-300 hover:text-brand-primary-300 transition-colors duration-200 text-base focus:outline-none focus:ring-2 focus:ring-brand-primary-500/50 rounded-md px-2 py-1"
                   >
                     {settings.contactInfo.email}
                   </a>
                 </div>
                 <div className="flex items-center space-x-3">
-                  <PhoneIcon className="w-5 h-5 text-teal-400" />
+                  <PhoneIcon className="w-5 h-5 text-brand-primary-400" />
                   <a 
                     href={`tel:${settings.contactInfo.phone.replace(/\s/g, '')}`} 
-                    className="text-slate-400 hover:text-teal-400 transition-colors duration-200 text-base"
+                    className="text-slate-300 hover:text-brand-primary-300 transition-colors duration-200 text-base focus:outline-none focus:ring-2 focus:ring-brand-primary-500/50 rounded-md px-2 py-1"
                   >
                     {settings.contactInfo.phone}
                   </a>
                 </div>
                 <div className="flex items-start space-x-3">
-                  <MapPinIcon className="w-5 h-5 text-teal-400 mt-1" />
-                  <span className="text-slate-400 text-base">
+                  <MapPinIcon className="w-5 h-5 text-brand-primary-400 mt-1" />
+                  <span className="text-slate-300 text-base">
                     {settings.contactInfo.address}
                   </span>
                 </div>
@@ -232,7 +232,7 @@ const ConditionalFooter: React.FC = () => {
                     href={settings.developerInfo.website}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="text-teal-400 hover:text-teal-300 transition-colors duration-200 font-medium"
+                    className="text-brand-primary-400 hover:text-brand-primary-300 transition-colors duration-200 font-medium"
                   >
                     {settings.developerInfo.name}
                   </a>

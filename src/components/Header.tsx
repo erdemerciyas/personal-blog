@@ -326,10 +326,10 @@ E-posta: ${projectForm.email}
                   className={`px-4 py-2 rounded-xl font-medium transition-all duration-200 group flex items-center space-x-2 ${
                     isActive
                       ? isScrolled
-                        ? 'bg-teal-100 text-teal-700'
-                        : 'bg-white text-teal-700 shadow'
+                        ? 'bg-brand-primary-100 text-brand-primary-800'
+                        : 'bg-white text-brand-primary-800 shadow'
                       : isScrolled
-                      ? 'text-slate-700 hover:bg-slate-100 hover:text-teal-600'
+                      ? 'text-slate-700 hover:bg-slate-100 hover:text-brand-primary-700'
                       : 'text-white hover:text-white hover:bg-white/10'
                   }`}
                 >
@@ -385,8 +385,8 @@ E-posta: ${projectForm.email}
                     onClick={closeMobileMenu}
                     className={`flex items-center space-x-3 py-3 px-4 rounded-xl font-medium transition-all duration-200 ${
                       isActive
-                        ? 'bg-teal-100 text-teal-700'
-                        : 'text-slate-700 hover:bg-slate-100 hover:text-teal-600'
+                        ? 'bg-brand-primary-100 text-brand-primary-800'
+                        : 'text-slate-700 hover:bg-slate-100 hover:text-brand-primary-700'
                     }`}
                   >
                     <link.icon className="w-5 h-5" />
@@ -414,7 +414,7 @@ E-posta: ${projectForm.email}
           <div className="bg-white rounded-3xl shadow-2xl w-full max-w-2xl max-h-[90vh] overflow-y-auto">
             <div className="p-6 border-b border-gray-200 flex items-center justify-between">
               <h2 className="text-2xl font-bold text-gray-900 flex items-center space-x-2">
-                <PaperAirplaneIcon className="w-6 h-6 text-teal-600" />
+                <PaperAirplaneIcon className="w-6 h-6 text-brand-primary-700" />
                 <span>Proje Başvurusu</span>
               </h2>
               <button
@@ -427,14 +427,14 @@ E-posta: ${projectForm.email}
             
             <form onSubmit={handleProjectFormSubmit} className="p-6 space-y-6">
               {submitStatus === 'success' && (
-                <div className="bg-green-50 border border-green-200 rounded-xl p-4">
+                <div className="bg-brand-primary-50 border border-brand-primary-200 rounded-xl p-4">
                   <div className="flex items-center space-x-2">
-                    <div className="w-5 h-5 bg-green-500 rounded-full flex items-center justify-center">
+                    <div className="w-5 h-5 bg-brand-primary-600 rounded-full flex items-center justify-center">
                       <svg className="w-3 h-3 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
                       </svg>
                     </div>
-                    <p className="text-green-800 font-medium">Proje başvurunuz başarıyla gönderildi!</p>
+                    <p className="text-brand-primary-800 font-medium">Proje başvurunuz başarıyla gönderildi!</p>
                   </div>
                 </div>
               )}
@@ -457,7 +457,7 @@ E-posta: ${projectForm.email}
                     value={projectForm.name}
                     onChange={handleProjectFormChange}
                     required
-                    className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-teal-500 focus:border-transparent transition-all"
+                    className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-brand-primary-600 focus:border-transparent transition-all"
                     placeholder="Adınız ve soyadınız"
                   />
                 </div>
@@ -473,7 +473,7 @@ E-posta: ${projectForm.email}
                     value={projectForm.email}
                     onChange={handleProjectFormChange}
                     required
-                    className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-teal-500 focus:border-transparent transition-all"
+                    className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-brand-primary-600 focus:border-transparent transition-all"
                     placeholder="ornek@email.com"
                   />
                 </div>
@@ -488,7 +488,7 @@ E-posta: ${projectForm.email}
                     name="phone"
                     value={projectForm.phone}
                     onChange={handleProjectFormChange}
-                    className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-teal-500 focus:border-transparent transition-all"
+                    className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-brand-primary-600 focus:border-transparent transition-all"
                     placeholder="05XX XXX XX XX"
                   />
                 </div>
@@ -503,7 +503,7 @@ E-posta: ${projectForm.email}
                     value={projectForm.projectType}
                     onChange={handleProjectFormChange}
                     required
-                    className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-teal-500 focus:border-transparent transition-all"
+                    className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-brand-primary-600 focus:border-transparent transition-all"
                   >
                     <option value="">Seçiniz</option>
                     <option value="3d-scanning">3D Tarama</option>
@@ -525,7 +525,7 @@ E-posta: ${projectForm.email}
                     name="budget"
                     value={projectForm.budget}
                     onChange={handleProjectFormChange}
-                    className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-teal-500 focus:border-transparent transition-all"
+                    className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-brand-primary-600 focus:border-transparent transition-all"
                   >
                     <option value="">Seçiniz</option>
                     <option value="under-5k">5.000 TL altı</option>
@@ -545,7 +545,7 @@ E-posta: ${projectForm.email}
                     name="timeline"
                     value={projectForm.timeline}
                     onChange={handleProjectFormChange}
-                    className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-teal-500 focus:border-transparent transition-all"
+                    className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-brand-primary-600 focus:border-transparent transition-all"
                   >
                     <option value="">Seçiniz</option>
                     <option value="asap">Mümkün olan en kısa sürede</option>
@@ -568,7 +568,7 @@ E-posta: ${projectForm.email}
                   onChange={handleProjectFormChange}
                   required
                   rows={4}
-                  className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-teal-500 focus:border-transparent transition-all resize-none"
+                  className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-brand-primary-600 focus:border-transparent transition-all resize-none"
                   placeholder="Projenizin detaylarını, hedeflerinizi ve özel gereksinimlerinizi açıklayın..."
                 />
               </div>

@@ -110,9 +110,9 @@ export default function ModernProjectCard({
             )}
           </>
         ) : (
-          <div className="absolute inset-0 bg-gradient-to-br from-teal-100 to-blue-100 flex flex-col items-center justify-center">
-            <div className="w-16 h-16 bg-teal-200 rounded-full flex items-center justify-center">
-              <PhotoIcon className="w-8 h-8 text-teal-600" />
+          <div className="absolute inset-0 bg-gradient-to-br from-brand-primary-100 to-blue-100 flex flex-col items-center justify-center">
+            <div className="w-16 h-16 bg-brand-primary-200 rounded-full flex items-center justify-center">
+              <PhotoIcon className="w-8 h-8 text-brand-primary-700" />
             </div>
           </div>
         )}
@@ -136,7 +136,7 @@ export default function ModernProjectCard({
       {/* Content */}
       <div className="p-6 flex flex-col flex-grow">
         {/* Title */}
-        <h3 className="text-xl font-bold text-slate-800 mb-3 group-hover:text-teal-600 transition-colors duration-300 line-clamp-2">
+        <h3 className="text-xl font-bold text-slate-800 mb-3 group-hover:text-brand-primary-700 transition-colors duration-300 line-clamp-2">
           {project.title}
         </h3>
 
@@ -167,7 +167,7 @@ export default function ModernProjectCard({
       </div>
 
       {/* Hover Effect Border */}
-      <div className="absolute inset-0 rounded-3xl border-2 border-transparent group-hover:border-teal-500/20 transition-colors duration-500 pointer-events-none"></div>
+      <div className="absolute inset-0 rounded-3xl border-2 border-transparent group-hover:border-brand-primary-600/20 transition-colors duration-500 pointer-events-none"></div>
     </motion.div>
   );
 }

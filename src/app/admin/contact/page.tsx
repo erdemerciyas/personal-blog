@@ -190,7 +190,7 @@ export default function AdminContactPage() {
             className={`flex items-center space-x-2 px-6 py-3 rounded-xl font-semibold transition-all duration-200 ${
               saving
                 ? 'bg-slate-400 cursor-not-allowed text-white'
-                : 'bg-teal-600 hover:bg-teal-700 text-white shadow-sm'
+                : 'bg-brand-primary-700 hover:bg-brand-primary-800 text-white shadow-sm'
             }`}
           >
             {saving ? (
@@ -223,7 +223,7 @@ export default function AdminContactPage() {
           {/* Basic Contact Info */}
           <div className="bg-white rounded-xl p-6 shadow-sm border border-slate-200">
             <h3 className="text-lg font-semibold text-slate-900 mb-4 flex items-center space-x-2">
-              <EnvelopeIcon className="w-5 h-5 text-teal-600" />
+              <EnvelopeIcon className="w-5 h-5 text-brand-primary-700" />
               <span>Temel İletişim Bilgileri</span>
             </h3>
             
@@ -237,7 +237,7 @@ export default function AdminContactPage() {
                   name="email"
                   value={contactData.email}
                   onChange={handleInputChange}
-                  className="w-full border border-slate-300 rounded-xl px-4 py-3 text-slate-900 focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-transparent"
+                  className="w-full border border-slate-300 rounded-xl px-4 py-3 text-slate-900 focus:outline-none focus:ring-2 focus:ring-brand-primary-600 focus:border-transparent"
                   placeholder="info@example.com"
                 />
               </div>
@@ -251,7 +251,7 @@ export default function AdminContactPage() {
                   name="phone"
                   value={contactData.phone}
                   onChange={handleInputChange}
-                  className="w-full border border-slate-300 rounded-xl px-4 py-3 text-slate-900 focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-transparent"
+                  className="w-full border border-slate-300 rounded-xl px-4 py-3 text-slate-900 focus:outline-none focus:ring-2 focus:ring-brand-primary-600 focus:border-transparent"
                   placeholder="+90 555 000 00 00"
                 />
               </div>
@@ -265,7 +265,7 @@ export default function AdminContactPage() {
                   value={contactData.address}
                   onChange={handleInputChange}
                   rows={3}
-                  className="w-full border border-slate-300 rounded-xl px-4 py-3 text-slate-900 focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-transparent"
+                  className="w-full border border-slate-300 rounded-xl px-4 py-3 text-slate-900 focus:outline-none focus:ring-2 focus:ring-brand-primary-600 focus:border-transparent"
                   placeholder="Tam adres bilgisi..."
                 />
               </div>
@@ -279,7 +279,7 @@ export default function AdminContactPage() {
                   name="workingHours"
                   value={contactData.workingHours}
                   onChange={handleInputChange}
-                  className="w-full border border-slate-300 rounded-xl px-4 py-3 text-slate-900 focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-transparent"
+                  className="w-full border border-slate-300 rounded-xl px-4 py-3 text-slate-900 focus:outline-none focus:ring-2 focus:ring-brand-primary-600 focus:border-transparent"
                   placeholder="Pazartesi - Cuma: 09:00 - 18:00"
                 />
               </div>
@@ -289,7 +289,7 @@ export default function AdminContactPage() {
           {/* Social Media Links */}
           <div className="bg-white rounded-xl p-6 shadow-sm border border-slate-200">
             <h3 className="text-lg font-semibold text-slate-900 mb-4 flex items-center space-x-2">
-              <GlobeAltIcon className="w-5 h-5 text-teal-600" />
+              <GlobeAltIcon className="w-5 h-5 text-brand-primary-700" />
               <span>Sosyal Medya Hesapları</span>
             </h3>
             
@@ -303,7 +303,7 @@ export default function AdminContactPage() {
                   name="socialLinks.linkedin"
                   value={contactData.socialLinks.linkedin}
                   onChange={handleInputChange}
-                  className="w-full border border-slate-300 rounded-xl px-4 py-3 text-slate-900 focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-transparent"
+                  className="w-full border border-slate-300 rounded-xl px-4 py-3 text-slate-900 focus:outline-none focus:ring-2 focus:ring-brand-primary-600 focus:border-transparent"
                   placeholder="https://linkedin.com/in/..."
                 />
               </div>
@@ -317,7 +317,7 @@ export default function AdminContactPage() {
                   name="socialLinks.twitter"
                   value={contactData.socialLinks.twitter}
                   onChange={handleInputChange}
-                  className="w-full border border-slate-300 rounded-xl px-4 py-3 text-slate-900 focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-transparent"
+                  className="w-full border border-slate-300 rounded-xl px-4 py-3 text-slate-900 focus:outline-none focus:ring-2 focus:ring-brand-primary-600 focus:border-transparent"
                   placeholder="https://twitter.com/..."
                 />
               </div>
@@ -331,7 +331,7 @@ export default function AdminContactPage() {
                   name="socialLinks.instagram"
                   value={contactData.socialLinks.instagram}
                   onChange={handleInputChange}
-                  className="w-full border border-slate-300 rounded-xl px-4 py-3 text-slate-900 focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-transparent"
+                  className="w-full border border-slate-300 rounded-xl px-4 py-3 text-slate-900 focus:outline-none focus:ring-2 focus:ring-brand-primary-600 focus:border-transparent"
                   placeholder="https://instagram.com/..."
                 />
               </div>
@@ -345,7 +345,7 @@ export default function AdminContactPage() {
                   name="socialLinks.facebook"
                   value={contactData.socialLinks.facebook}
                   onChange={handleInputChange}
-                  className="w-full border border-slate-300 rounded-xl px-4 py-3 text-slate-900 focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-transparent"
+                  className="w-full border border-slate-300 rounded-xl px-4 py-3 text-slate-900 focus:outline-none focus:ring-2 focus:ring-brand-primary-600 focus:border-transparent"
                   placeholder="https://facebook.com/..."
                 />
               </div>
@@ -355,7 +355,7 @@ export default function AdminContactPage() {
           {/* Preview Section */}
           <div className="bg-white rounded-xl p-6 shadow-sm border border-slate-200">
             <h3 className="text-lg font-semibold text-slate-900 mb-4 flex items-center space-x-2">
-              <DocumentTextIcon className="w-5 h-5 text-teal-600" />
+              <DocumentTextIcon className="w-5 h-5 text-brand-primary-700" />
               <span>Önizleme</span>
             </h3>
             
@@ -363,19 +363,19 @@ export default function AdminContactPage() {
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div className="space-y-4">
                   <div className="flex items-center space-x-3">
-                    <EnvelopeIcon className="w-5 h-5 text-teal-600" />
+                    <EnvelopeIcon className="w-5 h-5 text-brand-primary-700" />
                     <span className="text-slate-700">{contactData.email || 'E-posta girilmedi'}</span>
                   </div>
                   <div className="flex items-center space-x-3">
-                    <PhoneIcon className="w-5 h-5 text-teal-600" />
+                    <PhoneIcon className="w-5 h-5 text-brand-primary-700" />
                     <span className="text-slate-700">{contactData.phone || 'Telefon girilmedi'}</span>
                   </div>
                   <div className="flex items-start space-x-3">
-                    <MapPinIcon className="w-5 h-5 text-teal-600 mt-0.5" />
+                    <MapPinIcon className="w-5 h-5 text-brand-primary-700 mt-0.5" />
                     <span className="text-slate-700">{contactData.address || 'Adres girilmedi'}</span>
                   </div>
                   <div className="flex items-center space-x-3">
-                    <ClockIcon className="w-5 h-5 text-teal-600" />
+                    <ClockIcon className="w-5 h-5 text-brand-primary-700" />
                     <span className="text-slate-700">{contactData.workingHours || 'Çalışma saatleri girilmedi'}</span>
                   </div>
                 </div>
@@ -384,7 +384,7 @@ export default function AdminContactPage() {
                   <h4 className="font-semibold text-slate-900">Sosyal Medya:</h4>
                   {Object.entries(contactData.socialLinks).map(([platform, url]) => (
                     <div key={platform} className="flex items-center space-x-3">
-                      <div className="w-3 h-3 bg-teal-600 rounded-full"></div>
+                      <div className="w-3 h-3 bg-brand-primary-700 rounded-full"></div>
                       <span className="text-slate-700 capitalize">
                         {platform}: {url || 'Girilmedi'}
                       </span>

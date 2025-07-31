@@ -53,7 +53,7 @@ export async function GET() {
       theme: {
         backgroundColor: 'bg-slate-800',
         textColor: 'text-slate-300',
-        accentColor: 'text-teal-400'
+        accentColor: 'text-brand-primary-400'
       }
     };
     

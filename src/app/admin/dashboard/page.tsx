@@ -11,7 +11,7 @@ const AdminLayout = dynamic(() => import('../../../components/admin/AdminLayout'
   loading: () => (
     <div className="min-h-screen bg-slate-50 flex items-center justify-center">
       <div className="text-center space-y-4">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-teal-600 mx-auto"></div>
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-brand-primary-700 mx-auto"></div>
         <p className="text-slate-600">Dashboard yükleniyor...</p>
       </div>
     </div>
@@ -166,7 +166,7 @@ function AdminDashboardContent() {
     return (
       <div className="min-h-screen bg-slate-50 flex items-center justify-center">
         <div className="text-center space-y-4">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-teal-600 mx-auto"></div>
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-brand-primary-700 mx-auto"></div>
           <p className="text-slate-600">Dashboard yükleniyor...</p>
         </div>
       </div>
@@ -184,7 +184,7 @@ function AdminDashboardContent() {
     return (
       <div className="min-h-screen bg-slate-50 flex items-center justify-center">
         <div className="text-center space-y-4">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-teal-600 mx-auto"></div>
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-brand-primary-700 mx-auto"></div>
           <p className="text-slate-600">Oturum kontrol ediliyor...</p>
         </div>
       </div>
@@ -204,7 +204,7 @@ function AdminDashboardContent() {
         <div className="px-4 sm:px-6 lg:px-8 py-6 space-y-8">
         
         {/* Welcome Section */}
-        <div className="bg-gradient-to-r from-teal-50 to-cyan-50 rounded-2xl p-6 lg:p-8 border border-teal-100">
+        <div className="bg-gradient-to-r from-brand-primary-50 to-cyan-50 rounded-2xl p-6 lg:p-8 border border-brand-primary-100">
           <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between space-y-4 lg:space-y-0">
             <div>
               <h2 className="text-2xl lg:text-3xl font-bold text-slate-900 mb-2">
@@ -216,10 +216,10 @@ function AdminDashboardContent() {
             </div>
             <div className="flex flex-col sm:flex-row items-start sm:items-center space-y-2 sm:space-y-0 sm:space-x-4">
               <div className="flex items-center space-x-2 text-sm text-slate-600">
-                <span className="w-2 h-2 bg-green-500 rounded-full"></span>
+                <span className="w-2 h-2 bg-brand-primary-600 rounded-full"></span>
                 <span>Son giriş: Bugün 17:23</span>
               </div>
-              <div className="px-3 py-1 bg-teal-100 text-teal-700 rounded-full text-sm font-medium">
+              <div className="px-3 py-1 bg-brand-primary-100 text-brand-primary-800 rounded-full text-sm font-medium">
                 v2.2.0
               </div>
             </div>
@@ -234,8 +234,8 @@ function AdminDashboardContent() {
                 <p className="text-slate-600 text-sm font-medium">Toplam Proje</p>
                 <p className="text-2xl font-bold text-slate-900 mt-1">{stats.portfolioCount}</p>
                 <div className="flex items-center space-x-1 mt-2">
-                  <ArrowTrendingUpIcon className="w-4 h-4 text-green-500" />
-                  <span className="text-green-600 text-sm font-medium">+12%</span>
+                  <ArrowTrendingUpIcon className="w-4 h-4 text-brand-primary-600" />
+                  <span className="text-brand-primary-700 text-sm font-medium">+12%</span>
                   <span className="text-slate-500 text-sm">bu ay</span>
                 </div>
               </div>
@@ -271,13 +271,13 @@ function AdminDashboardContent() {
                 <p className="text-slate-600 text-sm font-medium">Aktif Hizmet</p>
                 <p className="text-2xl font-bold text-slate-900 mt-1">7</p>
                 <div className="flex items-center space-x-1 mt-2">
-                  <WrenchScrewdriverIcon className="w-4 h-4 text-teal-500" />
-                  <span className="text-teal-600 text-sm font-medium">3 yeni</span>
+                  <WrenchScrewdriverIcon className="w-4 h-4 text-brand-primary-600" />
+                  <span className="text-brand-primary-700 text-sm font-medium">3 yeni</span>
                 </div>
               </div>
               <div className="flex-shrink-0">
-                <div className="w-12 h-12 bg-teal-100 rounded-xl flex items-center justify-center">
-                  <WrenchScrewdriverIcon className="w-6 h-6 text-teal-600" />
+                <div className="w-12 h-12 bg-brand-primary-100 rounded-xl flex items-center justify-center">
+                  <WrenchScrewdriverIcon className="w-6 h-6 text-brand-primary-700" />
                 </div>
               </div>
             </div>
@@ -325,13 +325,13 @@ function AdminDashboardContent() {
                 <p className="text-slate-600 text-sm font-medium">Kayıtlı Kullanıcı</p>
                 <p className="text-2xl font-bold text-slate-900 mt-1">{stats.usersCount}</p>
                 <div className="flex items-center space-x-1 mt-2">
-                  <UsersIcon className="w-4 h-4 text-emerald-500" />
-                  <span className="text-emerald-600 text-sm font-medium">Aktif</span>
+                  <UsersIcon className="w-4 h-4 text-brand-primary-600" />
+                  <span className="text-brand-primary-700 text-sm font-medium">Aktif</span>
                 </div>
               </div>
               <div className="flex-shrink-0">
-                <div className="w-12 h-12 bg-emerald-100 rounded-xl flex items-center justify-center">
-                  <UsersIcon className="w-6 h-6 text-emerald-600" />
+                <div className="w-12 h-12 bg-brand-primary-100 rounded-xl flex items-center justify-center">
+                  <UsersIcon className="w-6 h-6 text-brand-primary-700" />
                 </div>
               </div>
             </div>
@@ -371,7 +371,7 @@ function AdminDashboardContent() {
             </Link>
             
             <Link href="/admin/services/new" className="flex flex-col items-center space-y-3 p-4 rounded-xl hover:bg-slate-50 transition-colors group">
-              <div className="w-12 h-12 bg-gradient-to-br from-teal-500 to-teal-600 rounded-xl flex items-center justify-center group-hover:scale-110 transition-transform">
+              <div className="w-12 h-12 bg-gradient-to-br from-brand-primary-600 to-brand-primary-700 rounded-xl flex items-center justify-center group-hover:scale-110 transition-transform">
                 <WrenchScrewdriverIcon className="w-6 h-6 text-white" />
               </div>
               <span className="text-sm font-medium text-slate-700 text-center">Yeni Hizmet</span>
@@ -399,14 +399,14 @@ function AdminDashboardContent() {
             </Link>
             
             <Link href="/admin/users" className="flex flex-col items-center space-y-3 p-4 rounded-xl hover:bg-slate-50 transition-colors group">
-              <div className="w-12 h-12 bg-gradient-to-br from-emerald-500 to-emerald-600 rounded-xl flex items-center justify-center group-hover:scale-110 transition-transform">
+              <div className="w-12 h-12 bg-gradient-to-br from-brand-primary-600 to-brand-primary-700 rounded-xl flex items-center justify-center group-hover:scale-110 transition-transform">
                 <UsersIcon className="w-6 h-6 text-white" />
               </div>
               <span className="text-sm font-medium text-slate-700 text-center">Kullanıcılar</span>
             </Link>
             
             <Link href="/admin/about" className="flex flex-col items-center space-y-3 p-4 rounded-xl hover:bg-slate-50 transition-colors group">
-              <div className="w-12 h-12 bg-gradient-to-br from-green-500 to-green-600 rounded-xl flex items-center justify-center group-hover:scale-110 transition-transform">
+              <div className="w-12 h-12 bg-gradient-to-br from-brand-primary-600 to-brand-primary-700 rounded-xl flex items-center justify-center group-hover:scale-110 transition-transform">
                 <DocumentTextIcon className="w-6 h-6 text-white" />
               </div>
               <span className="text-sm font-medium text-slate-700 text-center">Hakkımda</span>
@@ -427,12 +427,12 @@ function AdminDashboardContent() {
                 <div key={activity.id} className="flex items-start space-x-4 p-4 rounded-lg hover:bg-slate-50 transition-colors">
                   <div className={`w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0 ${
                     activity.type === 'portfolio' ? 'bg-blue-100' :
-                    activity.type === 'service' ? 'bg-teal-100' :
+                    activity.type === 'service' ? 'bg-brand-primary-100' :
                     activity.type === 'message' ? 'bg-orange-100' :
                     'bg-gray-100'
                   }`}>
                     {activity.type === 'portfolio' && <FolderOpenIcon className="w-4 h-4 text-blue-600" />}
-                    {activity.type === 'service' && <WrenchScrewdriverIcon className="w-4 h-4 text-teal-600" />}
+                    {activity.type === 'service' && <WrenchScrewdriverIcon className="w-4 h-4 text-brand-primary-700" />}
                     {activity.type === 'message' && <EnvelopeIcon className="w-4 h-4 text-orange-600" />}
                     {activity.type === 'upload' && <CloudArrowUpIcon className="w-4 h-4 text-purple-600" />}
                   </div>
@@ -459,37 +459,37 @@ function AdminDashboardContent() {
               <ServerIcon className="w-5 h-5 text-slate-400" />
             </div>
             <div className="space-y-4">
-              <div className="flex items-center justify-between p-4 bg-green-50 rounded-lg">
+              <div className="flex items-center justify-between p-4 bg-brand-primary-50 rounded-lg">
                 <div className="flex items-center space-x-3">
-                  <div className="w-3 h-3 bg-green-500 rounded-full"></div>
+                  <div className="w-3 h-3 bg-brand-primary-600 rounded-full"></div>
                   <div>
-                    <p className="text-sm font-medium text-green-900">Server Durumu</p>
-                    <p className="text-xs text-green-700">Çevrimiçi ve düzgün çalışıyor</p>
+                    <p className="text-sm font-medium text-brand-primary-900">Server Durumu</p>
+                    <p className="text-xs text-brand-primary-800">Çevrimiçi ve düzgün çalışıyor</p>
                   </div>
                 </div>
-                <CheckCircleIcon className="w-5 h-5 text-green-500" />
+                <CheckCircleIcon className="w-5 h-5 text-brand-primary-600" />
               </div>
               
-              <div className="flex items-center justify-between p-4 bg-green-50 rounded-lg">
+              <div className="flex items-center justify-between p-4 bg-brand-primary-50 rounded-lg">
                 <div className="flex items-center space-x-3">
-                  <div className="w-3 h-3 bg-green-500 rounded-full"></div>
+                  <div className="w-3 h-3 bg-brand-primary-600 rounded-full"></div>
                   <div>
-                    <p className="text-sm font-medium text-green-900">Veritabanı</p>
-                    <p className="text-xs text-green-700">MongoDB bağlantısı aktif</p>
+                    <p className="text-sm font-medium text-brand-primary-900">Veritabanı</p>
+                    <p className="text-xs text-brand-primary-800">MongoDB bağlantısı aktif</p>
                   </div>
                 </div>
-                <CheckCircleIcon className="w-5 h-5 text-green-500" />
+                <CheckCircleIcon className="w-5 h-5 text-brand-primary-600" />
               </div>
               
-              <div className="flex items-center justify-between p-4 bg-green-50 rounded-lg">
+              <div className="flex items-center justify-between p-4 bg-brand-primary-50 rounded-lg">
                 <div className="flex items-center space-x-3">
-                  <div className="w-3 h-3 bg-green-500 rounded-full"></div>
+                  <div className="w-3 h-3 bg-brand-primary-600 rounded-full"></div>
                   <div>
-                    <p className="text-sm font-medium text-green-900">Cloudinary</p>
-                    <p className="text-xs text-green-700">CDN hizmeti aktif</p>
+                    <p className="text-sm font-medium text-brand-primary-900">Cloudinary</p>
+                    <p className="text-xs text-brand-primary-800">CDN hizmeti aktif</p>
                   </div>
                 </div>
-                <CheckCircleIcon className="w-5 h-5 text-green-500" />
+                <CheckCircleIcon className="w-5 h-5 text-brand-primary-600" />
               </div>
             </div>
           </div>
@@ -542,7 +542,7 @@ export default function AdminDashboard() {
     <Suspense fallback={
       <div className="min-h-screen bg-slate-50 flex items-center justify-center">
         <div className="text-center space-y-4">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-teal-600 mx-auto"></div>
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-brand-primary-700 mx-auto"></div>
           <p className="text-slate-600">Dashboard yükleniyor...</p>
         </div>
       </div>

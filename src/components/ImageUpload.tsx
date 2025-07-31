@@ -224,10 +224,10 @@ const ImageUpload: React.FC<ImageUploadProps> = ({
       )}
 
       {success && (
-        <div className="p-3 bg-green-50 border border-green-200 rounded-lg">
+        <div className="p-3 bg-brand-primary-50 border border-brand-primary-200 rounded-lg">
           <div className="flex items-center space-x-2">
-            <CheckIcon className="w-4 h-4 text-green-500 flex-shrink-0" />
-            <span className="text-sm text-green-700">{success}</span>
+            <CheckIcon className="w-4 h-4 text-brand-primary-600 flex-shrink-0" />
+            <span className="text-sm text-brand-primary-800">{success}</span>
           </div>
         </div>
       )}
@@ -300,7 +300,7 @@ const ImageUpload: React.FC<ImageUploadProps> = ({
               type="button"
               onClick={() => fileInputRef.current?.click()}
               disabled={disabled || uploading}
-              className="flex items-center space-x-2 px-4 py-2 bg-green-50 text-green-600 rounded-lg hover:bg-green-100 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+              className="flex items-center space-x-2 px-4 py-2 bg-brand-primary-50 text-brand-primary-700 rounded-lg hover:bg-brand-primary-100 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
             >
               <ArrowUpTrayIcon className="w-4 h-4" />
               <span>Yeni Yükle</span>

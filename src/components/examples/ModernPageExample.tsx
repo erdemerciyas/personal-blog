@@ -49,7 +49,7 @@ export default function ModernPageExample() {
         <div className="flex justify-center space-x-4 mb-12">
           <PrefetchLink 
             href="/" 
-            className="bg-teal-600 text-white px-6 py-3 rounded-lg hover:bg-teal-700 transition-colors"
+            className="bg-brand-primary-700 text-white px-6 py-3 rounded-lg hover:bg-brand-primary-800 transition-colors"
           >
             Ana Sayfa
           </PrefetchLink>

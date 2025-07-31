@@ -129,7 +129,7 @@ export default function NewServicePage() {
 
         {/* Success/Error Messages */}
         {success && (
-          <div className="bg-green-50 border border-green-200 text-green-800 p-4 rounded-xl flex items-center space-x-3">
+          <div className="bg-brand-primary-50 border border-brand-primary-200 text-brand-primary-900 p-4 rounded-xl flex items-center space-x-3">
             <CheckIcon className="w-5 h-5" />
             <span>Servis başarıyla eklendi! Yönlendiriliyorsunuz...</span>
           </div>
@@ -148,7 +148,7 @@ export default function NewServicePage() {
           {/* Basic Information */}
           <div className="bg-white rounded-xl p-6 shadow-sm border border-slate-200">
             <h3 className="text-lg font-semibold text-slate-900 mb-4 flex items-center space-x-2">
-              <DocumentTextIcon className="w-5 h-5 text-teal-600" />
+              <DocumentTextIcon className="w-5 h-5 text-brand-primary-700" />
               <span>Temel Bilgiler</span>
             </h3>
             
@@ -162,7 +162,7 @@ export default function NewServicePage() {
                   name="title"
                   value={serviceTitle}
                   onChange={(e) => setServiceTitle(e.target.value)}
-                  className="w-full border border-slate-300 rounded-xl px-4 py-3 text-slate-900 focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-transparent"
+                  className="w-full border border-slate-300 rounded-xl px-4 py-3 text-slate-900 focus:outline-none focus:ring-2 focus:ring-brand-primary-600 focus:border-transparent"
                   placeholder="Servis başlığı giriniz"
                   required
                 />
@@ -186,7 +186,7 @@ export default function NewServicePage() {
           {/* Service Image */}
           <div className="bg-white rounded-xl p-6 shadow-sm border border-slate-200">
             <h3 className="text-lg font-semibold text-slate-900 mb-4 flex items-center space-x-2">
-              <PhotoIcon className="w-5 h-5 text-teal-600" />
+              <PhotoIcon className="w-5 h-5 text-brand-primary-700" />
               <span>Servis Görseli</span>
             </h3>
             
@@ -214,13 +214,13 @@ export default function NewServicePage() {
           <div className="bg-white rounded-xl p-6 shadow-sm border border-slate-200">
             <div className="flex items-center justify-between mb-4">
               <h3 className="text-lg font-semibold text-slate-900 flex items-center space-x-2">
-                <ListBulletIcon className="w-5 h-5 text-teal-600" />
+                <ListBulletIcon className="w-5 h-5 text-brand-primary-700" />
                 <span>Servis Özellikleri</span>
               </h3>
               <button
                 type="button"
                 onClick={addFeature}
-                className="flex items-center space-x-2 bg-teal-50 text-teal-600 px-3 py-2 rounded-lg hover:bg-teal-100 transition-colors"
+                className="flex items-center space-x-2 bg-brand-primary-50 text-brand-primary-700 px-3 py-2 rounded-lg hover:bg-brand-primary-100 transition-colors"
               >
                 <PlusIcon className="w-4 h-4" />
                 <span>Özellik Ekle</span>
@@ -239,7 +239,7 @@ export default function NewServicePage() {
                       type="text"
                       value={feature}
                       onChange={(e) => updateFeature(index, e.target.value)}
-                      className="flex-1 border border-slate-300 rounded-xl px-4 py-3 text-slate-900 focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-transparent"
+                      className="flex-1 border border-slate-300 rounded-xl px-4 py-3 text-slate-900 focus:outline-none focus:ring-2 focus:ring-brand-primary-600 focus:border-transparent"
                       placeholder="Özellik açıklaması"
                     />
                     <button
@@ -258,7 +258,7 @@ export default function NewServicePage() {
           {/* Preview */}
           <div className="bg-white rounded-xl p-6 shadow-sm border border-slate-200">
             <h3 className="text-lg font-semibold text-slate-900 mb-4 flex items-center space-x-2">
-              <WrenchScrewdriverIcon className="w-5 h-5 text-teal-600" />
+              <WrenchScrewdriverIcon className="w-5 h-5 text-brand-primary-700" />
               <span>Önizleme</span>
             </h3>
             
@@ -314,7 +314,7 @@ export default function NewServicePage() {
               <button
                 type="submit"
                 disabled={loading}
-                className="flex-1 bg-teal-600 text-white px-6 py-3 rounded-xl font-medium hover:bg-teal-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors flex items-center justify-center space-x-2"
+                className="flex-1 bg-brand-primary-700 text-white px-6 py-3 rounded-xl font-medium hover:bg-brand-primary-800 disabled:opacity-50 disabled:cursor-not-allowed transition-colors flex items-center justify-center space-x-2"
               >
                 {loading ? (
                   <>

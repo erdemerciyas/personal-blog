@@ -190,7 +190,7 @@ export default function AdminSettingsPage() {
       <AdminLayout>
         <div className="flex items-center justify-center min-h-[400px]">
           <div className="flex flex-col items-center space-y-4">
-            <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-teal-500"></div>
+            <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-brand-primary-600"></div>
             <p className="text-lg text-slate-700">Ayarlar yükleniyor...</p>
           </div>
         </div>
@@ -215,7 +215,7 @@ export default function AdminSettingsPage() {
         {message && (
           <div className={`p-4 rounded-xl border ${
             message.type === 'success' 
-              ? 'bg-green-50 border-green-200 text-green-800' 
+              ? 'bg-brand-primary-50 border-brand-primary-200 text-brand-primary-900' 
               : 'bg-red-50 border-red-200 text-red-800'
           }`}>
             {message.text}
@@ -235,7 +235,7 @@ export default function AdminSettingsPage() {
                 type="text"
                 value={settings.siteName}
                 onChange={(e) => handleInputChange('siteName', e.target.value)}
-                className="w-full border border-slate-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-teal-500"
+                className="w-full border border-slate-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-brand-primary-600"
                 placeholder="Site adınız"
               />
             </div>
@@ -248,7 +248,7 @@ export default function AdminSettingsPage() {
                 type="url"
                 value={settings.siteUrl}
                 onChange={(e) => handleInputChange('siteUrl', e.target.value)}
-                className="w-full border border-slate-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-teal-500"
+                className="w-full border border-slate-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-brand-primary-600"
                 placeholder="https://example.com"
               />
             </div>
@@ -261,7 +261,7 @@ export default function AdminSettingsPage() {
                 type="text"
                 value={settings.siteTitle}
                 onChange={(e) => handleInputChange('siteTitle', e.target.value)}
-                className="w-full border border-slate-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-teal-500"
+                className="w-full border border-slate-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-brand-primary-600"
                 placeholder="SEO için site başlığı"
               />
             </div>
@@ -274,7 +274,7 @@ export default function AdminSettingsPage() {
                 value={settings.siteDescription}
                 onChange={(e) => handleInputChange('siteDescription', e.target.value)}
                 rows={4}
-                className="w-full border border-slate-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-teal-500"
+                className="w-full border border-slate-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-brand-primary-600"
                 placeholder="Site açıklamanız..."
               />
             </div>
@@ -287,7 +287,7 @@ export default function AdminSettingsPage() {
                 type="text"
                 value={settings.siteKeywords}
                 onChange={(e) => handleInputChange('siteKeywords', e.target.value)}
-                className="w-full border border-slate-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-teal-500"
+                className="w-full border border-slate-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-brand-primary-600"
                 placeholder="mühendislik, 3d tarama, teknoloji (virgülle ayırın)"
               />
             </div>
@@ -332,7 +332,7 @@ export default function AdminSettingsPage() {
                 
                 <div 
                   onClick={() => fileInputRef.current?.click()}
-                  className="border-2 border-dashed border-slate-300 rounded-xl p-8 text-center hover:border-teal-400 hover:bg-teal-50/50 transition-colors cursor-pointer"
+                  className="border-2 border-dashed border-slate-300 rounded-xl p-8 text-center hover:border-brand-primary-400 hover:bg-brand-primary-50/50 transition-colors cursor-pointer"
                 >
                   <CloudArrowUpIcon className="w-12 h-12 text-slate-400 mx-auto mb-4" />
                   <p className="text-sm font-medium text-slate-600 mb-2">
@@ -383,7 +383,7 @@ export default function AdminSettingsPage() {
                     <button
                       onClick={handleLogoUpload}
                       disabled={uploadingLogo}
-                      className="w-full mt-4 bg-gradient-to-r from-teal-500 to-teal-600 hover:from-teal-600 hover:to-teal-700 text-white px-4 py-2 rounded-lg font-medium transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center space-x-2"
+                      className="w-full mt-4 bg-gradient-to-r from-brand-primary-600 to-brand-primary-700 hover:from-brand-primary-700 hover:to-brand-primary-800 text-white px-4 py-2 rounded-lg font-medium transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center space-x-2"
                     >
                       {uploadingLogo ? (
                         <>
@@ -410,7 +410,7 @@ export default function AdminSettingsPage() {
                   type="url"
                   value={settings.logo}
                   onChange={(e) => handleInputChange('logo', e.target.value)}
-                  className="w-full border border-slate-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-teal-500"
+                  className="w-full border border-slate-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-brand-primary-600"
                   placeholder="https://example.com/logo.png"
                 />
               </div>
@@ -428,7 +428,7 @@ export default function AdminSettingsPage() {
                   type="url"
                   value={settings.favicon}
                   onChange={(e) => handleInputChange('favicon', e.target.value)}
-                  className="w-full border border-slate-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-teal-500"
+                  className="w-full border border-slate-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-brand-primary-600"
                   placeholder="/favicon.ico"
                 />
               </div>
@@ -441,7 +441,7 @@ export default function AdminSettingsPage() {
                   type="text"
                   value={settings.twitterHandle}
                   onChange={(e) => handleInputChange('twitterHandle', e.target.value)}
-                  className="w-full border border-slate-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-teal-500"
+                  className="w-full border border-slate-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-brand-primary-600"
                   placeholder="@username"
                 />
               </div>
@@ -498,7 +498,7 @@ export default function AdminSettingsPage() {
                   id="registration"
                   checked={settings.allowRegistration}
                   onChange={(e) => handleInputChange('allowRegistration', e.target.checked)}
-                  className="w-4 h-4 text-teal-600 bg-gray-100 border-gray-300 rounded focus:ring-teal-500"
+                  className="w-4 h-4 text-brand-primary-700 bg-gray-100 border-gray-300 rounded focus:ring-brand-primary-600"
                 />
                 <label htmlFor="registration" className="text-sm font-medium text-slate-700">
                   Kullanıcı Kaydına İzin Ver
@@ -516,7 +516,7 @@ export default function AdminSettingsPage() {
                 max="100"
                 value={settings.maxUploadSize}
                 onChange={(e) => handleInputChange('maxUploadSize', parseInt(e.target.value))}
-                className="w-full md:w-1/3 border border-slate-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-teal-500"
+                className="w-full md:w-1/3 border border-slate-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-brand-primary-600"
               />
             </div>
 
@@ -539,7 +539,7 @@ export default function AdminSettingsPage() {
           <button
             onClick={saveSettings}
             disabled={saving}
-            className="bg-teal-600 hover:bg-teal-700 text-white px-6 py-3 rounded-lg font-medium transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center space-x-2"
+            className="bg-brand-primary-700 hover:bg-brand-primary-800 text-white px-6 py-3 rounded-lg font-medium transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center space-x-2"
           >
             {saving ? (
               <>

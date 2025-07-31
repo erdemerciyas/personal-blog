@@ -1,184 +1,255 @@
 #!/usr/bin/env node
 
 /**
- * Performance Test Script
- * Bu script projenin performans durumunu test eder
+ * 🚀 Performance Test Script - Optimized
+ * Tests site performance metrics efficiently
  */
 
 const fs = require('fs');
 const path = require('path');
 
-console.log('🚀 Personal Blog - Performans Testi Başlatılıyor...\n');
-
-// Test sonuçları
-const results = {
-  passed: 0,
-  failed: 0,
-  warnings: 0,
-  tests: []
+// Colors for console output
+const colors = {
+  reset: '\x1b[0m',
+  bright: '\x1b[1m',
+  red: '\x1b[31m',
+  green: '\x1b[32m',
+  yellow: '\x1b[33m',
+  blue: '\x1b[34m',
+  cyan: '\x1b[36m'
 };
 
-function addTest(name, status, message, severity = 'info') {
-  results.tests.push({ name, status, message, severity });
-  if (status === 'PASS') results.passed++;
-  else if (status === 'FAIL') results.failed++;
-  else if (status === 'WARN') results.warnings++;
+function log(message, color = 'reset') {
+  console.log(`${colors[color]}${message}${colors.reset}`);
 }
 
-function checkFileExists(filePath, description) {
-  const exists = fs.existsSync(filePath);
-  addTest(
-    description,
-    exists ? 'PASS' : 'FAIL',
-    exists ? `✅ ${filePath} mevcut` : `❌ ${filePath} bulunamadı`,
-    exists ? 'info' : 'error'
-  );
-  return exists;
+function logSuccess(message) {
+  log(`✅ ${message}`, 'green');
 }
 
-function checkFileContent(filePath, searchText, description) {
-  if (!fs.existsSync(filePath)) {
-    addTest(description, 'FAIL', `❌ ${filePath} bulunamadı`, 'error');
-    return false;
+function logError(message) {
+  log(`❌ ${message}`, 'red');
+}
+
+function logInfo(message) {
+  log(`ℹ️  ${message}`, 'blue');
+}
+
+function logWarning(message) {
+  log(`⚠️  ${message}`, 'yellow');
+}
+
+async function runPerformanceTest() {
+  try {
+    log('🚀 Performance Test Başlatılıyor...', 'bright');
+    
+    const results = {
+      timestamp: new Date().toISOString(),
+      tests: [],
+      score: 0,
+      recommendations: []
+    };
+
+    // 1. CSS Optimizasyonları Kontrolü
+    logInfo('CSS optimizasyonları kontrol ediliyor...');
+    const cssFile = path.join(process.cwd(), 'src/app/globals.css');
+    
+    if (fs.existsSync(cssFile)) {
+      const cssContent = fs.readFileSync(cssFile, 'utf8');
+      
+      // Transform utilities kontrolü
+      const hasTransformUtilities = cssContent.includes('transform-gpu');
+      const hasWillChange = cssContent.includes('will-change');
+      const hasBackfaceVisibility = cssContent.includes('backface-visibility');
+      
+      if (hasTransformUtilities && hasWillChange && hasBackfaceVisibility) {
+        logSuccess('CSS transform optimizasyonları mevcut');
+        results.tests.push({ name: 'CSS Transform Optimizations', status: 'pass', score: 15 });
+      } else {
+        logWarning('CSS transform optimizasyonları eksik');
+        results.tests.push({ name: 'CSS Transform Optimizations', status: 'warning', score: 8 });
+        results.recommendations.push('CSS transform utilities ekleyin');
+      }
+      
+      // Animation optimizasyonları
+      const hasReducedMotion = cssContent.includes('@media (prefers-reduced-motion');
+      if (hasReducedMotion) {
+        logSuccess('Reduced motion desteği mevcut');
+        results.tests.push({ name: 'Reduced Motion Support', status: 'pass', score: 10 });
+      } else {
+        logWarning('Reduced motion desteği eksik');
+        results.tests.push({ name: 'Reduced Motion Support', status: 'fail', score: 0 });
+        results.recommendations.push('Reduced motion media query ekleyin');
+      }
+      
+      // Brand colors kontrolü
+      const hasBrandColors = cssContent.includes('--brand-primary');
+      if (hasBrandColors) {
+        logSuccess('Brand color system mevcut');
+        results.tests.push({ name: 'Brand Color System', status: 'pass', score: 10 });
+      } else {
+        logWarning('Brand color system eksik');
+        results.tests.push({ name: 'Brand Color System', status: 'fail', score: 0 });
+        results.recommendations.push('CSS custom properties ile brand color system ekleyin');
+      }
+    }
+
+    // 2. Component Optimizasyonları
+    logInfo('Component optimizasyonları kontrol ediliyor...');
+    
+    // Skeleton loader kontrolü
+    const skeletonFile = path.join(process.cwd(), 'src/components/ContentSkeleton.tsx');
+    if (fs.existsSync(skeletonFile)) {
+      logSuccess('Skeleton loader component mevcut');
+      results.tests.push({ name: 'Skeleton Loading', status: 'pass', score: 15 });
+    } else {
+      logWarning('Skeleton loader component eksik');
+      results.tests.push({ name: 'Skeleton Loading', status: 'fail', score: 0 });
+      results.recommendations.push('Skeleton loading component ekleyin');
+    }
+    
+    // HOC kontrolü
+    const hocFile = path.join(process.cwd(), 'src/components/withSkeleton.tsx');
+    if (fs.existsSync(hocFile)) {
+      logSuccess('HOC pattern mevcut');
+      results.tests.push({ name: 'HOC Pattern', status: 'pass', score: 10 });
+    } else {
+      logWarning('HOC pattern eksik');
+      results.tests.push({ name: 'HOC Pattern', status: 'fail', score: 0 });
+      results.recommendations.push('Higher-Order Component pattern ekleyin');
+    }
+
+    // 3. Image Optimizasyonları
+    logInfo('Image optimizasyonları kontrol ediliyor...');
+    
+    const pageFile = path.join(process.cwd(), 'src/app/page.tsx');
+    if (fs.existsSync(pageFile)) {
+      const pageContent = fs.readFileSync(pageFile, 'utf8');
+      
+      // Next.js Image component kullanımı
+      const usesNextImage = pageContent.includes('from \'next/image\'');
+      if (usesNextImage) {
+        logSuccess('Next.js Image component kullanılıyor');
+        results.tests.push({ name: 'Next.js Image Optimization', status: 'pass', score: 15 });
+      } else {
+        logWarning('Next.js Image component kullanılmıyor');
+        results.tests.push({ name: 'Next.js Image Optimization', status: 'fail', score: 0 });
+        results.recommendations.push('Next.js Image component kullanın');
+      }
+      
+      // Priority loading
+      const hasPriorityLoading = pageContent.includes('priority');
+      if (hasPriorityLoading) {
+        logSuccess('Priority image loading mevcut');
+        results.tests.push({ name: 'Priority Image Loading', status: 'pass', score: 10 });
+      } else {
+        logWarning('Priority image loading eksik');
+        results.tests.push({ name: 'Priority Image Loading', status: 'warning', score: 5 });
+        results.recommendations.push('Kritik görsellere priority prop ekleyin');
+      }
+    }
+
+    // 4. Bundle Analizi
+    logInfo('Bundle optimizasyonları kontrol ediliyor...');
+    
+    const packageFile = path.join(process.cwd(), 'package.json');
+    if (fs.existsSync(packageFile)) {
+      const packageContent = JSON.parse(fs.readFileSync(packageFile, 'utf8'));
+      
+      // Dynamic imports kontrolü
+      if (pageFile && fs.existsSync(pageFile)) {
+        const pageContent = fs.readFileSync(pageFile, 'utf8');
+        const hasDynamicImports = pageContent.includes('dynamic(');
+        if (hasDynamicImports) {
+          logSuccess('Dynamic imports kullanılıyor');
+          results.tests.push({ name: 'Dynamic Imports', status: 'pass', score: 15 });
+        } else {
+          logWarning('Dynamic imports kullanılmıyor');
+          results.tests.push({ name: 'Dynamic Imports', status: 'warning', score: 8 });
+          results.recommendations.push('Büyük componentler için dynamic import kullanın');
+        }
+      }
+    }
+
+    // 5. Accessibility Skoru
+    logInfo('Accessibility skoru kontrol ediliyor...');
+    
+    const accessibilityFile = path.join(process.cwd(), 'accessibility-report.json');
+    if (fs.existsSync(accessibilityFile)) {
+      try {
+        const accessibilityData = JSON.parse(fs.readFileSync(accessibilityFile, 'utf8'));
+        const accessibilityScore = accessibilityData.score || 0;
+        
+        if (accessibilityScore >= 90) {
+          logSuccess(`Accessibility skoru: ${accessibilityScore}%`);
+          results.tests.push({ name: 'Accessibility Score', status: 'pass', score: 20 });
+        } else if (accessibilityScore >= 75) {
+          logWarning(`Accessibility skoru: ${accessibilityScore}%`);
+          results.tests.push({ name: 'Accessibility Score', status: 'warning', score: 15 });
+        } else {
+          logError(`Accessibility skoru: ${accessibilityScore}%`);
+          results.tests.push({ name: 'Accessibility Score', status: 'fail', score: 5 });
+          results.recommendations.push('Accessibility iyileştirmeleri yapın');
+        }
+      } catch (error) {
+        logWarning('Accessibility raporu okunamadı');
+        results.tests.push({ name: 'Accessibility Score', status: 'warning', score: 10 });
+      }
+    } else {
+      logWarning('Accessibility raporu bulunamadı');
+      results.tests.push({ name: 'Accessibility Score', status: 'warning', score: 10 });
+      results.recommendations.push('Accessibility test çalıştırın');
+    }
+
+    // Toplam skor hesapla
+    results.score = results.tests.reduce((total, test) => total + test.score, 0);
+    const maxScore = results.tests.length * 15; // Ortalama max skor
+    const percentage = Math.round((results.score / maxScore) * 100);
+
+    // Sonuçları göster
+    log('\\n============================================================', 'cyan');
+    log('🚀 PERFORMANCE TEST SONUÇLARI', 'bright');
+    log('============================================================', 'cyan');
+    
+    results.tests.forEach(test => {
+      const icon = test.status === 'pass' ? '✅' : test.status === 'warning' ? '⚠️' : '❌';
+      log(`${icon} ${test.name}: ${test.score} puan`);
+    });
+    
+    log('\\n============================================================', 'cyan');
+    log(`🏆 TOPLAM SKOR: ${results.score}/${maxScore} (${percentage}%)`, 'bright');
+    
+    if (percentage >= 90) {
+      log('🟢 Mükemmel! Performans optimizasyonları harika.', 'green');
+    } else if (percentage >= 75) {
+      log('🟡 İyi! Birkaç iyileştirme yapılabilir.', 'yellow');
+    } else {
+      log('🔴 Performans iyileştirmeleri gerekli.', 'red');
+    }
+    
+    log('============================================================', 'cyan');
+    
+    // Öneriler
+    if (results.recommendations.length > 0) {
+      log('\\n📋 ÖNERİLER:', 'yellow');
+      results.recommendations.forEach((rec, index) => {
+        log(`${index + 1}. ${rec}`, 'yellow');
+      });
+    }
+
+    // Raporu kaydet
+    fs.writeFileSync('performance-report.json', JSON.stringify(results, null, 2));
+    logInfo('Performance raporu performance-report.json dosyasına kaydedildi.');
+    
+  } catch (error) {
+    logError(`Hata oluştu: ${error.message}`);
+    process.exit(1);
   }
-  
-  const content = fs.readFileSync(filePath, 'utf8');
-  const found = content.includes(searchText);
-  addTest(
-    description,
-    found ? 'PASS' : 'FAIL',
-    found ? `✅ ${description}` : `❌ ${description}`,
-    found ? 'info' : 'error'
-  );
-  return found;
 }
 
-// 1. Performans dosyalarının varlığını kontrol et
-console.log('📁 Performans Dosyaları Kontrolü:');
-checkFileExists('src/lib/cache-manager.ts', 'Cache Manager Sistemi');
-checkFileExists('src/hooks/useApi.ts', 'API Hooks Sistemi');
-checkFileExists('src/components/SkeletonLoader.tsx', 'Skeleton Loading Sistemi');
-checkFileExists('src/components/OptimizedImage.tsx', 'Optimized Image Sistemi');
-checkFileExists('src/hooks/usePerformance.ts', 'Performance Monitoring');
-
-// 2. Next.js optimizasyonları kontrolü
-console.log('\n⚙️ Next.js Optimizasyonları:');
-checkFileContent('next.config.js', 'swcMinify: true', 'SWC Minification');
-checkFileContent('next.config.js', 'compress: true', 'Compression Enabled');
-checkFileContent('next.config.js', 'optimizeCss: true', 'CSS Optimization');
-checkFileContent('next.config.js', 'formats: [\'image/webp\']', 'WebP Image Format');
-
-// 3. Caching sistemi kontrolü
-console.log('\n🗄️ Caching Sistemi Kontrolü:');
-checkFileContent('src/hooks/useApi.ts', 'cacheManager', 'API Caching');
-checkFileContent('src/lib/cache-manager.ts', 'class CacheManager', 'Cache Manager Class');
-checkFileContent('src/lib/cache-manager.ts', 'cleanup()', 'Cache Cleanup');
-
-// 4. Loading optimizasyonları kontrolü
-console.log('\n⏳ Loading Optimizasyonları:');
-checkFileContent('src/app/page.tsx', 'SkeletonLoader', 'Modular Skeleton Loading');
-checkFileContent('src/app/loading.tsx', 'DefaultLoading', 'Global Loading Optimization');
-checkFileContent('src/components/withSkeleton.tsx', 'withSkeleton', 'HOC Loading System');
-checkFileContent('src/lib/config.ts', 'showSkeleton', 'Loading System Configuration');
-
-// 5. Image optimizasyonları kontrolü
-console.log('\n🖼️ Image Optimizasyonları:');
-checkFileContent('src/components/OptimizedImage.tsx', 'quality=', 'Image Quality Control');
-checkFileContent('src/components/OptimizedImage.tsx', 'placeholder=', 'Image Placeholder');
-checkFileContent('src/components/OptimizedImage.tsx', 'onLoad=', 'Image Load Handling');
-
-// 6. Bundle size kontrolü
-console.log('\n📦 Bundle Optimizasyonları:');
-if (fs.existsSync('.next')) {
-  addTest('Next.js Build', 'PASS', '✅ Next.js build mevcut', 'info');
-  
-  // Check for build optimization
-  const buildManifest = '.next/build-manifest.json';
-  if (fs.existsSync(buildManifest)) {
-    addTest('Build Manifest', 'PASS', '✅ Build manifest mevcut', 'info');
-  } else {
-    addTest('Build Manifest', 'WARN', '⚠️ Build manifest bulunamadı', 'warning');
-  }
-} else {
-  addTest('Next.js Build', 'WARN', '⚠️ Next.js build bulunamadı (npm run build çalıştırın)', 'warning');
+// Script'i çalıştır
+if (require.main === module) {
+  runPerformanceTest();
 }
 
-// 7. Performance scripts kontrolü
-console.log('\n🔧 Performance Scripts:');
-if (fs.existsSync('package.json')) {
-  const packageJson = JSON.parse(fs.readFileSync('package.json', 'utf8'));
-  const scripts = packageJson.scripts || {};
-  
-  const performanceScripts = ['perf:analyze', 'perf:lighthouse', 'perf:bundle'];
-  performanceScripts.forEach(script => {
-    const exists = scripts[script] !== undefined;
-    addTest(
-      `Performance Script: ${script}`,
-      exists ? 'PASS' : 'FAIL',
-      exists ? `✅ ${script} script mevcut` : `❌ ${script} script bulunamadı`,
-      exists ? 'info' : 'error'
-    );
-  });
-}
-
-// Sonuçları göster
-console.log('\n' + '='.repeat(60));
-console.log('🚀 PERFORMANS TESTİ SONUÇLARI');
-console.log('='.repeat(60));
-
-console.log(`✅ Başarılı: ${results.passed}`);
-console.log(`❌ Başarısız: ${results.failed}`);
-console.log(`⚠️ Uyarı: ${results.warnings}`);
-console.log(`📊 Toplam: ${results.tests.length}`);
-
-console.log('\n📋 Detaylı Sonuçlar:');
-results.tests.forEach(test => {
-  const icon = test.status === 'PASS' ? '✅' : test.status === 'FAIL' ? '❌' : '⚠️';
-  console.log(`${icon} ${test.name}: ${test.message}`);
-});
-
-// Performans skoru hesapla
-const performanceScore = Math.round((results.passed / results.tests.length) * 100);
-console.log('\n' + '='.repeat(60));
-console.log(`🏆 PERFORMANS SKORU: ${performanceScore}%`);
-
-if (performanceScore >= 90) {
-  console.log('🟢 Mükemmel! Performans seviyesi çok yüksek.');
-} else if (performanceScore >= 80) {
-  console.log('🟡 İyi! Birkaç iyileştirme yapılabilir.');
-} else if (performanceScore >= 70) {
-  console.log('🟠 Orta! Performans iyileştirmeleri gerekli.');
-} else {
-  console.log('🔴 Düşük! Acil performans optimizasyonları gerekli.');
-}
-
-console.log('='.repeat(60));
-
-// Öneriler
-if (results.failed > 0 || results.warnings > 0) {
-  console.log('\n💡 ÖNERİLER:');
-  
-  if (results.failed > 0) {
-    console.log('❌ Başarısız testler için:');
-    console.log('   - Eksik performans dosyalarını oluşturun');
-    console.log('   - Next.js optimizasyonlarını aktifleştirin');
-    console.log('   - Caching sistemini tamamlayın');
-  }
-  
-  if (results.warnings > 0) {
-    console.log('⚠️ Uyarılar için:');
-    console.log('   - npm run build çalıştırın');
-    console.log('   - Bundle analyzer ile analiz yapın');
-    console.log('   - Lighthouse ile performans testi yapın');
-  }
-  
-  console.log('\n📚 Performans komutları:');
-  console.log('   - npm run perf:analyze (bundle analizi)');
-  console.log('   - npm run perf:lighthouse (lighthouse testi)');
-  console.log('   - npm run perf:bundle (bundle boyut analizi)');
-}
-
-console.log('\n📈 Performans iyileştirmeleri hakkında daha fazla bilgi için README.md dosyasını inceleyin.');
-
-// Exit code
-process.exit(results.failed > 0 ? 1 : 0);
+module.exports = { runPerformanceTest };

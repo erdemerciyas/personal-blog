@@ -94,7 +94,7 @@ function ResetPasswordForm() {
       <div className="min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 flex items-center justify-center px-4">
         <div className="max-w-md w-full">
           <div className="text-center mb-8">
-            <div className="inline-flex items-center justify-center w-16 h-16 bg-gradient-to-br from-green-500 to-emerald-600 rounded-2xl mb-6">
+            <div className="inline-flex items-center justify-center w-16 h-16 bg-gradient-to-br from-brand-primary-600 to-brand-primary-700 rounded-2xl mb-6">
               <CheckCircleIcon className="w-8 h-8 text-white" />
             </div>
             <h1 className="text-3xl font-bold text-white mb-2">Şifre Güncellendi</h1>
@@ -102,14 +102,14 @@ function ResetPasswordForm() {
           </div>
 
           <div className="bg-white/10 backdrop-blur-xl rounded-3xl p-8 border border-white/20 text-center">
-            <div className="bg-green-500/10 border border-green-500/30 text-green-300 p-4 rounded-2xl mb-6">
+            <div className="bg-brand-primary-600/10 border border-brand-primary-600/30 text-brand-primary-300 p-4 rounded-2xl mb-6">
               <CheckCircleIcon className="w-6 h-6 mx-auto mb-2" />
               <p className="text-sm">Şifreniz başarıyla güncellendi. Giriş sayfasına yönlendiriliyorsunuz...</p>
             </div>
 
             <div className="animate-pulse">
               <div className="flex items-center justify-center space-x-2">
-                <div className="w-6 h-6 border-4 border-green-500 rounded-full animate-spin"></div>
+                <div className="w-6 h-6 border-4 border-brand-primary-600 rounded-full animate-spin"></div>
               </div>
             </div>
           </div>
@@ -124,7 +124,7 @@ function ResetPasswordForm() {
         
         {/* Logo and Title */}
         <div className="text-center mb-8">
-          <div className="inline-flex items-center justify-center w-16 h-16 bg-gradient-to-br from-teal-500 to-blue-600 rounded-2xl mb-6">
+          <div className="inline-flex items-center justify-center w-16 h-16 bg-gradient-to-br from-brand-primary-600 to-blue-600 rounded-2xl mb-6">
             <CubeTransparentIcon className="w-8 h-8 text-white" />
           </div>
           <h1 className="text-3xl font-bold text-white mb-2">Şifre Sıfırla</h1>
@@ -164,7 +164,7 @@ function ResetPasswordForm() {
                   required
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
-                  className="w-full bg-white/5 border border-white/20 rounded-xl pl-12 pr-12 py-4 text-white placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-transparent transition-all duration-200"
+                  className="w-full bg-white/5 border border-white/20 rounded-xl pl-12 pr-12 py-4 text-white placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-brand-primary-600 focus:border-transparent transition-all duration-200"
                   placeholder="En az 6 karakter"
                 />
                 <button
@@ -198,7 +198,7 @@ function ResetPasswordForm() {
                   required
                   value={confirmPassword}
                   onChange={(e) => setConfirmPassword(e.target.value)}
-                  className="w-full bg-white/5 border border-white/20 rounded-xl pl-12 pr-12 py-4 text-white placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-transparent transition-all duration-200"
+                  className="w-full bg-white/5 border border-white/20 rounded-xl pl-12 pr-12 py-4 text-white placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-brand-primary-600 focus:border-transparent transition-all duration-200"
                   placeholder="Şifrenizi tekrar girin"
                 />
                 <button
@@ -221,13 +221,13 @@ function ResetPasswordForm() {
               disabled={loading || !token}
               className={`w-full flex items-center justify-center space-x-3 py-4 px-6 rounded-xl font-semibold transition-all duration-200 ${
                 loading || !token
-                  ? 'bg-teal-600/50 cursor-not-allowed text-teal-200'
-                  : 'bg-gradient-to-r from-teal-600 to-blue-600 hover:from-teal-700 hover:to-blue-700 text-white hover:scale-105 hover:shadow-xl transform'
+                  ? 'bg-brand-primary-700/50 cursor-not-allowed text-brand-primary-200'
+                  : 'bg-gradient-to-r from-brand-primary-700 to-blue-600 hover:from-brand-primary-800 hover:to-blue-700 text-white hover:scale-105 hover:shadow-xl transform'
               }`}
             >
               {loading ? (
                 <>
-                  <div className="w-6 h-6 border-4 border-teal-500 rounded-full animate-spin"></div>
+                  <div className="w-6 h-6 border-4 border-brand-primary-600 rounded-full animate-spin"></div>
                 </>
               ) : (
                 <>

@@ -30,7 +30,7 @@ export default function NotFound() {
               </div>
               
               {/* Floating icons */}
-              <div className="absolute top-0 left-1/4 w-12 h-12 bg-gradient-to-br from-teal-500 to-blue-500 rounded-2xl flex items-center justify-center animate-bounce">
+              <div className="absolute top-0 left-1/4 w-12 h-12 bg-gradient-to-br from-brand-primary-600 to-blue-500 rounded-2xl flex items-center justify-center animate-bounce">
                 <ExclamationCircleIcon className="w-6 h-6 text-white" />
               </div>
               
@@ -58,7 +58,7 @@ export default function NotFound() {
             </h3>
             <ul className="text-slate-600 space-y-2 text-left">
               <li className="flex items-center space-x-2">
-                <span className="w-2 h-2 bg-teal-500 rounded-full"></span>
+                <span className="w-2 h-2 bg-brand-primary-600 rounded-full"></span>
                 <span>URL'yi kontrol edin</span>
               </li>
               <li className="flex items-center space-x-2">
@@ -93,35 +93,35 @@ export default function NotFound() {
           </div>
 
           {/* Popular Pages */}
-          <div className="mt-12 p-6 bg-gradient-to-br from-teal-50 to-blue-50 rounded-2xl border border-teal-200">
+          <div className="mt-12 p-6 bg-gradient-to-br from-brand-primary-50 to-blue-50 rounded-2xl border border-brand-primary-200">
             <div className="flex items-center space-x-3 mb-4">
-              <SparklesIcon className="w-6 h-6 text-teal-600" />
-              <h3 className="text-lg font-semibold text-teal-800">
+              <SparklesIcon className="w-6 h-6 text-brand-primary-700" />
+              <h3 className="text-lg font-semibold text-brand-primary-800">
                 Popüler Sayfalar
               </h3>
             </div>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
               <Link 
                 href="/services" 
-                className="text-teal-700 hover:text-teal-800 font-medium p-2 rounded-lg hover:bg-teal-100 transition-colors"
+                className="text-brand-primary-800 hover:text-brand-primary-900 font-medium p-2 rounded-lg hover:bg-brand-primary-100 transition-colors"
               >
                 Hizmetlerimiz
               </Link>
               <Link 
                 href="/portfolio" 
-                className="text-teal-700 hover:text-teal-800 font-medium p-2 rounded-lg hover:bg-teal-100 transition-colors"
+                className="text-brand-primary-800 hover:text-brand-primary-900 font-medium p-2 rounded-lg hover:bg-brand-primary-100 transition-colors"
               >
                 Portfolyo
               </Link>
               <Link 
                 href="/about" 
-                className="text-teal-700 hover:text-teal-800 font-medium p-2 rounded-lg hover:bg-teal-100 transition-colors"
+                className="text-brand-primary-800 hover:text-brand-primary-900 font-medium p-2 rounded-lg hover:bg-brand-primary-100 transition-colors"
               >
                 Hakkımızda
               </Link>
               <Link 
                 href="/contact" 
-                className="text-teal-700 hover:text-teal-800 font-medium p-2 rounded-lg hover:bg-teal-100 transition-colors"
+                className="text-brand-primary-800 hover:text-brand-primary-900 font-medium p-2 rounded-lg hover:bg-brand-primary-100 transition-colors"
               >
                 İletişim
               </Link>

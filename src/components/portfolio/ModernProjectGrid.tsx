@@ -79,8 +79,8 @@ export default function ModernProjectGrid({
               onClick={() => handleLayoutChange('grid')}
               className={`p-3 rounded-xl transition-all duration-300 ${
                 currentLayout === 'grid'
-                  ? 'bg-teal-500 text-white shadow-lg'
-                  : 'text-slate-600 hover:bg-slate-100 hover:text-teal-600'
+                  ? 'bg-brand-primary-600 text-white shadow-lg'
+                  : 'text-slate-600 hover:bg-slate-100 hover:text-brand-primary-700'
               }`}
               title="Grid Görünümü"
             >
@@ -90,8 +90,8 @@ export default function ModernProjectGrid({
               onClick={() => handleLayoutChange('masonry')}
               className={`p-3 rounded-xl transition-all duration-300 ${
                 currentLayout === 'masonry'
-                  ? 'bg-teal-500 text-white shadow-lg'
-                  : 'text-slate-600 hover:bg-slate-100 hover:text-teal-600'
+                  ? 'bg-brand-primary-600 text-white shadow-lg'
+                  : 'text-slate-600 hover:bg-slate-100 hover:text-brand-primary-700'
               }`}
               title="Masonry Görünümü"
             >
@@ -101,8 +101,8 @@ export default function ModernProjectGrid({
               onClick={() => handleLayoutChange('list')}
               className={`p-3 rounded-xl transition-all duration-300 ${
                 currentLayout === 'list'
-                  ? 'bg-teal-500 text-white shadow-lg'
-                  : 'text-slate-600 hover:bg-slate-100 hover:text-teal-600'
+                  ? 'bg-brand-primary-600 text-white shadow-lg'
+                  : 'text-slate-600 hover:bg-slate-100 hover:text-brand-primary-700'
               }`}
               title="Liste Görünümü"
             >

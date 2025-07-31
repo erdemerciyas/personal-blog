@@ -206,7 +206,7 @@ export default function AdminAboutPage() {
               className={`flex items-center space-x-2 px-6 py-3 rounded-xl font-semibold transition-all duration-200 ${
                 saving
                   ? 'bg-slate-400 cursor-not-allowed text-white'
-                  : 'bg-teal-600 hover:bg-teal-700 text-white shadow-sm'
+                  : 'bg-brand-primary-700 hover:bg-brand-primary-800 text-white shadow-sm'
               }`}
             >
               {saving ? (
@@ -228,7 +228,7 @@ export default function AdminAboutPage() {
         {message && (
           <div className={`p-4 rounded-xl border ${
             message.type === 'success' 
-              ? 'bg-green-50 border-green-200 text-green-800' 
+              ? 'bg-brand-primary-50 border-brand-primary-200 text-brand-primary-900' 
               : 'bg-red-50 border-red-200 text-red-800'
           }`}>
             {message.text}
@@ -241,7 +241,7 @@ export default function AdminAboutPage() {
           {/* Hero Section */}
           <div className="bg-white rounded-xl p-6 shadow-sm border border-slate-200">
             <h3 className="text-lg font-semibold text-slate-900 mb-4 flex items-center space-x-2">
-              <SparklesIcon className="w-5 h-5 text-teal-600" />
+              <SparklesIcon className="w-5 h-5 text-brand-primary-700" />
               <span>Hero Bölümü</span>
             </h3>
             
@@ -252,7 +252,7 @@ export default function AdminAboutPage() {
                   type="text"
                   value={aboutData.heroTitle}
                   onChange={(e) => setAboutData(prev => ({ ...prev, heroTitle: e.target.value }))}
-                  className="w-full border border-slate-300 rounded-xl px-4 py-3 text-slate-900 focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-transparent"
+                  className="w-full border border-slate-300 rounded-xl px-4 py-3 text-slate-900 focus:outline-none focus:ring-2 focus:ring-brand-primary-600 focus:border-transparent"
                   placeholder="Ana başlık"
                 />
               </div>
@@ -263,7 +263,7 @@ export default function AdminAboutPage() {
                   type="text"
                   value={aboutData.heroSubtitle}
                   onChange={(e) => setAboutData(prev => ({ ...prev, heroSubtitle: e.target.value }))}
-                  className="w-full border border-slate-300 rounded-xl px-4 py-3 text-slate-900 focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-transparent"
+                  className="w-full border border-slate-300 rounded-xl px-4 py-3 text-slate-900 focus:outline-none focus:ring-2 focus:ring-brand-primary-600 focus:border-transparent"
                   placeholder="Alt başlık"
                 />
               </div>
@@ -274,7 +274,7 @@ export default function AdminAboutPage() {
                   value={aboutData.heroDescription}
                   onChange={(e) => setAboutData(prev => ({ ...prev, heroDescription: e.target.value }))}
                   rows={4}
-                  className="w-full border border-slate-300 rounded-xl px-4 py-3 text-slate-900 focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-transparent"
+                  className="w-full border border-slate-300 rounded-xl px-4 py-3 text-slate-900 focus:outline-none focus:ring-2 focus:ring-brand-primary-600 focus:border-transparent"
                   placeholder="Kısa açıklama"
                 />
               </div>
@@ -292,7 +292,7 @@ export default function AdminAboutPage() {
                   type="text"
                   value={aboutData.storyTitle}
                   onChange={(e) => setAboutData(prev => ({ ...prev, storyTitle: e.target.value }))}
-                  className="w-full border border-slate-300 rounded-xl px-4 py-3 text-slate-900 focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-transparent"
+                  className="w-full border border-slate-300 rounded-xl px-4 py-3 text-slate-900 focus:outline-none focus:ring-2 focus:ring-brand-primary-600 focus:border-transparent"
                   placeholder="Hikaye başlığı"
                 />
               </div>
@@ -305,7 +305,7 @@ export default function AdminAboutPage() {
                       value={paragraph}
                       onChange={(e) => updateArrayItem('storyParagraphs', index, e.target.value)}
                       rows={3}
-                      className="flex-1 border border-slate-300 rounded-xl px-4 py-3 text-slate-900 focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-transparent"
+                      className="flex-1 border border-slate-300 rounded-xl px-4 py-3 text-slate-900 focus:outline-none focus:ring-2 focus:ring-brand-primary-600 focus:border-transparent"
                       placeholder={`Paragraf ${index + 1}`}
                     />
                     <button
@@ -320,7 +320,7 @@ export default function AdminAboutPage() {
                 <button
                   type="button"
                   onClick={() => addArrayItem('storyParagraphs', '')}
-                  className="flex items-center space-x-2 text-teal-600 hover:text-teal-700 transition-colors"
+                  className="flex items-center space-x-2 text-brand-primary-700 hover:text-brand-primary-800 transition-colors"
                 >
                   <PlusIcon className="w-4 h-4" />
                   <span>Paragraf Ekle</span>
@@ -339,7 +339,7 @@ export default function AdminAboutPage() {
                   type="text"
                   value={skill}
                   onChange={(e) => updateArrayItem('skills', index, e.target.value)}
-                  className="flex-1 border border-slate-300 rounded-xl px-4 py-3 text-slate-900 focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-transparent"
+                  className="flex-1 border border-slate-300 rounded-xl px-4 py-3 text-slate-900 focus:outline-none focus:ring-2 focus:ring-brand-primary-600 focus:border-transparent"
                   placeholder={`Yetenek ${index + 1}`}
                 />
                 <button
@@ -354,7 +354,7 @@ export default function AdminAboutPage() {
             <button
               type="button"
               onClick={() => addArrayItem('skills', '')}
-              className="flex items-center space-x-2 text-teal-600 hover:text-teal-700 transition-colors"
+              className="flex items-center space-x-2 text-brand-primary-700 hover:text-brand-primary-800 transition-colors"
             >
               <PlusIcon className="w-4 h-4" />
               <span>Yetenek Ekle</span>
@@ -384,14 +384,14 @@ export default function AdminAboutPage() {
                       type="text"
                       value={exp.title}
                       onChange={(e) => updateArrayItem('experience', index, { ...exp, title: e.target.value })}
-                      className="border border-slate-300 rounded-xl px-4 py-2 text-slate-900 focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-transparent"
+                      className="border border-slate-300 rounded-xl px-4 py-2 text-slate-900 focus:outline-none focus:ring-2 focus:ring-brand-primary-600 focus:border-transparent"
                       placeholder="Pozisyon"
                     />
                     <input
                       type="text"
                       value={exp.company}
                       onChange={(e) => updateArrayItem('experience', index, { ...exp, company: e.target.value })}
-                      className="border border-slate-300 rounded-xl px-4 py-2 text-slate-900 focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-transparent"
+                      className="border border-slate-300 rounded-xl px-4 py-2 text-slate-900 focus:outline-none focus:ring-2 focus:ring-brand-primary-600 focus:border-transparent"
                       placeholder="Şirket"
                     />
                   </div>
@@ -399,14 +399,14 @@ export default function AdminAboutPage() {
                     type="text"
                     value={exp.period}
                     onChange={(e) => updateArrayItem('experience', index, { ...exp, period: e.target.value })}
-                    className="w-full border border-slate-300 rounded-xl px-4 py-2 text-slate-900 focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-transparent"
+                    className="w-full border border-slate-300 rounded-xl px-4 py-2 text-slate-900 focus:outline-none focus:ring-2 focus:ring-brand-primary-600 focus:border-transparent"
                     placeholder="Dönem (örn: 2020-2023)"
                   />
                   <textarea
                     value={exp.description}
                     onChange={(e) => updateArrayItem('experience', index, { ...exp, description: e.target.value })}
                     rows={3}
-                    className="w-full border border-slate-300 rounded-xl px-4 py-2 text-slate-900 focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-transparent"
+                    className="w-full border border-slate-300 rounded-xl px-4 py-2 text-slate-900 focus:outline-none focus:ring-2 focus:ring-brand-primary-600 focus:border-transparent"
                     placeholder="Açıklama"
                   />
                 </div>
@@ -415,7 +415,7 @@ export default function AdminAboutPage() {
             <button
               type="button"
               onClick={() => addArrayItem('experience', { title: '', company: '', period: '', description: '' })}
-              className="flex items-center space-x-2 text-teal-600 hover:text-teal-700 transition-colors"
+              className="flex items-center space-x-2 text-brand-primary-700 hover:text-brand-primary-800 transition-colors"
             >
               <PlusIcon className="w-4 h-4" />
               <span>Deneyim Ekle</span>
@@ -432,7 +432,7 @@ export default function AdminAboutPage() {
                   type="text"
                   value={achievement}
                   onChange={(e) => updateArrayItem('achievements', index, e.target.value)}
-                  className="flex-1 border border-slate-300 rounded-xl px-4 py-3 text-slate-900 focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-transparent"
+                  className="flex-1 border border-slate-300 rounded-xl px-4 py-3 text-slate-900 focus:outline-none focus:ring-2 focus:ring-brand-primary-600 focus:border-transparent"
                   placeholder={`Başarı ${index + 1}`}
                 />
                 <button
@@ -447,7 +447,7 @@ export default function AdminAboutPage() {
             <button
               type="button"
               onClick={() => addArrayItem('achievements', '')}
-              className="flex items-center space-x-2 text-teal-600 hover:text-teal-700 transition-colors"
+              className="flex items-center space-x-2 text-brand-primary-700 hover:text-brand-primary-800 transition-colors"
             >
               <PlusIcon className="w-4 h-4" />
               <span>Başarı Ekle</span>
@@ -476,13 +476,13 @@ export default function AdminAboutPage() {
                     type="text"
                     value={value.text}
                     onChange={(e) => updateArrayItem('values', index, { ...value, text: e.target.value })}
-                    className="w-full border border-slate-300 rounded-xl px-4 py-2 text-slate-900 focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-transparent"
+                    className="w-full border border-slate-300 rounded-xl px-4 py-2 text-slate-900 focus:outline-none focus:ring-2 focus:ring-brand-primary-600 focus:border-transparent"
                     placeholder="Değer metni"
                   />
                   <select
                     value={value.iconName}
                     onChange={(e) => updateArrayItem('values', index, { ...value, iconName: e.target.value })}
-                    className="w-full border border-slate-300 rounded-xl px-4 py-2 text-slate-900 focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-transparent"
+                    className="w-full border border-slate-300 rounded-xl px-4 py-2 text-slate-900 focus:outline-none focus:ring-2 focus:ring-brand-primary-600 focus:border-transparent"
                   >
                     <option value="SparklesIcon">Yıldız</option>
                     <option value="CheckIcon">Onay</option>
@@ -495,7 +495,7 @@ export default function AdminAboutPage() {
             <button
               type="button"
               onClick={() => addArrayItem('values', { text: '', iconName: 'SparklesIcon' })}
-              className="flex items-center space-x-2 text-teal-600 hover:text-teal-700 transition-colors"
+              className="flex items-center space-x-2 text-brand-primary-700 hover:text-brand-primary-800 transition-colors"
             >
               <PlusIcon className="w-4 h-4" />
               <span>Değer Ekle</span>
@@ -513,7 +513,7 @@ export default function AdminAboutPage() {
                   type="text"
                   value={aboutData.contactTitle}
                   onChange={(e) => setAboutData(prev => ({ ...prev, contactTitle: e.target.value }))}
-                  className="w-full border border-slate-300 rounded-xl px-4 py-3 text-slate-900 focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-transparent"
+                  className="w-full border border-slate-300 rounded-xl px-4 py-3 text-slate-900 focus:outline-none focus:ring-2 focus:ring-brand-primary-600 focus:border-transparent"
                   placeholder="İletişim başlığı"
                 />
               </div>
@@ -524,7 +524,7 @@ export default function AdminAboutPage() {
                   value={aboutData.contactDescription}
                   onChange={(e) => setAboutData(prev => ({ ...prev, contactDescription: e.target.value }))}
                   rows={3}
-                  className="w-full border border-slate-300 rounded-xl px-4 py-3 text-slate-900 focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-transparent"
+                  className="w-full border border-slate-300 rounded-xl px-4 py-3 text-slate-900 focus:outline-none focus:ring-2 focus:ring-brand-primary-600 focus:border-transparent"
                   placeholder="İletişim açıklaması"
                 />
               </div>
@@ -536,7 +536,7 @@ export default function AdminAboutPage() {
                     type="email"
                     value={aboutData.contactEmail}
                     onChange={(e) => setAboutData(prev => ({ ...prev, contactEmail: e.target.value }))}
-                    className="w-full border border-slate-300 rounded-xl px-4 py-3 text-slate-900 focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-transparent"
+                    className="w-full border border-slate-300 rounded-xl px-4 py-3 text-slate-900 focus:outline-none focus:ring-2 focus:ring-brand-primary-600 focus:border-transparent"
                     placeholder="email@domain.com"
                   />
                 </div>
@@ -547,7 +547,7 @@ export default function AdminAboutPage() {
                     type="text"
                     value={aboutData.contactPhone}
                     onChange={(e) => setAboutData(prev => ({ ...prev, contactPhone: e.target.value }))}
-                    className="w-full border border-slate-300 rounded-xl px-4 py-3 text-slate-900 focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-transparent"
+                    className="w-full border border-slate-300 rounded-xl px-4 py-3 text-slate-900 focus:outline-none focus:ring-2 focus:ring-brand-primary-600 focus:border-transparent"
                     placeholder="+90 555 000 00 00"
                   />
                 </div>
@@ -558,7 +558,7 @@ export default function AdminAboutPage() {
                     type="text"
                     value={aboutData.contactLocation}
                     onChange={(e) => setAboutData(prev => ({ ...prev, contactLocation: e.target.value }))}
-                    className="w-full border border-slate-300 rounded-xl px-4 py-3 text-slate-900 focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-transparent"
+                    className="w-full border border-slate-300 rounded-xl px-4 py-3 text-slate-900 focus:outline-none focus:ring-2 focus:ring-brand-primary-600 focus:border-transparent"
                     placeholder="Şehir, Ülke"
                   />
                 </div>

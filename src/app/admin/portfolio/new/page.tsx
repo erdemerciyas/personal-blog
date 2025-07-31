@@ -184,7 +184,7 @@ export default function NewPortfolioItem() {
         <div className="flex items-center justify-center min-h-[400px]">
           <div className="flex flex-col items-center space-y-4">
             <div className="flex flex-col items-center space-y-4">
-              <div className="w-12 h-12 border-4 border-teal-500 border-t-transparent rounded-full animate-spin"></div>
+              <div className="w-12 h-12 border-4 border-brand-primary-600 border-t-transparent rounded-full animate-spin"></div>
               <p className="text-slate-600">Sayfa yükleniyor...</p>
             </div>
           </div>
@@ -227,7 +227,7 @@ export default function NewPortfolioItem() {
           {/* Basic Information */}
           <div className="bg-white rounded-xl p-6 shadow-sm border border-slate-200">
             <h3 className="text-lg font-semibold text-slate-900 mb-4 flex items-center space-x-2">
-              <DocumentTextIcon className="w-5 h-5 text-teal-600" />
+              <DocumentTextIcon className="w-5 h-5 text-brand-primary-700" />
               <span>Temel Bilgiler</span>
             </h3>
             
@@ -240,7 +240,7 @@ export default function NewPortfolioItem() {
                   type="text"
                   value={formData.title}
                   onChange={handleTitleChange}
-                  className="w-full border border-slate-300 rounded-xl px-4 py-3 text-slate-900 focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-transparent"
+                  className="w-full border border-slate-300 rounded-xl px-4 py-3 text-slate-900 focus:outline-none focus:ring-2 focus:ring-brand-primary-600 focus:border-transparent"
                   placeholder="Proje başlığı giriniz"
                   required
                 />
@@ -255,7 +255,7 @@ export default function NewPortfolioItem() {
                     type="text"
                     value={formData.slug}
                     onChange={(e) => setFormData(prev => ({ ...prev, slug: e.target.value }))}
-                    className={`w-full border border-slate-300 rounded-xl px-4 py-3 text-slate-900 focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-transparent ${slugLocked ? 'bg-slate-100' : ''}`}
+                    className={`w-full border border-slate-300 rounded-xl px-4 py-3 text-slate-900 focus:outline-none focus:ring-2 focus:ring-brand-primary-600 focus:border-transparent ${slugLocked ? 'bg-slate-100' : ''}`}
                     placeholder="url-uyumlu-metin"
                     required
                     readOnly={slugLocked}
@@ -263,7 +263,7 @@ export default function NewPortfolioItem() {
                   <button
                     type="button"
                     onClick={() => setSlugLocked(!slugLocked)}
-                    className="absolute inset-y-0 right-0 flex items-center px-3 text-slate-500 hover:text-teal-600"
+                    className="absolute inset-y-0 right-0 flex items-center px-3 text-slate-500 hover:text-brand-primary-700"
                   >
                     {slugLocked ? <PencilIcon className="w-5 h-5" /> : <CheckIcon className="w-5 h-5" />}
                   </button>
@@ -278,7 +278,7 @@ export default function NewPortfolioItem() {
                   type="text"
                   value={formData.client}
                   onChange={(e) => setFormData(prev => ({ ...prev, client: e.target.value }))}
-                  className="w-full border border-slate-300 rounded-xl px-4 py-3 text-slate-900 focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-transparent"
+                  className="w-full border border-slate-300 rounded-xl px-4 py-3 text-slate-900 focus:outline-none focus:ring-2 focus:ring-brand-primary-600 focus:border-transparent"
                   placeholder="Müşteri veya şirket adı"
                   required
                 />
@@ -292,7 +292,7 @@ export default function NewPortfolioItem() {
                   type="date"
                   value={formData.completionDate}
                   onChange={(e) => setFormData(prev => ({ ...prev, completionDate: e.target.value }))}
-                  className="w-full border border-slate-300 rounded-xl px-4 py-3 text-slate-900 focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-transparent"
+                  className="w-full border border-slate-300 rounded-xl px-4 py-3 text-slate-900 focus:outline-none focus:ring-2 focus:ring-brand-primary-600 focus:border-transparent"
                   required
                 />
               </div>
@@ -315,7 +315,7 @@ export default function NewPortfolioItem() {
           {/* Categories Selection */}
           <div className="bg-white rounded-xl p-6 shadow-sm border border-slate-200">
             <h3 className="text-lg font-semibold text-slate-900 mb-4 flex items-center space-x-2">
-              <TagIcon className="w-5 h-5 text-teal-600" />
+              <TagIcon className="w-5 h-5 text-brand-primary-700" />
               <span>Kategoriler *</span>
             </h3>
             
@@ -336,13 +336,13 @@ export default function NewPortfolioItem() {
                       return category ? (
                         <span
                           key={categoryId}
-                          className="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-teal-100 text-teal-800"
+                          className="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-brand-primary-100 text-brand-primary-900"
                         >
                           {category.name}
                           <button
                             type="button"
                             onClick={() => handleCategoryToggle(categoryId)}
-                            className="ml-2 hover:text-teal-600"
+                            className="ml-2 hover:text-brand-primary-700"
                           >
                             <XMarkIcon className="h-4 w-4" />
                           </button>
@@ -361,7 +361,7 @@ export default function NewPortfolioItem() {
                   key={category._id}
                   className={`relative rounded-lg border-2 transition-all cursor-pointer ${
                     formData.categoryIds.includes(category._id)
-                      ? 'border-teal-500 bg-teal-50'
+                      ? 'border-brand-primary-600 bg-brand-primary-50'
                       : 'border-slate-200 hover:border-slate-300 bg-white'
                   }`}
                   onClick={() => handleCategoryToggle(category._id)}
@@ -371,7 +371,7 @@ export default function NewPortfolioItem() {
                       <div className="flex items-center space-x-3">
                         <div className={`w-4 h-4 rounded border-2 transition-all ${
                           formData.categoryIds.includes(category._id)
-                            ? 'border-teal-500 bg-teal-500'
+                            ? 'border-brand-primary-600 bg-brand-primary-600'
                             : 'border-slate-300'
                         }`}>
                           {formData.categoryIds.includes(category._id) && (
@@ -380,7 +380,7 @@ export default function NewPortfolioItem() {
                         </div>
                         <span className={`font-medium ${
                           formData.categoryIds.includes(category._id)
-                            ? 'text-teal-800'
+                            ? 'text-brand-primary-900'
                             : 'text-slate-700'
                         }`}>
                           {category.name}
@@ -390,7 +390,7 @@ export default function NewPortfolioItem() {
                     {category.description && (
                       <p className={`mt-2 text-sm ${
                         formData.categoryIds.includes(category._id)
-                          ? 'text-teal-600'
+                          ? 'text-brand-primary-700'
                           : 'text-slate-500'
                       }`}>
                         {category.description}
@@ -409,7 +409,7 @@ export default function NewPortfolioItem() {
                 </p>
                 <Link 
                   href="/admin/portfolio?tab=categories"
-                  className="inline-flex items-center mt-3 text-teal-600 hover:text-teal-700"
+                  className="inline-flex items-center mt-3 text-brand-primary-700 hover:text-brand-primary-800"
                 >
                   <PlusIcon className="w-4 h-4 mr-1" />
                   Kategori Oluştur
@@ -421,7 +421,7 @@ export default function NewPortfolioItem() {
           {/* Project Images Gallery */}
           <div className="bg-white rounded-xl p-6 shadow-sm border border-slate-200">
             <h3 className="text-lg font-semibold text-slate-900 mb-4 flex items-center space-x-2">
-              <PhotoIcon className="w-5 h-5 text-teal-600" />
+              <PhotoIcon className="w-5 h-5 text-brand-primary-700" />
               <span>Proje Görselleri *</span>
             </h3>
             
@@ -446,13 +446,13 @@ export default function NewPortfolioItem() {
           <div className="bg-white rounded-xl p-6 shadow-sm border border-slate-200">
             <div className="flex items-center justify-between mb-4">
               <h3 className="text-lg font-semibold text-slate-900 flex items-center space-x-2">
-                <HashtagIcon className="w-5 h-5 text-teal-600" />
+                <HashtagIcon className="w-5 h-5 text-brand-primary-700" />
                 <span>Teknolojiler</span>
               </h3>
               <button
                 type="button"
                 onClick={() => setFormData(prev => ({ ...prev, technologies: [...prev.technologies, ''] }))}
-                className="flex items-center space-x-2 bg-teal-50 text-teal-600 px-3 py-2 rounded-lg hover:bg-teal-100 transition-colors"
+                className="flex items-center space-x-2 bg-brand-primary-50 text-brand-primary-700 px-3 py-2 rounded-lg hover:bg-brand-primary-100 transition-colors"
               >
                 <PlusIcon className="w-4 h-4" />
                 <span>Teknoloji Ekle</span>
@@ -471,7 +471,7 @@ export default function NewPortfolioItem() {
                       type="text"
                       value={tech}
                       onChange={(e) => handleTechnologyChange(index, e.target.value)}
-                      className="flex-1 border border-slate-300 rounded-xl px-4 py-3 text-slate-900 focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-transparent"
+                      className="flex-1 border border-slate-300 rounded-xl px-4 py-3 text-slate-900 focus:outline-none focus:ring-2 focus:ring-brand-primary-600 focus:border-transparent"
                       placeholder="Teknoloji adı (örn: 3D Tarama, CAD Tasarım)"
                     />
                     <button
@@ -490,7 +490,7 @@ export default function NewPortfolioItem() {
           {/* Additional Options */}
           <div className="bg-white rounded-xl p-6 shadow-sm border border-slate-200">
             <h3 className="text-lg font-semibold text-slate-900 mb-4 flex items-center space-x-2">
-              <StarIcon className="w-5 h-5 text-teal-600" />
+              <StarIcon className="w-5 h-5 text-brand-primary-700" />
               <span>Ek Seçenekler</span>
             </h3>
             
@@ -501,7 +501,7 @@ export default function NewPortfolioItem() {
                     type="checkbox"
                     checked={formData.featured}
                     onChange={(e) => setFormData(prev => ({ ...prev, featured: e.target.checked }))}
-                    className="w-4 h-4 text-teal-600 border-slate-300 rounded focus:ring-teal-500"
+                    className="w-4 h-4 text-brand-primary-700 border-slate-300 rounded focus:ring-brand-primary-600"
                   />
                   <span className="text-sm font-medium text-slate-700">Öne Çıkan Proje</span>
                 </label>
@@ -518,7 +518,7 @@ export default function NewPortfolioItem() {
                   type="number"
                   value={formData.order}
                   onChange={(e) => setFormData(prev => ({ ...prev, order: parseInt(e.target.value) || 0 }))}
-                  className="w-full border border-slate-300 rounded-xl px-4 py-3 text-slate-900 focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-transparent"
+                  className="w-full border border-slate-300 rounded-xl px-4 py-3 text-slate-900 focus:outline-none focus:ring-2 focus:ring-brand-primary-600 focus:border-transparent"
                   placeholder="0"
                   min="0"
                 />
@@ -542,7 +542,7 @@ export default function NewPortfolioItem() {
             <button
               type="submit"
               disabled={submitting}
-              className="flex items-center space-x-2 bg-teal-600 text-white px-8 py-3 rounded-xl hover:bg-teal-700 focus:outline-none focus:ring-2 focus:ring-teal-500 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+              className="flex items-center space-x-2 bg-brand-primary-700 text-white px-8 py-3 rounded-xl hover:bg-brand-primary-800 focus:outline-none focus:ring-2 focus:ring-brand-primary-600 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
             >
               {submitting ? (
                 <>
