@@ -127,7 +127,16 @@ npm run dev
 
 Uygulama [http://localhost:3000](http://localhost:3000) adresinde çalışacaktır.
 
-## 🆕 Yeni Özellikler (v2.2.0)
+## 🆕 Yeni Özellikler (v2.2.1)
+
+### 🚀 CI/CD Pipeline Optimizasyonu (2025-07-31)
+- **GitHub Actions İyileştirmesi**: Robust CI/CD pipeline
+- **Bundle Analyzer Entegrasyonu**: Next.js bundle analysis
+- **Environment Validation**: Gelişmiş environment variable kontrolü
+- **Error Tolerance**: Kritik olmayan hatalar için continue-on-error
+- **Vercel Deployment**: Otomatik production deployment
+- **Security Pipeline**: Automated security testing
+- **Performance Testing**: Bundle size ve performance monitoring
 
 ### 🧹 Kod Kalitesi ve Optimizasyon (2025-07-31)
 - **ESLint Hata Düzeltmeleri**: 200+ → 142 hata (58+ düzeltme)
@@ -455,13 +464,20 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 ## 📈 Project Status
 
 - **Status**: ✅ **PRODUCTION READY**
-- **Version**: v2.2.0
+- **Version**: v2.2.1
 - **Last Updated**: 2025-07-31
 - **Security Level**: 🔒 HIGH
 - **Performance**: ⚡ OPTIMIZED
 - **Documentation**: 📚 COMPLETE
 
-### Recent Updates (v2.2.0)
+### Recent Updates (v2.2.1)
+- ✅ **CI/CD Pipeline Enhancement**: GitHub Actions workflow optimizasyonu
+- ✅ **Bundle Analyzer Integration**: Next.js bundle analysis entegrasyonu
+- ✅ **Environment Validation**: Gelişmiş environment variable kontrolü
+- ✅ **Error Handling**: Robust error handling ve continue-on-error
+- ✅ **Automated Deployment**: Vercel otomatik deployment
+- ✅ **Security Testing**: Automated security pipeline
+- ✅ **Performance Monitoring**: Bundle size ve performance testing
 - ✅ **Code Quality Optimization**: ESLint hatalarını 200+ → 142'ye düşürdük
 - ✅ **TypeScript Enhancement**: Any tiplerini %26 azalttık (100+ → 74)
 - ✅ **React Performance**: Hook bağımlılıkları ve useMemo optimizasyonları
@@ -471,10 +487,6 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 - ✅ **Database Integration**: MongoDB bağlantı optimizasyonu
 - ✅ **API Endpoints**: Page settings API endpoint eklendi
 - ✅ **Security Hardening**: Kritik güvenlik riskleri giderildi
-- ✅ **Code Cleanup**: Debug logları ve hardcoded şifreler temizlendi
-- ✅ **Environment Optimization**: 200+ gereksiz variable kaldırıldı
-- ✅ **TypeScript Strict**: Tip güvenliği artırıldı
-- ✅ **Performance**: %95 dosya boyutu azaltması
 - ✅ **Production Ready**: Güvenli production deployment
 
 ## 🔗 Useful Links

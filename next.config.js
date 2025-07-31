@@ -1,5 +1,10 @@
 const path = require('path');
 
+// Bundle analyzer için
+const withBundleAnalyzer = require('@next/bundle-analyzer')({
+  enabled: process.env.ANALYZE === 'true',
+});
+
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   eslint: {
@@ -117,4 +122,4 @@ const nextConfig = {
   trailingSlash: false,
 }
 
-module.exports = nextConfig
+module.exports = withBundleAnalyzer(nextConfig)

@@ -1,6 +1,6 @@
 {
   "name": "personal-blog",
-  "version": "2.2.0",
+  "version": "2.2.1",
   "private": true,
   "author": {
     "name": "Erdem Erciyas",
@@ -34,7 +34,7 @@
     "lint": "next lint",
     "lint:fix": "next lint --fix",
     "type-check": "tsc --noEmit",
-    "test:config": "node -e \"require('./src/lib/config').config.getSafeConfig() && console.log('✅ Configuration valid')\"",
+    "test:config": "node scripts/validate-env.js",
     "clean": "rimraf .next out dist",
 
     "format": "prettier --write .",

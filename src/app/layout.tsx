@@ -9,7 +9,7 @@ import Providers from '../components/Providers'
 import connectDB from '../lib/mongoose'
 import SiteSettings from '../models/SiteSettings'
 
-const inter = Inter({ 
+const inter = Inter({
   subsets: ['latin', 'latin-ext'],
   variable: '--font-inter',
   display: 'swap',
@@ -23,13 +23,13 @@ export async function generateMetadata(): Promise<Metadata> {
   try {
     await connectDB();
     const siteSettings = await SiteSettings.getSiteSettings();
-    
+
     const title = siteSettings?.seo?.metaTitle || siteSettings?.siteName || config.app.name;
     const description = siteSettings?.seo?.metaDescription || siteSettings?.description || 'Modern kişisel blog ve portfolio sitesi';
     const keywords = siteSettings?.seo?.keywords || ['nextjs', 'react', 'typescript', 'portfolio', 'blog', 'engineering'];
     const siteName = siteSettings?.siteName || config.app.name;
     const logoUrl = siteSettings?.logo?.url;
-    
+
     return {
       title,
       description,
@@ -122,17 +122,17 @@ export default function RootLayout({
         <meta name="apple-mobile-web-app-capable" content="yes" />
         <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
         <meta name="google-site-verification" content="jXX7ASmYpD2OOlPo5cKqGptc9Zy1yLxl00b-JqlQHZE" />
-        
+
         {/* Preconnect to external domains for performance */}
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
         <link rel="preconnect" href="https://res.cloudinary.com" />
-        
+
         {/* Favicon and app icons */}
         <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
         <link rel="icon" href="/favicon.ico" />
         <link rel="apple-touch-icon" href="/favicon.svg" />
-        
+
         {/* DNS prefetch for better performance */}
         <link rel="dns-prefetch" href="//fonts.googleapis.com" />
         <link rel="dns-prefetch" href="//fonts.gstatic.com" />
@@ -154,7 +154,7 @@ export default function RootLayout({
             </ClientWrapper>
           </Providers>
         </ThemeProvider>
-        
+
         {/* Development tools */}
         {config.isDevelopment && (
           <div id="dev-tools" className="fixed bottom-4 right-4 z-50 opacity-50 hover:opacity-100 transition-opacity">
