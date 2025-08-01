@@ -66,8 +66,7 @@ export default function ModernProjectCard({
       variants={cardVariants}
       initial="hidden"
       animate="visible"
-      whileHover={{ y: -8, transition: { duration: 0.3 } }}
-      className={`group relative bg-white rounded-3xl shadow-lg hover:shadow-2xl border border-slate-200/50 overflow-hidden transition-all duration-500 flex flex-col h-full ${
+      className={`group relative bg-white rounded-3xl shadow-lg hover:shadow-2xl border border-slate-200/50 overflow-hidden transition-all duration-500 flex flex-col h-full hover:-translate-y-2 ${
         layout === 'masonry' ? 'break-inside-avoid mb-6' : ''
       }`}
     >
@@ -157,13 +156,18 @@ export default function ModernProjectCard({
         <div className="flex-grow"></div>
 
         {/* Action Button */}
-        <Link
-          href={`/portfolio/${project.slug}`}
-          className="btn-primary w-full group/btn mt-auto"
+        <button
+          onClick={(e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            window.location.href = `/portfolio/${project.slug}`;
+          }}
+          className="btn-primary w-full group/btn mt-auto relative z-50 cursor-pointer"
+          type="button"
         >
           <span>Detayları Görüntüle</span>
           <ArrowRightIcon className="w-5 h-5 ml-2 transition-transform duration-300 group-hover/btn:translate-x-1" />
-        </Link>
+        </button>
       </div>
 
       {/* Hover Effect Border */}

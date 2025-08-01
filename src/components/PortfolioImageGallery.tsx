@@ -9,7 +9,8 @@ import {
   CheckIcon,
   TrashIcon,
   StarIcon,
-  Bars3Icon
+  Bars3Icon,
+  PhotoIcon
 } from '@heroicons/react/24/outline';
 import { StarIcon as StarIconSolid } from '@heroicons/react/24/solid';
 import MediaBrowser from './MediaBrowser';
@@ -326,7 +327,7 @@ const PortfolioImageGallery: React.FC<PortfolioImageGalleryProps> = ({
                 onDragOver={handleImageDragOver}
                 onDrop={(e) => handleImageDrop(e, index)}
                 onDragEnd={handleImageDragEnd}
-                className={`relative group rounded-xl overflow-hidden border-2 transition-all ${
+                className={`relative group rounded-xl overflow-hidden border-2 transition-all h-32 ${
                   imageUrl === coverImage 
                     ? 'border-brand-primary-600 shadow-lg' 
                     : 'border-slate-200 hover:border-slate-300'
@@ -354,7 +355,7 @@ const PortfolioImageGallery: React.FC<PortfolioImageGalleryProps> = ({
                 )}
 
                 {/* Image */}
-                <div className="aspect-square bg-slate-100">
+                <div className="aspect-square bg-slate-100 h-32 w-32">
                   <Image
                     src={imageUrl}
                     alt={`Proje görseli ${index + 1}`}

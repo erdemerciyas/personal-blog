@@ -391,7 +391,7 @@ const MediaBrowser: React.FC<MediaBrowserProps> = ({
               </button>
             </div>
           ) : (
-            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-4">
+                            <div className="grid grid-cols-4 sm:grid-cols-6 md:grid-cols-8 lg:grid-cols-10 xl:grid-cols-12 gap-2">
               {filteredItems.map((item) => {
                 const isSelected = allowMultipleSelect 
                   ? selectedItems.includes(item._id)
@@ -400,7 +400,7 @@ const MediaBrowser: React.FC<MediaBrowserProps> = ({
                 return (
                   <div
                     key={item._id}
-                    className={`${themeStyles.card} rounded-xl p-3 transition-all duration-200 hover:scale-105 relative border`}
+                    className={`${themeStyles.card} rounded-xl p-2 transition-all duration-200 hover:scale-105 relative border h-24`}
                   >
                     {/* Sil butonu */}
                     <button
@@ -414,7 +414,7 @@ const MediaBrowser: React.FC<MediaBrowserProps> = ({
                     {/* Önizleme için tıklama */}
                     <div
                       onClick={() => setPreviewItem(item)}
-                      className="aspect-square mb-2 bg-slate-700 rounded-lg overflow-hidden relative cursor-zoom-in"
+                      className="aspect-square mb-2 bg-slate-700 rounded-lg overflow-hidden relative cursor-zoom-in h-20 w-20"
                       tabIndex={0}
                       role="button"
                       aria-label="Önizle"

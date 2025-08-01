@@ -368,16 +368,16 @@ export default function AdminMediaPage() {
             </div>
           </div>
         ) : (
-          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 xl:grid-cols-8 gap-4">
+          <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-6 lg:grid-cols-8 xl:grid-cols-10 gap-3">
             {/* Select All Button */}
             {getFilteredMediaItems().length > 0 && (
               <div
                 onClick={selectAllMedia}
-                className="bg-white/10 border-2 border-dashed border-white/30 rounded-xl p-6 cursor-pointer hover:bg-white/20 hover:border-brand-primary-600 transition-all duration-200 flex flex-col items-center justify-center min-h-[180px] group"
+                className="bg-white/10 border-2 border-dashed border-white/30 rounded-xl p-4 cursor-pointer hover:bg-white/20 hover:border-brand-primary-600 transition-all duration-200 flex flex-col items-center justify-center h-24 group"
               >
-                <CheckCircleIcon className="w-8 h-8 text-brand-primary-400 mb-2 group-hover:scale-110 transition-transform" />
-                <span className="text-sm text-slate-300 text-center font-medium">Tümünü Seç</span>
-                <span className="text-xs text-slate-500 mt-1">{getFilteredMediaItems().length} dosya</span>
+                <CheckCircleIcon className="w-6 h-6 text-brand-primary-400 mb-1 group-hover:scale-110 transition-transform" />
+                <span className="text-xs text-slate-300 text-center font-medium">Tümünü Seç</span>
+                <span className="text-xs text-slate-500">{getFilteredMediaItems().length} dosya</span>
               </div>
             )}
 
@@ -385,7 +385,7 @@ export default function AdminMediaPage() {
             {getFilteredMediaItems().map((item) => (
               <div
                 key={item._id}
-                className={`relative bg-white/5 border-2 rounded-xl overflow-hidden cursor-pointer transition-all duration-200 hover:bg-white/10 group ${
+                className={`relative bg-white/5 border-2 rounded-xl overflow-hidden cursor-pointer transition-all duration-200 hover:bg-white/10 group h-24 ${
                   selectedMedia.includes(item._id) 
                     ? 'border-brand-primary-600 bg-brand-primary-600/10 shadow-lg shadow-brand-primary-600/20' 
                     : 'border-white/20 hover:border-brand-primary-600/50'
@@ -423,13 +423,13 @@ export default function AdminMediaPage() {
                 </div>
 
                 {/* Image Preview */}
-                <div className="aspect-square bg-slate-800 flex items-center justify-center">
+                <div className="aspect-square bg-slate-800 flex items-center justify-center h-24 w-24">
                   {item.mimeType.startsWith('image/') ? (
                     <Image
                       src={item.url}
                       alt={item.originalName}
-                      width={200}
-                      height={200}
+                      width={96}
+                      height={96}
                       className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
                       onError={(e) => {
                         const target = e.target as HTMLImageElement;
@@ -437,23 +437,18 @@ export default function AdminMediaPage() {
                       }}
                     />
                   ) : (
-                    <DocumentIcon className="w-12 h-12 text-slate-400 group-hover:text-slate-300 transition-colors" />
+                    <DocumentIcon className="w-8 h-8 text-slate-400 group-hover:text-slate-300 transition-colors" />
                   )}
                 </div>
 
                 {/* File Info */}
-                <div className="p-3 bg-gradient-to-t from-black/50 to-transparent absolute bottom-0 left-0 right-0">
-                  <p className="text-sm text-white font-semibold truncate mb-1" title={item.originalName}>
+                <div className="p-1 bg-gradient-to-t from-black/70 to-transparent absolute bottom-0 left-0 right-0">
+                  <p className="text-xs text-white font-medium truncate" title={item.originalName}>
                     {item.originalName}
                   </p>
-                  <div className="flex items-center justify-between">
-                    <p className="text-xs text-slate-300">
-                      {formatFileSize(item.size)}
-                    </p>
-                    <p className="text-xs text-slate-400">
-                      {new Date(item.uploadedAt).toLocaleDateString('tr-TR')}
-                    </p>
-                  </div>
+                  <p className="text-xs text-slate-300">
+                    {formatFileSize(item.size)}
+                  </p>
                 </div>
               </div>
             ))}

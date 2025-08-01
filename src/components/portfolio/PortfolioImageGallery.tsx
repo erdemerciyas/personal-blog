@@ -30,9 +30,23 @@ export default function PortfolioImageGallery({
 
   // Combine cover image with other images, avoiding duplicates
   const allImages = useMemo(() => {
-    return coverImage
-      ? [coverImage, ...images.filter(img => img !== coverImage)]
-      : images;
+    // Eğer images array'i yoksa veya boşsa, sadece coverImage kullan
+    if (!images || images.length === 0) {
+      return coverImage ? [coverImage] : [];
+    }
+    
+    // images array'i varsa, coverImage'ı kontrol et
+    if (coverImage) {
+      // coverImage zaten images array'inde varsa, images'ı döndür
+      if (images.includes(coverImage)) {
+        return images;
+      }
+      // coverImage images'da yoksa, başına ekle
+      return [coverImage, ...images];
+    }
+    
+    // coverImage yoksa sadece images'ı döndür
+    return images;
   }, [coverImage, images]);
 
   useEffect(() => {
@@ -168,7 +182,7 @@ export default function PortfolioImageGallery({
               Proje Görselleri ({allImages.length})
             </h3>
             
-            <div className="grid grid-cols-4 sm:grid-cols-6 md:grid-cols-8 lg:grid-cols-10 gap-4">
+            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-3">
               {allImages.map((image, index) => (
                 <motion.button
                   key={`thumb-${index}-${image}`}
@@ -179,7 +193,7 @@ export default function PortfolioImageGallery({
                     e.stopPropagation();
                     setSelectedImage(image);
                   }}
-                  className={`relative aspect-square rounded-xl overflow-hidden border-3 transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-brand-primary-600 focus:ring-offset-2 ${
+                  className={`relative aspect-square w-full h-20 sm:h-24 md:h-28 lg:h-32 xl:h-36 rounded-xl overflow-hidden border-2 transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-brand-primary-600 focus:ring-offset-2 ${
                     selectedImage === image
                       ? 'border-brand-primary-600 shadow-lg ring-4 ring-brand-primary-200 scale-105'
                       : 'border-slate-200 hover:border-brand-primary-300 hover:shadow-md'
