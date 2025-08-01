@@ -10,6 +10,8 @@ env:
   NODE_VERSION: '18'
   CI: true
   SKIP_ENV_VALIDATION: 'true'
+  NEXTAUTH_SECRET: 'ci-fallback-secret-key-for-build-only'
+  NEXTAUTH_URL: 'http://localhost:3000'
 
 jobs:
   # 🔍 Code Quality & Security
@@ -69,9 +71,14 @@ jobs:
       
     - name: 🧪 Run tests
       run: npm run test:config
+      env:
+        SKIP_ENV_VALIDATION: 'true'
+        CI: 'true'
       
     - name: 🔒 Security test
       run: npm run security:test
+      env:
+        CI: 'true'
       continue-on-error: true
 
   # 🏗️ Build
@@ -96,10 +103,11 @@ jobs:
     - name: 🏗️ Build application
       run: npm run build
       env:
-        NEXTAUTH_SECRET: ${{ secrets.NEXTAUTH_SECRET || 'fallback-secret-for-ci-build' }}
+        NEXTAUTH_SECRET: ${{ secrets.NEXTAUTH_SECRET || 'ci-fallback-secret-key-for-build-only' }}
         NEXTAUTH_URL: ${{ secrets.NEXTAUTH_URL || 'http://localhost:3000' }}
         SKIP_ENV_VALIDATION: 'true'
         CI: 'true'
+        NODE_ENV: 'production'
         
     - name: 📤 Upload build artifacts
       uses: actions/upload-artifact@v4

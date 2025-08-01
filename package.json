@@ -46,6 +46,8 @@
     "test:security": "node scripts/security-test.js",
     "test:accessibility": "node scripts/accessibility-test.js",
     "test:performance": "node scripts/performance-test.js",
+    "security:test": "node scripts/security-test.js",
+    "perf:check": "node scripts/performance-test.js",
     "audit": "npm audit --audit-level moderate",
     "deploy": "vercel --prod",
     "deploy:preview": "vercel",
