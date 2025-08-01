@@ -23,7 +23,7 @@ export default function PortfolioImageGallery({
   title, 
   coverImage 
 }: PortfolioImageGalleryProps) {
-  const [selectedImage, setSelectedImage] = useState<string>('');
+  const [selectedImage, setSelectedImage] = useState<string | null>(null);
   const [lightboxOpen, setLightboxOpen] = useState(false);
   const [lightboxImageIndex, setLightboxImageIndex] = useState(0);
   const [mounted, setMounted] = useState(false);
@@ -40,7 +40,7 @@ export default function PortfolioImageGallery({
     if (allImages.length > 0 && !selectedImage) {
       setSelectedImage(allImages[0]);
     }
-  }, [allImages, selectedImage]);
+  }, [allImages]);
 
 
 
@@ -108,15 +108,17 @@ export default function PortfolioImageGallery({
       <div className="space-y-6">
         {/* Main Image */}
         <motion.div 
-          key={`main-image-${selectedImage}`}
+          key={`main-image-${selectedImage || 'loading'}`}
           initial={{ opacity: 0, scale: 0.95 }}
           animate={{ opacity: 1, scale: 1 }}
           transition={{ duration: 0.6 }}
           className="relative aspect-[16/10] rounded-3xl overflow-hidden shadow-2xl border border-slate-200 bg-white group cursor-pointer"
           onClick={(e) => {
             e.preventDefault();
-            const currentIndex = allImages.findIndex(img => img === selectedImage);
-            openLightbox(currentIndex >= 0 ? currentIndex : 0);
+            if (selectedImage) {
+              const currentIndex = allImages.findIndex(img => img === selectedImage);
+              openLightbox(currentIndex >= 0 ? currentIndex : 0);
+            }
           }}
         >
           {selectedImage ? (
