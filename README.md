@@ -16,7 +16,7 @@ Modern, güvenli ve performanslı kişisel blog ve portfolyo platformu. Next.js 
 
 **🚀 [Live Site](https://erdemerciyas-7i0biarkh-erdem-erciyas-projects.vercel.app)** | **🔧 [Admin Panel](https://erdemerciyas-7i0biarkh-erdem-erciyas-projects.vercel.app/admin)** | **📊 [API Health](https://erdemerciyas-7i0biarkh-erdem-erciyas-projects.vercel.app/api/health)**
 
-> **Status**: ✅ **LIVE** | **Last Deploy**: 2025-01-27 15:30 UTC | **Version**: v2.2.1 | **🚀 CI/CD Pipeline**: ✅ **OPTIMIZED**
+> **Status**: ✅ **LIVE** | **Last Deploy**: 2025-08-01 07:15 UTC | **Version**: v2.2.2 | **🚀 CI/CD Pipeline**: ✅ **OPTIMIZED**
 
 ## ✨ Özellikler
 
@@ -127,7 +127,15 @@ npm run dev
 
 Uygulama [http://localhost:3000](http://localhost:3000) adresinde çalışacaktır.
 
-## 🆕 Yeni Özellikler (v2.2.1)
+## 🆕 Yeni Özellikler (v2.2.2)
+
+### 🎨 Footer UI/UX İyileştirmeleri (2025-08-01)
+- **Footer Başlık Renkleri**: Başlıklar artık net beyaz renkte görünüyor
+- **FIXRAL Logo Entegrasyonu**: Footer'a profesyonel logo eklendi
+- **İletişim Bilgileri Tasarımı**: Icon background'ları ve hover efektleri
+- **Quick Links Bullet Points**: Görsel hiyerarşi iyileştirmeleri
+- **Typography Enhancement**: Daha iyi okunabilirlik ve spacing
+- **Responsive Design**: Tüm cihazlarda tutarlı görünüm
 
 ### 🚀 GitHub Hazırlığı ve Deployment (2025-01-27)
 - **GitHub Repository Hazırlığı**: Proje GitHub'a yayın için hazırlandı
@@ -466,13 +474,18 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 ## 📈 Project Status
 
 - **Status**: ✅ **PRODUCTION READY**
-- **Version**: v2.2.1
-- **Last Updated**: 2025-01-27
+- **Version**: v2.2.2
+- **Last Updated**: 2025-08-01
 - **Security Level**: 🔒 HIGH
 - **Performance**: ⚡ OPTIMIZED
 - **Documentation**: 📚 COMPLETE
 
-### Recent Updates (v2.2.1)
+### Recent Updates (v2.2.2)
+- ✅ **Footer UI Enhancement**: Başlık renkleri ve logo düzeltmeleri
+- ✅ **Visual Improvements**: İletişim bilgileri ve link tasarımları
+- ✅ **Typography Optimization**: Daha iyi okunabilirlik ve hiyerarşi
+
+### Previous Updates (v2.2.1)
 - ✅ **GitHub Preparation**: Proje GitHub'a yayın için hazırlandı
 - ✅ **README Update**: En güncel bilgiler ve deployment durumu
 - ✅ **Branch Cleanup**: Açık branch'ler kapatıldı ve merge edildi
