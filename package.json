@@ -1,6 +1,6 @@
 {
   "name": "personal-blog",
-  "version": "2.2.1",
+  "version": "2.2.2",
   "private": true,
   "author": {
     "name": "Erdem Erciyas",
@@ -43,7 +43,6 @@
     "version:minor": "npm version minor",
     "version:major": "npm version major",
     "prepare": "node -e \"if (process.env.NODE_ENV !== 'production' && process.env.VERCEL !== '1') { try { require('husky').install() } catch (e) { console.log('Husky not available, skipping...') } }\"",
-
     "test:security": "node scripts/security-test.js",
     "test:accessibility": "node scripts/accessibility-test.js",
     "test:performance": "node scripts/performance-test.js",
@@ -64,21 +63,15 @@
     "@types/nodemailer": "^6.4.17",
     "@types/react": "^18.2.45",
     "@types/react-dom": "^18.2.18",
-
     "autoprefixer": "^10.4.16",
     "bcryptjs": "^3.0.2",
-
     "cloudinary": "^2.6.1",
     "clsx": "^2.1.1",
-
     "dompurify": "^3.2.6",
-
     "eslint": "^8.56.0",
     "eslint-config-next": "^14.0.4",
     "framer-motion": "^12.23.6",
-
     "jsdom": "^26.1.0",
-
     "mongodb": "^6.16.0",
     "mongoose": "^8.15.1",
     "multer": "^2.0.0",
@@ -93,12 +86,10 @@
     "react-i18next": "^15.6.0",
     "rimraf": "^3.0.2",
     "slugify": "^1.6.6",
-
     "tailwindcss": "^3.4.0"
   },
   "devDependencies": {
     "@next/bundle-analyzer": "^15.4.1",
-
     "@types/node": "^24.0.13",
     "cross-env": "^7.0.3",
     "husky": "^9.1.7",
