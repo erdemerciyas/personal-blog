@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, useCallback } from 'react';
 import Image from 'next/image';
 import { InlineLoader } from './AdminLoader';
 import {
@@ -113,14 +113,7 @@ const MediaBrowser: React.FC<MediaBrowserProps> = ({
     return Boolean(url && (url.startsWith('/') || url.startsWith('http://') || url.startsWith('https://')));
   };
 
-  // Fetch media items
-  useEffect(() => {
-    if (isOpen) {
-      fetchMediaItems();
-    }
-  }, [isOpen, pageFilter, fetchMediaItems]);
-
-  const fetchMediaItems = async () => {
+  const fetchMediaItems = useCallback(async () => {
     setLoading(true);
     try {
       const params = new URLSearchParams();
@@ -138,7 +131,14 @@ const MediaBrowser: React.FC<MediaBrowserProps> = ({
     } finally {
       setLoading(false);
     }
-  };
+  }, [pageFilter]);
+
+  // Fetch media items
+  useEffect(() => {
+    if (isOpen) {
+      fetchMediaItems();
+    }
+  }, [isOpen, pageFilter, fetchMediaItems]);
 
   // Filter media items
   const getFilteredItems = () => {

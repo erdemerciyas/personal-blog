@@ -69,7 +69,7 @@ export const POST = asyncHandler(async (request: Request) => {
     throw createError.validation('Açıklama çok uzun (maksimum 2000 karakter)');
   }
 
-  const { db } = await connectToDatabase();
+  await connectToDatabase();
 
   const imageUrl = body.image || '';
 
@@ -85,12 +85,10 @@ export const POST = asyncHandler(async (request: Request) => {
 
   try {
     const newService = new Service(serviceData);
-    const result = await newService.save();
+    await newService.save();
     
     // Invalidate services cache
     cacheHelpers.invalidateContentCaches();
-    
-    
     
     const duration = Date.now() - startTime;
     logger.apiResponse('POST', '/api/services', 201, duration);

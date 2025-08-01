@@ -6,7 +6,7 @@ import Category from '@/models/Category';
 export async function GET(request: Request, { params }: { params: { slug: string } }) {
   try {
     // Veritabanı bağlantısını timeout ile koru
-    const dbConnection = await Promise.race([
+    await Promise.race([
       connectDB(),
       new Promise((_, reject) =>
         setTimeout(() => reject(new Error('Database connection timeout')), 10000)

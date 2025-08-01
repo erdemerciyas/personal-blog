@@ -44,7 +44,7 @@ interface PortfolioItem {
 }
 
 export default function PortfolioManagement() {
-  const { data: session, status } = useSession();
+  const { status } = useSession(); // session is used indirectly for auth
   const router = useRouter();
   const [activeTab, setActiveTab] = useState<'projects' | 'categories'>('projects');
   const [portfolioItems, setPortfolioItems] = useState<PortfolioItem[]>([]);

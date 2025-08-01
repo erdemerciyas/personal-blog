@@ -10,7 +10,6 @@ import {
   ArrowRightIcon,
   CheckCircleIcon,
   ClockIcon,
-  UserGroupIcon,
   CogIcon,
   SparklesIcon
 } from '@heroicons/react/24/outline';

@@ -10,7 +10,6 @@ import UniversalEditor from '../../../../../components/ui/UniversalEditor';
 import HTMLContent from '../../../../../components/HTMLContent';
 import { 
   WrenchScrewdriverIcon,
-  PencilIcon,
   PhotoIcon,
   DocumentTextIcon,
   CheckIcon,

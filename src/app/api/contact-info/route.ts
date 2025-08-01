@@ -15,13 +15,13 @@ export async function GET() {
     // Eğer hiç kayıt yoksa default kayıt oluştur
     if (!contact) {
       contact = await Contact.create({
-        email: 'erdem.erciyas@example.com',
-        phone: '+90 (500) 123 45 67',
-        address: 'Teknoloji Vadisi, No: 42, Cyberpark, Ankara, Türkiye',
+        email: 'erdem.erciyas@gmail.com',
+        phone: '+90 (532) 123 45 67',
+        address: 'Altay Mahallesi Bilgi sk No: 5 Turgutlu Manisa',
         workingHours: 'Pazartesi - Cuma: 09:00 - 18:00',
         socialLinks: {
           linkedin: '',
-          twitter: '',
+          twitter: '@fixral',
           instagram: '',
           facebook: '',
         },

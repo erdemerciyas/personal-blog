@@ -21,7 +21,7 @@ export class SecurityHeaders {
     "img-src 'self' data: blob: https: http:",
     "media-src 'self' https:",
     "connect-src 'self' https: wss: ws://localhost:* http://localhost:*",
-    "frame-src 'self' https:",
+    "frame-src 'self' https://maps.google.com https://www.google.com https:",
     "worker-src 'self' blob:",
     "child-src 'self' blob:",
     "object-src 'none'",
@@ -38,7 +38,7 @@ export class SecurityHeaders {
     "img-src 'self' data: blob: https:",
     "media-src 'self' https:",
     "connect-src 'self' https: wss:",
-    "frame-src 'self' https:",
+    "frame-src 'self' https://maps.google.com https://www.google.com https:",
     "worker-src 'self' blob:",
     "child-src 'self' blob:",
     "object-src 'none'",
@@ -186,7 +186,7 @@ export class SecurityHeaders {
           "font-src 'self' https://fonts.gstatic.com",
           "img-src 'self' data: https:",
           "media-src 'self' https:",
-          "frame-src 'none'",
+          "frame-src 'self' https://maps.google.com https://www.google.com",
           "frame-ancestors 'none'"
         ];
 

@@ -12,7 +12,6 @@ interface AuthUser {
   role?: string;
 }
 
-// @ts-ignore
 interface Credentials {
   email?: string;
   password?: string;

@@ -42,8 +42,8 @@ export async function PUT(request: Request) {
     }
 
     // Güvenlik kontrolleri
-    const sanitizedCurrentPassword = SecurityUtils.sanitizeString(currentPassword);
-    const sanitizedNewPassword = SecurityUtils.sanitizeString(newPassword);
+    SecurityUtils.sanitizeString(currentPassword); // Used for security validation
+    SecurityUtils.sanitizeString(newPassword); // Used for security validation
     
     // SQL injection kontrolü
     if (SecurityUtils.containsSQLInjection(currentPassword) || SecurityUtils.containsSQLInjection(newPassword)) {

@@ -8,9 +8,6 @@ import HomePortfolioSection from '../components/portfolio/HomePortfolioSection';
 import { useSliderItems, usePortfolioItems, useServices } from '../hooks/useApi';
 import { 
   ArrowRightIcon,
-  CubeTransparentIcon,
-  WrenchScrewdriverIcon,
-  CheckBadgeIcon,
   SparklesIcon,
   RocketLaunchIcon,
   ChevronLeftIcon,
