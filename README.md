@@ -4,7 +4,7 @@
 [![TypeScript](https://img.shields.io/badge/TypeScript-5.8.3-blue?style=for-the-badge&logo=typescript)](https://www.typescriptlang.org/)
 [![MongoDB](https://img.shields.io/badge/MongoDB-Latest-003450?style=for-the-badge&logo=mongodb)](https://www.mongodb.com/)
 [![Tailwind CSS](https://img.shields.io/badge/Tailwind_CSS-3.4.0-003450?style=for-the-badge&logo=tailwind-css)](https://tailwindcss.com/)
-[![Vercel](https://img.shields.io/badge/Vercel-Live-black?style=for-the-badge&logo=vercel)](https://erdemerciyas-7i0biarkh-erdem-erciyas-projects.vercel.app)
+[![Vercel](https://img.shields.io/badge/Vercel-Live-black?style=for-the-badge&logo=vercel)](https://fixral-m8b3vn7k7-erdem-erciyas-projects.vercel.app)
 [![Security](https://img.shields.io/badge/Security-Hardened-003450?style=for-the-badge&logo=shield)](https://github.com/erdemerciyas/personal-blog/blob/main/SECURITY.md)
 [![License](https://img.shields.io/badge/License-MIT-yellow?style=for-the-badge)](https://github.com/erdemerciyas/personal-blog/blob/main/LICENSE)
 [![Build Status](https://img.shields.io/badge/Build-Passing-075985?style=for-the-badge&logo=github-actions)](https://github.com/erdemerciyas/personal-blog/actions)
@@ -14,7 +14,7 @@ Modern, güvenli ve performanslı kişisel blog ve portfolyo platformu. Next.js 
 
 ## 🌐 Live Demo
 
-**🚀 [Live Site](https://erdemerciyas-7i0biarkh-erdem-erciyas-projects.vercel.app)** | **🔧 [Admin Panel](https://erdemerciyas-7i0biarkh-erdem-erciyas-projects.vercel.app/admin)** | **📊 [API Health](https://erdemerciyas-7i0biarkh-erdem-erciyas-projects.vercel.app/api/health)**
+**🚀 [Live Site](https://fixral-m8b3vn7k7-erdem-erciyas-projects.vercel.app)** | **🔧 [Admin Panel](https://fixral-m8b3vn7k7-erdem-erciyas-projects.vercel.app/admin)** | **📊 [API Health](https://fixral-m8b3vn7k7-erdem-erciyas-projects.vercel.app/api/health)**
 
 > **Status**: ✅ **LIVE** | **Last Deploy**: 2025-08-01 07:15 UTC | **Version**: v2.2.2 | **🚀 CI/CD Pipeline**: ✅ **OPTIMIZED**
 
@@ -303,8 +303,8 @@ Permissions-Policy: camera=(), microphone=(), geolocation=()
 ### ✅ Production Deployment (Vercel)
 
 **Current Status**: ✅ **LIVE** on Vercel 
-**Deployment URL**: https://erdemerciyas-7i0biarkh-erdem-erciyas-projects.vercel.app  
-**Last Deploy**: 2025-01-27 15:30 UTC  
+**Deployment URL**: https://fixral-m8b3vn7k7-erdem-erciyas-projects.vercel.app  
+**Last Deploy**: 2025-08-01 07:17 UTC  
 **Build Time**: ~57 seconds  
 
 #### Quick Deploy
@@ -512,11 +512,11 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 ## 🔗 Useful Links
 
-- 🌐 **Live Demo**: [erdemerciyas-7i0biarkh-erdem-erciyas-projects.vercel.app](https://erdemerciyas-7i0biarkh-erdem-erciyas-projects.vercel.app)
-- 🔧 **Admin Panel**: [/admin](https://erdemerciyas-7i0biarkh-erdem-erciyas-projects.vercel.app/admin)
-- 📊 **API Health**: [/api/health](https://erdemerciyas-7i0biarkh-erdem-erciyas-projects.vercel.app/api/health)
-- 🗺️ **Sitemap**: [/sitemap.xml](https://erdemerciyas-7i0biarkh-erdem-erciyas-projects.vercel.app/sitemap.xml)
-- 🤖 **Robots**: [/robots.txt](https://erdemerciyas-7i0biarkh-erdem-erciyas-projects.vercel.app/robots.txt)
+- 🌐 **Live Demo**: [fixral-m8b3vn7k7-erdem-erciyas-projects.vercel.app](https://fixral-m8b3vn7k7-erdem-erciyas-projects.vercel.app)
+- 🔧 **Admin Panel**: [/admin](https://fixral-m8b3vn7k7-erdem-erciyas-projects.vercel.app/admin)
+- 📊 **API Health**: [/api/health](https://fixral-m8b3vn7k7-erdem-erciyas-projects.vercel.app/api/health)
+- 🗺️ **Sitemap**: [/sitemap.xml](https://fixral-m8b3vn7k7-erdem-erciyas-projects.vercel.app/sitemap.xml)
+- 🤖 **Robots**: [/robots.txt](https://fixral-m8b3vn7k7-erdem-erciyas-projects.vercel.app/robots.txt)
 
 ## 📞 Support
 
