@@ -4,13 +4,14 @@ import { usePathname } from 'next/navigation';
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import Version from './Version';
-import { 
-  EnvelopeIcon, 
-  PhoneIcon, 
+import {
+  EnvelopeIcon,
+  PhoneIcon,
   MapPinIcon,
   HeartIcon,
   SparklesIcon
 } from '@heroicons/react/24/outline';
+import Logo from './Logo';
 
 interface FooterSettings {
   mainDescription: string;
@@ -54,9 +55,9 @@ const ConditionalFooter: React.FC = () => {
   const pathname = usePathname();
   const [settings, setSettings] = useState<FooterSettings | null>(null);
   const [loading, setLoading] = useState(true);
-  
+
   const isAdminPage = pathname?.startsWith('/admin');
-  
+
   useEffect(() => {
     const fetchFooterSettings = async () => {
       try {
@@ -116,7 +117,7 @@ const ConditionalFooter: React.FC = () => {
       setLoading(false);
     }
   }, [isAdminPage]);
-  
+
   if (isAdminPage || loading || !settings) {
     return null;
   }
@@ -136,22 +137,22 @@ const ConditionalFooter: React.FC = () => {
         <div className="grid grid-cols-1 md:grid-cols-3 gap-12 mb-16">
           {/* About Section */}
           <div>
-            <div className="flex items-center space-x-3 mb-6">
-              <div className="w-10 h-10 bg-gradient-primary rounded-xl flex items-center justify-center">
-                <SparklesIcon className="w-5 h-5 text-white" />
-              </div>
-              <h3 className="text-xl font-bold">Hakkımızda</h3>
+            <div className="mb-6">
+              <Logo isDark={false} width={56} height={56} className="mb-6" />
             </div>
-            <p className="text-slate-300 leading-relaxed text-lg">
+            <p className="text-slate-300 leading-relaxed text-lg mb-4">
               {settings.mainDescription}
             </p>
+            <p className="text-slate-400 text-sm">
+              Modern mühendislik çözümleri ile projelerinizi hayata geçiriyoruz.
+            </p>
           </div>
-          
+
           {/* Quick Links */}
           {settings.visibility.showQuickLinks && settings.quickLinks.length > 0 && (
             <nav aria-label="Footer navigation">
-              <h3 className="text-lg font-semibold mb-6">Hızlı Bağlantılar</h3>
-              <ul className="space-y-3">
+              <h3 className="text-xl font-bold mb-6 text-white border-b border-slate-700 pb-3">Hızlı Bağlantılar</h3>
+              <ul className="space-y-4">
                 {settings.quickLinks.map((link, index) => (
                   <li key={index}>
                     {link.isExternal ? (
@@ -159,15 +160,17 @@ const ConditionalFooter: React.FC = () => {
                         href={link.url}
                         target="_blank"
                         rel="noopener noreferrer"
-                        className="text-slate-300 hover:text-brand-primary-300 transition-colors duration-200 text-base focus:outline-none focus:ring-2 focus:ring-brand-primary-500/50 rounded-md px-2 py-1"
+                        className="text-slate-300 hover:text-white hover:translate-x-1 transition-all duration-200 text-base focus:outline-none focus:ring-2 focus:ring-brand-primary-500/50 rounded-md px-2 py-1 inline-flex items-center group"
                       >
+                        <span className="w-2 h-2 bg-brand-primary-400 rounded-full mr-3 group-hover:bg-white transition-colors duration-200"></span>
                         {link.title}
                       </a>
                     ) : (
                       <Link
                         href={link.url}
-                        className="text-slate-300 hover:text-brand-primary-300 transition-colors duration-200 text-base focus:outline-none focus:ring-2 focus:ring-brand-primary-500/50 rounded-md px-2 py-1"
+                        className="text-slate-300 hover:text-white hover:translate-x-1 transition-all duration-200 text-base focus:outline-none focus:ring-2 focus:ring-brand-primary-500/50 rounded-md px-2 py-1 inline-flex items-center group"
                       >
+                        <span className="w-2 h-2 bg-brand-primary-400 rounded-full mr-3 group-hover:bg-white transition-colors duration-200"></span>
                         {link.title}
                       </Link>
                     )}
@@ -176,33 +179,39 @@ const ConditionalFooter: React.FC = () => {
               </ul>
             </nav>
           )}
-          
+
           {/* Contact Info */}
           {settings.visibility.showContactInfo && (
             <div>
-              <h3 className="text-lg font-semibold mb-6">İletişim</h3>
-              <div className="space-y-4">
-                <div className="flex items-center space-x-3">
-                  <EnvelopeIcon className="w-5 h-5 text-brand-primary-400" />
-                  <a 
-                    href={`mailto:${settings.contactInfo.email}`} 
-                    className="text-slate-300 hover:text-brand-primary-300 transition-colors duration-200 text-base focus:outline-none focus:ring-2 focus:ring-brand-primary-500/50 rounded-md px-2 py-1"
+              <h3 className="text-xl font-bold mb-6 text-white border-b border-slate-700 pb-3">İletişim</h3>
+              <div className="space-y-5">
+                <div className="flex items-center space-x-4 group">
+                  <div className="w-10 h-10 bg-brand-primary-600/20 rounded-lg flex items-center justify-center group-hover:bg-brand-primary-600/30 transition-colors duration-200">
+                    <EnvelopeIcon className="w-5 h-5 text-brand-primary-400" />
+                  </div>
+                  <a
+                    href={`mailto:${settings.contactInfo.email}`}
+                    className="text-slate-300 hover:text-white transition-colors duration-200 text-base focus:outline-none focus:ring-2 focus:ring-brand-primary-500/50 rounded-md px-2 py-1"
                   >
                     {settings.contactInfo.email}
                   </a>
                 </div>
-                <div className="flex items-center space-x-3">
-                  <PhoneIcon className="w-5 h-5 text-brand-primary-400" />
-                  <a 
-                    href={`tel:${settings.contactInfo.phone.replace(/\s/g, '')}`} 
-                    className="text-slate-300 hover:text-brand-primary-300 transition-colors duration-200 text-base focus:outline-none focus:ring-2 focus:ring-brand-primary-500/50 rounded-md px-2 py-1"
+                <div className="flex items-center space-x-4 group">
+                  <div className="w-10 h-10 bg-brand-primary-600/20 rounded-lg flex items-center justify-center group-hover:bg-brand-primary-600/30 transition-colors duration-200">
+                    <PhoneIcon className="w-5 h-5 text-brand-primary-400" />
+                  </div>
+                  <a
+                    href={`tel:${settings.contactInfo.phone.replace(/\s/g, '')}`}
+                    className="text-slate-300 hover:text-white transition-colors duration-200 text-base focus:outline-none focus:ring-2 focus:ring-brand-primary-500/50 rounded-md px-2 py-1"
                   >
                     {settings.contactInfo.phone}
                   </a>
                 </div>
-                <div className="flex items-start space-x-3">
-                  <MapPinIcon className="w-5 h-5 text-brand-primary-400 mt-1" />
-                  <span className="text-slate-300 text-base">
+                <div className="flex items-start space-x-4 group">
+                  <div className="w-10 h-10 bg-brand-primary-600/20 rounded-lg flex items-center justify-center group-hover:bg-brand-primary-600/30 transition-colors duration-200 mt-1">
+                    <MapPinIcon className="w-5 h-5 text-brand-primary-400" />
+                  </div>
+                  <span className="text-slate-300 text-base pt-2">
                     {settings.contactInfo.address}
                   </span>
                 </div>
@@ -217,7 +226,7 @@ const ConditionalFooter: React.FC = () => {
             {/* Copyright */}
             <div className="text-slate-400 text-sm">
               <p>
-                © {settings.copyrightInfo.year} {settings.copyrightInfo.companyName}. 
+                © {settings.copyrightInfo.year} {settings.copyrightInfo.companyName}.
                 {settings.copyrightInfo.additionalText}
               </p>
             </div>
@@ -228,7 +237,7 @@ const ConditionalFooter: React.FC = () => {
               {settings.visibility.showDeveloperInfo && (
                 <div className="flex items-center space-x-2 text-sm text-slate-400">
                   <span>Geliştiren:</span>
-                  <a 
+                  <a
                     href={settings.developerInfo.website}
                     target="_blank"
                     rel="noopener noreferrer"

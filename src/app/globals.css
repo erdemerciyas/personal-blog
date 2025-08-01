@@ -767,6 +767,21 @@ select::-webkit-scrollbar-thumb:hover {
   outline-offset: 2px;
 }
 
+/* Footer specific styles */
+footer h3 {
+  color: #ffffff !important;
+  font-weight: 600;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+}
+
+footer .text-slate-300 {
+  color: #cbd5e1 !important;
+}
+
+footer .text-slate-400 {
+  color: #94a3b8 !important;
+}
+
 /* High contrast mode support */
 @media (prefers-contrast: high) {
   .text-brand-primary-800,
@@ -786,6 +801,11 @@ select::-webkit-scrollbar-thumb:hover {
   .border-brand-primary-600,
   .border-brand-primary-500 {
     border-color: #000000 !important;
+  }
+  
+  footer h3 {
+    color: #ffffff !important;
+    text-shadow: none;
   }
 }
 
