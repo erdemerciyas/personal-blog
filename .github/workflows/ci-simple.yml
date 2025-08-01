@@ -63,9 +63,9 @@ jobs:
         path: .next/
         retention-days: 1
 
-  # 🚀 Deploy to Vercel (only on main branch)
-  deploy:
-    name: 🚀 Deploy to Vercel
+  # 🚀 Deploy Notification (manual deployment recommended)
+  deploy-notification:
+    name: 🚀 Deploy Notification
     runs-on: ubuntu-latest
     needs: build-and-test
     if: github.ref == 'refs/heads/main' && github.event_name == 'push'
@@ -74,11 +74,13 @@ jobs:
     - name: 📥 Checkout code
       uses: actions/checkout@v4
       
-    - name: 🚀 Deploy to Vercel
-      uses: amondnet/vercel-action@v20
+    - name: 📝 Deployment Ready Notification
+      uses: actions/github-script@v7
       with:
-        vercel-token: ${{ secrets.VERCEL_TOKEN }}
-        vercel-org-id: ${{ secrets.VERCEL_ORG_ID }}
-        vercel-project-id: ${{ secrets.VERCEL_PROJECT_ID }}
-        vercel-args: '--prod'
-      continue-on-error: true
+        script: |
+          github.rest.repos.createCommitComment({
+            owner: context.repo.owner,
+            repo: context.repo.repo,
+            commit_sha: context.sha,
+            body: '✅ Build başarılı! Manuel deployment için `npm run deploy` komutunu kullanabilirsiniz.\n\n🔗 Current Live Site: https://fixral-m8b3vn7k7-erdem-erciyas-projects.vercel.app'
+          })

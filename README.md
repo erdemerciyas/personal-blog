@@ -309,15 +309,16 @@ Permissions-Policy: camera=(), microphone=(), geolocation=()
 
 #### Quick Deploy
 ```bash
-# Otomatik deployment script
+# Manuel deployment (önerilen)
 npm run deploy
 
-# Manuel deployment
+# Alternatif deployment
 vercel --prod
 ```
 
 #### Deployment Features
-- ✅ **Automatic CI/CD** with GitHub Actions
+- ✅ **CI/CD Pipeline** with GitHub Actions (build & test)
+- ✅ **Manual Deployment** for better control
 - ✅ **Security Headers** configured
 - ✅ **Performance Optimized** (87.3 kB shared JS)
 - ✅ **SEO Ready** (sitemap.xml, robots.txt)
@@ -349,10 +350,11 @@ CLOUDINARY_API_SECRET=your-api-secret
 
 ### Automated Testing
 - ✅ **GitHub Actions CI/CD** pipeline
-- ✅ **Security scanning** (daily)
+- ✅ **Security scanning** (81% score)
 - ✅ **Dependency vulnerability** checks
 - ✅ **Code quality** validation
 - ✅ **Build verification** on every commit
+- ✅ **Manual deployment** notification system
 
 ### Manual Testing Commands
 ```bash
