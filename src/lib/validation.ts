@@ -3,7 +3,7 @@ import { JSDOM } from 'jsdom';
 
 // Server-side DOMPurify setup
 const window = new JSDOM('').window;
-const purify = DOMPurify(window as any);
+const purify = DOMPurify(window as unknown as Window & typeof globalThis);
 
 // Input validation schemas
 export const ValidationSchemas = {

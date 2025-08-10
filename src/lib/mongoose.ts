@@ -133,7 +133,7 @@ process.on('SIGINT', async () => {
       await clientCached!.client.close();
       // MongoDB Client connection closed
     }
-  } catch (err) {
+  } catch {
     // Error closing MongoDB connections
   }
   process.exit(0);

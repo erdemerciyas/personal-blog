@@ -15,7 +15,7 @@ export function clearRateLimitCache(): void {
   // Cache'i temizlemek için global değişkene erişim gerekiyor
   // Bu fonksiyon browser console'dan çağrılabilir
   if (typeof window !== 'undefined') {
-    (window as any).__clearRateLimit = () => {
+    (window as unknown as { __clearRateLimit?: () => void }).__clearRateLimit = () => {
       // Client-side'da localStorage'daki cache'i temizle
       const keys = Object.keys(localStorage);
       keys.forEach(key => {

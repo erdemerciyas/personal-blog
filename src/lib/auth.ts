@@ -221,7 +221,7 @@ export const authOptions: NextAuthOptions = {
           // Farklı domain ise dashboard'a yönlendir
           return `${finalBaseUrl}/admin/dashboard`;
         }
-      } catch (error) {
+      } catch {
         // Redirect URL parse error - silently handle
         return `${finalBaseUrl}/admin/dashboard`;
       }
