@@ -14,9 +14,9 @@ Modern, güvenli ve performanslı kişisel blog ve portfolyo platformu. Next.js 
 
 ## 🌐 Live Demo
 
-**🚀 [Live Site](https://fixral-ao7clr42w-erdem-erciyas-projects.vercel.app)** | **🔧 [Admin Panel](https://fixral-ao7clr42w-erdem-erciyas-projects.vercel.app/admin)** | **📊 [API Health](https://fixral-ao7clr42w-erdem-erciyas-projects.vercel.app/api/health)**
+**🚀 [Live Site](https://fixral-2ah66opij-erdem-erciyas-projects.vercel.app)** | **🔧 [Admin Panel](https://fixral-2ah66opij-erdem-erciyas-projects.vercel.app/admin)** | **📊 [API Health](https://fixral-2ah66opij-erdem-erciyas-projects.vercel.app/api/health)**
 
-> **Status**: ✅ **LIVE** | **Last Deploy**: 2025-08-10 09:00 UTC | **Version**: v2.2.5 | **🚀 CI/CD Pipeline**: ✅ **OPTIMIZED**
+> **Status**: ✅ **LIVE** | **Last Deploy**: 2025-08-10 10:30 UTC | **Version**: v2.2.6 | **🚀 CI/CD Pipeline**: ✅ **OPTIMIZED**
 
 ## ✨ Özellikler
 
@@ -131,7 +131,18 @@ npm run dev
 
 Uygulama [http://localhost:3000](http://localhost:3000) adresinde çalışacaktır.
 
-## 🆕 Yeni Özellikler (v2.2.5)
+## 🆕 Yeni Özellikler (v2.2.6)
+
+### 🧹 Lint/TS Temizliği ve Tip Güçlendirme (2025-08-10)
+- **Typescript**: `any` kullanımları büyük ölçüde kaldırıldı, `unknown` ve dar tipler benimsendi
+- **Lib Katmanı**: `errorHandler`, `logger`, `performance`, `security-*`, `validation`, `cache*` dosyaları güçlendirildi
+- **UI**: `ImageUpload`, `PortfolioImageGallery`, `MediaBrowser`, `SmartLink` küçük lint/erişilebilirlik düzeltmeleri
+- **Hooks**: `usePortfolioFilters`, `usePerformance` sadeleştirme ve log temizlikleri
+- **Admin**: Portfolyo edit sayfasında çoklu kategori tipleri netleştirildi
+
+---
+
+## 🆕 Önceki Güncellemeler (v2.2.5)
 
 ### 📱 Mobil UI Yenilemesi (2025-08-10)
 - **Hero/Slider (Mobil)**: Navigasyon okları ve play/pause mobilde gizlendi; dot göstergesi ve CTA alanı güvenli boşluklarla hizalandı

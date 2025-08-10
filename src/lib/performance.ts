@@ -168,7 +168,7 @@ class PerformanceMonitor {
 
     // Group metrics by operation name
     const operationGroups: { [key: string]: PerformanceMetric[] } = {};
-    recentMetrics.forEach(metric => {
+    recentMetrics.forEach((metric) => {
       if (!operationGroups[metric.name]) {
         operationGroups[metric.name] = [];
       }
@@ -177,7 +177,7 @@ class PerformanceMonitor {
 
     // Get top operations by frequency
     const topOperations = Object.entries(operationGroups)
-      .map(([name, metrics]) => ({
+      .map(([name]) => ({
         name,
         stats: this.getStats(name)
       }))
