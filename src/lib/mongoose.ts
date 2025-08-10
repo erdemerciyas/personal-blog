@@ -118,7 +118,7 @@ export async function connectToDatabase() {
   } catch (e) {
     clientCached!.promise = null;
     // MongoDB (Client) connection error
-    throw e;
+    throw e as Error;
   }
 }
 

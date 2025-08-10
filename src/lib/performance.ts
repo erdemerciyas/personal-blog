@@ -31,17 +31,17 @@ class PerformanceMonitor {
   }
 
   // Start a performance measurement
-  startMeasurement(name: string): (metadata?: unknown) => void {
+  startMeasurement(name: string): (metadata?: Record<string, unknown>) => void {
     const startTime = Date.now();
     
-    return (metadata?: any) => {
+    return (metadata?: Record<string, unknown>) => {
       const duration = Date.now() - startTime;
       this.recordMetric(name, duration, metadata);
     };
   }
 
   // Record a performance metric
-  recordMetric(name: string, duration: number, metadata?: unknown): void {
+  recordMetric(name: string, duration: number, metadata?: Record<string, unknown>): void {
     const metric: PerformanceMetric = {
       name,
       duration,
@@ -221,14 +221,14 @@ export function measureExternalService(service: string, operation: string) {
 }
 
 // Middleware helper for automatic API measurement
-export function withPerformanceMonitoring<T extends (...args: any[]) => Promise<any>>(
+export function withPerformanceMonitoring<T extends (...args: unknown[]) => Promise<unknown>>(
   fn: T,
   name: string
 ): T {
-  return (async (...args: any[]) => {
+  return (async (...args: unknown[]) => {
     const endMeasurement = performanceMonitor.startMeasurement(name);
     try {
-      const result = await fn(...args);
+      const result = await fn(...args as never[]);
       endMeasurement({ success: true });
       return result;
     } catch (error) {

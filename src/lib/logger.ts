@@ -138,7 +138,7 @@ class Logger {
 export const logger = new Logger();
 
 // Legacy console.log replacement (for gradual migration)
-export const devLog = (message: string, data?: any): void => {
+export const devLog = (message: string, data?: unknown): void => {
   if (process.env.NODE_ENV === 'development') {
     logger.debug(message, 'DEV', data);
   }

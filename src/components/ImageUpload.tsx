@@ -376,7 +376,7 @@ const ImageUpload: React.FC<ImageUploadProps> = ({
             <div className="p-4 space-y-4">
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Görsel URL'si
+                  Görsel URL&apos;si
                 </label>
                 <input
                   type="url"

@@ -69,7 +69,7 @@ export const authOptions: NextAuthOptions = {
           // Log login attempt
           try {
             SecurityEvents.loginAttempt(clientIP, email, userAgent);
-          } catch (secError) {
+          } catch {
             // Security logging error - silently continue
           }
           
@@ -89,7 +89,7 @@ export const authOptions: NextAuthOptions = {
             // Log failed login - user not found
             try {
               SecurityEvents.loginFailure(clientIP, email, userAgent, 'user_not_found');
-            } catch (secError) {
+            } catch {
               // Security logging error - silently continue
             }
             return null;
@@ -101,7 +101,7 @@ export const authOptions: NextAuthOptions = {
             // Log failed login attempt
             try {
               SecurityEvents.loginFailure(clientIP, email, userAgent, 'invalid_password');
-            } catch (secError) {
+            } catch {
               // Security logging error - silently continue
             }
             
@@ -115,7 +115,7 @@ export const authOptions: NextAuthOptions = {
           // Log successful login
           try {
             SecurityEvents.loginSuccess(clientIP, email, userAgent);
-          } catch (secError) {
+          } catch {
             // Security logging error - silently continue
           }
 
@@ -125,7 +125,7 @@ export const authOptions: NextAuthOptions = {
             name: user.name,
             role: user.role,
           };
-        } catch (error) {
+        } catch {
           // Auth error - don't reveal internal errors to client
           return null;
         }

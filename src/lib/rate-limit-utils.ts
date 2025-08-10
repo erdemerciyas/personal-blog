@@ -38,7 +38,7 @@ export function checkRateLimitStatus(ip: string): void {
   }
 
   const status = getRateLimitStatus(ip);
-  // Rate limit status checked for IP (logging removed for security)
+  void status; // silence unused var in production
 }
 
 // Development modunda rate limit'i bypass et

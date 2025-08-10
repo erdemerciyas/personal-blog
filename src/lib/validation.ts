@@ -140,13 +140,13 @@ export interface ValidationRule {
   maxLength?: number;
   pattern?: RegExp;
   sanitize?: boolean;
-  allowedValues?: any[];
+  allowedValues?: unknown[];
 }
 
 export class RequestValidator {
-  static validate(data: any, rules: ValidationRule[]): { isValid: boolean; errors: string[]; sanitizedData: any } {
+  static validate(data: Record<string, unknown>, rules: ValidationRule[]): { isValid: boolean; errors: string[]; sanitizedData: Record<string, unknown> } {
     const errors: string[] = [];
-    const sanitizedData: any = {};
+    const sanitizedData: Record<string, unknown> = {};
 
     for (const rule of rules) {
       const value = data[rule.field];
@@ -167,21 +167,21 @@ export class RequestValidator {
       // Type validation and sanitization
       switch (rule.type) {
         case 'email':
-          if (!Validator.isEmail(value)) {
+          if (!Validator.isEmail(String(value))) {
             errors.push(`${rule.field} must be a valid email`);
           }
-          processedValue = rule.sanitize ? Sanitizer.sanitizeEmail(value) : value;
+          processedValue = rule.sanitize ? Sanitizer.sanitizeEmail(String(value)) : value;
           break;
 
         case 'url':
-          if (!Validator.isValidUrl(value)) {
+          if (!Validator.isValidUrl(String(value))) {
             errors.push(`${rule.field} must be a valid URL`);
           }
-          processedValue = rule.sanitize ? Sanitizer.sanitizeUrl(value) : value;
+          processedValue = rule.sanitize ? Sanitizer.sanitizeUrl(String(value)) : value;
           break;
 
         case 'mongoId':
-          if (!Validator.isValidMongoId(value)) {
+          if (!Validator.isValidMongoId(String(value))) {
             errors.push(`${rule.field} must be a valid ID`);
           }
           break;
@@ -190,7 +190,7 @@ export class RequestValidator {
           if (typeof value !== 'string') {
             errors.push(`${rule.field} must be a string`);
           }
-          processedValue = rule.sanitize ? Sanitizer.sanitizeText(value) : value;
+          processedValue = rule.sanitize ? Sanitizer.sanitizeText(String(value)) : value;
           break;
 
         case 'number':

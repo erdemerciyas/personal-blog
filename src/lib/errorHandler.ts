@@ -156,28 +156,29 @@ export function asyncHandler<T extends (req: Request, context?: unknown) => Prom
 }
 
 // Database error parser
-export function parseDatabaseError(error: any): AppError {
-  if (error.code === 11000) {
+export function parseDatabaseError(error: unknown): AppError {
+  const err = error as { code?: number; keyValue?: Record<string, string>; name?: string; errors?: Record<string, { path: string; message: string }>; path?: string; value?: string };
+  if (err.code === 11000) {
     // MongoDB duplicate key error
-    const field = Object.keys(error.keyValue)[0];
+    const field = err.keyValue ? Object.keys(err.keyValue)[0] : 'field';
     return createError.validation(`${field} already exists`, {
       field,
-      value: error.keyValue[field]
+      value: err.keyValue ? err.keyValue[field] : undefined
     });
   }
   
-  if (error.name === 'ValidationError') {
+  if (err.name === 'ValidationError' && err.errors) {
     // Mongoose validation error
-    const errors = Object.values(error.errors).map((err: any) => ({
-      field: err.path,
-      message: err.message
+    const errors = Object.values(err.errors).map((e) => ({
+      field: e.path,
+      message: e.message
     }));
     return createError.validation('Validation failed', { errors });
   }
   
-  if (error.name === 'CastError') {
+  if (err.name === 'CastError') {
     // MongoDB cast error (invalid ObjectId, etc.)
-    return createError.badRequest(`Invalid ${error.path}: ${error.value}`);
+    return createError.badRequest(`Invalid ${err.path}: ${err.value}`);
   }
   
   // Generic database error
@@ -199,9 +200,9 @@ export function setupGlobalErrorHandlers() {
     process.setMaxListeners(20);
 
     // Handle unhandled promise rejections
-    process.on('unhandledRejection', (reason: any, promise: Promise<any>) => {
+    process.on('unhandledRejection', (reason: unknown, promise: Promise<unknown>) => {
       logger.error('Unhandled Promise Rejection', 'GLOBAL', {
-        reason: reason?.message || reason,
+        reason: (reason as Error)?.message || String(reason),
         promise: promise.toString()
       });
     });

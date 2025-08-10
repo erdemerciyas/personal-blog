@@ -36,7 +36,7 @@ export function withSecurity(config: SecurityConfig = {}) {
         }
 
         // 2. Authentication check
-        if (config.requireAuth) {
+          if (config.requireAuth) {
           const session = await getServerSession(authOptions);
           if (!session?.user?.email) {
             SecurityUtils.logSecurityEvent('Unauthorized API Access', {
@@ -52,12 +52,12 @@ export function withSecurity(config: SecurityConfig = {}) {
           }
 
           // Admin check
-          if (config.requireAdmin && (session.user as any).role !== 'admin') {
+          if (config.requireAdmin && (session.user as unknown as { role?: string }).role !== 'admin') {
             SecurityUtils.logSecurityEvent('Admin Access Attempt', {
               url: request.url,
               ip: clientIP,
               email: session.user.email,
-              role: (session.user as any).role
+              role: (session.user as unknown as { role?: string }).role
             }, 'high');
             
             return NextResponse.json(
@@ -68,7 +68,7 @@ export function withSecurity(config: SecurityConfig = {}) {
         }
 
         // 3. Input validation for POST/PUT requests
-        if (config.validateInput && ['POST', 'PUT', 'PATCH'].includes(request.method)) {
+          if (config.validateInput && ['POST', 'PUT', 'PATCH'].includes(request.method)) {
           try {
             const body = await request.clone().json();
             

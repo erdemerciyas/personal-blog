@@ -161,7 +161,7 @@ export class SecurityUtils {
 }
 
 // Request validation middleware helper
-export function validateRequest(req: Record<string, unknown>, rules: Record<string, unknown>) {
+export function validateRequest(req: Record<string, unknown>, rules: Record<string, { required?: boolean; type?: 'string' | 'number' | 'boolean' | 'email' | 'url' | 'mongoId'; minLength?: number; maxLength?: number }>) {
   const errors: string[] = [];
   
   for (const [field, rule] of Object.entries(rules)) {

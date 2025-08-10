@@ -11,7 +11,7 @@ export interface SecurityEvent {
   ip: string;
   userAgent?: string;
   email?: string;
-  details?: any;
+  details?: Record<string, unknown>;
   timestamp: Date;
 }
 
@@ -127,7 +127,7 @@ class SecurityAudit {
   }
 
   // Get security summary
-  static getSecuritySummary(timeframeMs = 24 * 60 * 60 * 1000): any {
+  static getSecuritySummary(timeframeMs = 24 * 60 * 60 * 1000): Record<string, unknown> {
     const recentEvents = this.getRecentEvents(timeframeMs);
     
     const summary = {
@@ -265,7 +265,7 @@ export const SecurityEvents = {
     });
   },
 
-  suspiciousActivity: (ip: string, activity: string, details?: any, userAgent?: string) => {
+  suspiciousActivity: (ip: string, activity: string, details?: Record<string, unknown>, userAgent?: string) => {
     SecurityAudit.logEvent({
       type: 'suspicious_activity',
       severity: 'high',
