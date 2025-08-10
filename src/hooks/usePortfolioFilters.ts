@@ -136,34 +136,28 @@ export function usePortfolioFilters(
 
     // Category filter
     if (filters.categories.length > 0) {
-      console.log('Filtering by categories:', filters.categories);
+      // console.debug('Filtering by categories:', filters.categories);
       filtered = filtered.filter(project => {
-        console.log('Checking project:', {
-          title: project.title,
-          categoryId: project.categoryId,
-          categoryIds: project.categoryIds,
-          categories: project.categories,
-          category: project.category
-        });
+        // debug helper removed for production cleanliness
         
         // Support both old single category and new multiple categories
         if (project.categories && project.categories.length > 0) {
           const match = project.categories.some(cat => 
             filters.categories.includes(cat.slug) || filters.categories.includes(cat.name)
           );
-          console.log('Categories match:', match);
+           // console.debug('Categories match:', match);
           return match;
         } else if (project.category) {
-          const match = filters.categories.includes(project.category.slug) || filters.categories.includes(project.category.name);
-          console.log('Category match:', match);
+           const match = filters.categories.includes(project.category.slug) || filters.categories.includes(project.category.name);
+           // console.debug('Category match:', match);
           return match;
         } else if (project.categoryId && typeof project.categoryId === 'object' && 'slug' in project.categoryId) {
           const categoryObj = project.categoryId as { slug: string; name: string };
           const match = filters.categories.includes(categoryObj.slug) || filters.categories.includes(categoryObj.name);
-          console.log('CategoryId match:', match);
+           // console.debug('CategoryId match:', match);
           return match;
         }
-        console.log('No category match found');
+        // console.debug('No category match found');
         return false;
       });
     }

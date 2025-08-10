@@ -29,17 +29,16 @@ export function usePerformance(pageName: string) {
       try {
         if ('performance' in window) {
           const navigation = performance.getEntriesByType('navigation')[0] as PerformanceNavigationTiming;
-          const metrics: PerformanceMetrics = {
+          const perf: PerformanceMetrics = {
             loadTime: navigation.loadEventEnd - navigation.loadEventStart,
             renderTime: renderTime,
             interactionTime: navigation.domInteractive - navigation.fetchStart
           };
-          
-          // Send to analytics
-          // analytics.track('page_performance', { page: pageName, ...metrics });
+          // placeholder for analytics usage
+          void perf;
         }
-      } catch (error) {
-        console.warn('Performance tracking error:', error);
+      } catch (e) {
+        console.warn('Performance tracking error:', e);
       }
     }
   }, [pageName]);

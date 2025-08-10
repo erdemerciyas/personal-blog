@@ -52,7 +52,7 @@ const MediaBrowser: React.FC<MediaBrowserProps> = ({
   const [selectedItem, setSelectedItem] = useState<string | null>(null);
   const [selectedItems, setSelectedItems] = useState<string[]>([]);
   const [filter, setFilter] = useState('all');
-  const [pageFilter, setPageFilter] = useState('all');
+  const [pageFilter, setPageFilter] = useState(pageContext || 'all');
   const [windowSize, setWindowSize] = useState({
     width: 1024,
     height: 768

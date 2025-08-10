@@ -37,7 +37,7 @@ export const authOptions: NextAuthOptions = {
         email: { label: 'Email', type: 'email' },
         password: { label: 'Password', type: 'password' }
       },
-      async authorize(credentials: Credentials | undefined, req: any): Promise<AuthUser | null> {
+      async authorize(credentials: Credentials | undefined, req: { headers?: Record<string, string | string[] | undefined>; connection?: { remoteAddress?: string } } | undefined): Promise<AuthUser | null> {
         if (!credentials?.email || !credentials?.password) {
           return null;
         }
@@ -47,11 +47,11 @@ export const authOptions: NextAuthOptions = {
         const password = credentials.password;
         
         // Get client IP and user agent for security logging
-        const clientIP = req?.headers?.['x-forwarded-for'] || 
-                        req?.headers?.['x-real-ip'] || 
+        const clientIP = (req?.headers?.['x-forwarded-for'] as string) || 
+                        (req?.headers?.['x-real-ip'] as string) || 
                         req?.connection?.remoteAddress || 
                         'unknown';
-        const userAgent = req?.headers?.['user-agent'] || 'unknown';
+        const userAgent = (req?.headers?.['user-agent'] as string) || 'unknown';
 
         // Basic email validation
         if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
@@ -184,8 +184,8 @@ export const authOptions: NextAuthOptions = {
     },
     async session({ session, token }) {
       if (session.user && token) {
-        (session.user as any).role = token.role;
-        (session.user as any).id = token.id;
+        (session.user as unknown as { role?: string; id?: string }).role = token.role as string | undefined;
+        (session.user as unknown as { role?: string; id?: string }).id = token.id as string | undefined;
         session.user.email = token.email as string;
       }
       return session;

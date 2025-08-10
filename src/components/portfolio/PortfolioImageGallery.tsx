@@ -54,7 +54,7 @@ export default function PortfolioImageGallery({
     if (allImages.length > 0 && !selectedImage) {
       setSelectedImage(allImages[0]);
     }
-  }, [allImages]);
+  }, [allImages, selectedImage]);
 
 
 

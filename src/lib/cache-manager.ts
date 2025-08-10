@@ -9,7 +9,7 @@ interface CacheItem<T> {
 }
 
 class CacheManager {
-  private cache = new Map<string, CacheItem<any>>();
+  private cache = new Map<string, CacheItem<unknown>>();
   private readonly DEFAULT_TTL = 5 * 60 * 1000; // 5 minutes
 
   set<T>(key: string, data: T, ttl: number = this.DEFAULT_TTL): void {
@@ -21,7 +21,7 @@ class CacheManager {
   }
 
   get<T>(key: string): T | null {
-    const item = this.cache.get(key);
+    const item = this.cache.get(key) as CacheItem<T> | undefined;
     
     if (!item) {
       return null;

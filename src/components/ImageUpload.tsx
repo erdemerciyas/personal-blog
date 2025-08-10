@@ -48,7 +48,7 @@ const ImageUpload: React.FC<ImageUploadProps> = ({
 }) => {
   const [uploading, setUploading] = useState(false);
   const [uploadProgress, setUploadProgress] = useState(0);
-  const [, ] = useState(false);
+  // reserved state placeholder removed
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
   const [showMediaBrowser, setShowMediaBrowser] = useState(false);
@@ -87,7 +87,7 @@ const ImageUpload: React.FC<ImageUploadProps> = ({
       const file = files[0];
       
       if (file.size > maxSize * 1024 * 1024) {
-        throw new Error(`Dosya boyutu ${maxSize}MB'dan büyük olamaz`);
+        throw new Error(`Dosya boyutu ${maxSize}MB&apos;dan büyük olamaz`);
       }
 
       if (!file.type.startsWith('image/')) {
@@ -129,8 +129,8 @@ const ImageUpload: React.FC<ImageUploadProps> = ({
         setSuccess('');
         setUploadProgress(0);
       }, 2000);
-    } catch (error) {
-      setError(error instanceof Error ? error.message : 'Upload sırasında hata oluştu');
+    } catch (e) {
+      setError(e instanceof Error ? e.message : 'Upload sırasında hata oluştu');
       setUploadProgress(0);
     } finally {
       setUploading(false);
@@ -149,7 +149,7 @@ const ImageUpload: React.FC<ImageUploadProps> = ({
       }
       setSuccess('Resim başarıyla silindi!');
       setTimeout(() => setSuccess(''), 2000);
-    } catch (error) {
+    } catch {
       setError('Resim silinirken hata oluştu');
     }
   };

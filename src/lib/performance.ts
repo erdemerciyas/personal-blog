@@ -9,7 +9,7 @@ interface PerformanceMetric {
   name: string;
   duration: number;
   timestamp: number;
-  metadata?: any;
+  metadata?: unknown;
 }
 
 interface SystemMetrics {
@@ -31,7 +31,7 @@ class PerformanceMonitor {
   }
 
   // Start a performance measurement
-  startMeasurement(name: string): (metadata?: any) => void {
+  startMeasurement(name: string): (metadata?: unknown) => void {
     const startTime = Date.now();
     
     return (metadata?: any) => {
@@ -41,7 +41,7 @@ class PerformanceMonitor {
   }
 
   // Record a performance metric
-  recordMetric(name: string, duration: number, metadata?: any): void {
+  recordMetric(name: string, duration: number, metadata?: unknown): void {
     const metric: PerformanceMetric = {
       name,
       duration,

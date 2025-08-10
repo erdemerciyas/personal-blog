@@ -17,8 +17,8 @@ export interface SecurityConfig {
 }
 
 export function withSecurity(config: SecurityConfig = {}) {
-  return function securityMiddleware(handler: Function) {
-    return async function securedHandler(request: NextRequest, ...args: any[]) {
+  return function securityMiddleware<T extends (request: NextRequest, ...args: unknown[]) => Promise<NextResponse> | NextResponse>(handler: T) {
+    return async function securedHandler(request: NextRequest, ...args: unknown[]) {
       const startTime = Date.now();
       const clientIP = request.headers.get('x-forwarded-for') || 
                       request.headers.get('x-real-ip') || 
@@ -73,10 +73,10 @@ export function withSecurity(config: SecurityConfig = {}) {
             const body = await request.clone().json();
             
             // Check for suspicious patterns in all string values
-            const checkObject = (obj: any, path = ''): string[] => {
+            const checkObject = (obj: unknown, path = ''): string[] => {
               const issues: string[] = [];
               
-              for (const [key, value] of Object.entries(obj)) {
+              for (const [key, value] of Object.entries(obj as Record<string, unknown>)) {
                 const currentPath = path ? `${path}.${key}` : key;
                 
                 if (typeof value === 'string') {
@@ -122,7 +122,7 @@ export function withSecurity(config: SecurityConfig = {}) {
         }
 
         // 4. Execute the actual handler
-        const response = await handler(request, ...args);
+         const response = await handler(request, ...args as never[]);
         
         // 5. Add security headers to response
         if (response instanceof NextResponse) {

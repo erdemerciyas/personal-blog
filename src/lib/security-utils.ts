@@ -94,7 +94,7 @@ export class SecurityUtils {
   }
 
   // Log security events
-  static logSecurityEvent(event: string, details: any, severity: 'low' | 'medium' | 'high' | 'critical' = 'medium') {
+  static logSecurityEvent(event: string, details: unknown, severity: 'low' | 'medium' | 'high' | 'critical' = 'medium') {
     logger.error(`Security Event: ${event}`, 'SECURITY', {
       severity,
       timestamp: new Date().toISOString(),
@@ -161,42 +161,42 @@ export class SecurityUtils {
 }
 
 // Request validation middleware helper
-export function validateRequest(req: any, rules: any) {
+export function validateRequest(req: Record<string, unknown>, rules: Record<string, unknown>) {
   const errors: string[] = [];
   
   for (const [field, rule] of Object.entries(rules)) {
-    const value = req[field];
-    const fieldRule = rule as any;
+    const value = (req as Record<string, unknown>)[field];
+    const fieldRule = rule as Record<string, unknown>;
     
     // Required field check
-    if (fieldRule.required && (!value || value.toString().trim() === '')) {
+    if ((fieldRule as any).required && (!value || value.toString().trim() === '')) {
       errors.push(`${field} alanı gereklidir`);
       continue;
     }
     
     // Skip other validations if field is not required and empty
-    if (!fieldRule.required && (!value || value.toString().trim() === '')) {
+    if (!(fieldRule as any).required && (!value || value.toString().trim() === '')) {
       continue;
     }
     
     // Type validation
-    if (fieldRule.type === 'email' && !SecurityUtils.isValidEmail(value)) {
+    if ((fieldRule as any).type === 'email' && !SecurityUtils.isValidEmail(String(value))) {
       errors.push(`${field} geçerli bir email adresi olmalıdır`);
     }
     
-    if (fieldRule.type === 'password') {
-      const passwordCheck = SecurityUtils.isStrongPassword(value);
+    if ((fieldRule as any).type === 'password') {
+      const passwordCheck = SecurityUtils.isStrongPassword(String(value));
       if (!passwordCheck.valid) {
         errors.push(...passwordCheck.errors);
       }
     }
     
     // Length validation
-    if (fieldRule.minLength && value.length < fieldRule.minLength) {
+    if ((fieldRule as any).minLength && String(value).length < (fieldRule as any).minLength) {
       errors.push(`${field} en az ${fieldRule.minLength} karakter olmalıdır`);
     }
     
-    if (fieldRule.maxLength && value.length > fieldRule.maxLength) {
+    if ((fieldRule as any).maxLength && String(value).length > (fieldRule as any).maxLength) {
       errors.push(`${field} en fazla ${fieldRule.maxLength} karakter olabilir`);
     }
     

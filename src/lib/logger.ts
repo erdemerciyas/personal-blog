@@ -15,7 +15,7 @@ interface LogEntry {
   message: string;
   timestamp: string;
   context?: string;
-  data?: any;
+  data?: unknown;
   error?: Error;
 }
 
@@ -51,7 +51,7 @@ class Logger {
     }
   }
 
-  private log(level: LogLevel, message: string, context?: string, data?: any, error?: Error): void {
+  private log(level: LogLevel, message: string, context?: string, data?: unknown, error?: Error): void {
     // Skip debug logs in production
     if (this.isProduction && level === LogLevel.DEBUG) {
       return;
@@ -86,19 +86,19 @@ class Logger {
     }
   }
 
-  error(message: string, context?: string, data?: any, error?: Error): void {
+  error(message: string, context?: string, data?: unknown, error?: Error): void {
     this.log(LogLevel.ERROR, message, context, data, error);
   }
 
-  warn(message: string, context?: string, data?: any): void {
+  warn(message: string, context?: string, data?: unknown): void {
     this.log(LogLevel.WARN, message, context, data);
   }
 
-  info(message: string, context?: string, data?: any): void {
+  info(message: string, context?: string, data?: unknown): void {
     this.log(LogLevel.INFO, message, context, data);
   }
 
-  debug(message: string, context?: string, data?: any): void {
+  debug(message: string, context?: string, data?: unknown): void {
     this.log(LogLevel.DEBUG, message, context, data);
   }
 

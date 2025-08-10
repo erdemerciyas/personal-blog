@@ -10,7 +10,7 @@ interface CacheEntry<T> {
 }
 
 class ClientCache {
-  private cache = new Map<string, CacheEntry<any>>();
+  private cache = new Map<string, CacheEntry<unknown>>();
   private readonly DEFAULT_TTL = 5 * 60 * 1000; // 5 minutes
 
   set<T>(key: string, data: T, ttl: number = this.DEFAULT_TTL): void {
@@ -23,7 +23,7 @@ class ClientCache {
   }
 
   get<T>(key: string): T | null {
-    const entry = this.cache.get(key);
+    const entry = this.cache.get(key) as CacheEntry<T> | undefined;
     
     if (!entry) {
       return null;

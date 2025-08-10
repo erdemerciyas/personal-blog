@@ -25,10 +25,10 @@ interface PortfolioImageGalleryProps {
   pageContext?: string;
 }
 
-interface ImageItem {
-  url: string;
-  id: string;
-}
+// interface ImageItem {
+//   url: string;
+//   id: string;
+// }
 
 const PortfolioImageGallery: React.FC<PortfolioImageGalleryProps> = ({
   images,
@@ -40,7 +40,7 @@ const PortfolioImageGallery: React.FC<PortfolioImageGalleryProps> = ({
   pageContext = 'portfolio'
 }) => {
   const [uploading, setUploading] = useState(false);
-  const [dragOver, setDragOver] = useState(false);
+  // const [dragOver, setDragOver] = useState(false);
   const [uploadProgress, setUploadProgress] = useState(0);
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
@@ -148,27 +148,27 @@ const PortfolioImageGallery: React.FC<PortfolioImageGalleryProps> = ({
     }
   };
 
-  const handleDragOver = (e: React.DragEvent) => {
-    e.preventDefault();
-    if (!disabled) {
-      setDragOver(true);
-    }
-  };
+  // const handleDragOver = (e: React.DragEvent) => {
+  //   e.preventDefault();
+  //   if (!disabled) {
+  //     setDragOver(true);
+  //   }
+  // };
 
-  const handleDragLeave = (e: React.DragEvent) => {
-    e.preventDefault();
-    setDragOver(false);
-  };
+  // const handleDragLeave = (e: React.DragEvent) => {
+  //   e.preventDefault();
+  //   setDragOver(false);
+  // };
 
-  const handleDrop = (e: React.DragEvent) => {
-    e.preventDefault();
-    setDragOver(false);
-    
-    if (disabled) return;
-    
-    const files = e.dataTransfer.files;
-    handleFileSelect(files);
-  };
+  // const handleDrop = (e: React.DragEvent) => {
+  //   e.preventDefault();
+  //   setDragOver(false);
+  //   
+  //   if (disabled) return;
+  //   
+  //   const files = e.dataTransfer.files;
+  //   handleFileSelect(files);
+  // };
 
   const removeImage = (indexToRemove: number) => {
     const imageToRemove = images[indexToRemove];

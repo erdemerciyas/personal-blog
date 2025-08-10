@@ -29,21 +29,21 @@ export enum ErrorCode {
 export interface AppError extends Error {
   code: ErrorCode;
   statusCode: number;
-  details?: any;
+  details?: unknown;
   isOperational?: boolean;
 }
 
 export class CustomError extends Error implements AppError {
   code: ErrorCode;
   statusCode: number;
-  details?: any;
+  details?: unknown;
   isOperational = true;
 
   constructor(
     message: string,
     code: ErrorCode,
     statusCode: number,
-    details?: any
+    details?: unknown
   ) {
     super(message);
     this.name = 'CustomError';
@@ -58,7 +58,7 @@ export class CustomError extends Error implements AppError {
 
 // Predefined error creators
 export const createError = {
-  badRequest: (message: string, details?: any) => 
+  badRequest: (message: string, details?: unknown) => 
     new CustomError(message, ErrorCode.BAD_REQUEST, 400, details),
   
   unauthorized: (message: string = 'Unauthorized') => 
@@ -70,28 +70,28 @@ export const createError = {
   notFound: (message: string = 'Not found') => 
     new CustomError(message, ErrorCode.NOT_FOUND, 404),
   
-  validation: (message: string, details?: any) => 
+  validation: (message: string, details?: unknown) => 
     new CustomError(message, ErrorCode.VALIDATION_ERROR, 422, details),
   
-  internal: (message: string = 'Internal server error', details?: any) => 
+  internal: (message: string = 'Internal server error', details?: unknown) => 
     new CustomError(message, ErrorCode.INTERNAL_ERROR, 500, details),
   
-  database: (message: string, details?: any) => 
+  database: (message: string, details?: unknown) => 
     new CustomError(message, ErrorCode.DATABASE_ERROR, 500, details),
   
-  auth: (message: string, details?: any) => 
+  auth: (message: string, details?: unknown) => 
     new CustomError(message, ErrorCode.AUTH_ERROR, 401, details),
   
-  upload: (message: string, details?: any) => 
+  upload: (message: string, details?: unknown) => 
     new CustomError(message, ErrorCode.UPLOAD_ERROR, 400, details),
   
-  permission: (message: string, details?: any) => 
+  permission: (message: string, details?: unknown) => 
     new CustomError(message, ErrorCode.PERMISSION_ERROR, 403, details)
 };
 
 // Error response formatter
 export function formatErrorResponse(error: Error | AppError, path?: string) {
-  const isAppError = 'code' in error && 'statusCode' in error;
+  const isAppError = (error as Partial<AppError>).code !== undefined && (error as Partial<AppError>).statusCode !== undefined;
   const isProduction = process.env.NODE_ENV === 'production';
 
   if (isAppError) {
@@ -145,8 +145,8 @@ export function handleApiError(error: Error, request?: Request): NextResponse {
 }
 
 // Async error wrapper for API routes
-export function asyncHandler(fn: Function) {
-  return async (req: Request, context?: any) => {
+export function asyncHandler<T extends (req: Request, context?: unknown) => Promise<NextResponse>>(fn: T) {
+  return async (req: Request, context?: unknown) => {
     try {
       return await fn(req, context);
     } catch (error) {

@@ -10,7 +10,7 @@ interface CacheItem<T> {
 }
 
 class MemoryCache {
-  private cache = new Map<string, CacheItem<any>>();
+  private cache = new Map<string, CacheItem<unknown>>();
   private defaultTTL = 5 * 60 * 1000; // 5 minutes default
 
   set<T>(key: string, data: T, ttl?: number): void {
@@ -23,7 +23,7 @@ class MemoryCache {
   }
 
   get<T>(key: string): T | null {
-    const item = this.cache.get(key);
+    const item = this.cache.get(key) as CacheItem<T> | undefined;
     
     if (!item) {
       return null;
@@ -92,7 +92,7 @@ class MemoryCache {
 export const cache = new MemoryCache();
 
 // Cache wrapper for functions
-export function withCache<T extends (...args: any[]) => Promise<any>>(
+export function withCache<T extends (...args: unknown[]) => Promise<unknown>>(
   fn: T,
   keyGenerator: (...args: Parameters<T>) => string,
   ttl?: number
@@ -101,14 +101,14 @@ export function withCache<T extends (...args: any[]) => Promise<any>>(
     const key = keyGenerator(...args);
     
     // Try to get from cache first
-    const cached = cache.get(key);
+    const cached = cache.get<Awaited<ReturnType<T>>>(key);
     if (cached !== null) {
       return cached;
     }
 
     // Execute function and cache result
     const result = await fn(...args);
-    cache.set(key, result, ttl);
+    cache.set<Awaited<ReturnType<T>>>(key, result as Awaited<ReturnType<T>>, ttl);
     
     return result;
   }) as T;
@@ -151,7 +151,7 @@ export const CacheTTL = {
 if (typeof window === 'undefined') { // Server-side only
   setInterval(() => {
     const cleaned = cache.cleanup();
-    // Cache cleanup completed
+    void cleaned;
   }, 10 * 60 * 1000);
 }
 

@@ -1,6 +1,6 @@
 import React from 'react';
 import Link from 'next/link';
-import { useRouter } from 'next/navigation';
+// import { useRouter } from 'next/navigation';
 
 interface SmartLinkProps {
   href: string;
@@ -20,6 +20,7 @@ export const SmartLink: React.FC<SmartLinkProps> = ({
   prefetch = true,
   replace = false,
   scroll = true,
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   shallow = false,
   onClick
 }) => {

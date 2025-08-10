@@ -25,6 +25,10 @@ import { Category, PortfolioItem } from '../../../../../types/portfolio';
 
 import slugify from 'slugify';
 
+type EditForm = Omit<PortfolioItem, 'categoryIds' | 'categoryId' | 'category'> & {
+  categoryIds: string[];
+};
+
 export default function EditPortfolioItem({ params }: { params: { id: string } }) {
   const { data: session, status } = useSession();
   const router = useRouter();
@@ -35,12 +39,12 @@ export default function EditPortfolioItem({ params }: { params: { id: string } }
   const [categories, setCategories] = useState<Category[]>([]);
   const [slugLocked, setSlugLocked] = useState(true);
 
-  const [formData, setFormData] = useState<PortfolioItem>({
+  const [formData, setFormData] = useState<EditForm>({
     _id: '',
     title: '',
     slug: '',
     description: '',
-    categoryIds: [], // Çoklu kategori desteği
+    categoryIds: [], // Çoklu kategori desteği (string id listesi)
     client: '',
     completionDate: '',
     technologies: [''],
@@ -86,9 +90,9 @@ export default function EditPortfolioItem({ params }: { params: { id: string } }
       // Çoklu kategori desteği - mevcut veriyi uygun formata çevir
       let categoryIds: string[] = [];
       if (data.categoryIds && data.categoryIds.length > 0) {
-        categoryIds = data.categoryIds;
+        categoryIds = data.categoryIds as unknown as string[];
       } else if (data.categoryId) {
-        categoryIds = [data.categoryId];
+        categoryIds = [data.categoryId as unknown as string];
       }
       
       setFormData({
@@ -171,9 +175,9 @@ export default function EditPortfolioItem({ params }: { params: { id: string } }
   const handleCategoryToggle = (categoryId: string) => {
     setFormData(prev => ({
       ...prev,
-      categoryIds: (prev.categoryIds as string[])?.includes(categoryId)
-        ? (prev.categoryIds as string[]).filter((id: string) => id !== categoryId)
-        : [...((prev.categoryIds as string[]) || []), categoryId]
+      categoryIds: prev.categoryIds?.includes(categoryId)
+        ? prev.categoryIds.filter((id) => id !== categoryId)
+        : [...(prev.categoryIds || []), categoryId]
     }));
   };
 
@@ -370,17 +374,17 @@ export default function EditPortfolioItem({ params }: { params: { id: string } }
                     Seçili Kategoriler ({formData.categoryIds.length}):
                   </p>
                   <div className="flex flex-wrap gap-2">
-                    {(formData.categoryIds as any)?.map((categoryId: any) => {
-                      const category = categories.find(cat => cat._id === (categoryId as string));
+                    {formData.categoryIds.map((categoryId) => {
+                      const category = categories.find(cat => cat._id === categoryId);
                       return category ? (
                         <span
-                          key={categoryId as string}
+                          key={categoryId}
                           className="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-brand-primary-100 text-brand-primary-900"
                         >
                           {category.name}
                           <button
                             type="button"
-                            onClick={() => handleCategoryToggle(categoryId as string)}
+                            onClick={() => handleCategoryToggle(categoryId)}
                             className="ml-2 hover:text-brand-primary-700"
                           >
                             <XMarkIcon className="h-4 w-4" />
@@ -399,7 +403,7 @@ export default function EditPortfolioItem({ params }: { params: { id: string } }
                 <div
                   key={category._id}
                   className={`relative rounded-lg border-2 transition-all cursor-pointer ${
-                    (formData.categoryIds as any)?.includes(category._id)
+                    formData.categoryIds?.includes(category._id)
                       ? 'border-brand-primary-600 bg-brand-primary-50'
                       : 'border-slate-200 hover:border-slate-300 bg-white'
                   }`}
@@ -409,16 +413,16 @@ export default function EditPortfolioItem({ params }: { params: { id: string } }
                     <div className="flex items-center justify-between">
                       <div className="flex items-center space-x-3">
                         <div className={`w-4 h-4 rounded border-2 transition-all ${
-                          (formData.categoryIds as any)?.includes(category._id)
+                          formData.categoryIds?.includes(category._id)
                             ? 'border-brand-primary-600 bg-brand-primary-600'
                             : 'border-slate-300'
                         }`}>
-                          {(formData.categoryIds as any)?.includes(category._id) && (
+                          {formData.categoryIds?.includes(category._id) && (
                             <CheckIcon className="w-3 h-3 text-white" />
                           )}
                         </div>
                         <span className={`font-medium ${
-                          (formData.categoryIds as any)?.includes(category._id)
+                          formData.categoryIds?.includes(category._id)
                             ? 'text-brand-primary-900'
                             : 'text-slate-700'
                         }`}>
@@ -428,7 +432,7 @@ export default function EditPortfolioItem({ params }: { params: { id: string } }
                     </div>
                     {category.description && (
                       <p className={`mt-2 text-sm ${
-                        (formData.categoryIds as any)?.includes(category._id)
+                        formData.categoryIds?.includes(category._id)
                           ? 'text-brand-primary-700'
                           : 'text-slate-500'
                       }`}>
