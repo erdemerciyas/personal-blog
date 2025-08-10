@@ -37,7 +37,7 @@ async function connectDB() {
       if (cached!.conn.connection.readyState === 1) {
         return cached!.conn;
       }
-    } catch (error) {
+  } catch {
       // Cached connection check failed, reconnecting
       cached!.conn = null;
       cached!.promise = null;

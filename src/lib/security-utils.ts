@@ -166,25 +166,25 @@ export function validateRequest(req: Record<string, unknown>, rules: Record<stri
   
   for (const [field, rule] of Object.entries(rules)) {
     const value = (req as Record<string, unknown>)[field];
-    const fieldRule = rule as Record<string, unknown>;
+    const fieldRule = rule as { required?: boolean; type?: string; minLength?: number; maxLength?: number };
     
     // Required field check
-    if ((fieldRule as any).required && (!value || value.toString().trim() === '')) {
+    if (fieldRule.required && (!value || String(value).trim() === '')) {
       errors.push(`${field} alanı gereklidir`);
       continue;
     }
     
     // Skip other validations if field is not required and empty
-    if (!(fieldRule as any).required && (!value || value.toString().trim() === '')) {
+    if (!fieldRule.required && (!value || String(value).trim() === '')) {
       continue;
     }
     
     // Type validation
-    if ((fieldRule as any).type === 'email' && !SecurityUtils.isValidEmail(String(value))) {
+    if (fieldRule.type === 'email' && !SecurityUtils.isValidEmail(String(value))) {
       errors.push(`${field} geçerli bir email adresi olmalıdır`);
     }
     
-    if ((fieldRule as any).type === 'password') {
+    if (fieldRule.type === 'password') {
       const passwordCheck = SecurityUtils.isStrongPassword(String(value));
       if (!passwordCheck.valid) {
         errors.push(...passwordCheck.errors);
@@ -192,11 +192,11 @@ export function validateRequest(req: Record<string, unknown>, rules: Record<stri
     }
     
     // Length validation
-    if ((fieldRule as any).minLength && String(value).length < (fieldRule as any).minLength) {
+    if (typeof fieldRule.minLength === 'number' && String(value).length < fieldRule.minLength) {
       errors.push(`${field} en az ${fieldRule.minLength} karakter olmalıdır`);
     }
     
-    if ((fieldRule as any).maxLength && String(value).length > (fieldRule as any).maxLength) {
+    if (typeof fieldRule.maxLength === 'number' && String(value).length > fieldRule.maxLength) {
       errors.push(`${field} en fazla ${fieldRule.maxLength} karakter olabilir`);
     }
     

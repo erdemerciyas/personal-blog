@@ -157,10 +157,10 @@ class PerformanceMonitor {
 
   // Generate performance report
   generateReport(): {
-    summary: any;
+    summary: Record<string, unknown>;
     slowOperations: PerformanceMetric[];
     systemMetrics: SystemMetrics;
-    topOperations: Array<{ name: string; stats: any }>;
+    topOperations: Array<{ name: string; stats: Record<string, unknown> }>;
   } {
     const now = Date.now();
     const lastHour = now - (60 * 60 * 1000);

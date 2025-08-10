@@ -116,7 +116,7 @@ export function withSecurity(config: SecurityConfig = {}) {
                 { status: 400 }
               );
             }
-          } catch (error) {
+          } catch {
             // If JSON parsing fails, continue (might be form data or other format)
           }
         }
