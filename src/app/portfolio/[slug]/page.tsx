@@ -11,7 +11,7 @@ import HTMLContent from '../../../components/HTMLContent';
 import ContentSkeleton from '../../../components/ContentSkeleton';
 import { cachedFetch } from '../../../lib/client-cache';
 
-import type { Metadata } from 'next';
+// removed unused Metadata import
 
 // Helper component to handle client-side logic dependent on Suspense
 function PortfolioDetailPageContent({ params }: { params: { slug: string } }) {

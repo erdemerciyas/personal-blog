@@ -59,7 +59,7 @@ export default function NotFound() {
             <ul className="text-slate-600 space-y-2 text-left">
               <li className="flex items-center space-x-2">
                 <span className="w-2 h-2 bg-brand-primary-600 rounded-full"></span>
-                <span>URL'yi kontrol edin</span>
+                <span>URL&apos;yi kontrol edin</span>
               </li>
               <li className="flex items-center space-x-2">
                 <span className="w-2 h-2 bg-blue-500 rounded-full"></span>

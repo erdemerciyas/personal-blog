@@ -19,9 +19,8 @@ const Breadcrumbs: React.FC = () => {
   // Add Home breadcrumb
   breadcrumbs.push({ label: 'Anasayfa', href: '/' });
 
-  pathSegments.forEach((segment, index) => {
+  pathSegments.forEach((segment) => {
     currentPath += `/${segment}`;
-    const _ = index === pathSegments.length - 1;
 
     // Basic title mapping (can be expanded for more complex cases)
     let label = segment.replace(/-/g, ' ');

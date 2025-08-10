@@ -7,7 +7,7 @@ import PageSetting from '../../../../models/PageSetting';
 export async function GET(request: NextRequest) {
   try {
     // Allow public access for navigation data (no auth check for public navigation)
-    const url = new URL(request.url); // Reserved for future query parameter handling
+    // const url = new URL(request.url); // Reserved for future query parameter handling
     const isPublicAccess = !request.headers.get('authorization');
     
     // Only require auth for admin panel access

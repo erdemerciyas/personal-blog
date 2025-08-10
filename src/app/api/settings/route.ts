@@ -10,7 +10,9 @@ import SiteSettings from '../../../models/SiteSettings';
 
 // GET Method
 export async function GET() {
-  console.log('🔍 GET /api/settings called');
+  if (process.env.NODE_ENV === 'development') {
+    console.log('🔍 GET /api/settings called');
+  }
   try {
     await connectDB();
     
@@ -44,7 +46,7 @@ export async function GET() {
     
     return NextResponse.json(settings);
   } catch (error) {
-    console.error('Settings GET error:', error);
+  console.error('Settings GET error:', error);
     return NextResponse.json(
       { error: 'Site ayarları getirilirken bir hata oluştu' },
       { status: 500 }
@@ -54,14 +56,18 @@ export async function GET() {
 
 // PUT Method
 export async function PUT(request: NextRequest) {
-  console.log('🔥 PUT /api/settings called - WORKING!');
+  if (process.env.NODE_ENV === 'development') {
+    console.log('🔥 PUT /api/settings called');
+  }
   
   try {
     const session = await getServerSession(authOptions);
-    console.log('👤 Session check:', !!session?.user, session?.user?.role);
+    if (process.env.NODE_ENV === 'development') {
+      console.log('👤 Session check:', !!session?.user, session?.user?.role);
+    }
     
     if (!session?.user) {
-      console.log('❌ No session');
+      if (process.env.NODE_ENV === 'development') console.log('❌ No session');
       return NextResponse.json(
         { error: 'Bu işlem için yetkiniz yok' },
         { status: 401 }
@@ -69,7 +75,7 @@ export async function PUT(request: NextRequest) {
     }
 
     if (session.user.role !== 'admin') {
-      console.log('❌ Not admin:', session.user.role);
+      if (process.env.NODE_ENV === 'development') console.log('❌ Not admin:', session.user.role);
       return NextResponse.json(
         { error: 'Bu işlem için admin yetkisi gerekli' },
         { status: 403 }
@@ -77,10 +83,10 @@ export async function PUT(request: NextRequest) {
     }
 
     const body = await request.json();
-    console.log('📝 Body keys:', Object.keys(body));
+    if (process.env.NODE_ENV === 'development') console.log('📝 Body keys:', Object.keys(body));
     
     await connectDB();
-    console.log('🔗 Database connected');
+    if (process.env.NODE_ENV === 'development') console.log('🔗 Database connected');
 
     const settings = await Settings.findOneAndUpdate(
       { isActive: true },
@@ -95,11 +101,17 @@ export async function PUT(request: NextRequest) {
       }
     );
 
-    console.log('✅ Settings updated:', !!settings);
+    if (process.env.NODE_ENV === 'development') console.log('✅ Settings updated:', !!settings);
 
     // SiteSettings sync
     if (settings) {
-      const siteSettingsUpdate: any = {};
+      const siteSettingsUpdate: Partial<{
+        logo: { url: string; alt: string; width: number; height: number };
+        siteName: string;
+        description: string;
+        seo: { metaTitle: string; metaDescription: string; keywords: string[] };
+        socialMedia: { twitter?: string; linkedin?: string; github?: string; instagram?: string };
+      }> = {};
       
       if (body.logo !== undefined) {
         siteSettingsUpdate.logo = {
@@ -137,7 +149,7 @@ export async function PUT(request: NextRequest) {
 
       if (Object.keys(siteSettingsUpdate).length > 0) {
         await SiteSettings.updateSiteSettings(siteSettingsUpdate);
-        console.log('✅ SiteSettings synced');
+        if (process.env.NODE_ENV === 'development') console.log('✅ SiteSettings synced');
       }
     }
 
@@ -147,7 +159,7 @@ export async function PUT(request: NextRequest) {
     });
     
   } catch (error) {
-    console.error('❌ PUT Error:', error);
+  console.error('❌ PUT Error:', error);
     return NextResponse.json(
       { error: 'Site ayarları güncellenirken bir hata oluştu' },
       { status: 500 }

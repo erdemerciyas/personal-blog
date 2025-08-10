@@ -20,10 +20,10 @@ export const SmartLink: React.FC<SmartLinkProps> = ({
   prefetch = true,
   replace = false,
   scroll = true,
-  shallow: _ = false,
+  shallow = false,
   onClick
 }) => {
-  const {} = useRouter();
+  const router = useRouter();
 
   const handleClick = () => {
     onClick?.();

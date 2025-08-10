@@ -53,7 +53,7 @@ export default function DashboardError({
           <p>Sorun devam ederse:</p>
           <p>1. Sayfayı yenileyin (F5)</p>
           <p>2. Çıkış yapıp tekrar giriş yapın</p>
-          <p>3. Browser cache'ini temizleyin</p>
+          <p>3. Browser cache&apos;ini temizleyin</p>
         </div>
       </div>
     </div>

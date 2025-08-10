@@ -6,7 +6,8 @@ import PrefetchLink from '../PrefetchLinks';
 
 // Modern sayfa örneği - Skeleton sadece dinamik içerikler için
 export default function ModernPageExample() {
-  const [services, setServices] = useState<any[]>([]);
+  interface ServiceItem { id: number; title: string; description: string }
+  const [services, setServices] = useState<ServiceItem[]>([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {

@@ -29,17 +29,7 @@ interface SliderItem {
   duration?: number;
 }
 
-interface PortfolioItem {
-  _id: string;
-  slug: string;
-  title: string;
-  description: string;
-  coverImage: string;
-  category: {
-    _id: string;
-    name: string;
-  };
-}
+// Removed unused interface to satisfy linter
 
 interface ServiceItem {
   _id: string;

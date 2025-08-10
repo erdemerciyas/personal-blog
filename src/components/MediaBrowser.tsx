@@ -7,7 +7,6 @@ import {
   XMarkIcon,
   PhotoIcon,
   MagnifyingGlassIcon,
-  CheckIcon,
   ArrowUpTrayIcon
 } from '@heroicons/react/24/outline';
 

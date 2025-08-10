@@ -47,7 +47,8 @@ const PortfolioImageGallery: React.FC<PortfolioImageGalleryProps> = ({
   const [draggedIndex, setDraggedIndex] = useState<number | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [mediaModalOpen, setMediaModalOpen] = useState(false);
-  const [loading, setLoading] = useState(false);
+  // local loader (reserved for future async ops)
+  const [loading] = useState(false);
 
   // Görsel listesini ImageItem formatına çevir
   const imageItems: ImageItem[] = images.map((url, index) => ({

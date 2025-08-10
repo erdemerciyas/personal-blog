@@ -5,8 +5,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { 
   Squares2X2Icon,
   ViewColumnsIcon,
-  QueueListIcon,
-  AdjustmentsHorizontalIcon
+  QueueListIcon
 } from '@heroicons/react/24/outline';
 import { ProjectSummary } from '@/types/portfolio';
 import ModernProjectCard from './ModernProjectCard';
