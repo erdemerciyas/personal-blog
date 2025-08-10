@@ -111,11 +111,11 @@ h1, h2, h3, h4, h5, h6 {
   }
 
   .btn-primary {
-    @apply btn bg-brand-primary-900 text-white border-none hover:bg-brand-primary-800 hover:scale-105 focus:ring-2 focus:ring-brand-primary-600/25 active:scale-95;
+    @apply btn bg-brand-primary-900 text-white border-none hover:bg-brand-primary-800 hover:scale-105 focus:ring-2 focus:ring-brand-primary-600/25 active:scale-95 w-auto;
   }
   
   .btn-secondary {
-    @apply btn bg-slate-700 text-white border-none hover:bg-slate-800 hover:scale-105 focus:ring-2 focus:ring-slate-500/25 active:scale-95;
+    @apply btn bg-slate-700 text-white border-none hover:bg-slate-800 hover:scale-105 focus:ring-2 focus:ring-slate-500/25 active:scale-95 w-auto;
   }
 
   .btn-outline {
@@ -263,7 +263,7 @@ h1, h2, h3, h4, h5, h6 {
   }
 
   .section-hero {
-    @apply min-h-screen flex items-center justify-center py-32 md:py-40 lg:py-48;
+    @apply min-h-screen flex items-center justify-center py-28 md:py-40 lg:py-48;
   }
 
 
@@ -594,6 +594,17 @@ select::-webkit-scrollbar-thumb:hover {
 
 /* Fixral Mobile Responsiveness */
 @media (max-width: 640px) {
+  /* Mobile hero spacing and safe areas */
+  .section-hero {
+    padding-top: calc(env(safe-area-inset-top) + 5rem);
+    padding-bottom: 5rem;
+  }
+
+  header[role="banner"] .container-content {
+    padding-left: 1rem;
+    padding-right: 1rem;
+  }
+
   .mobile-scroll-snap {
     scroll-snap-type: x mandatory;
   }

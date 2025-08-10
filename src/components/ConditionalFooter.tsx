@@ -134,7 +134,7 @@ const ConditionalFooter: React.FC = () => {
       </div>
 
       <div className="container-main section-sm relative z-10">
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-12 mb-16">
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-8 md:gap-12 mb-12 md:mb-16">
           {/* About Section */}
           <div>
             <div className="mb-6">

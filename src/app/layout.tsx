@@ -155,9 +155,9 @@ export default function RootLayout({
           </Providers>
         </ThemeProvider>
 
-        {/* Development tools */}
+        {/* Development tools - hidden on mobile to avoid UI overlay */}
         {config.isDevelopment && (
-          <div id="dev-tools" className="fixed bottom-4 right-4 z-50 opacity-50 hover:opacity-100 transition-opacity">
+          <div id="dev-tools" className="hidden md:block fixed bottom-4 right-4 z-50 opacity-50 hover:opacity-100 transition-opacity pointer-events-none">
             <div className="bg-gray-900 text-white p-2 rounded text-xs">
               <div>ENV: {config.nodeEnv}</div>
               <div>Cloudinary: {config.cloudinary.isConfigured ? '✅' : '❌'}</div>

@@ -16,7 +16,7 @@ Modern, güvenli ve performanslı kişisel blog ve portfolyo platformu. Next.js 
 
 **🚀 [Live Site](https://fixral-ao7clr42w-erdem-erciyas-projects.vercel.app)** | **🔧 [Admin Panel](https://fixral-ao7clr42w-erdem-erciyas-projects.vercel.app/admin)** | **📊 [API Health](https://fixral-ao7clr42w-erdem-erciyas-projects.vercel.app/api/health)**
 
-> **Status**: ✅ **LIVE** | **Last Deploy**: 2025-01-27 15:45 UTC | **Version**: v2.2.4 | **🚀 CI/CD Pipeline**: ✅ **OPTIMIZED**
+> **Status**: ✅ **LIVE** | **Last Deploy**: 2025-08-10 09:00 UTC | **Version**: v2.2.5 | **🚀 CI/CD Pipeline**: ✅ **OPTIMIZED**
 
 ## ✨ Özellikler
 
@@ -120,6 +120,10 @@ CLOUDINARY_API_KEY=your-api-key
 CLOUDINARY_API_SECRET=your-api-secret
 ```
 
+Notlar:
+- MongoDB kurulu değilse uygulama public sayfalar ve varsayılan metadata ile açılır; admin ve veri yazma işlemleri çalışmaz.
+- Production build artık ESLint/TS hatalarında durur. Geliştirme için `npm run dev` yeterlidir; build için önce `npm run lint:fix && npm run type-check` çalıştırın.
+
 ### 4. Geliştirme Sunucusunu Başlatın
 ```bash
 npm run dev
@@ -127,10 +131,27 @@ npm run dev
 
 Uygulama [http://localhost:3000](http://localhost:3000) adresinde çalışacaktır.
 
-## 🆕 Yeni Özellikler (v2.2.4)
+## 🆕 Yeni Özellikler (v2.2.5)
+
+### 📱 Mobil UI Yenilemesi (2025-08-10)
+- **Hero/Slider (Mobil)**: Navigasyon okları ve play/pause mobilde gizlendi; dot göstergesi ve CTA alanı güvenli boşluklarla hizalandı
+- **CTA Butonları**: Mobilde tam genişlikte ve dikey stack; erişilebilir aralıklar
+- **Tipografi**: Başlık/alt başlık/açıklama için `leading-tight`, `break-words`, ek `px` padding ve safe-area uyumu
+- **Header**: Mobil yükseklik optimize edildi; menü açıkken içeriğe taşma yok, odak halkaları eklendi
+- **Gridler**: Portfolyo ve footer grid yapısı mobilde 1, sm’de 2, md’de 3 kolon olacak şekilde güncellendi
+- **Dev Rozeti**: Mobilde gizlendi; masaüstünde debug için görünür
+
+---
+
+## 🆕 Önceki Güncellemeler (v2.2.4)
 
 ### 🧹 Code Organization & Production Readiness (2025-01-27)
 - **Project Cleanup**: Debug ve test dosyaları kaldırıldı (debug page, test-login, rate-limit endpoints)
+- **Middleware Consolidation**: Tüm güvenlik, rate limit ve erişim kontrolleri kök `middleware.ts` altında birleştirildi; `src/middleware.ts` kaldırıldı
+- **CSP & Headers Single-Source**: Güvenlik başlıkları ve CSP artık sadece middleware üzerinden yönetiliyor; `next.config.js` header tanımları kaldırıldı
+- **Hardened CSP (Prod)**: Production ortamında `unsafe-eval`/gereksiz script izinleri kaldırıldı; admin/public için dev/prod ayrımı netleştirildi
+- **Build Quality**: `ignoreBuildErrors` ve `ignoreDuringBuilds` devre dışı bırakıldı; derleme kalite kontrolleri aktif
+- **Server Cleanup**: Özel `server.js` kaldırıldı, Next.js varsayılan sunucu kullanımı
 - **Security Hardening**: Test authentication endpoints güvenlik riski nedeniyle kaldırıldı
 - **Next.js Configuration**: Güvenlik ve performans optimizasyonları
 - **API Route Optimization**: Contact info ve services endpoints iyileştirildi
@@ -496,8 +517,8 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 ## 📈 Project Status
 
 - **Status**: ✅ **PRODUCTION READY**
-- **Version**: v2.2.4
-- **Last Updated**: 2025-01-27
+- **Version**: v2.2.5
+- **Last Updated**: 2025-08-10
 - **Security Level**: 🔒 HIGH
 - **Performance**: ⚡ OPTIMIZED
 - **Documentation**: 📚 COMPLETE

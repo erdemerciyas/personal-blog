@@ -32,13 +32,14 @@ export class SecurityHeaders {
 
   private static readonly PRODUCTION_CSP = [
     "default-src 'self'",
-    "script-src 'self' 'unsafe-inline' https://vercel.live https://va.vercel-scripts.com",
+    // Avoid unsafe-eval/inline in production; allow minimal inline styles if necessary
+    "script-src 'self'",
     "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com",
     "font-src 'self' https://fonts.gstatic.com",
     "img-src 'self' data: blob: https:",
     "media-src 'self' https:",
     "connect-src 'self' https: wss:",
-    "frame-src 'self' https://maps.google.com https://www.google.com https:",
+    "frame-src 'self' https://maps.google.com https://www.google.com",
     "worker-src 'self' blob:",
     "child-src 'self' blob:",
     "object-src 'none'",
@@ -160,7 +161,8 @@ export class SecurityHeaders {
       case 'admin':
         const adminCSP = [
           ...baseCSP,
-          "script-src 'self' 'unsafe-inline' 'unsafe-eval'", // Admin needs more flexibility
+          // Keep strict: avoid unsafe-eval in production
+          process.env.NODE_ENV === 'development' ? "script-src 'self' 'unsafe-inline' 'unsafe-eval'" : "script-src 'self'",
           "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com",
           "font-src 'self' https://fonts.gstatic.com",
           "img-src 'self' data: blob: https: http:",
@@ -194,7 +196,7 @@ export class SecurityHeaders {
           publicCSP.push("script-src 'self' 'unsafe-inline' 'unsafe-eval' https://vercel.live https://va.vercel-scripts.com");
           publicCSP.push("connect-src 'self' https: wss: ws://localhost:* http://localhost:*");
         } else {
-          publicCSP.push("script-src 'self' 'unsafe-inline' https://vercel.live https://va.vercel-scripts.com");
+          publicCSP.push("script-src 'self'");
           publicCSP.push("connect-src 'self' https: wss:");
         }
 

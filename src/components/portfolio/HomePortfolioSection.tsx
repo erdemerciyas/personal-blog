@@ -176,7 +176,7 @@ export default function HomePortfolioSection({
             >
               {Array.from({ length: totalSlides }).map((_, slideIndex) => (
                 <div key={slideIndex} className="w-full flex-shrink-0">
-                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 px-2">
+                  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8 px-1 sm:px-2">
                     {featuredProjects
                       .slice(slideIndex * projectsPerSlide, (slideIndex + 1) * projectsPerSlide)
                       .map((item, index) => (

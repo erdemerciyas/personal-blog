@@ -280,7 +280,7 @@ E-posta: ${projectForm.email}
         : 'bg-transparent'
     }`}>
       <div className="container-main">
-        <div className="flex items-center justify-between h-20">
+        <div className="flex items-center justify-between h-16 sm:h-20">
           {/* Logo */}
           <Link href="/" className="flex items-center space-x-3 group">
             {siteSettings?.logo?.url ? (
@@ -358,7 +358,7 @@ E-posta: ${projectForm.email}
           {/* Mobile Menu Button */}
           <button
             onClick={toggleMobileMenu}
-            className={`md:hidden p-2 rounded-xl transition-all duration-200 ${
+            className={`md:hidden p-2 rounded-xl transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-white/30 ${
               isScrolled
                 ? 'text-slate-700 hover:bg-slate-100'
                 : 'text-white hover:bg-white/10'
@@ -374,7 +374,7 @@ E-posta: ${projectForm.email}
 
         {/* Mobile Menu */}
         {isMobileMenuOpen && (
-          <div className="md:hidden absolute top-full left-0 right-0 bg-white/95 backdrop-blur-lg shadow-2xl border-t border-slate-200/50">
+          <div className="md:hidden absolute top-full left-0 right-0 bg-white/95 backdrop-blur-lg shadow-2xl border-t border-slate-200/50 max-h-[75vh] overflow-y-auto">
             <div className="py-4 px-6">
               {navLinks.map((link, index) => {
                 const isActive = pathname === link.href;

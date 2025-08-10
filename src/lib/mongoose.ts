@@ -18,15 +18,10 @@ declare global {
   var mongoClientConnection: GlobalMongoClient | undefined;
 }
 
-// MongoDB URI from environment variable
+// MongoDB URI from environment variable (lazy-checked to avoid build-time crashes)
 const MONGODB_URI = process.env.MONGODB_URI;
-
-if (!MONGODB_URI) {
-  throw new Error('Please define the MONGODB_URI environment variable in .env.local');
-}
-
-// Type assertion after the check
-const mongoUri = MONGODB_URI as string;
+// Do not throw at import time; validate when connecting
+const mongoUri = (MONGODB_URI || '') as string;
 
 // Mongoose connection
 let cached = global.mongooseConnection;
@@ -50,6 +45,9 @@ async function connectDB() {
   }
 
   if (!cached!.promise) {
+    if (!mongoUri) {
+      throw new Error('MONGODB_URI is not set');
+    }
     // Vercel serverless için optimize edilmiş ayarlar
     const opts = {
       bufferCommands: false,
@@ -99,6 +97,9 @@ export async function connectToDatabase() {
   }
 
   if (!clientCached!.promise) {
+    if (!mongoUri) {
+      throw new Error('MONGODB_URI is not set');
+    }
     // Vercel serverless için optimize edilmiş client ayarları
     const options = {
       maxPoolSize: process.env.VERCEL ? 1 : 5, // Vercel serverless için tek connection

@@ -51,16 +51,7 @@ export async function GET(request: Request) {
       .populate('categoryId', 'name slug') // Eski tekli kategori alanı
       .populate('categoryIds', 'name slug') // Yeni çoklu kategori alanı
       .sort({ order: 1 });
-    
-    console.log('Portfolio API - Found portfolios:', portfolios.length);
-    portfolios.forEach((portfolio, index) => {
-      console.log(`Portfolio ${index}:`, {
-        title: portfolio.title,
-        categoryId: portfolio.categoryId,
-        categoryIds: portfolio.categoryIds
-      });
-    });
-    
+
     return NextResponse.json(portfolios);
   } catch (error) {
     console.error('Portfolio fetch error:', error);

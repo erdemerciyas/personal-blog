@@ -12,7 +12,7 @@ export async function POST() {
 
     // Clear middleware cache by importing and calling the clear function
     try {
-      const { clearPageSettingsCache } = await import('../../../../middleware');
+      const { clearPageSettingsCache } = await import('../../../../../middleware');
       clearPageSettingsCache();
     } catch (error) {
       console.log('Middleware cache clear not available:', error);

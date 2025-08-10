@@ -155,7 +155,7 @@ export default function HomePage() {
   return (
     <>
       {/* Hero Slider Section */}
-      <header className={`relative overflow-hidden min-h-screen flex items-center justify-center ${
+      <header className={`relative overflow-hidden min-h-screen flex items-center justify-center pb-16 sm:pb-24 ${
         sliderLoading ? 'bg-gradient-to-br from-brand-primary-900 to-brand-primary-800' : ''
       }`} role="banner" aria-label="Ana hero bölümü">
         {sliderLoading ? (
@@ -193,10 +193,10 @@ export default function HomePage() {
             {/* Slider Controls */}
             {sliderItems.length > 1 && (
               <>
-                {/* Navigation Arrows */}
+                {/* Navigation Arrows (hidden on mobile) */}
                 <button
                   onClick={prevSlide}
-                  className="absolute left-4 top-1/2 transform -translate-y-1/2 z-20 p-3 bg-white/10 hover:bg-white/20 backdrop-blur-sm rounded-full transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-white/50"
+                  className="hidden sm:block absolute left-4 top-1/2 transform -translate-y-1/2 z-20 p-3 bg-white/10 hover:bg-white/20 backdrop-blur-sm rounded-full transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-white/50"
                   disabled={isTransitioning}
                   aria-label="Önceki slayt"
                 >
@@ -205,17 +205,17 @@ export default function HomePage() {
                 
                 <button
                   onClick={nextSlide}
-                  className="absolute right-4 top-1/2 transform -translate-y-1/2 z-20 p-3 bg-white/10 hover:bg-white/20 backdrop-blur-sm rounded-full transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-white/50"
+                  className="hidden sm:block absolute right-4 top-1/2 transform -translate-y-1/2 z-20 p-3 bg-white/10 hover:bg-white/20 backdrop-blur-sm rounded-full transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-white/50"
                   disabled={isTransitioning}
                   aria-label="Sonraki slayt"
                 >
                   <ChevronRightIcon className="w-6 h-6 text-white" />
                 </button>
                 
-                {/* Play/Pause Button */}
+                {/* Play/Pause Button (hidden on mobile) */}
                 <button
                   onClick={() => setIsPlaying(!isPlaying)}
-                  className="absolute bottom-20 right-4 z-20 p-3 bg-white/10 hover:bg-white/20 backdrop-blur-sm rounded-full transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-white/50"
+                  className="hidden sm:block absolute bottom-20 right-4 z-20 p-3 bg-white/10 hover:bg-white/20 backdrop-blur-sm rounded-full transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-white/50"
                   aria-label={isPlaying ? 'Otomatik geçişi durdur' : 'Otomatik geçişi başlat'}
                 >
                   {isPlaying ? (
@@ -226,7 +226,7 @@ export default function HomePage() {
                 </button>
                 
                 {/* Dots Indicator */}
-                <div className="absolute bottom-8 left-1/2 transform -translate-x-1/2 z-20 flex space-x-2">
+                <div className="absolute bottom-4 sm:bottom-8 left-1/2 transform -translate-x-1/2 z-20 flex space-x-2">
                   {sliderItems.map((_, index) => (
                     <button
                       key={index}
@@ -245,7 +245,7 @@ export default function HomePage() {
             
             {/* Content */}
             <div className="section-hero relative z-10">
-              <div className="container-content text-center text-white">
+              <div className="container-content text-center text-white px-4 pb-24 sm:pb-0">
                 {/* Badge */}
                 <div className="mb-8 animate-fade-in" style={{ animationDelay: '0.2s' }}>
                   <span className="inline-flex items-center px-6 py-3 bg-glass rounded-2xl text-sm font-semibold backdrop-blur-md">
@@ -259,30 +259,30 @@ export default function HomePage() {
                   currentSlide.title.length > 30 ? 'hero-title-compact' : 
                   currentSlide.title.length > 20 ? 'hero-title-responsive' : 
                   'hero-title'
-                } text-gradient-hero mb-6 animate-slide-in-left max-w-6xl mx-auto`} style={{ animationDelay: '0.4s' }}>
+                } text-gradient-hero mb-6 animate-slide-in-left max-w-6xl mx-auto leading-tight break-words`} style={{ animationDelay: '0.4s' }}>
                   {currentSlide.title}
                 </h1>
                 
                 {/* Subtitle */}
                 {currentSlide.subtitle && (
-                  <p className="text-2xl sm:text-3xl font-semibold text-brand-primary-200 mb-8 animate-slide-in-right" style={{ animationDelay: '0.6s' }}>
+                  <p className="text-2xl sm:text-3xl font-semibold text-brand-primary-200 mb-8 animate-slide-in-right px-2" style={{ animationDelay: '0.6s' }}>
                     {currentSlide.subtitle}
                   </p>
                 )}
                 
                 {/* Description */}
-                <p className="text-xl leading-relaxed text-slate-200 max-w-4xl mx-auto mb-12 animate-fade-in" style={{ animationDelay: '0.8s' }}>
+                <p className="text-lg sm:text-xl leading-relaxed text-slate-200 max-w-3xl sm:max-w-4xl mx-auto mb-12 animate-fade-in px-2" style={{ animationDelay: '0.8s' }}>
                   {currentSlide.description}
                 </p>
                 
                 {/* CTAs */}
-                <nav className="flex flex-col sm:flex-row gap-6 justify-center items-center animate-fade-in" style={{ animationDelay: '1s' }} aria-label="Hero eylem navigasyonu">
-                  <Link href={currentSlide.buttonLink || '/portfolio'} className="btn-primary">
+                <nav className="flex flex-col sm:flex-row gap-4 sm:gap-6 justify-center items-center animate-fade-in" style={{ animationDelay: '1s' }} aria-label="Hero eylem navigasyonu">
+                  <Link href={currentSlide.buttonLink || '/portfolio'} className="btn-primary w-full sm:w-auto">
                     <RocketLaunchIcon className="w-5 h-5 mr-2" />
                     {currentSlide.buttonText}
                     <ArrowRightIcon className="w-5 h-5 ml-2" />
                   </Link>
-                  <Link href="/contact" className="btn-secondary">
+                  <Link href="/contact" className="btn-secondary w-full sm:w-auto">
                     İletişime Geçin
                   </Link>
                 </nav>
