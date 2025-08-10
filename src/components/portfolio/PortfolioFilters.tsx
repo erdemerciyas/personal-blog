@@ -156,7 +156,7 @@ export default function PortfolioFilters({
         {/* Sort and Advanced Toggle */}
         <div className="flex gap-3">
           {/* Sort Dropdown */}
-          <div className="relative">
+          <div className="relative" role="group" aria-label="Sıralama">
             <select
               value={`${filters.sortBy}-${filters.sortOrder}`}
               onChange={(e) => {
@@ -164,6 +164,7 @@ export default function PortfolioFilters({
                 onFiltersChange({ ...filters, sortBy, sortOrder });
               }}
               className="appearance-none bg-white border-2 border-slate-200 rounded-2xl px-4 py-4 pr-10 text-slate-700 focus:border-brand-primary-600 focus:ring-4 focus:ring-brand-primary-600/20 outline-none transition-all duration-300 shadow-sm focus:shadow-lg cursor-pointer"
+              aria-label="Sırala"
             >
               <option value="newest-desc">En Yeni</option>
               <option value="oldest-asc">En Eski</option>
@@ -182,6 +183,8 @@ export default function PortfolioFilters({
                 ? 'bg-brand-primary-600 text-white'
                 : 'bg-white border-2 border-slate-200 text-slate-700 hover:border-brand-primary-300'
             }`}
+            aria-expanded={showAdvanced}
+            aria-controls="advanced-filters"
           >
             <AdjustmentsHorizontalIcon className="w-5 h-5 mr-2" />
             Filtreler
@@ -295,6 +298,7 @@ export default function PortfolioFilters({
             animate={{ opacity: 1, height: 'auto' }}
             exit={{ opacity: 0, height: 0 }}
             className="border-t border-slate-200 pt-6"
+            id="advanced-filters"
           >
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
               {/* Categories */}

@@ -138,7 +138,10 @@ export default function RootLayout({
         <link rel="dns-prefetch" href="//fonts.gstatic.com" />
         <link rel="dns-prefetch" href="//res.cloudinary.com" />
       </head>
-      <body className={`${inter.variable} font-sans min-h-screen bg-fixral-light-gray flex flex-col text-fixral-charcoal antialiased`}>
+      <body className={`${inter.variable} font-sans min-h-screen bg-[#f6f7f9] flex flex-col text-fixral-charcoal antialiased`}>
+        <a href="#main-content" className="sr-only focus:not-sr-only focus:fixed focus:top-2 focus:left-2 focus:z-[10000] focus:bg-white focus:text-slate-900 focus:px-4 focus:py-2 focus:rounded-lg focus:shadow">
+          İçeriğe atla
+        </a>
         <ThemeProvider>
           <LoadingBar />
           <Providers>
@@ -146,7 +149,7 @@ export default function RootLayout({
               <Header />
 
               {/* Main content area with consistent container */}
-              <main className="flex-grow">
+              <main id="main-content" className="flex-grow">
                 <div>{children}</div>
               </main>
 

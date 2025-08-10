@@ -146,7 +146,7 @@ export default function HomePage() {
     <>
       {/* Hero Slider Section */}
       <header className={`relative overflow-hidden min-h-screen flex items-center justify-center pb-16 sm:pb-24 ${
-        sliderLoading ? 'bg-gradient-to-br from-brand-primary-900 to-brand-primary-800' : ''
+        sliderLoading ? 'bg-gradient-primary' : ''
       }`} role="banner" aria-label="Ana hero bölümü">
         {sliderLoading ? (
           <div className="absolute inset-0 flex items-center justify-center">
@@ -175,7 +175,7 @@ export default function HomePage() {
                     className="object-cover"
                     priority={index === 0}
                   />
-                  <div className="absolute inset-0 bg-gradient-to-br from-brand-primary-900/90 via-brand-primary-800/80 to-brand-primary-700/90"></div>
+                  <div className="absolute inset-0 bg-gradient-to-b from-[#0f1e2d]/85 via-[#0f1b26]/85 to-[#0b1520]/90"></div>
                 </div>
               ))}
             </div>
@@ -238,7 +238,7 @@ export default function HomePage() {
               <div className="container-content text-center text-white px-4 pb-24 sm:pb-0">
                 {/* Badge */}
                 <div className="mb-8 animate-fade-in" style={{ animationDelay: '0.2s' }}>
-                  <span className="inline-flex items-center px-6 py-3 bg-glass rounded-2xl text-sm font-semibold backdrop-blur-md">
+                  <span className="inline-flex items-center px-6 py-3 bg-white/10 border border-white/30 rounded-full text-sm font-semibold backdrop-blur-md">
                     <SparklesIcon className="w-4 h-4 mr-2" />
                     {currentSlide.badge}
                   </span>
@@ -261,7 +261,7 @@ export default function HomePage() {
                 )}
                 
                 {/* Description */}
-                <p className="text-lg sm:text-xl leading-relaxed text-slate-200 max-w-3xl sm:max-w-4xl mx-auto mb-12 animate-fade-in px-2" style={{ animationDelay: '0.8s' }}>
+                <p className="text-lg sm:text-xl leading-relaxed text-slate-200/90 max-w-3xl sm:max-w-4xl mx-auto mb-12 animate-fade-in px-2" style={{ animationDelay: '0.8s' }}>
                   {currentSlide.description}
                 </p>
                 
@@ -287,26 +287,41 @@ export default function HomePage() {
         <section className="section bg-gradient-subtle" aria-label="Hizmetlerimiz">
         <div className="container-main">
           {/* Header */}
-          <div className="text-center mb-20">
-            <h2 className="section-title text-gradient mb-6">
-              Sunduğumuz Hizmetler
-            </h2>
-            <p className="section-subtitle max-w-3xl mx-auto">
-              Modern teknoloji ve uzman kadromuzla projelerinizi hayata geçirmek için 
+          <div className="section-header">
+            <h2>Sunduğumuz Hizmetler</h2>
+            <p>
+              Modern teknoloji ve uzman kadromuzla projelerinizi hayata geçirmek için
               kapsamlı mühendislik çözümleri sunuyoruz.
             </p>
           </div>
 
           {/* Services Grid */}
-          {servicesLoading ? (
+            {servicesLoading ? (
             <ContentSkeleton type="card" count={3} className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8" />
           ) : (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mb-16">
               {services.map((service, index) => (
                 <article 
                   key={service._id} 
-                  className="card-modern group h-full flex flex-col transform-gpu hover:scale-105 transition-all duration-300"
-                  style={{ animationDelay: `${index * 0.1}s` }}
+                  className="card-modern group h-full flex flex-col will-change-transform transition-transform duration-500"
+                  style={{
+                    animationDelay: `${index * 0.05}s`,
+                  }}
+                  onMouseMove={(e) => {
+                    const el = e.currentTarget as HTMLElement;
+                    const rect = el.getBoundingClientRect();
+                    const x = e.clientX - rect.left;
+                    const y = e.clientY - rect.top;
+                    const midX = rect.width / 2;
+                    const midY = rect.height / 2;
+                    const rotateY = ((x - midX) / midX) * 2;
+                    const rotateX = -((y - midY) / midY) * 2;
+                    el.style.transform = `perspective(900px) rotateX(${rotateX}deg) rotateY(${rotateY}deg)`;
+                  }}
+                  onMouseLeave={(e) => {
+                    const el = e.currentTarget as HTMLElement;
+                    el.style.transform = 'perspective(900px) rotateX(0deg) rotateY(0deg)';
+                  }}
                 >
                   {/* Icon or Image */}
                   <div className="mb-8 flex justify-center">
@@ -342,7 +357,7 @@ export default function HomePage() {
                     </div>
                     <Link
                       href={`/services#${service.title.toLowerCase().replace(/\s+/g, '-').replace(/&/g, '')}`}
-                      className="inline-flex items-center text-brand-primary-800 hover:text-brand-primary-900 font-semibold transition-colors duration-200 mt-auto focus:outline-none focus:ring-2 focus:ring-brand-primary-600/50 rounded-md px-2 py-1"
+                      className="inline-flex items-center text-brand-primary-800 hover:text-brand-primary-900 font-semibold transition-colors duration-200 mt-auto focus:outline-none focus:ring-2 focus:ring-brand-primary-600/50 rounded-full px-3 py-1.5"
                     >
                       Detayları Gör
                       <ArrowRightIcon className="w-4 h-4 ml-2" />

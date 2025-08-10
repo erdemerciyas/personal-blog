@@ -25,7 +25,7 @@ export default function PageHero({
   buttonText = "Keşfet",
   buttonLink = "#content",
   badge = "Yaratıcı Çözümler",
-  backgroundGradient = "from-slate-900 via-brand-primary-900 to-blue-900",
+  backgroundGradient = "bg-gradient-primary",
   showButton = true
 }: PageHeroProps) {
   const [mounted, setMounted] = useState(false);
@@ -46,13 +46,15 @@ export default function PageHero({
   }
 
   return (
-    <section className={`relative overflow-hidden bg-gradient-to-br ${backgroundGradient} text-white`}>
+    <section className={`relative overflow-hidden ${backgroundGradient} text-white`}>
       {/* Background Pattern */}
-      <div className="absolute inset-0 opacity-10">
-        <div className="absolute top-20 left-20 w-32 h-32 border-2 border-white rounded-full animate-pulse"></div>
-        <div className="absolute top-40 right-32 w-24 h-24 border-2 border-white rotate-45 animate-bounce"></div>
-        <div className="absolute bottom-32 left-1/3 w-40 h-40 border-2 border-white rounded-full animate-pulse"></div>
-        <div className="absolute bottom-20 right-20 w-28 h-28 border-2 border-white rotate-12 animate-bounce"></div>
+      <div className="absolute inset-0 opacity-[0.12]">
+        <div className="bg-blueprint absolute inset-0"></div>
+        <div className="absolute inset-0" style={{
+          background:
+            'radial-gradient(1200px 400px at 20% -10%, rgba(255,255,255,0.08) 0%, transparent 60%),\
+             radial-gradient(800px 300px at 80% 110%, rgba(0,180,216,0.15) 0%, transparent 60%)'
+        }} />
       </div>
 
       <div className="section-hero relative z-10">
@@ -65,7 +67,7 @@ export default function PageHero({
               transition={{ duration: 0.6 }}
               className="mb-8"
             >
-              <span className="inline-flex items-center px-6 py-3 bg-white/10 backdrop-blur-xl border border-white/20 rounded-2xl text-sm font-semibold">
+              <span className="inline-flex items-center px-6 py-3 bg-white/10 backdrop-blur-md border border-white/30 rounded-full text-sm font-semibold">
                 <SparklesIcon className="w-4 h-4 mr-2" />
                 {badge}
               </span>
@@ -93,7 +95,7 @@ export default function PageHero({
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8, delay: 0.4 }}
-            className="text-xl leading-relaxed text-slate-200 max-w-4xl mx-auto mb-12"
+            className="text-xl leading-relaxed text-slate-200/90 max-w-4xl mx-auto mb-12"
           >
             <HTMLContent 
               content={description}
@@ -109,18 +111,12 @@ export default function PageHero({
               transition={{ duration: 0.8, delay: 0.6 }}
             >
               {buttonLink.startsWith('#') ? (
-                <a
-                  href={buttonLink}
-                  className="btn-primary group inline-flex items-center"
-                >
+                <a href={buttonLink} className="btn-primary group inline-flex items-center rounded-full">
                   {buttonText}
                   <ArrowRightIcon className="w-5 h-5 ml-2 transition-transform duration-300 group-hover:translate-x-1" />
                 </a>
               ) : (
-                <Link
-                  href={buttonLink}
-                  className="btn-primary group inline-flex items-center"
-                >
+                <Link href={buttonLink} className="btn-primary group inline-flex items-center rounded-full">
                   {buttonText}
                   <ArrowRightIcon className="w-5 h-5 ml-2 transition-transform duration-300 group-hover:translate-x-1" />
                 </Link>

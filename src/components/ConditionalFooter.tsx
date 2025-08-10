@@ -124,12 +124,10 @@ const ConditionalFooter: React.FC = () => {
   // activeSocialLinks reserved for future use
 
   return (
-    <footer className="bg-slate-900 text-white relative overflow-hidden">
+    <footer className="bg-[#0f1b26] text-white relative overflow-hidden">
       {/* Background Pattern */}
-      <div className="absolute inset-0 opacity-5">
-        <div className="absolute top-10 right-10 w-32 h-32 border-2 border-white rounded-full"></div>
-        <div className="absolute bottom-20 left-20 w-24 h-24 border-2 border-white rotate-45"></div>
-        <div className="absolute top-1/2 left-1/4 w-16 h-16 border-2 border-white rounded-full"></div>
+      <div className="absolute inset-0 opacity-[0.08]">
+        <div className="bg-blueprint absolute inset-0" />
       </div>
 
       <div className="container-main section-sm relative z-10">
@@ -150,7 +148,7 @@ const ConditionalFooter: React.FC = () => {
           {/* Quick Links */}
           {settings.visibility.showQuickLinks && settings.quickLinks.length > 0 && (
             <nav aria-label="Footer navigation">
-              <h3 className="text-xl font-bold mb-6 text-white border-b border-slate-700 pb-3">Hızlı Bağlantılar</h3>
+              <h3 className="text-xl font-bold mb-6 text-white border-b border-white/10 pb-3">Hızlı Bağlantılar</h3>
               <ul className="space-y-4">
                 {settings.quickLinks.map((link, index) => (
                   <li key={index}>
@@ -182,7 +180,7 @@ const ConditionalFooter: React.FC = () => {
           {/* Contact Info */}
           {settings.visibility.showContactInfo && (
             <div>
-              <h3 className="text-xl font-bold mb-6 text-white border-b border-slate-700 pb-3">İletişim</h3>
+              <h3 className="text-xl font-bold mb-6 text-white border-b border-white/10 pb-3">İletişim</h3>
               <div className="space-y-5">
                 <div className="flex items-center space-x-4 group">
                   <div className="w-10 h-10 bg-brand-primary-600/20 rounded-lg flex items-center justify-center group-hover:bg-brand-primary-600/30 transition-colors duration-200">
@@ -220,7 +218,7 @@ const ConditionalFooter: React.FC = () => {
         </div>
 
         {/* Bottom Section */}
-        <div className="pt-8 border-t border-slate-800">
+        <div className="pt-8 border-t border-white/10">
           <div className="flex flex-col md:flex-row justify-between items-center space-y-4 md:space-y-0">
             {/* Copyright */}
             <div className="text-slate-400 text-sm">

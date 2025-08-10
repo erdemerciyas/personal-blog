@@ -18,13 +18,10 @@ interface PortfolioDetailHeroProps {
 
 export default function PortfolioDetailHero({ project }: PortfolioDetailHeroProps) {
   return (
-    <section className="relative overflow-hidden bg-gradient-to-br from-slate-900 via-brand-primary-900 to-blue-900 text-white">
+    <section className="relative overflow-hidden bg-gradient-primary text-white">
       {/* Background Pattern */}
-      <div className="absolute inset-0 opacity-10">
-        <div className="absolute top-20 left-20 w-32 h-32 border-2 border-white rounded-full animate-pulse"></div>
-        <div className="absolute top-40 right-32 w-24 h-24 border-2 border-white rotate-45"></div>
-        <div className="absolute bottom-32 left-1/3 w-40 h-40 border-2 border-white rounded-full animate-pulse"></div>
-        <div className="absolute bottom-20 right-20 w-28 h-28 border-2 border-white rotate-12"></div>
+      <div className="absolute inset-0 opacity-[0.12]">
+        <div className="bg-blueprint absolute inset-0"></div>
       </div>
 
       <div className="section-hero relative z-10">
@@ -38,14 +35,14 @@ export default function PortfolioDetailHero({ project }: PortfolioDetailHeroProp
           >
             <Link 
               href="/portfolio" 
-              className="inline-flex items-center text-brand-primary-100 hover:text-white text-sm group transition-all duration-300 bg-white/10 backdrop-blur-xl border border-white/20 rounded-2xl px-6 py-3"
+              className="inline-flex items-center text-brand-primary-100 hover:text-white text-sm group transition-all duration-300 bg-white/10 backdrop-blur-md border border-white/30 rounded-full px-5 py-2.5"
             >
               <ArrowLeftIcon className="h-5 w-5 mr-2 transition-transform duration-200 group-hover:-translate-x-1" />
               Tüm Projeler
             </Link>
             
             {project.featured && (
-              <div className="flex items-center px-4 py-2 bg-gradient-to-r from-yellow-400/20 to-orange-500/20 backdrop-blur-xl border border-yellow-400/30 rounded-2xl">
+                <div className="flex items-center px-4 py-2 bg-gradient-to-r from-yellow-400/20 to-orange-500/20 backdrop-blur-md border border-yellow-400/30 rounded-full">
                 <StarIconSolid className="w-5 h-5 text-yellow-400 mr-2" />
                 <span className="text-yellow-100 font-semibold">Öne Çıkan Proje</span>
               </div>
@@ -70,7 +67,7 @@ export default function PortfolioDetailHero({ project }: PortfolioDetailHeroProp
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.8, delay: 0.4 }}
-                className="text-xl leading-relaxed text-slate-200 mb-8"
+                className="text-xl leading-relaxed text-slate-200/90 mb-8"
               >
                 {project.description.replace(/<[^>]*>/g, '').substring(0, 200)}...
               </motion.div>

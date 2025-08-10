@@ -54,7 +54,7 @@ export default function ModernProjectGrid({
 
   if (!projects || projects.length === 0) {
     return (
-      <div className="text-center py-20 min-h-[40vh] flex flex-col justify-center items-center">
+      <div className="text-center py-20 min-h-[40vh] flex flex-col justify-center items-center" role="status" aria-live="polite">
         <div className="w-24 h-24 bg-slate-100 rounded-full flex items-center justify-center mx-auto mb-6">
           <Squares2X2Icon className="w-12 h-12 text-slate-400" />
         </div>
@@ -73,13 +73,13 @@ export default function ModernProjectGrid({
       {/* Layout Controls */}
       {onLayoutChange && (
         <div className="flex items-center justify-between">
-          <div className="flex items-center space-x-1 bg-white/80 backdrop-blur-xl rounded-2xl p-2 shadow-lg border border-white/20">
+          <div className="flex items-center space-x-1 bg-white/80 backdrop-blur-md rounded-full p-1.5 shadow border border-white/40">
             <button
               onClick={() => handleLayoutChange('grid')}
-              className={`p-3 rounded-xl transition-all duration-300 ${
+              className={`p-2.5 rounded-full transition-all duration-300 ${
                 currentLayout === 'grid'
-                  ? 'bg-brand-primary-600 text-white shadow-lg'
-                  : 'text-slate-600 hover:bg-slate-100 hover:text-brand-primary-700'
+                  ? 'bg-slate-900 text-white shadow'
+                  : 'text-slate-700 hover:bg-slate-100 hover:text-brand-primary-700'
               }`}
               title="Grid Görünümü"
             >
@@ -87,10 +87,10 @@ export default function ModernProjectGrid({
             </button>
             <button
               onClick={() => handleLayoutChange('masonry')}
-              className={`p-3 rounded-xl transition-all duration-300 ${
+              className={`p-2.5 rounded-full transition-all duration-300 ${
                 currentLayout === 'masonry'
-                  ? 'bg-brand-primary-600 text-white shadow-lg'
-                  : 'text-slate-600 hover:bg-slate-100 hover:text-brand-primary-700'
+                  ? 'bg-slate-900 text-white shadow'
+                  : 'text-slate-700 hover:bg-slate-100 hover:text-brand-primary-700'
               }`}
               title="Masonry Görünümü"
             >
@@ -98,10 +98,10 @@ export default function ModernProjectGrid({
             </button>
             <button
               onClick={() => handleLayoutChange('list')}
-              className={`p-3 rounded-xl transition-all duration-300 ${
+              className={`p-2.5 rounded-full transition-all duration-300 ${
                 currentLayout === 'list'
-                  ? 'bg-brand-primary-600 text-white shadow-lg'
-                  : 'text-slate-600 hover:bg-slate-100 hover:text-brand-primary-700'
+                  ? 'bg-slate-900 text-white shadow'
+                  : 'text-slate-700 hover:bg-slate-100 hover:text-brand-primary-700'
               }`}
               title="Liste Görünümü"
             >

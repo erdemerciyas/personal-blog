@@ -66,9 +66,29 @@ export default function ModernProjectCard({
       variants={cardVariants}
       initial="hidden"
       animate="visible"
-      className={`group relative bg-white rounded-3xl shadow-lg hover:shadow-2xl border border-slate-200/50 overflow-hidden transition-all duration-500 flex flex-col h-full hover:-translate-y-2 ${
+      className={`group relative bg-white rounded-3xl shadow hover:shadow-2xl border border-slate-200/70 overflow-hidden transition-all duration-500 flex flex-col h-full hover:-translate-y-1.5 ${
         layout === 'masonry' ? 'break-inside-avoid mb-6' : ''
       }`}
+      onMouseMove={(e) => {
+        // Reduce motion and pointer checks
+        if (typeof window !== 'undefined') {
+          if (window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+          if (window.matchMedia && !window.matchMedia('(pointer: fine)').matches) return;
+        }
+        const el = e.currentTarget as HTMLElement;
+        const rect = el.getBoundingClientRect();
+        const x = e.clientX - rect.left;
+        const y = e.clientY - rect.top;
+        const midX = rect.width / 2;
+        const midY = rect.height / 2;
+        const rotateY = ((x - midX) / midX) * 1.5;
+        const rotateX = -((y - midY) / midY) * 1.5;
+        el.style.transform = `perspective(900px) rotateX(${rotateX}deg) rotateY(${rotateY}deg)`;
+      }}
+      onMouseLeave={(e) => {
+        const el = e.currentTarget as HTMLElement;
+        el.style.transform = 'perspective(900px) rotateX(0deg) rotateY(0deg)';
+      }}
     >
       {/* Featured Badge */}
       {project.featured && (
@@ -101,7 +121,7 @@ export default function ModernProjectCard({
             
             {/* Loading Skeleton */}
             {!imageLoaded && (
-              <div className="absolute inset-0 bg-gradient-to-br from-slate-200 to-slate-300 animate-pulse">
+              <div className="absolute inset-0 bg-gradient-to-b from-slate-200 to-slate-300 animate-pulse">
                 <div className="absolute inset-0 flex items-center justify-center">
                   <PhotoIcon className="w-12 h-12 text-slate-400" />
                 </div>
@@ -109,7 +129,7 @@ export default function ModernProjectCard({
             )}
           </>
         ) : (
-          <div className="absolute inset-0 bg-gradient-to-br from-brand-primary-100 to-blue-100 flex flex-col items-center justify-center">
+          <div className="absolute inset-0 bg-gradient-to-b from-brand-primary-100 to-blue-100 flex flex-col items-center justify-center">
             <div className="w-16 h-16 bg-brand-primary-200 rounded-full flex items-center justify-center">
               <PhotoIcon className="w-8 h-8 text-brand-primary-700" />
             </div>
@@ -150,6 +170,22 @@ export default function ModernProjectCard({
           </div>
         )}
 
+        {/* Meta (client / date) - erişilebilir etiketlerle */}
+        <dl className="grid grid-cols-2 gap-2 text-xs text-slate-500 mb-4">
+          {project.client && (
+            <div>
+              <dt className="sr-only">Müşteri</dt>
+              <dd aria-label={`Müşteri: ${project.client}`}>{project.client}</dd>
+            </div>
+          )}
+          {project.completionDate && (
+            <div className="text-right">
+              <dt className="sr-only">Tamamlanma</dt>
+              <dd aria-label={`Tamamlanma tarihi`}>{new Date(project.completionDate).toLocaleDateString('tr-TR')}</dd>
+            </div>
+          )}
+        </dl>
+
 
 
         {/* Spacer to push button to bottom */}
@@ -162,7 +198,7 @@ export default function ModernProjectCard({
             e.stopPropagation();
             window.location.href = `/portfolio/${project.slug}`;
           }}
-          className="btn-primary w-full group/btn mt-auto relative z-50 cursor-pointer"
+          className="btn-primary w-full group/btn mt-auto relative z-50 cursor-pointer rounded-full"
           type="button"
         >
           <span>Detayları Görüntüle</span>

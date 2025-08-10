@@ -20,7 +20,7 @@ export default function PortfolioHero({
       buttonText={buttonText}
       buttonLink={buttonLink}
       badge="Yaratıcı Çözümler"
-      backgroundGradient="from-slate-900 via-brand-primary-900 to-blue-900"
+      backgroundGradient="bg-gradient-primary"
       showButton={true}
     />
   );

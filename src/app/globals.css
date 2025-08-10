@@ -111,7 +111,7 @@ h1, h2, h3, h4, h5, h6 {
   }
 
   .btn-primary {
-    @apply btn bg-brand-primary-900 text-white border-none hover:bg-brand-primary-800 hover:scale-105 focus:ring-2 focus:ring-brand-primary-600/25 active:scale-95 w-auto;
+    @apply btn bg-brand-primary-900 text-white border-none hover:bg-brand-primary-800 focus:ring-2 focus:ring-brand-primary-600/25 active:scale-95 w-auto;
   }
   
   .btn-secondary {
@@ -119,7 +119,7 @@ h1, h2, h3, h4, h5, h6 {
   }
 
   .btn-outline {
-    @apply inline-flex items-center justify-center px-8 py-4 bg-transparent border-2 border-brand-primary-600 text-brand-primary-700 font-semibold rounded-2xl hover:bg-brand-primary-600 hover:text-white hover:scale-105 transition-all duration-300 focus:outline-none focus:ring-4 focus:ring-brand-primary-500/30 active:scale-95 transform-gpu;
+    @apply inline-flex items-center justify-center px-8 py-4 bg-transparent border-2 border-brand-primary-600 text-brand-primary-700 font-semibold rounded-2xl hover:bg-brand-primary-600 hover:text-white transition-all duration-300 focus:outline-none focus:ring-4 focus:ring-brand-primary-500/30 active:scale-95 transform-gpu;
   }
 
   .btn-ghost {
@@ -266,6 +266,17 @@ h1, h2, h3, h4, h5, h6 {
     @apply min-h-screen flex items-center justify-center py-28 md:py-40 lg:py-48;
   }
 
+  /* Unified section header */
+  .section-header {
+    @apply text-center mb-12 md:mb-16;
+  }
+  .section-header h2 {
+    @apply section-title;
+  }
+  .section-header p {
+    @apply section-subtitle max-w-3xl mx-auto;
+  }
+
 
 
 
@@ -274,15 +285,34 @@ h1, h2, h3, h4, h5, h6 {
 
   /* Backgrounds */
   .bg-gradient-primary {
-    @apply bg-gradient-to-br from-brand-primary-700 via-brand-primary-800 to-brand-primary-900;
+    /* Daha rafine ve kurumsal bir ana degrade */
+    @apply bg-gradient-to-b from-[#0f1e2d] via-[#0f1b26] to-[#0b1520];
   }
 
   .bg-gradient-subtle {
-    @apply bg-gradient-to-br from-slate-50 via-white to-brand-primary-50/30;
+    @apply bg-gradient-to-b from-[#f6f7f9] via-white to-[#eef1f6];
   }
 
   .bg-glass {
-    @apply bg-white/10 backdrop-blur-2xl border border-white/20;
+    @apply bg-white/70 backdrop-blur-md border border-white/60;
+  }
+
+  /* Projeye özgü blueprint grid arka planı */
+  .bg-blueprint {
+    position: relative;
+    background-color: #0f1b26;
+  }
+
+  .bg-blueprint::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background-image:
+      linear-gradient(rgba(255,255,255,0.04) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(255,255,255,0.04) 1px, transparent 1px);
+    background-size: 24px 24px, 24px 24px;
+    background-position: -1px -1px, -1px -1px;
+    pointer-events: none;
   }
 }
 

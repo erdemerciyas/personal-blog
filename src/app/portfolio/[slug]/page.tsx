@@ -147,7 +147,7 @@ function PortfolioDetailPageContent({ params }: { params: { slug: string } }) {
     return (
       <div className="min-h-screen bg-gray-50">
         {/* Hero Skeleton */}
-        <section className="bg-gradient-to-br from-slate-900 via-brand-primary-900 to-blue-900 py-32">
+        <section className="bg-gradient-primary py-32">
           <div className="container mx-auto px-4 text-center">
             <div className="w-16 h-16 border-4 border-white/30 border-t-white rounded-full animate-spin mx-auto mb-4"></div>
             <p className="text-white text-lg">Proje detayları yükleniyor...</p>
@@ -289,11 +289,9 @@ function PortfolioDetailPageContent({ params }: { params: { slug: string } }) {
                   transition={{ duration: 0.8, delay: 0.6 }}
                   className="border-t border-slate-200/50 pt-16"
                 >
-                  <div className="text-center mb-12">
-                    <h2 className="section-title text-gradient">Benzer Projeler</h2>
-                    <p className="section-subtitle max-w-2xl mx-auto">
-                      Aynı kategoriden diğer projelerimizi inceleyin
-                    </p>
+                  <div className="section-header">
+                    <h2 className="text-gradient">Benzer Projeler</h2>
+                    <p>Aynı kategoriden diğer projelerimizi inceleyin</p>
                   </div>
                   
                   <ModernProjectGrid 
@@ -315,7 +313,7 @@ function PortfolioDetailPageContent({ params }: { params: { slug: string } }) {
                   />
                   
                   <div className="text-center mt-12">
-                    <Link href="/portfolio" className="btn-secondary">
+                    <Link href="/portfolio" className="btn-secondary rounded-full">
                       Tüm Projeleri Gör
                     </Link>
                   </div>

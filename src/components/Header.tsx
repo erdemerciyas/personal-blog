@@ -276,7 +276,7 @@ E-posta: ${projectForm.email}
   return (
     <header className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${
       isScrolled 
-        ? 'bg-white/95 backdrop-blur-lg shadow-lg border-b border-slate-200/50' 
+        ? 'bg-white/90 backdrop-blur-md shadow border-b border-slate-200/60' 
         : 'bg-transparent'
     }`}>
       <div className="container-main">
@@ -300,13 +300,13 @@ E-posta: ${projectForm.email}
               </div>
             )}
             <div className="hidden sm:block">
-              <h1 className={`text-xl font-bold transition-colors duration-300 ${
+              <h1 className={`text-xl font-bold tracking-tight transition-colors duration-300 ${
                 isScrolled ? 'text-slate-900' : 'text-white'
               }`}>
                 {siteSettings?.siteName || 'FIXRAL'}
               </h1>
               {siteSettings?.slogan && (
-                <p className={`text-sm transition-colors duration-300 ${
+                <p className={`text-sm opacity-80 transition-colors duration-300 ${
                   isScrolled ? 'text-slate-600' : 'text-white/80'
                 }`}>
                   {siteSettings.slogan}
@@ -344,10 +344,11 @@ E-posta: ${projectForm.email}
           <div className="hidden md:flex items-center space-x-4">
             <button
               onClick={openProjectModal}
-              className={`px-6 py-3 rounded-xl font-semibold transition-all duration-300 transform hover:scale-105 flex items-center space-x-2 ${
+              aria-label="Proje başvurusu formunu aç"
+              className={`px-5 py-2.5 rounded-full font-semibold transition-all duration-300 transform hover:scale-[1.02] flex items-center space-x-2 ${
                 isScrolled
-                  ? 'bg-gradient-primary text-white shadow-lg hover:shadow-xl'
-                  : 'bg-white/10 backdrop-blur-sm text-white border border-white/20 hover:bg-white/20'
+                  ? 'bg-slate-900 text-white shadow hover:shadow-lg'
+                  : 'bg-white/10 backdrop-blur-md text-white border border-white/20 hover:bg-white/20'
               }`}
             >
               <PaperAirplaneIcon className="w-5 h-5" />

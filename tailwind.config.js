@@ -72,6 +72,11 @@ module.exports = {
         'fixral-4xl': ['2.25rem', { lineHeight: '2.5rem' }],
         'fixral-5xl': ['3rem', { lineHeight: '1' }],
         'fixral-6xl': ['3.75rem', { lineHeight: '1' }],
+        // Atlas section heading sizes (daha tutarlı başlık ritmi)
+        'atlas-2xl': ['1.5rem', { lineHeight: '2rem', letterSpacing: '-0.01em' }],
+        'atlas-3xl': ['1.875rem', { lineHeight: '2.25rem', letterSpacing: '-0.01em' }],
+        'atlas-4xl': ['2.25rem', { lineHeight: '2.5rem', letterSpacing: '-0.02em' }],
+        'atlas-5xl': ['3rem', { lineHeight: '1.1', letterSpacing: '-0.03em' }],
       },
       borderRadius: {
         'fixral': '8px',

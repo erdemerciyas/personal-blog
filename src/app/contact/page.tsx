@@ -119,7 +119,7 @@ function ContactPageContent() {
         buttonText="İletişim Formu"
         buttonLink="#contact-form"
         badge="İletişim"
-        backgroundGradient="from-brand-primary-700 via-brand-primary-800 to-brand-primary-900"
+        backgroundGradient="bg-gradient-primary"
         showButton={true}
       />
 
@@ -340,8 +340,8 @@ function ContactPageContent() {
           {/* Map Section */}
           <div className="max-w-6xl mx-auto mt-16">
             <div className="card">
-              <div className="flex items-center justify-between mb-6">
-                <h2 className="text-2xl font-bold text-slate-800">Konumumuz</h2>
+          <div className="flex items-center justify-between mb-6">
+            <h2 className="text-2xl font-bold text-slate-800">Konumumuz</h2>
                 <div className="flex items-center text-sm text-slate-500">
                   <MapPinIcon className="w-4 h-4 mr-1" />
                   <span>Haritada göster</span>
@@ -488,7 +488,7 @@ function ContactPageContent() {
                     <div className="p-4 bg-brand-primary-50 rounded-lg">
                       <h4 className="font-semibold text-brand-primary-800 mb-2">Ulaşım Bilgileri</h4>
                       <div className="space-y-2 text-sm text-brand-primary-700">
-                        <div className="flex items-center">
+                    <div className="flex items-center">
                           <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
                           </svg>
