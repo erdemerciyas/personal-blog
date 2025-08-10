@@ -47,7 +47,7 @@ class ErrorBoundary extends Component<Props, State> {
                 onClick={() => window.location.href = '/admin/dashboard'}
                 className="w-full bg-slate-100 hover:bg-slate-200 text-slate-700 px-4 py-2 rounded-lg font-medium transition-colors"
               >
-                Dashboard'a Dön
+                Dashboard&apos;a Dön
               </button>
             </div>
             {process.env.NODE_ENV === 'development' && this.state.error && (

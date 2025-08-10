@@ -71,7 +71,7 @@ export default function ModernPageExample() {
         {/* Dynamic content with skeleton */}
         <div className="max-w-4xl mx-auto">
           <h2 className="text-2xl font-bold text-slate-800 mb-6">
-            Dinamik İçerik (API'den Yükleniyor)
+            Dinamik İçerik (API&apos;den Yükleniyor)
           </h2>
           
           {loading ? (

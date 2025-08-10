@@ -4,7 +4,6 @@ import { useState, useEffect, useMemo } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { 
   MagnifyingGlassIcon,
-  FunnelIcon,
   XMarkIcon,
   TagIcon,
   Squares2X2Icon,
@@ -211,7 +210,7 @@ export default function PortfolioFilters({
               {filters.search && (
                 <span className="inline-flex items-center px-3 py-1 bg-brand-primary-100 text-brand-primary-800 rounded-full text-sm font-medium">
                   <MagnifyingGlassIcon className="w-4 h-4 mr-1" />
-                  "{filters.search}"
+                  &quot;{filters.search}&quot;
                   <button
                     onClick={() => clearFilter('search')}
                     className="ml-2 hover:text-brand-primary-700"

@@ -23,7 +23,7 @@ export const SmartLink: React.FC<SmartLinkProps> = ({
   shallow = false,
   onClick
 }) => {
-  const router = useRouter();
+  // const router = useRouter(); // reserved for future navigation enhancements
 
   const handleClick = () => {
     onClick?.();
