@@ -242,7 +242,7 @@ const MediaBrowser: React.FC<MediaBrowserProps> = ({
   const filteredItems = getFilteredItems();
 
   // Theme-based styles
-  const themeStyles = {
+  const themeStyles: Record<string, string> = {
     modal: theme === 'dark' 
       ? 'bg-slate-900 border-slate-700' 
       : 'bg-white/10 backdrop-blur-xl border-white/20',

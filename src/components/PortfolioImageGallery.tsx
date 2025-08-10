@@ -51,10 +51,8 @@ const PortfolioImageGallery: React.FC<PortfolioImageGalleryProps> = ({
   const [loading] = useState(false);
 
   // Görsel listesini ImageItem formatına çevir
-  const imageItems: ImageItem[] = images.map((url, index) => ({
-    url,
-    id: `image-${index}-${url.split('/').pop()}`
-  }));
+  // Derivations kept for potential future UI (ordering, ids)
+  // const imageItems: ImageItem[] = images.map((url, index) => ({ url, id: `image-${index}-${url.split('/').pop()}` }));
 
   const handleFileSelect = async (files: FileList | null) => {
     if (!files || files.length === 0) return;

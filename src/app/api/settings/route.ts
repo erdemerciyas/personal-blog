@@ -105,7 +105,7 @@ export async function PUT(request: NextRequest) {
 
     // SiteSettings sync
     if (settings) {
-      const siteSettingsUpdate: Partial<{
+      const siteSettingsUpdate: Partial<{ 
         logo: { url: string; alt: string; width: number; height: number };
         siteName: string;
         description: string;

@@ -17,7 +17,7 @@ import {
   ChatBubbleLeftRightIcon,
   CogIcon,
   DocumentTextIcon,
-  TagIcon,
+  // TagIcon,
   UserIcon,
   UsersIcon,
   PhoneIcon,
