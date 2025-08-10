@@ -8,8 +8,7 @@ import {
   EnvelopeIcon,
   PhoneIcon,
   MapPinIcon,
-  HeartIcon,
-  SparklesIcon
+  HeartIcon
 } from '@heroicons/react/24/outline';
 import Logo from './Logo';
 
@@ -122,8 +121,7 @@ const ConditionalFooter: React.FC = () => {
     return null;
   }
 
-  // active social links (kept for potential future use)
-  const activeSocialLinks = Object.entries(settings.socialLinks).filter(([, url]) => url.trim() !== '');
+  // activeSocialLinks reserved for future use
 
   return (
     <footer className="bg-slate-900 text-white relative overflow-hidden">
