@@ -347,13 +347,16 @@ export default function AdminLayout({ children, title, breadcrumbs }: AdminLayou
   };
 
   const isActiveRoute = (href: string) => {
+    const safePathname = pathname || '';
     // Query parametreli linkler için özel kontrol
     if (href.includes('?')) {
       const [basePath, queryString] = href.split('?');
-      const currentUrl = typeof window !== 'undefined' ? window.location.pathname + window.location.search : pathname;
-      return currentUrl === href || (pathname === basePath && currentUrl.includes(queryString));
+      const currentUrl = typeof window !== 'undefined'
+        ? window.location.pathname + window.location.search
+        : safePathname;
+      return currentUrl === href || (safePathname === basePath && (currentUrl || '').includes(queryString));
     }
-    return pathname === href || pathname.startsWith(href + '/');
+    return safePathname === href || safePathname.startsWith(href + '/');
   };
 
   const hasActiveSubItem = (subItems?: Array<{ href: string }>) => {

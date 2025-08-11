@@ -95,7 +95,7 @@ function AdminMessagesContent() {
 
   // Auto-open message from notification
   useEffect(() => {
-    const messageId = searchParams.get('id');
+    const messageId = searchParams?.get('id') ?? null;
     if (messageId && messages.length > 0) {
       const message = messages.find(m => m._id === messageId);
       if (message) {

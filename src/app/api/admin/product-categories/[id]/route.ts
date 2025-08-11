@@ -4,7 +4,8 @@ import ProductCategory from '@/models/ProductCategory';
 import { withSecurity, SecurityConfigs } from '@/lib/security-middleware';
 import slugify from 'slugify';
 
-export const PUT = withSecurity(SecurityConfigs.admin)(async (req: NextRequest, { params }: { params: { id: string } }) => {
+export const PUT = withSecurity(SecurityConfigs.admin)(async (req: NextRequest, ...args: unknown[]) => {
+  const { params } = (args[0] as { params: { id: string } });
   await connectDB();
   try {
     const body = await req.json();
@@ -28,7 +29,8 @@ export const PUT = withSecurity(SecurityConfigs.admin)(async (req: NextRequest, 
   }
 });
 
-export const DELETE = withSecurity(SecurityConfigs.admin)(async (_req: NextRequest, { params }: { params: { id: string } }) => {
+export const DELETE = withSecurity(SecurityConfigs.admin)(async (_req: NextRequest, ...args: unknown[]) => {
+  const { params } = (args[0] as { params: { id: string } });
   await connectDB();
   await ProductCategory.findByIdAndDelete(params.id);
   return NextResponse.json({ success: true });

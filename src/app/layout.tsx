@@ -106,6 +106,8 @@ export async function generateMetadata(): Promise<Metadata> {
 
 import { ThemeProvider } from '../context/ThemeContext';
 import LoadingBar from '../components/LoadingBar';
+import { ToastProvider } from '../components/ui/useToast';
+import FixralToastViewport from '../components/ui/FixralToast';
 
 export default function RootLayout({
   children,
@@ -143,19 +145,23 @@ export default function RootLayout({
           İçeriğe atla
         </a>
         <ThemeProvider>
-          <LoadingBar />
-          <Providers>
-            <ClientWrapper>
-              <Header />
+          <ToastProvider>
+            <LoadingBar />
+            <Providers>
+              <ClientWrapper>
+                <Header />
 
-              {/* Main content area with consistent container */}
-              <main id="main-content" className="flex-grow">
-                <div>{children}</div>
-              </main>
+                {/* Main content area with consistent container */}
+                <main id="main-content" className="flex-grow">
+                  <div>{children}</div>
+                </main>
 
-              <ConditionalFooter />
-            </ClientWrapper>
-          </Providers>
+                <ConditionalFooter />
+              </ClientWrapper>
+            </Providers>
+            {/* Global toast viewport */}
+            <FixralToastViewport />
+          </ToastProvider>
         </ThemeProvider>
 
         {/* Development tools - hidden on mobile to avoid UI overlay */}

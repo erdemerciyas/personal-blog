@@ -79,19 +79,8 @@ function PortfolioPageContent() {
           throw new Error('Portfolyo projeleri yüklenemedi.');
         }
         const portfolioData = await portfolioResponse.json();
-        console.log('Fetched Portfolio Data:', portfolioData);
-        console.log('Categories Data:', catData);
-        
-        // Debug: Her portfolyo öğesinin kategori bilgilerini kontrol et
-        portfolioData.forEach((item: { title: string; categoryId?: string; categoryIds?: string[] }, index: number) => {
-          console.log(`Portfolio ${index}:`, {
-            title: item.title,
-            categoryId: item.categoryId,
-            categoryIds: item.categoryIds,
-            categories: item.categories,
-            category: item.category
-          });
-        });
+        console.log('Fetched Portfolio Data count:', Array.isArray(portfolioData) ? portfolioData.length : 0);
+        console.log('Categories count:', Array.isArray(catData) ? catData.length : 0);
         
         setPortfolioItems(portfolioData);
 
@@ -182,12 +171,14 @@ function PortfolioPageContent() {
                     return foundCategory?.name || 'Genel';
                   }
                   // Legacy: categories alanını kontrol et
-                  if (item.categories && Array.isArray(item.categories) && item.categories.length > 0) {
-                    return item.categories.map((cat: { name?: string } | string) => (typeof cat === 'object' ? cat.name : cat) || cat).join(', ');
+                  const legacyCategories = (item as unknown as { categories?: Array<{ name?: string } | string> }).categories;
+                  if (legacyCategories && Array.isArray(legacyCategories) && legacyCategories.length > 0) {
+                    return legacyCategories.map((cat: { name?: string } | string) => (typeof cat === 'object' ? cat.name : cat) || cat).join(', ');
                   }
                   // Legacy: category alanını kontrol et
-                  if (item.category?.name) {
-                    return item.category.name;
+                  const legacyCategory = (item as unknown as { category?: { name?: string } }).category;
+                  if (legacyCategory?.name) {
+                    return legacyCategory.name;
                   }
                   // Son çare olarak "Genel" döndür
                   return 'Genel';

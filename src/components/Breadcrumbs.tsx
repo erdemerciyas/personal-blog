@@ -11,7 +11,8 @@ interface BreadcrumbItem {
 
 const Breadcrumbs: React.FC = () => {
   const pathname = usePathname();
-  const pathSegments = pathname.split('/').filter(segment => segment !== '');
+  const safePath = pathname ?? '';
+  const pathSegments = safePath.split('/').filter(segment => segment !== '');
 
   const breadcrumbs: BreadcrumbItem[] = [];
   let currentPath = '';
@@ -40,7 +41,7 @@ const Breadcrumbs: React.FC = () => {
   }
 
   // Don't show breadcrumbs on the home page or admin pages
-  if (pathname === '/' || pathname.startsWith('/admin')) {
+  if (safePath === '/' || safePath.startsWith('/admin')) {
     return null;
   }
 

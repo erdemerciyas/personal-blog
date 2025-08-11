@@ -338,7 +338,7 @@ export default function FooterSettingsPage() {
               ].map((tab) => (
                 <button
                   key={tab.id}
-                  onClick={() => setActiveTab(tab.id as 'general' | 'social' | 'copyright' | 'visibility')}
+                  onClick={() => setActiveTab(tab.id as 'content' | 'links' | 'social' | 'appearance')}
                   className={`flex items-center space-x-2 py-4 px-1 border-b-2 font-medium text-sm transition-colors ${
                     activeTab === tab.id
                       ? 'border-brand-primary-600 text-brand-primary-700'

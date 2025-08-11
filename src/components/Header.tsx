@@ -17,6 +17,7 @@ import {
   PaperAirplaneIcon,
   EnvelopeIcon
 } from '@heroicons/react/24/outline';
+import { useToast } from './ui/useToast';
 
 interface SiteSettings {
   siteName: string;
@@ -78,6 +79,7 @@ const Header: React.FC = () => {
   });
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitStatus, setSubmitStatus] = useState<'idle' | 'success' | 'error'>('idle');
+  const { show } = useToast();
 
   const pathname = usePathname();
 
@@ -240,10 +242,8 @@ Proje Türü: ${projectForm.projectType}
 Bütçe: ${projectForm.budget}
 Zaman Planı: ${projectForm.timeline}
 
-Proje Detayları:
-${projectForm.description}
-
-İletişim Bilgileri:
+Proje Açıklaması: ${projectForm.description}
+Ad Soyad: ${projectForm.name}
 Telefon: ${projectForm.phone}
 E-posta: ${projectForm.email}
           `.trim()
@@ -252,6 +252,12 @@ E-posta: ${projectForm.email}
 
       if (response.ok) {
         setSubmitStatus('success');
+        show({
+          title: 'Başvurunuz alındı',
+          description: 'Size en kısa sürede geri dönüş yapacağım.',
+          variant: 'success',
+          duration: 4000,
+        });
         setProjectForm({
           name: '',
           email: '',
@@ -266,10 +272,22 @@ E-posta: ${projectForm.email}
         }, 2000);
       } else {
         setSubmitStatus('error');
+        show({
+          title: 'Gönderilemedi',
+          description: 'Lütfen daha sonra tekrar deneyin.',
+          variant: 'danger',
+          duration: 4500,
+        });
       }
     } catch (error) {
       console.error('Form submission error:', error);
       setSubmitStatus('error');
+      show({
+        title: 'Bir hata oluştu',
+        description: 'Bağlantı sırasında bir sorun yaşandı.',
+        variant: 'danger',
+        duration: 4500,
+      });
     } finally {
       setIsSubmitting(false);
     }
@@ -318,14 +336,14 @@ E-posta: ${projectForm.email}
           </Link>
 
           {/* Desktop Navigation */}
-          <nav className="hidden md:flex items-center space-x-2">
+          <nav role="navigation" aria-label="Ana navigasyon" className="hidden md:flex items-center space-x-2">
             {navLinks.map((link, index) => {
               const isActive = pathname === link.href;
               return (
                 <Link
                   key={index}
                   href={link.href}
-                  className={`px-4 py-2 rounded-xl font-medium transition-all duration-200 group flex items-center space-x-2 ${
+                  className={`relative overflow-hidden px-4 py-2 rounded-xl font-medium transition-all duration-200 group flex items-center space-x-2 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-primary-600 focus-visible:ring-offset-2 ${
                     isActive
                       ? isScrolled
                         ? 'bg-brand-primary-100 text-brand-primary-800'
@@ -334,9 +352,19 @@ E-posta: ${projectForm.email}
                       ? 'text-slate-700 hover:bg-slate-100 hover:text-brand-primary-700'
                       : 'text-white hover:text-white hover:bg-white/10'
                   }`}
+                  aria-current={isActive ? 'page' : undefined}
                 >
                   <link.icon className="w-4 h-4" />
                   <span>{link.label}</span>
+                  {/* underline animation */}
+                  <span
+                    aria-hidden="true"
+                    className={`pointer-events-none absolute left-4 right-4 bottom-1 h-[2px] origin-left scale-x-0 transition-transform duration-300 ${
+                      isScrolled
+                        ? 'bg-brand-primary-700'
+                        : 'bg-white/80'
+                    } ${isActive ? 'scale-x-100' : 'group-hover:scale-x-100'}`}
+                  />
                 </Link>
               );
             })}
@@ -361,6 +389,9 @@ E-posta: ${projectForm.email}
           {/* Mobile Menu Button */}
           <button
             onClick={toggleMobileMenu}
+            aria-label="Mobil menüyü aç/kapat"
+            aria-controls="mobile-menu"
+            aria-expanded={isMobileMenuOpen}
             className={`md:hidden p-2 rounded-xl transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-white/30 ${
               isScrolled
                 ? 'text-slate-700 hover:bg-slate-100'
@@ -377,7 +408,7 @@ E-posta: ${projectForm.email}
 
         {/* Mobile Menu */}
         {isMobileMenuOpen && (
-          <div className="md:hidden absolute top-full left-0 right-0 bg-white/95 backdrop-blur-lg shadow-2xl border-t border-slate-200/50 max-h-[75vh] overflow-y-auto">
+          <nav id="mobile-menu" aria-label="Mobil navigasyon" className="md:hidden absolute top-full left-0 right-0 bg-white/95 backdrop-blur-lg shadow-2xl border-t border-slate-200/50 max-h-[75vh] overflow-y-auto">
             <div className="py-4 px-6">
               {navLinks.map((link, index) => {
                 const isActive = pathname === link.href;
@@ -386,11 +417,12 @@ E-posta: ${projectForm.email}
                     key={index}
                     href={link.href}
                     onClick={closeMobileMenu}
-                    className={`flex items-center space-x-3 py-3 px-4 rounded-xl font-medium transition-all duration-200 ${
+                    className={`flex items-center space-x-3 py-3 px-4 rounded-xl font-medium transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-primary-600/70 focus-visible:ring-offset-2 ${
                       isActive
                         ? 'bg-brand-primary-100 text-brand-primary-800'
                         : 'text-slate-700 hover:bg-slate-100 hover:text-brand-primary-700'
                     }`}
+                    aria-current={isActive ? 'page' : undefined}
                   >
                     <link.icon className="w-5 h-5" />
                     <span>{link.label}</span>
@@ -407,7 +439,7 @@ E-posta: ${projectForm.email}
                 </button>
               </div>
             </div>
-          </div>
+          </nav>
         )}
       </div>
 

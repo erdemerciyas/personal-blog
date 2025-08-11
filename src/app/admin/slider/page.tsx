@@ -152,10 +152,11 @@ export default function AdminSliderPage() {
     }));
   };
 
-  const handleImageChange = (imageUrl: string) => {
+  const handleImageChange = (imageUrl: string | string[]) => {
+    const url = Array.isArray(imageUrl) ? imageUrl[0] : imageUrl;
     setFormData(prev => ({
       ...prev,
-      imageUrl,
+      imageUrl: url,
       imageType: 'upload'
     }));
   };

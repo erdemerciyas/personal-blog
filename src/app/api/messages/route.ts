@@ -115,6 +115,19 @@ export async function POST(request: Request) {
         'urgent': 'Acil'
       };
 
+      // Güvenli anahtar daraltmaları ve string coercion
+      type ProjectTypeKey = keyof typeof projectTypeMap;
+      type BudgetKey = keyof typeof budgetMap;
+      type UrgencyKey = keyof typeof urgencyMap;
+      const projectTypeKey = (String(projectType ?? 'other') as ProjectTypeKey);
+      const budgetKey = (String(budget ?? 'not-specified') as BudgetKey);
+      const urgencyKey = (String(urgency ?? 'medium') as UrgencyKey);
+      const projectTypeLabel = projectTypeMap[projectTypeKey] ?? 'Diğer';
+      const budgetLabel = budgetMap[budgetKey] ?? 'Belirtilmedi';
+      const urgencyLabel = urgencyMap[urgencyKey] ?? 'Orta';
+      const messageText = String(message ?? '');
+      const emailAddress = String(email ?? '');
+
       // Size gönderilecek email (yeni proje talebi bildirimi)
       const notificationMailOptions = {
         from: process.env.GMAIL_USER,
@@ -168,22 +181,22 @@ export async function POST(request: Request) {
               <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 15px; margin-bottom: 20px;">
                 <div>
                   <strong style="color: #374151;">🔧 Proje Türü:</strong>
-                  <p style="color: #6b7280; margin: 5px 0;">${projectTypeMap[projectType] || 'Diğer'}</p>
+                  <p style="color: #6b7280; margin: 5px 0;">${projectTypeLabel}</p>
                 </div>
                 <div>
                   <strong style="color: #374151;">💰 Bütçe:</strong>
-                  <p style="color: #6b7280; margin: 5px 0;">${budgetMap[budget] || 'Belirtilmedi'}</p>
+                  <p style="color: #6b7280; margin: 5px 0;">${budgetLabel}</p>
                 </div>
                 <div>
                   <strong style="color: #374151;">⚡ Aciliyet:</strong>
-                  <p style="color: #6b7280; margin: 5px 0; font-weight: 600;">${urgencyMap[urgency] || 'Orta'}</p>
+                  <p style="color: #6b7280; margin: 5px 0; font-weight: 600;">${urgencyLabel}</p>
                 </div>
               </div>
               
               <div style="margin-bottom: 15px;">
                 <strong style="color: #374151;">💬 Proje Açıklaması:</strong>
                 <div style="background-color: #f1f5f9; padding: 15px; border-radius: 8px; margin-top: 8px; border-left: 4px solid #0891b2;">
-                  ${message.replace(/\n/g, '<br>')}
+                  ${messageText.replace(/\n/g, '<br>')}
                 </div>
               </div>
               
@@ -202,7 +215,7 @@ export async function POST(request: Request) {
       // Gönderene otomatik yanıt
       const autoReplyMailOptions = {
         from: process.env.GMAIL_USER,
-        to: email,
+        to: emailAddress,
         subject: `✅ Proje Talebinizi Aldık - ${subject}`,
         html: `
           <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px; background-color: #f8fafc; border-radius: 12px;">
@@ -227,9 +240,9 @@ export async function POST(request: Request) {
                   🎯 Proje Detaylarınız:
                 </h3>
                 <ul style="color: #047857; margin: 10px 0; padding-left: 20px;">
-                  <li><strong>Proje Türü:</strong> ${projectTypeMap[projectType] || 'Diğer'}</li>
-                  <li><strong>Bütçe Aralığı:</strong> ${budgetMap[budget] || 'Belirtilmedi'}</li>
-                  <li><strong>Öncelik Seviyesi:</strong> ${urgencyMap[urgency] || 'Orta'}</li>
+                  <li><strong>Proje Türü:</strong> ${projectTypeLabel}</li>
+                  <li><strong>Bütçe Aralığı:</strong> ${budgetLabel}</li>
+                  <li><strong>Öncelik Seviyesi:</strong> ${urgencyLabel}</li>
                 </ul>
               </div>
               

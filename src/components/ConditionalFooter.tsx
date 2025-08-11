@@ -121,10 +121,23 @@ const ConditionalFooter: React.FC = () => {
     return null;
   }
 
-  // activeSocialLinks reserved for future use
+  // Sosyal bağlantıları aktif olanlarıyla hazırla
+  const socialEntries = [
+    { key: 'linkedin', label: 'LinkedIn', url: settings.socialLinks.linkedin },
+    { key: 'twitter', label: 'Twitter', url: settings.socialLinks.twitter },
+    { key: 'instagram', label: 'Instagram', url: settings.socialLinks.instagram },
+    { key: 'facebook', label: 'Facebook', url: settings.socialLinks.facebook },
+    { key: 'github', label: 'GitHub', url: settings.socialLinks.github },
+    { key: 'youtube', label: 'YouTube', url: settings.socialLinks.youtube },
+  ].filter(item => item.url && item.url.trim().length > 0);
+
+  const scrollToTop = () => {
+    const prefersReduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    window.scrollTo({ top: 0, behavior: prefersReduced ? 'auto' : 'smooth' });
+  };
 
   return (
-    <footer className="bg-[#0f1b26] text-white relative overflow-hidden">
+    <footer className="bg-[#0f1b26] text-white relative overflow-hidden" role="contentinfo">
       {/* Background Pattern */}
       <div className="absolute inset-0 opacity-[0.08]">
         <div className="bg-blueprint absolute inset-0" />
@@ -143,6 +156,28 @@ const ConditionalFooter: React.FC = () => {
             <p className="text-slate-400 text-sm">
               Modern mühendislik çözümleri ile projelerinizi hayata geçiriyoruz.
             </p>
+
+            {/* Social Links */}
+            {settings.visibility.showSocialLinks && socialEntries.length > 0 && (
+              <nav aria-label="Sosyal medya" className="mt-6">
+                <ul className="flex flex-wrap gap-3">
+                  {socialEntries.map(item => (
+                    <li key={item.key}>
+                      <a
+                        href={item.url}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        aria-label={`${item.label} sayfamız`}
+                        className="inline-flex items-center justify-center min-h-[44px] px-4 py-2 rounded-xl bg-white/5 text-slate-200 hover:text-white hover:bg-white/10 focus:outline-none focus:ring-2 focus:ring-brand-primary-500/50 transition-colors duration-200"
+                      >
+                        <span className="sr-only">{item.label}</span>
+                        <span aria-hidden className="font-medium">{item.label}</span>
+                      </a>
+                    </li>
+                  ))}
+                </ul>
+              </nav>
+            )}
           </div>
 
           {/* Quick Links */}
@@ -254,6 +289,18 @@ const ConditionalFooter: React.FC = () => {
               <HeartIcon className="w-4 h-4 text-red-500" />
               <span>in Turkey</span>
             </p>
+          </div>
+
+          {/* Back to top */}
+          <div className="mt-6 flex justify-end">
+            <button
+              type="button"
+              onClick={scrollToTop}
+              className="inline-flex items-center justify-center min-h-[44px] px-4 py-2 rounded-xl bg-brand-primary-600 text-white hover:bg-brand-primary-500 focus:outline-none focus:ring-2 focus:ring-brand-primary-500/50 transition-colors duration-200"
+              aria-label="Sayfa başına dön"
+            >
+              Yukarı Çık
+            </button>
           </div>
         </div>
       </div>

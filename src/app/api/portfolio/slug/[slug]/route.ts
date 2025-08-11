@@ -3,6 +3,25 @@ import connectDB from '@/lib/mongoose';
 import Portfolio from '@/models/Portfolio';
 import Category from '@/models/Category';
 
+type LeanCategory = { _id: string; name: string; slug: string };
+type PortfolioLean = {
+  _id: string;
+  title: string;
+  slug: string;
+  description?: string;
+  client?: string;
+  completionDate?: string | Date;
+  technologies?: string[];
+  coverImage?: string;
+  images?: string[];
+  featured?: boolean;
+  order?: number;
+  createdAt?: Date;
+  updatedAt?: Date;
+  categoryId?: string | LeanCategory;
+  categoryIds?: Array<string | LeanCategory>;
+};
+
 export async function GET(request: Request, { params }: { params: { slug: string } }) {
   try {
     // Veritabanı bağlantısını timeout ile koru
@@ -40,22 +59,24 @@ export async function GET(request: Request, { params }: { params: { slug: string
     }
 
     // Kategori bilgisini güvenli şekilde normalize et
+    // Lean sonuç için yerel tip ile güvenli erişim
+    const p = portfolioItem as unknown as PortfolioLean;
     let category = null;
     try {
-      if (portfolioItem.categoryIds && portfolioItem.categoryIds.length > 0) {
+      if (p.categoryIds && p.categoryIds.length > 0) {
         // Eğer populate edilmişse
-        if (typeof portfolioItem.categoryIds[0] === 'object') {
-          category = portfolioItem.categoryIds[0];
+        if (typeof p.categoryIds[0] === 'object') {
+          category = p.categoryIds[0];
         } else {
           // Populate edilmemişse, manuel olarak kategoriyi getir
-          category = await Category.findById(portfolioItem.categoryIds[0]).lean() as { _id: string; name: string; slug: string } | null;
+          category = await Category.findById(p.categoryIds[0]).lean() as LeanCategory | null;
         }
-      } else if (portfolioItem.categoryId) {
+      } else if (p.categoryId) {
         // Geriye uyumluluk için
-        if (typeof portfolioItem.categoryId === 'object') {
-          category = portfolioItem.categoryId;
+        if (typeof p.categoryId === 'object') {
+          category = p.categoryId;
         } else {
-          category = await Category.findById(portfolioItem.categoryId).lean() as { _id: string; name: string; slug: string } | null;
+          category = await Category.findById(p.categoryId).lean() as LeanCategory | null;
         }
       }
     } catch (categoryError) {
@@ -66,23 +87,23 @@ export async function GET(request: Request, { params }: { params: { slug: string
 
     // Response'ı güvenli şekilde oluştur
     const response = {
-      _id: portfolioItem._id,
-      title: portfolioItem.title,
-      slug: portfolioItem.slug,
-      description: portfolioItem.description,
-      client: portfolioItem.client,
-      completionDate: portfolioItem.completionDate,
-      technologies: portfolioItem.technologies || [],
-      coverImage: portfolioItem.coverImage,
-      images: portfolioItem.images || [],
-      featured: portfolioItem.featured || false,
-      order: portfolioItem.order || 0,
-      createdAt: portfolioItem.createdAt,
-      updatedAt: portfolioItem.updatedAt,
+      _id: p._id,
+      title: p.title,
+      slug: p.slug,
+      description: p.description,
+      client: p.client,
+      completionDate: p.completionDate,
+      technologies: p.technologies || [],
+      coverImage: p.coverImage,
+      images: p.images || [],
+      featured: p.featured || false,
+      order: p.order || 0,
+      createdAt: p.createdAt,
+      updatedAt: p.updatedAt,
       category: category,
       // Geriye uyumluluk için
-      categoryId: portfolioItem.categoryId,
-      categoryIds: portfolioItem.categoryIds
+      categoryId: p.categoryId,
+      categoryIds: p.categoryIds
     };
 
     // Cache headers ekle

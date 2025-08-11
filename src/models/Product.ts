@@ -1,4 +1,4 @@
-import mongoose from 'mongoose';
+import mongoose, { type Document } from 'mongoose';
 import slugify from 'slugify';
 
 type AllowedAttachmentType = 'image' | 'pdf' | 'docx' | 'xlsx' | 'csv' | 'raw';
@@ -75,11 +75,9 @@ const productSchema = new mongoose.Schema<IProduct>({
   isActive: { type: Boolean, default: true },
 }, { timestamps: true });
 
-productSchema.pre('validate', function preValidate(next) {
-  // @ts-expect-error mongoose doc typing
+productSchema.pre('validate', function preValidate(this: Document & Partial<IProduct>, next) {
   if (this.isModified('title') || !this.slug) {
-    // @ts-expect-error mongoose doc typing
-    this.slug = slugify(this.title, { lower: true, strict: true });
+    this.slug = slugify(String(this.title), { lower: true, strict: true });
   }
   next();
 });

@@ -97,7 +97,7 @@ export default async function ProductDetail({ params }: { params: { slug: string
                 <CubeIcon className="w-4 h-4 text-emerald-600" />
                 Stok: {product.stock}
               </div>
-              {typeof product.price === 'number' && product.price >= (appConfig?.freeShippingThreshold || 1500) && (
+              {typeof product.price === 'number' && product.price >= Number((appConfig as { freeShippingThreshold?: number })?.freeShippingThreshold ?? 1500) && (
                 <div className="flex items-center gap-2">
                   <TagIcon className="w-4 h-4 text-emerald-600" />
                   Ücretsiz Kargo

@@ -18,7 +18,14 @@ export const GET = withSecurity(SecurityConfigs.admin)(async (req: NextRequest) 
   if (condition) (filter as Record<string, unknown>).condition = condition;
   if (category) (filter as Record<string, unknown>).categoryIds = category;
 
-  const sortSpec = !sort || sort === 'created' ? { createdAt: -1 } : (sort === 'priceAsc' ? { price: 1 } : { price: -1 });
+  let sortSpec: Record<string, 1 | -1>;
+  if (!sort || sort === 'created') {
+    sortSpec = { createdAt: -1 };
+  } else if (sort === 'priceAsc') {
+    sortSpec = { price: 1 };
+  } else {
+    sortSpec = { price: -1 };
+  }
   const items = await Product.find(filter).sort(sortSpec).skip((page - 1) * limit).limit(limit);
   const total = await Product.countDocuments(filter);
   return NextResponse.json({ items, total, page, limit });

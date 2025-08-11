@@ -95,10 +95,11 @@ export class SecurityUtils {
 
   // Log security events
   static logSecurityEvent(event: string, details: unknown, severity: 'low' | 'medium' | 'high' | 'critical' = 'medium') {
+    const detailsPayload = typeof details === 'object' && details !== null ? (details as Record<string, unknown>) : { details };
     logger.error(`Security Event: ${event}`, 'SECURITY', {
       severity,
       timestamp: new Date().toISOString(),
-      ...details
+      ...detailsPayload
     });
   }
 

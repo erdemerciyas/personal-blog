@@ -70,23 +70,58 @@ export default function HomePage() {
   const { data: servicesData, loading: servicesLoading } = useServices();
 
   // Process slider data
-  const sliderItems = (sliderData as Array<{ _id: string; title: string; subtitle: string; description: string; isActive: boolean; buttonText?: string; buttonLink?: string; backgroundImage?: string }>)?.filter((item) => item.isActive)?.map((item) => ({
+  const sliderItems: SliderItem[] = (sliderData as Array<{ _id: string; title: string; subtitle: string; description: string; isActive: boolean; buttonText?: string; buttonLink?: string; backgroundImage?: string }>)?.filter((item) => item.isActive)?.map((item) => ({
     _id: item._id,
     title: item.title,
     subtitle: item.subtitle,
     description: item.description,
-    image: item.imageUrl,
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    image: (item as any).imageUrl || item.backgroundImage || defaultSlider[0].image,
     buttonText: item.buttonText || 'Keşfet',
     buttonLink: item.buttonLink || '/portfolio',
-    badge: item.badge || 'Yenilik',
-    duration: item.duration || 5000
+    // include optional fields for typing compatibility
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    badge: (item as any).badge as string | undefined,
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    duration: (item as any).duration as number | undefined,
   })) || defaultSlider;
 
-  // Process portfolio data
-  const portfolioItems = (portfolioData as Array<{ _id: string; title: string; description: string; coverImage: string; slug: string }>)?.slice(0, 6) || [];
+  // Process portfolio data with required fields normalized for HomePortfolioSection
+  const portfolioItems = (portfolioData as Array<{ 
+    _id: string; 
+    title: string; 
+    description: string; 
+    coverImage: string; 
+    slug: string;
+    client?: string;
+    completionDate?: string;
+    technologies?: string[];
+    categories?: Array<{ name: string }>;
+    featured?: boolean;
+  }>)?.slice(0, 6).map(item => ({
+    ...item,
+    client: item.client ?? '',
+    completionDate: item.completionDate ?? '',
+    technologies: item.technologies ?? [],
+    categories: (item.categories ?? []).map(c => ({
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      _id: (c as any)._id ?? '',
+      name: c.name,
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      slug: (c as any).slug ?? c.name.toLowerCase().trim().replace(/\s+/g, '-'),
+    })),
+    featured: item.featured ?? false,
+  })) || [];
 
   // Process services data
   const services = (servicesData as Array<{ _id: string; title: string; description: string; image: string }>)?.length > 0 ? (servicesData as Array<{ _id: string; title: string; description: string; image: string }>).slice(-6) : defaultServices;
+  // Normalize services shape to always include optional icon for safer access
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const servicesList = (services as Array<any>).map((s) => ({
+    ...s,
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    icon: (s as any).icon as (React.ComponentType<{ className?: string }>) | undefined,
+  }));
 
   // Slider states
   const [currentSlideIndex, setCurrentSlideIndex] = useState(0);
@@ -237,12 +272,14 @@ export default function HomePage() {
             <div className="section-hero relative z-10">
               <div className="container-content text-center text-white px-4 pb-24 sm:pb-0">
                 {/* Badge */}
-                <div className="mb-8 animate-fade-in" style={{ animationDelay: '0.2s' }}>
-                  <span className="inline-flex items-center px-6 py-3 bg-white/10 border border-white/30 rounded-full text-sm font-semibold backdrop-blur-md">
-                    <SparklesIcon className="w-4 h-4 mr-2" />
-                    {currentSlide.badge}
-                  </span>
-                </div>
+                {currentSlide.badge && (
+                  <div className="mb-8 animate-fade-in" style={{ animationDelay: '0.2s' }}>
+                    <span className="inline-flex items-center px-6 py-3 bg-white/10 border border-white/30 rounded-full text-sm font-semibold backdrop-blur-md">
+                      <SparklesIcon className="w-4 h-4 mr-2" />
+                      {currentSlide.badge}
+                    </span>
+                  </div>
+                )}
                 
                 {/* Title */}
                 <h1 className={`${
@@ -298,9 +335,9 @@ export default function HomePage() {
           {/* Services Grid */}
             {servicesLoading ? (
             <ContentSkeleton type="card" count={3} className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8" />
-          ) : (
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mb-16">
-              {services.map((service, index) => (
+          ) : services && services.length > 0 ? (
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mb-16" aria-live="polite">
+              {servicesList.map((service, index) => (
                 <article 
                   key={service._id} 
                   className="card-modern group h-full flex flex-col will-change-transform transition-transform duration-500"
@@ -308,6 +345,7 @@ export default function HomePage() {
                     animationDelay: `${index * 0.05}s`,
                   }}
                   onMouseMove={(e) => {
+                    if (typeof window !== 'undefined' && window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
                     const el = e.currentTarget as HTMLElement;
                     const rect = el.getBoundingClientRect();
                     const x = e.clientX - rect.left;
@@ -357,7 +395,7 @@ export default function HomePage() {
                     </div>
                     <Link
                       href={`/services#${service.title.toLowerCase().replace(/\s+/g, '-').replace(/&/g, '')}`}
-                      className="inline-flex items-center text-brand-primary-800 hover:text-brand-primary-900 font-semibold transition-colors duration-200 mt-auto focus:outline-none focus:ring-2 focus:ring-brand-primary-600/50 rounded-full px-3 py-1.5"
+                      className="inline-flex items-center text-brand-primary-800 hover:text-brand-primary-900 font-semibold transition-colors duration-200 mt-auto focus:outline-none focus:ring-2 focus:ring-brand-primary-600/50 rounded-full px-4 py-2 min-h-[44px]"
                     >
                       Detayları Gör
                       <ArrowRightIcon className="w-4 h-4 ml-2" />
@@ -365,6 +403,11 @@ export default function HomePage() {
                   </div>
                 </article>
               ))}
+            </div>
+          ) : (
+            <div className="col-span-full text-center py-12 mb-16">
+              <p className="text-slate-600 mb-4">Şu an gösterilecek hizmet bulunamadı.</p>
+              <Link href="/contact" className="btn-secondary">Proje talebi bırakın</Link>
             </div>
           )}
 

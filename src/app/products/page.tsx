@@ -1,13 +1,10 @@
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
-import { appConfig } from '@/lib/config';
+import { config } from '@/lib/config';
 import dynamic from 'next/dynamic';
 import FixralCard from '@/components/ui/FixralCard';
-// Avoid client-only component in server component context; use plain img here
-import SkeletonLoader from '@/components/SkeletonLoader';
 import TiltHover from '@/components/TiltHover';
 const PageHero = dynamic(() => import('@/components/common/PageHero'), { ssr: false });
-const FiltersClient = dynamic(() => import('./FiltersClient'), { ssr: false });
 import { Squares2X2Icon, AdjustmentsHorizontalIcon, StarIcon, CurrencyDollarIcon, CheckCircleIcon, MagnifyingGlassIcon } from '@heroicons/react/24/outline';
 
 async function getData(searchParams: Record<string, string>) {
@@ -191,14 +188,14 @@ export default async function ProductsPage({ searchParams }: { searchParams: Rec
 
           <div className={view==='grid' ? 'mt-4 grid gap-6 md:grid-cols-3' : 'mt-4 space-y-4'}>
         {items.map((p: { _id: string; slug: string; coverImage: string; title: string; condition: 'new'|'used'; stock: number; price?: number; currency?: string; ratingAverage?: number; ratingCount?: number }) => {
-          const freeShipping = typeof p.price === 'number' && p.price >= (appConfig?.freeShippingThreshold || 1500);
+          const hasFreeShipping = typeof p.price === 'number' && p.price >= (config.app.freeShippingThreshold || 1500);
           if (view === 'list') {
             const sp = new URLSearchParams({ q, condition, category, sort, priceMin, priceMax, ratingMin, inStock, freeShipping, view });
             return (
               <FixralCard key={p._id} className="p-4" variant="default">
                 <div className="grid md:grid-cols-[180px_1fr_auto] gap-4 items-center">
-                  {/* eslint-disable-next-line @next/next/no-img-element */}
                   <div className="relative">
+                    {/* eslint-disable-next-line @next/next/no-img-element */}
                     <img src={p.coverImage} alt={p.title} loading="lazy" className="w-full h-40 object-cover rounded-md" />
                     {p.stock <= 0 && (
                       <span className="absolute top-2 left-2 text-xs px-2 py-0.5 rounded bg-red-600 text-white">Stokta Yok</span>
@@ -214,7 +211,7 @@ export default async function ProductsPage({ searchParams }: { searchParams: Rec
                       {typeof p.ratingAverage === 'number' && p.ratingCount ? (
                         <span className="text-slate-500">{p.ratingAverage.toFixed(1)} / 5 • {p.ratingCount}</span>
                       ) : null}
-                    {freeShipping && <span className="inline-flex items-center px-2 py-0.5 rounded-full bg-emerald-50 text-emerald-700">Ücretsiz Kargo</span>}
+                      {hasFreeShipping && <span className="inline-flex items-center px-2 py-0.5 rounded-full bg-emerald-50 text-emerald-700">Ücretsiz Kargo</span>}
                     </div>
                   </div>
                   <div className="text-right">
@@ -249,7 +246,7 @@ export default async function ProductsPage({ searchParams }: { searchParams: Rec
                     {typeof p.price === 'number' ? (
                       <div className="text-emerald-700 font-semibold">{p.price} {p.currency}</div>
                     ) : <span />}
-                    {freeShipping && <span className="text-[11px] px-2 py-0.5 rounded-full bg-emerald-50 text-emerald-700">Ücretsiz Kargo</span>}
+                    {hasFreeShipping && <span className="text-[11px] px-2 py-0.5 rounded-full bg-emerald-50 text-emerald-700">Ücretsiz Kargo</span>}
                   </div>
                   <div className="mt-3">
                     <span className="inline-flex items-center justify-center h-9 px-4 rounded-md border text-sm text-slate-700 group-hover:border-emerald-600 group-hover:text-emerald-700">Detaya Git</span>

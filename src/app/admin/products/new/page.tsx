@@ -94,7 +94,7 @@ export default function AdminProductNewPage() {
           <FixralInput label="Başlık" placeholder="Ürün başlığı" value={form.title} onChange={(e) => setForm({ ...form, title: (e.target as HTMLInputElement).value })} />
           <FixralTextarea label="Açıklama" placeholder="Ürün açıklaması" value={form.description} onChange={(e) => setForm({ ...form, description: (e.target as HTMLTextAreaElement).value })} />
           <div className="grid sm:grid-cols-3 gap-3">
-            <FixralSelect label="Durum" value={form.condition} onChange={(e) => setForm({ ...form, condition: (e.target as HTMLSelectElement).value })} options={[{ value: 'new', label: 'Sıfır' }, { value: 'used', label: 'İkinci El' }]} />
+            <FixralSelect label="Durum" value={form.condition} onChange={(e) => setForm({ ...form, condition: (e.target as HTMLSelectElement).value as 'new' | 'used' })} options={[{ value: 'new', label: 'Sıfır' }, { value: 'used', label: 'İkinci El' }]} />
             <FixralInput label="Fiyat (opsiyonel)" type="number" value={form.price ?? ''} onChange={(e) => setForm({ ...form, price: (e.target as HTMLInputElement).value ? Number((e.target as HTMLInputElement).value) : undefined })} />
             <div className="grid grid-cols-2 gap-3">
               <FixralInput label="Para Birimi" value={form.currency} onChange={(e) => setForm({ ...form, currency: (e.target as HTMLInputElement).value })} />

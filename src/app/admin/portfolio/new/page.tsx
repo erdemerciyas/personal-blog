@@ -24,15 +24,19 @@ import Link from 'next/link';
 import { Category } from '../../../../types/portfolio';
 
 import slugify from 'slugify';
+import { useToast } from '../../../../components/ui/useToast';
 
 export default function NewPortfolioItem() {
   const { data: session, status } = useSession();
   const router = useRouter();
+  const { show: showToast } = useToast();
   const [loading, setLoading] = useState(false);
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState('');
   const [categories, setCategories] = useState<Category[]>([]);
   const [slugLocked, setSlugLocked] = useState(true);
+
+  const [fieldErrors, setFieldErrors] = useState<Record<string, string>>({});
 
   const [formData, setFormData] = useState({
     title: '',
@@ -58,7 +62,6 @@ export default function NewPortfolioItem() {
       return { ...prev, title: newTitle, slug: newSlug };
     });
   };
-
 
   useEffect(() => {
     if (status === 'unauthenticated') {
@@ -89,21 +92,26 @@ export default function NewPortfolioItem() {
     e.preventDefault();
     setSubmitting(true);
     setError('');
+    setFieldErrors({});
 
     try {
-      // Validate that at least one category is selected
-      if (formData.categoryIds.length === 0) {
-        throw new Error('En az bir kategori seçmelisiniz');
-      }
+      // Alan bazlı doğrulama
+      const errs: Record<string, string> = {};
+      if (!formData.title.trim()) errs.title = 'Proje başlığı zorunludur';
+      if (!formData.slug.trim()) errs.slug = 'URL slug zorunludur';
+      if (!formData.client.trim()) errs.client = 'Müşteri/Şirket zorunludur';
+      if (!formData.completionDate) errs.completionDate = 'Tamamlanma tarihi zorunludur';
+      if (!formData.description.trim()) errs.description = 'Proje açıklaması zorunludur';
+      if (formData.categoryIds.length === 0) errs.categoryIds = 'En az bir kategori seçmelisiniz';
+      if (formData.images.length === 0) errs.images = 'En az bir proje görseli yüklemelisiniz';
+      if (!formData.coverImage) errs.coverImage = 'Kapak görseli seçmelisiniz';
 
-      // Validate that at least one image is uploaded
-      if (formData.images.length === 0) {
-        throw new Error('En az bir proje görseli yüklemelisiniz');
-      }
-
-      // Validate that cover image is set
-      if (!formData.coverImage) {
-        throw new Error('Kapak görseli seçmelisiniz');
+      if (Object.keys(errs).length > 0) {
+        setFieldErrors(errs);
+        const firstErr = Object.values(errs)[0];
+        setError(firstErr);
+        showToast({ variant: 'danger', title: 'Form hatası', description: firstErr });
+        return;
       }
 
       // Prepare cleaned data
@@ -126,9 +134,12 @@ export default function NewPortfolioItem() {
         throw new Error(data.error || 'Bir hata oluştu');
       }
 
+      showToast({ variant: 'success', title: 'Başarılı', description: 'Portfolio öğesi oluşturuldu' });
       router.push('/admin/portfolio');
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Bir hata oluştu');
+      const msg = err instanceof Error ? err.message : 'Bir hata oluştu';
+      setError(msg);
+      showToast({ variant: 'danger', title: 'İşlem başarısız', description: msg });
     } finally {
       setSubmitting(false);
     }
@@ -215,7 +226,7 @@ export default function NewPortfolioItem() {
 
         {/* Error Message */}
         {error && (
-          <div className="bg-red-50 border border-red-200 text-red-800 p-4 rounded-xl flex items-center space-x-3">
+          <div className="bg-red-50 border border-red-200 text-red-800 p-4 rounded-xl flex items-center space-x-3" role="alert" aria-live="assertive">
             <ExclamationTriangleIcon className="w-5 h-5" />
             <span>{error}</span>
           </div>
@@ -233,32 +244,42 @@ export default function NewPortfolioItem() {
             
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <div>
-                <label className="block text-sm font-medium text-slate-700 mb-2">
+                <label htmlFor="title" className="block text-sm font-medium text-slate-700 mb-2">
                   Proje Başlığı *
                 </label>
                 <input
                   type="text"
+                  id="title"
                   value={formData.title}
                   onChange={handleTitleChange}
-                  className="w-full border border-slate-300 rounded-xl px-4 py-3 text-slate-900 focus:outline-none focus:ring-2 focus:ring-brand-primary-600 focus:border-transparent"
+                  aria-invalid={!!fieldErrors.title}
+                  aria-describedby={fieldErrors.title ? 'title-error' : 'title-help'}
+                  className={`w-full rounded-xl px-4 py-3 text-slate-900 focus:outline-none focus:ring-2 focus:ring-brand-primary-600 focus:border-transparent border ${fieldErrors.title ? 'border-red-400' : 'border-slate-300'}`}
                   placeholder="Proje başlığı giriniz"
                   required
+                  disabled={submitting}
                 />
+                <p id="title-help" className="mt-1 text-xs text-slate-500">Açıklayıcı bir başlık girin.</p>
+                {fieldErrors.title && <p id="title-error" className="mt-1 text-xs text-red-600">{fieldErrors.title}</p>}
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-slate-700 mb-2">
+                <label htmlFor="slug" className="block text-sm font-medium text-slate-700 mb-2">
                   URL Slug (SEO)
                 </label>
                 <div className="relative">
                   <input
                     type="text"
+                    id="slug"
                     value={formData.slug}
                     onChange={(e) => setFormData(prev => ({ ...prev, slug: e.target.value }))}
-                    className={`w-full border border-slate-300 rounded-xl px-4 py-3 text-slate-900 focus:outline-none focus:ring-2 focus:ring-brand-primary-600 focus:border-transparent ${slugLocked ? 'bg-slate-100' : ''}`}
+                    aria-invalid={!!fieldErrors.slug}
+                    aria-describedby={fieldErrors.slug ? 'slug-error' : 'slug-help'}
+                    className={`w-full rounded-xl px-4 py-3 text-slate-900 focus:outline-none focus:ring-2 focus:ring-brand-primary-600 focus:border-transparent border ${fieldErrors.slug ? 'border-red-400' : 'border-slate-300'} ${slugLocked ? 'bg-slate-100' : ''}`}
                     placeholder="url-uyumlu-metin"
                     required
                     readOnly={slugLocked}
+                    disabled={submitting}
                   />
                   <button
                     type="button"
@@ -268,53 +289,72 @@ export default function NewPortfolioItem() {
                     {slugLocked ? <PencilIcon className="w-5 h-5" /> : <CheckIcon className="w-5 h-5" />}
                   </button>
                 </div>
+                <p id="slug-help" className="mt-1 text-xs text-slate-500">URL&apos;de kullanılacak kısa metin.</p>
+                {fieldErrors.slug && <p id="slug-error" className="mt-1 text-xs text-red-600">{fieldErrors.slug}</p>}
               </div>
               
               <div>
-                <label className="block text-sm font-medium text-slate-700 mb-2">
+                <label htmlFor="client" className="block text-sm font-medium text-slate-700 mb-2">
                   Müşteri/Şirket *
                 </label>
                 <input
                   type="text"
+                  id="client"
                   value={formData.client}
                   onChange={(e) => setFormData(prev => ({ ...prev, client: e.target.value }))}
-                  className="w-full border border-slate-300 rounded-xl px-4 py-3 text-slate-900 focus:outline-none focus:ring-2 focus:ring-brand-primary-600 focus:border-transparent"
+                  aria-invalid={!!fieldErrors.client}
+                  aria-describedby={fieldErrors.client ? 'client-error' : 'client-help'}
+                  className={`w-full rounded-xl px-4 py-3 text-slate-900 focus:outline-none focus:ring-2 focus:ring-brand-primary-600 focus:border-transparent border ${fieldErrors.client ? 'border-red-400' : 'border-slate-300'}`}
                   placeholder="Müşteri veya şirket adı"
                   required
+                  disabled={submitting}
                 />
+                <p id="client-help" className="mt-1 text-xs text-slate-500">Referans adı (gizli ise &quot;Gizli&quot; yazabilirsiniz).</p>
+                {fieldErrors.client && <p id="client-error" className="mt-1 text-xs text-red-600">{fieldErrors.client}</p>}
               </div>
               
               <div>
-                <label className="block text-sm font-medium text-slate-700 mb-2">
+                <label htmlFor="completionDate" className="block text-sm font-medium text-slate-700 mb-2">
                   Tamamlanma Tarihi *
                 </label>
                 <input
                   type="date"
+                  id="completionDate"
                   value={formData.completionDate}
                   onChange={(e) => setFormData(prev => ({ ...prev, completionDate: e.target.value }))}
-                  className="w-full border border-slate-300 rounded-xl px-4 py-3 text-slate-900 focus:outline-none focus:ring-2 focus:ring-brand-primary-600 focus:border-transparent"
+                  aria-invalid={!!fieldErrors.completionDate}
+                  aria-describedby={fieldErrors.completionDate ? 'completionDate-error' : 'completionDate-help'}
+                  className={`w-full rounded-xl px-4 py-3 text-slate-900 focus:outline-none focus:ring-2 focus:ring-brand-primary-600 focus:border-transparent border ${fieldErrors.completionDate ? 'border-red-400' : 'border-slate-300'}`}
                   required
+                  disabled={submitting}
                 />
+                <p id="completionDate-help" className="mt-1 text-xs text-slate-500">Tarihi seçiniz.</p>
+                {fieldErrors.completionDate && <p id="completionDate-error" className="mt-1 text-xs text-red-600">{fieldErrors.completionDate}</p>}
               </div>
               
               <div className="md:col-span-2">
-                <label className="block text-sm font-medium text-slate-700 mb-2">
+                <label htmlFor="description" className="block text-sm font-medium text-slate-700 mb-2">
                   Proje Açıklaması *
                 </label>
                 <UniversalEditor
                   value={formData.description}
                   onChange={(content) => setFormData(prev => ({ ...prev, description: content }))}
+                  id="description"
+                  aria-invalid={!!fieldErrors.description}
+                  aria-describedby={fieldErrors.description ? 'description-error' : 'description-help'}
                   placeholder="Proje hakkında detaylı açıklama yazınız"
                   mode="text"
                   minHeight="200px"
                 />
+                <p id="description-help" className="mt-1 text-xs text-slate-500">Özet, kapsam ve katkılarınızı belirtin.</p>
+                {fieldErrors.description && <p id="description-error" className="mt-1 text-xs text-red-600">{fieldErrors.description}</p>}
               </div>
             </div>
           </div>
 
           {/* Categories Selection */}
           <div className="bg-white rounded-xl p-6 shadow-sm border border-slate-200">
-            <h3 className="text-lg font-semibold text-slate-900 mb-4 flex items-center space-x-2">
+            <h3 className="text-lg font-semibold text-slate-900 mb-4 flex items-center space-x-2" id="cats-label">
               <TagIcon className="w-5 h-5 text-brand-primary-700" />
               <span>Kategoriler *</span>
             </h3>
@@ -355,7 +395,7 @@ export default function NewPortfolioItem() {
             </div>
             
             {/* Category Selection Grid */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3" role="group" aria-labelledby="cats-label" aria-describedby={fieldErrors.categoryIds ? 'cats-error' : undefined}>
               {categories.map((category) => (
                 <div
                   key={category._id}
@@ -400,6 +440,7 @@ export default function NewPortfolioItem() {
                 </div>
               ))}
             </div>
+            {fieldErrors.categoryIds && <p id="cats-error" className="mt-2 text-xs text-red-600">{fieldErrors.categoryIds}</p>}
             
             {categories.length === 0 && (
               <div className="text-center py-8">
@@ -420,7 +461,7 @@ export default function NewPortfolioItem() {
 
           {/* Project Images Gallery */}
           <div className="bg-white rounded-xl p-6 shadow-sm border border-slate-200">
-            <h3 className="text-lg font-semibold text-slate-900 mb-4 flex items-center space-x-2">
+            <h3 className="text-lg font-semibold text-slate-900 mb-4 flex items-center space-x-2" id="images-label">
               <PhotoIcon className="w-5 h-5 text-brand-primary-700" />
               <span>Proje Görselleri *</span>
             </h3>
@@ -440,6 +481,12 @@ export default function NewPortfolioItem() {
               disabled={submitting}
               pageContext="portfolio"
             />
+            {(fieldErrors.images || fieldErrors.coverImage) && (
+              <div className="mt-2 space-y-1">
+                {fieldErrors.images && <p className="text-xs text-red-600">{fieldErrors.images}</p>}
+                {fieldErrors.coverImage && <p className="text-xs text-red-600">{fieldErrors.coverImage}</p>}
+              </div>
+            )}
           </div>
 
           {/* Technologies */}
@@ -473,6 +520,7 @@ export default function NewPortfolioItem() {
                       onChange={(e) => handleTechnologyChange(index, e.target.value)}
                       className="flex-1 border border-slate-300 rounded-xl px-4 py-3 text-slate-900 focus:outline-none focus:ring-2 focus:ring-brand-primary-600 focus:border-transparent"
                       placeholder="Teknoloji adı (örn: 3D Tarama, CAD Tasarım)"
+                      disabled={submitting}
                     />
                     <button
                       type="button"
@@ -502,6 +550,7 @@ export default function NewPortfolioItem() {
                     checked={formData.featured}
                     onChange={(e) => setFormData(prev => ({ ...prev, featured: e.target.checked }))}
                     className="w-4 h-4 text-brand-primary-700 border-slate-300 rounded focus:ring-brand-primary-600"
+                    disabled={submitting}
                   />
                   <span className="text-sm font-medium text-slate-700">Öne Çıkan Proje</span>
                 </label>
@@ -521,6 +570,7 @@ export default function NewPortfolioItem() {
                   className="w-full border border-slate-300 rounded-xl px-4 py-3 text-slate-900 focus:outline-none focus:ring-2 focus:ring-brand-primary-600 focus:border-transparent"
                   placeholder="0"
                   min="0"
+                  disabled={submitting}
                 />
                 <p className="text-sm text-slate-500 mt-1">
                   Düşük sayılar önce gösterilir
@@ -546,14 +596,16 @@ export default function NewPortfolioItem() {
             >
               {submitting ? (
                 <>
-                  <div className="flex flex-col items-center space-y-4">
-                    <p className="text-white">Güncelleniyor...</p>
-                  </div>
+                  <svg className="-ml-1 mr-2 h-5 w-5 animate-spin text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" aria-hidden>
+                    <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                    <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z"></path>
+                  </svg>
+                  <span>Kaydediliyor...</span>
                 </>
               ) : (
                 <>
                   <CheckIcon className="w-5 h-5" />
-                  <span>Güncelle</span>
+                  <span>Kaydet</span>
                 </>
               )}
             </button>

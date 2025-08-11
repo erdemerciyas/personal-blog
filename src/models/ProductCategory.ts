@@ -1,4 +1,4 @@
-import mongoose from 'mongoose';
+import mongoose, { type Document } from 'mongoose';
 import slugify from 'slugify';
 
 export interface IProductCategory {
@@ -20,11 +20,9 @@ const productCategorySchema = new mongoose.Schema<IProductCategory>({
   isActive: { type: Boolean, default: true },
 }, { timestamps: true });
 
-productCategorySchema.pre('save', function preSave(next) {
-  // @ts-expect-error mongoose doc typing
+productCategorySchema.pre('save', function preSave(this: Document & Partial<IProductCategory>, next) {
   if (this.isModified('name') || !this.slug) {
-    // @ts-expect-error mongoose doc typing
-    this.slug = slugify(this.name, { lower: true, strict: true });
+    this.slug = slugify(String(this.name), { lower: true, strict: true });
   }
   next();
 });

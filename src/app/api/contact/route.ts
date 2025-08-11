@@ -1,6 +1,6 @@
 import connectDB from '../../../lib/mongoose';
 import Message from '../../../models/Message';
-import { NextResponse } from 'next/server';
+import { NextRequest, NextResponse } from 'next/server';
 import nodemailer from 'nodemailer';
 import { rateLimit, getClientIP } from '../../../lib/rate-limit';
 import { RequestValidator, CommonValidationRules } from '../../../lib/validation';
@@ -9,9 +9,9 @@ import { logger } from '../../../lib/logger';
 // Force dynamic rendering
 export const dynamic = 'force-dynamic';
 
-export async function POST(request: Request) {
+export async function POST(request: NextRequest) {
   const startTime = Date.now();
-  const clientIP = getClientIP(request as Request & { headers: Headers });
+  const clientIP = getClientIP(request);
   
   try {
     // Rate limiting - contact form specific
@@ -58,6 +58,8 @@ export async function POST(request: Request) {
     }
 
     const { name, email, subject, message } = validation.sanitizedData;
+    const messageText = String(message ?? '');
+    const emailAddress = String(email ?? '');
 
     // Database'e bağlan
     await connectDB();
@@ -120,7 +122,7 @@ export async function POST(request: Request) {
               <div style="margin-bottom: 15px;">
                 <strong style="color: #374151;">💬 Mesaj:</strong>
                 <div style="background-color: #f1f5f9; padding: 15px; border-radius: 8px; margin-top: 8px; border-left: 4px solid #0891b2;">
-                  ${message.replace(/\n/g, '<br>')}
+                  ${messageText.replace(/\n/g, '<br>')}
                 </div>
               </div>
               
@@ -139,7 +141,7 @@ export async function POST(request: Request) {
       // Gönderene otomatik yanıt
       const autoReplyMailOptions = {
         from: process.env.GMAIL_USER,
-        to: email,
+        to: emailAddress,
         subject: `✅ Mesajınızı Aldık - ${subject}`,
         html: `
           <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px; background-color: #f8fafc; border-radius: 12px;">

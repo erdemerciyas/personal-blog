@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useState, useRef, useCallback, useMemo } from 'react';
+
 import {
   BoldIcon,
   ItalicIcon,
@@ -13,7 +14,7 @@ import {
   CheckIcon
 } from '@heroicons/react/24/outline';
 
-interface UniversalEditorProps {
+interface UniversalEditorProps extends Omit<React.TextareaHTMLAttributes<HTMLTextAreaElement>, 'value' | 'onChange' | 'placeholder' | 'disabled'> {
   value: string;
   onChange: (value: string) => void;
   placeholder?: string;
@@ -65,7 +66,9 @@ const UniversalEditor: React.FC<UniversalEditorProps> = ({
   maxHeight = '500px',
   disabled = false,
   mode = 'text',
-  showPreview = true
+  showPreview = true,
+  rows,
+  ...rest
 }) => {
   const textareaRef = useRef<HTMLTextAreaElement>(null);
   const [isPreview, setIsPreview] = useState(false);
@@ -383,6 +386,8 @@ const UniversalEditor: React.FC<UniversalEditorProps> = ({
           maxHeight,
           opacity: disabled ? 0.6 : 1
         }}
+        rows={rows}
+        {...rest}
         spellCheck={false}
       />
 

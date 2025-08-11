@@ -109,7 +109,7 @@ export async function POST(request: Request) {
     }
 
     return NextResponse.json({ message: 'Sipariş onaylandı' }, { status: 200 });
-  } catch (err) {
+  } catch {
     return NextResponse.json({ message: 'Bir hata oluştu' }, { status: 500 });
   }
 }

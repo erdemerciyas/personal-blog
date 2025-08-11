@@ -151,19 +151,19 @@ export async function POST(request: NextRequest) {
 
 // Generate security recommendations based on current data
 function generateSecurityRecommendations(
-  summary: Record<string, number>, 
-  suspiciousEvents: Array<Record<string, unknown>>, 
+  summary: Record<string, unknown>, 
+  suspiciousEvents: unknown[], 
   blockedIPs: string[]
 ): string[] {
   const recommendations: string[] = [];
 
   // High failed login rate
-  if (summary.failedLogins > 20) {
+  if (Number((summary as { failedLogins?: number }).failedLogins ?? 0) > 20) {
     recommendations.push('Yüksek başarısız giriş denemesi tespit edildi. Rate limiting ayarlarını gözden geçirin.');
   }
 
   // Many suspicious activities
-  if (summary.suspiciousActivity > 10) {
+  if (Number((summary as { suspiciousActivity?: number }).suspiciousActivity ?? 0) > 10) {
     recommendations.push('Çok sayıda şüpheli aktivite tespit edildi. Güvenlik kurallarını sıkılaştırın.');
   }
 
@@ -173,13 +173,13 @@ function generateSecurityRecommendations(
   }
 
   // Recent critical events
-  const recentCritical = suspiciousEvents.filter(e => e.severity === 'critical');
+  const recentCritical = suspiciousEvents.filter(e => (e as { severity?: string }).severity === 'critical');
   if (recentCritical.length > 0) {
     recommendations.push('Kritik güvenlik olayları tespit edildi. Acil müdahale gerekebilir.');
   }
 
   // Low activity might indicate issues
-  if (summary.totalEvents < 10) {
+  if (Number((summary as { totalEvents?: number }).totalEvents ?? 0) < 10) {
     recommendations.push('Düşük aktivite tespit edildi. Güvenlik loglarının düzgün çalıştığını kontrol edin.');
   }
 

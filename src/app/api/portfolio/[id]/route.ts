@@ -134,19 +134,8 @@ export async function PUT(
       );
     }
 
-    // Update object'ini hazırla
-    const updateData: {
-      title: string;
-      description: string;
-      client: string;
-      completionDate: Date;
-      technologies: string[];
-      coverImage: string;
-      images: string[];
-      categoryIds?: string[];
-      categoryId?: string;
-      slug: string;
-    } = {
+    // Update object'ini hazırla (Mongo doküman alanları için esnek tip)
+    const updateData: Record<string, unknown> = {
       title: data.title,
       description: data.description,
       client: data.client,
@@ -164,10 +153,12 @@ export async function PUT(
       updateData.categoryIds = data.categoryIds.map((id: string) => new ObjectId(id));
       // Geriye uyumluluk için ilk kategoriyi categoryId olarak da kaydet
       updateData.categoryId = new ObjectId(data.categoryIds[0]);
+
     } else if (data.categoryId) {
       // Eski tekli kategori desteği
       updateData.categoryId = new ObjectId(data.categoryId);
       updateData.categoryIds = [new ObjectId(data.categoryId)];
+
     }
 
     const result = await db.collection('portfolios').updateOne(

@@ -27,7 +27,7 @@ export async function GET() {
 
     // For now, return an empty array since there's no Page model yet
     // This can be expanded when a Page model is created
-    const pages = [];
+    const pages: unknown[] = [];
 
     return NextResponse.json(pages);
 

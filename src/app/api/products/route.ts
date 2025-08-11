@@ -48,7 +48,7 @@ export async function GET(req: NextRequest) {
     (filter as Record<string, unknown>).stock = { $gt: 0 };
   }
   if (freeShipping === 'true') {
-    const threshold = appConfig.freeShippingThreshold || 1500;
+    const threshold = Number((appConfig as { freeShippingThreshold?: number })?.freeShippingThreshold ?? 1500);
     (filter as Record<string, unknown>).price = {
       ...(filter as Record<string, unknown>).price as Record<string, unknown> || {},
       $gte: threshold
@@ -61,7 +61,9 @@ export async function GET(req: NextRequest) {
     if (cat?._id) (filter as Record<string, unknown>).categoryIds = String(cat._id);
   }
 
-  const sortSpec = !sort ? { createdAt: -1 } : (sort === 'priceAsc' ? { price: 1 } : { price: -1 });
+  const sortSpec: Record<string, 1 | -1> = !sort
+    ? { createdAt: -1 }
+    : (sort === 'priceAsc' ? { price: 1 } : { price: -1 });
   // Projection to reduce payload size
   const projection = '-attachments';
   const items = await Product.find(filter, projection).sort(sortSpec).skip((page - 1) * limit).limit(limit).lean({ getters: true });

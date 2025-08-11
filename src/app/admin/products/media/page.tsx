@@ -40,7 +40,7 @@ export default function AdminProductMediaPage() {
       if (!res.ok) throw new Error('Medya yüklenemedi');
       const items: MediaItem[] = await res.json();
       setMediaItems(items);
-    } catch (e) {
+    } catch {
       setMessage({ type: 'error', text: 'Medya listelenirken hata oluştu.' });
     } finally {
       setLoading(false);
@@ -59,7 +59,7 @@ export default function AdminProductMediaPage() {
       setMessage({ type: 'success', text: 'Dosya silindi' });
       await loadMedia();
       setTimeout(() => setMessage(null), 2000);
-    } catch (e) {
+    } catch {
       setMessage({ type: 'error', text: 'Dosya silinirken hata oluştu.' });
     }
   }

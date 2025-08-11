@@ -109,9 +109,9 @@ export function formatErrorResponse(error: Error | AppError, path?: string) {
       error: {
         message: appError.message,
         code: appError.code,
-        ...(appError.details && { details: appError.details }),
-        ...(path && { path }),
-        ...(isProduction ? {} : { stack: appError.stack })
+        ...appError.details ? { details: appError.details } : {},
+        ...path ? { path } : {},
+        ...!isProduction ? { stack: appError.stack } : {},
       },
       statusCode: appError.statusCode
     };
@@ -123,8 +123,8 @@ export function formatErrorResponse(error: Error | AppError, path?: string) {
       error: {
         message: isProduction ? 'Internal server error' : error.message,
         code: ErrorCode.INTERNAL_ERROR,
-        ...(path && { path }),
-        ...(isProduction ? {} : { stack: error.stack })
+        ...path ? { path } : {},
+        ...!isProduction ? { stack: error.stack } : {},
       },
       statusCode: 500
     };

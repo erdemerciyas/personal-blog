@@ -393,7 +393,7 @@ export default function PortfolioFilters({
 
       {/* Results Count */}
       <div className="flex items-center justify-between pt-4 border-t border-slate-200">
-        <div className="flex items-center text-slate-600">
+        <div className="flex items-center text-slate-600" role="status" aria-live="polite">
           <Squares2X2Icon className="w-5 h-5 mr-2" />
           <span className="font-medium">
             {isLoading ? (

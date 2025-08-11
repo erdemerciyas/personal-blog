@@ -16,7 +16,7 @@ Modern, güvenli ve performanslı kişisel blog ve portfolyo platformu. Next.js 
 
 **🚀 [Live Site](https://fixral-ao7clr42w-erdem-erciyas-projects.vercel.app)** | **🔧 [Admin Panel](https://fixral-ao7clr42w-erdem-erciyas-projects.vercel.app/admin)** | **📊 [API Health](https://fixral-ao7clr42w-erdem-erciyas-projects.vercel.app/api/health)**
 
-> **Status**: ✅ **LIVE** | **Last Deploy**: Pending | **Version**: v2.2.8 | **🚀 CI/CD Pipeline**: ✅ **OPTIMIZED**
+> **Status**: ✅ **LIVE** | **Last Deploy**: Pending | **Version**: v2.2.9 | **🚀 CI/CD Pipeline**: ✅ **OPTIMIZED**
 
 ## ✨ Özellikler
 
@@ -130,6 +130,18 @@ npm run dev
 ```
 
 Uygulama [http://localhost:3000](http://localhost:3000) adresinde çalışacaktır.
+
+## 🆕 Yeni Özellikler (v2.2.9)
+
+### 🔧 TypeScript ve Lint Temizliği (2025-08-12)
+- Proje genelinde TypeScript tip hataları giderildi, `npm run type-check` hatasız
+- `no-explicit-any` ve ilgili ESLint uyarıları temizlendi
+- Mongoose pre hook'larında `this` tipleri tanımlanarak güvenli hale getirildi
+- `appConfig.freeShippingThreshold` erişimleri dar tiplerle güvence altına alındı
+- Portfolio slug API için lean sonuç arayüzleri eklendi, güvenli erişim sağlandı
+- `npm run build` başarıyla doğrulandı
+
+---
 
 ## 🆕 Yeni Özellikler (v2.2.7)
 

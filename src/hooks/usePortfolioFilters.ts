@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useMemo, useCallback } from 'react';
+import { useState, useMemo, useCallback, useEffect } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import type { PortfolioItem, Category } from '../types/portfolio';
 
@@ -105,6 +105,44 @@ export function usePortfolioFilters(
     setFiltersState(newFilters);
     updateURL(newFilters);
   }, [updateURL]);
+
+  // Keep filters in sync if URL changes (e.g., back/forward navigation)
+  useEffect(() => {
+    if (!searchParams) return;
+    const categoriesParam = searchParams.get('categories');
+    const categoryParam = searchParams.get('category');
+    const searchParam = searchParams.get('search') || '';
+    const technologiesParam = searchParams.get('technologies');
+    const sortParam = searchParams.get('sort') || 'newest-desc';
+    const startDateParam = searchParams.get('startDate') || '';
+    const endDateParam = searchParams.get('endDate') || '';
+
+    let selectedCategories: string[] = [];
+    if (categoriesParam) {
+      selectedCategories = categoriesParam.split(',').map(slug => slug.trim()).filter(Boolean);
+    } else if (categoryParam) {
+      selectedCategories = [categoryParam];
+    }
+
+    const selectedTechnologies = technologiesParam 
+      ? technologiesParam.split(',').map(tech => tech.trim()).filter(Boolean)
+      : [];
+
+    const [sortBy, sortOrder] = (sortParam.split('-') as [FilterState['sortBy'], FilterState['sortOrder']]);
+
+    const nextFilters: FilterState = {
+      search: searchParam,
+      categories: selectedCategories,
+      technologies: selectedTechnologies,
+      dateRange: { start: startDateParam, end: endDateParam },
+      sortBy: sortBy || 'newest',
+      sortOrder: sortOrder || 'desc'
+    };
+
+    setFiltersState(prev => {
+      return JSON.stringify(prev) === JSON.stringify(nextFilters) ? prev : nextFilters;
+    });
+  }, [searchParams]);
 
   // Extract available technologies from all projects
   const availableTechnologies = useMemo(() => {
