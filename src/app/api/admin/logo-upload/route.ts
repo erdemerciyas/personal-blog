@@ -1,22 +1,12 @@
 export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';
 import { NextRequest, NextResponse } from 'next/server';
-import { getServerSession } from 'next-auth';
-import { authOptions } from '../../../../lib/auth';
 import { writeFile, mkdir } from 'fs/promises';
 import path from 'path';
+import { withSecurity, SecurityConfigs } from '../../../../lib/security-middleware';
 
-export async function POST(request: NextRequest) {
+export const POST = withSecurity(SecurityConfigs.admin)(async (request: NextRequest) => {
   try {
-    const session = await getServerSession(authOptions);
-    
-    if (!session?.user) {
-      return NextResponse.json(
-        { error: 'Yetkisiz erişim' },
-        { status: 401 }
-      );
-    }
-
     const formData = await request.formData();
     const file = formData.get('logo') as File;
     
@@ -77,4 +67,4 @@ export async function POST(request: NextRequest) {
       { status: 500 }
     );
   }
-} 
+}); 

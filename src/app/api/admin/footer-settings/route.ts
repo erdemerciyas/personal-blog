@@ -1,15 +1,14 @@
 import { NextResponse } from 'next/server';
 import connectDB from '../../../../lib/mongoose';
 import FooterSettings from '../../../../models/FooterSettings';
-import { getServerSession } from 'next-auth/next';
-import { authOptions } from '../../../../lib/auth';
+import { withSecurity, SecurityConfigs } from '../../../../lib/security-middleware';
 
 // Force dynamic rendering
 export const dynamic = 'force-dynamic';
 export const runtime = 'nodejs';
 
 // GET: Footer ayarlarını getir
-export async function GET() {
+export const GET = withSecurity(SecurityConfigs.admin)(async () => {
   try {
     console.log('🔄 Footer settings GET request started');
     await connectDB();
@@ -30,26 +29,13 @@ export async function GET() {
       { status: 500 }
     );
   }
-}
+})
 
 // PUT: Footer ayarlarını güncelle  
-export async function PUT(request: Request) {
+export const PUT = withSecurity(SecurityConfigs.admin)(async (request: Request) => {
   try {
     console.log('🔄 Footer settings PUT request started');
     
-    // Sadece admin kullanıcılar güncelleyebilir
-    console.log('🔐 Checking session...');
-    const session = await getServerSession(authOptions);
-    console.log('Session result:', session ? 'Found' : 'Not found');
-    
-    if (!session) {
-      console.log('❌ No session found, returning 401');
-      return NextResponse.json(
-        { message: 'Yetki gerekli' },
-        { status: 401 }
-      );
-    }
-
     console.log('🔗 Connecting to database...');
     await connectDB();
     console.log('✅ Database connected');
@@ -84,7 +70,8 @@ export async function PUT(request: Request) {
       console.log('📝 Updating existing footer settings');
       try {
         // Deep merge for nested objects
-        const mergeDeep = (target: Record<string, unknown>, source: Record<string, unknown>) => {
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        const mergeDeep = (target: any, source: any) => {
           for (const key in source) {
             if (source[key] && typeof source[key] === 'object' && !Array.isArray(source[key])) {
               if (!target[key]) target[key] = {};
@@ -95,7 +82,8 @@ export async function PUT(request: Request) {
           }
         };
         
-        mergeDeep(settings, updateData);
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        mergeDeep(settings as any, updateData as any);
         console.log('✅ Settings merged successfully');
       } catch (mergeError) {
         console.error('❌ Error merging settings:', mergeError);
@@ -156,19 +144,11 @@ export async function PUT(request: Request) {
       { status: 500 }
     );
   }
-}
+})
 
 // POST: Footer ayarlarını sıfırla (varsayılan değerlere döndür)
-export async function POST() {
+export const POST = withSecurity(SecurityConfigs.admin)(async () => {
   try {
-    const session = await getServerSession(authOptions);
-    if (!session) {
-      return NextResponse.json(
-        { message: 'Yetki gerekli' },
-        { status: 401 }
-      );
-    }
-
     await connectDB();
     
     // Mevcut ayarları sil ve yenilerini oluştur
@@ -189,4 +169,4 @@ export async function POST() {
       { status: 500 }
     );
   }
-}
+})

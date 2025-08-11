@@ -7,12 +7,13 @@ const withBundleAnalyzer = require('@next/bundle-analyzer')({
 
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-  // For CI/production deployments, allow build to proceed even with lint/TS issues
+  // Determine strictness based on environment
+  // In CI/Vercel builds we enforce lint and type-check errors to fail the build
   eslint: {
-    ignoreDuringBuilds: true,
+    ignoreDuringBuilds: !(process.env.CI === 'true' || process.env.VERCEL === '1'),
   },
   typescript: {
-    ignoreBuildErrors: true,
+    ignoreBuildErrors: !(process.env.CI === 'true' || process.env.VERCEL === '1'),
   },
   // Vercel optimizations
   webpack: (config) => {
@@ -62,7 +63,6 @@ const nextConfig = {
     imageSizes: [16, 32, 48, 64, 96, 128, 256, 384],
     // Security: Disable external image optimization for untrusted sources
     dangerouslyAllowSVG: false,
-    contentSecurityPolicy: "default-src 'self'; script-src 'none'; frame-src 'self' https://vercel.live https://vercel.com; sandbox;",
     // Performance: Enable image optimization
     formats: ['image/webp'],
     minimumCacheTTL: 60 * 60 * 24 * 30, // 30 days

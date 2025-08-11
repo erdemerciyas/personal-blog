@@ -4,6 +4,7 @@ import { authOptions } from '../../../../../lib/auth';
 import connectDB from '../../../../../lib/mongoose';
 import User from '../../../../../models/User';
 import bcrypt from 'bcryptjs';
+import { withSecurity, SecurityConfigs } from '../../../../../lib/security-middleware';
 
 interface SessionUser {
   id: string;
@@ -13,19 +14,11 @@ interface SessionUser {
 }
 
 // PUT /api/admin/users/password - Kullanıcı şifresi değiştir
-export async function PUT(request: Request) {
+export const PUT = withSecurity(SecurityConfigs.authenticated)(async (request: Request) => {
   try {
     const session = await getServerSession(authOptions);
-    
-    if (!session?.user) {
-      return NextResponse.json(
-        { error: 'Bu işlem için yetkiniz yok' },
-        { status: 401 }
-      );
-    }
-
     const { userId, currentPassword, newPassword, isAdmin } = await request.json();
-    const sessionUser = session.user as SessionUser;
+    const sessionUser = session?.user as SessionUser;
 
     // Admin kullanıcısı başka kullanıcının şifresini değiştirebilir
     // Normal kullanıcı sadece kendi şifresini değiştirebilir
@@ -88,4 +81,4 @@ export async function PUT(request: Request) {
       { status: 500 }
     );
   }
-} 
+}); 

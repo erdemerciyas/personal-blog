@@ -1,11 +1,11 @@
 import { NextResponse } from 'next/server';
 import { getServerSession } from 'next-auth';
 import { connectToDatabase } from '../../../lib/mongoose';
-import { authOptions } from '../../../lib/auth';
 
 import { logger } from '../../../lib/logger';
 import { createError, asyncHandler } from '../../../lib/errorHandler';
 import { cache, CacheKeys, CacheTTL, cacheHelpers } from '../../../lib/cache';
+import { withSecurity, SecurityConfigs } from '../../../lib/security-middleware';
 
 import Service from '../../../models/Service';
 
@@ -13,9 +13,10 @@ import Service from '../../../models/Service';
 export const dynamic = 'force-dynamic';
 
 // GET /api/services - Tüm servisleri getir
-export const GET = asyncHandler(async () => {
+export const GET = asyncHandler(async (req: Request) => {
   const startTime = Date.now();
   logger.apiRequest('GET', '/api/services');
+  logger.debug('Services GET handler invoked', 'API', { method: req.method });
 
   // Try to get from cache first
   const cached = cache.get(CacheKeys.SERVICES);
@@ -39,14 +40,9 @@ export const GET = asyncHandler(async () => {
 });
 
 // POST /api/services - Yeni servis ekle
-export const POST = asyncHandler(async (request: Request) => {
+export const POST = withSecurity(SecurityConfigs.admin)(asyncHandler(async (request: Request) => {
   const startTime = Date.now();
   logger.apiRequest('POST', '/api/services');
-
-  const session = await getServerSession(authOptions);
-  if (!session?.user) {
-    throw createError.unauthorized('Bu işlem için yetkiniz yok');
-  }
 
   const body = await request.json();
   
@@ -73,6 +69,7 @@ export const POST = asyncHandler(async (request: Request) => {
 
   const imageUrl = body.image || '';
 
+  const session = await getServerSession();
   const serviceData = {
     title: body.title.trim(),
     description: body.description.trim(),
@@ -80,7 +77,7 @@ export const POST = asyncHandler(async (request: Request) => {
     features: body.features || [],
     createdAt: new Date(),
     updatedAt: new Date(),
-    createdBy: session.user.email
+    createdBy: session?.user?.email
   };
 
   try {
@@ -98,11 +95,12 @@ export const POST = asyncHandler(async (request: Request) => {
     });
 
     return NextResponse.json(newService, { status: 201 });
-  } catch (error: { code?: number }) {
-    if (error.code === 11000) {
+  } catch (error: unknown) {
+    const err = error as { code?: number };
+    if (err.code === 11000) {
       // Duplicate key error
       throw createError.validation('Bu başlıkta bir servis zaten mevcut');
     }
     throw createError.database('Servis oluşturulurken veritabanı hatası oluştu');
   }
-});
+}));

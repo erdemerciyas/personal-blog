@@ -1,33 +1,16 @@
 export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';
 import { NextResponse } from 'next/server';
-import { getServerSession } from 'next-auth';
-import { authOptions } from '../../../../lib/auth';
 import connectDB from '../../../../lib/mongoose';
 import Portfolio from '../../../../models/Portfolio';
 import Product from '../../../../models/Product';
 import Service from '../../../../models/Service';
 import Message from '../../../../models/Message';
 import User from '../../../../models/User';
+import { withSecurity, SecurityConfigs } from '../../../../lib/security-middleware';
 
-export async function GET() {
+export const GET = withSecurity(SecurityConfigs.admin)(async () => {
   try {
-    const session = await getServerSession(authOptions);
-    
-    if (!session?.user) {
-      return NextResponse.json(
-        { error: 'Yetkisiz erişim' },
-        { status: 401 }
-      );
-    }
-
-    if (session.user.role !== 'admin') {
-      return NextResponse.json(
-        { error: 'Admin yetkisi gerekli' },
-        { status: 403 }
-      );
-    }
-
     await connectDB();
 
     // Medya sayısını Cloudinary'den al
@@ -93,4 +76,4 @@ export async function GET() {
       { status: 500 }
     );
   }
-} 
+}); 

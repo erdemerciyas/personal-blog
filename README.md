@@ -16,7 +16,7 @@ Modern, güvenli ve performanslı kişisel blog ve portfolyo platformu. Next.js 
 
 **🚀 [Live Site](https://fixral-ao7clr42w-erdem-erciyas-projects.vercel.app)** | **🔧 [Admin Panel](https://fixral-ao7clr42w-erdem-erciyas-projects.vercel.app/admin)** | **📊 [API Health](https://fixral-ao7clr42w-erdem-erciyas-projects.vercel.app/api/health)**
 
-> **Status**: ✅ **LIVE** | **Last Deploy**: 2025-08-11 10:30 UTC | **Version**: v2.2.7 | **🚀 CI/CD Pipeline**: ✅ **OPTIMIZED**
+> **Status**: ✅ **LIVE** | **Last Deploy**: Pending | **Version**: v2.2.8 | **🚀 CI/CD Pipeline**: ✅ **OPTIMIZED**
 
 ## ✨ Özellikler
 

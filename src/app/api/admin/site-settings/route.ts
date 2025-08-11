@@ -1,15 +1,14 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { getServerSession } from 'next-auth/next';
-import { authOptions } from '../../../../lib/auth';
 import connectDB from '../../../../lib/mongoose';
 import SiteSettings from '../../../../models/SiteSettings';
+import { withSecurity, SecurityConfigs } from '../../../../lib/security-middleware';
 
 // Force dynamic rendering
 export const dynamic = 'force-dynamic';
 export const runtime = 'nodejs';
 
 // GET: Site ayarlarını getir
-export async function GET() {
+export const GET = withSecurity(SecurityConfigs.admin)(async () => {
   try {
     await connectDB();
     
@@ -23,20 +22,11 @@ export async function GET() {
       { status: 500 }
     );
   }
-}
+});
 
 // PUT: Site ayarlarını güncelle
-export async function PUT(request: NextRequest) {
+export const PUT = withSecurity(SecurityConfigs.admin)(async (request: NextRequest) => {
   try {
-    const session = await getServerSession(authOptions);
-    
-    if (!session?.user) {
-      return NextResponse.json(
-        { error: 'Yetkisiz erişim' },
-        { status: 401 }
-      );
-    }
-
     await connectDB();
     
     const updateData = await request.json();
@@ -76,7 +66,7 @@ export async function PUT(request: NextRequest) {
       { status: 500 }
     );
   }
-}
+});
 
 interface SiteSettingsRequest {
   facebook?: string;
@@ -87,14 +77,8 @@ interface SiteSettingsRequest {
   youtube?: string;
 }
 
-export async function POST(request: NextRequest) {
+export const POST = withSecurity(SecurityConfigs.admin)(async (request: NextRequest) => {
   try {
-    const session = await getServerSession(authOptions);
-    
-    if (!session?.user?.email) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
-    }
-
     await connectDB();
     
     const body: SiteSettingsRequest = await request.json();
@@ -114,4 +98,4 @@ export async function POST(request: NextRequest) {
       error: 'Ayarlar güncellenirken bir hata oluştu' 
     }, { status: 500 });
   }
-}
+});

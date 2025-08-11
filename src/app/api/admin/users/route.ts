@@ -1,24 +1,15 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { getServerSession } from 'next-auth/next';
-import { authOptions } from '../../../../lib/auth';
 import connectDB from '../../../../lib/mongoose';
 import User from '../../../../models/User';
 import bcrypt from 'bcryptjs';
+import { withSecurity, SecurityConfigs } from '../../../../lib/security-middleware';
 
-export async function GET() {
+export const GET = withSecurity(SecurityConfigs.admin)(async () => {
   try {
-    const session = await getServerSession(authOptions);
-    
-    if (!session?.user || session.user.role !== 'admin') {
-      return NextResponse.json({ message: 'Yetkisiz erişim' }, { status: 401 });
-    }
-
     await connectDB();
-    
     const users = await User.find({})
       .select('-password')
       .sort({ createdAt: -1 });
-
     return NextResponse.json(users);
   } catch (error) {
     console.error('Users fetch error:', error);
@@ -27,16 +18,10 @@ export async function GET() {
       { status: 500 }
     );
   }
-}
+});
 
-export async function POST(request: NextRequest) {
+export const POST = withSecurity(SecurityConfigs.admin)(async (request: NextRequest) => {
   try {
-    const session = await getServerSession(authOptions);
-    
-    if (!session?.user || session.user.role !== 'admin') {
-      return NextResponse.json({ message: 'Yetkisiz erişim' }, { status: 401 });
-    }
-
     const { name, email, password, role, isActive } = await request.json();
 
     if (!name || !email || !password) {
@@ -89,4 +74,4 @@ export async function POST(request: NextRequest) {
       { status: 500 }
     );
   }
-}
+});

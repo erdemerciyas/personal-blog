@@ -3,19 +3,11 @@ import { getServerSession } from 'next-auth';
 import { connectToDatabase } from '../../../../lib/mongoose';
 import { authOptions } from '../../../../lib/auth';
 import bcrypt from 'bcryptjs';
+import { withSecurity, SecurityConfigs } from '../../../../lib/security-middleware';
 
-export async function POST(request: Request) {
+export const POST = withSecurity(SecurityConfigs.admin)(async (request: Request) => {
   try {
     const session = await getServerSession(authOptions);
-
-    // Oturum kontrolü
-    if (!session || session.user?.role !== 'admin') {
-      return NextResponse.json(
-        { error: 'Bu işlem için yetkiniz yok' },
-        { status: 403 }
-      );
-    }
-
     const { currentPassword, newPassword } = await request.json();
 
     if (!currentPassword || !newPassword) {
@@ -25,13 +17,20 @@ export async function POST(request: Request) {
       );
     }
 
+    // Session email (admin) must exist due to middleware; validate defensively
+    const email = session?.user?.email as string | undefined;
+    if (!email) {
+      return NextResponse.json(
+        { error: 'Oturum bilgisi eksik' },
+        { status: 500 }
+      );
+    }
+
     // Veritabanı bağlantısı
     const { db } = await connectToDatabase();
 
     // Admin kullanıcısını bul
-    const admin = await db.collection('users').findOne({
-      email: session.user.email,
-    });
+    const admin = await db.collection('users').findOne({ email });
 
     if (!admin) {
       return NextResponse.json(
@@ -45,7 +44,7 @@ export async function POST(request: Request) {
 
     // Şifreyi güncelle
     await db.collection('users').updateOne(
-      { email: session.user.email },
+      { email },
       { $set: { password: hashedPassword } }
     );
 
@@ -60,4 +59,4 @@ export async function POST(request: Request) {
       { status: 500 }
     );
   }
-} 
+});

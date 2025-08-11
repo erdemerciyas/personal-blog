@@ -1,3 +1,15 @@
+## [2.2.8] - 2025-08-12
+
+### Changed
+- Admin API endpoints refactored to use centralized security middleware `withSecurity(SecurityConfigs.admin)` for consistent RBAC.
+- Removed manual session/role checks from admin and admin-required routes for maintainability.
+
+### Fixed
+- `src/app/api/settings/route.ts`: aligned handlers with middleware signature, removed legacy session references, and fixed TypeScript types using `Partial<ISiteSettings>`; ensured full `socialMedia` shape to satisfy the model contract.
+- Addressed minor ESLint issues and logging consistency in refactored routes.
+
+### Notes
+- Remaining TypeScript errors exist in unrelated pages/components; will be addressed next before enforcing CI build.
 
 ## [2.1.2] - 2025-07-29
 

@@ -162,10 +162,11 @@ export class SecurityHeaders {
         const adminCSP = [
           ...baseCSP,
           // Keep strict: avoid unsafe-eval in production
-          process.env.NODE_ENV === 'development' ? "script-src 'self' 'unsafe-inline' 'unsafe-eval'" : "script-src 'self'",
+          // script-src will be extended conditionally (e.g., GA) below
           "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com",
           "font-src 'self' https://fonts.gstatic.com",
-          "img-src 'self' data: blob: https: http:",
+          // Explicitly allow Cloudinary
+          "img-src 'self' data: blob: https: res.cloudinary.com",
           "media-src 'self' https:",
           "frame-src 'self'",
           "worker-src 'self' blob:",
@@ -173,11 +174,27 @@ export class SecurityHeaders {
           "frame-ancestors 'none'"
         ];
 
-        if (isDevelopment) {
-          adminCSP.push("connect-src 'self' https: wss: ws://localhost:* http://localhost:*");
-        } else {
-          adminCSP.push("connect-src 'self' https: wss:");
+        // Build script-src with optional analytics
+        let adminScriptSrc = isDevelopment
+          ? "script-src 'self' 'unsafe-inline' 'unsafe-eval'"
+          : "script-src 'self'";
+
+        if (process.env.NEXT_PUBLIC_GA_ID) {
+          adminScriptSrc += " https://www.googletagmanager.com https://www.google-analytics.com";
         }
+        if (isDevelopment) {
+          adminScriptSrc += " https://vercel.live https://va.vercel-scripts.com";
+        }
+        adminCSP.push(adminScriptSrc);
+
+        // Build connect-src with optional analytics endpoints
+        let adminConnectSrc = isDevelopment
+          ? "connect-src 'self' https: wss: ws://localhost:* http://localhost:*"
+          : "connect-src 'self' https: wss:";
+        if (process.env.NEXT_PUBLIC_GA_ID) {
+          adminConnectSrc += " https://www.google-analytics.com https://www.googletagmanager.com";
+        }
+        adminCSP.push(adminConnectSrc);
 
         return adminCSP.join('; ');
 
@@ -186,19 +203,33 @@ export class SecurityHeaders {
           ...baseCSP,
           "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com",
           "font-src 'self' https://fonts.gstatic.com",
-          "img-src 'self' data: https:",
+          // Explicitly allow Cloudinary
+          "img-src 'self' data: https: res.cloudinary.com",
           "media-src 'self' https:",
           "frame-src 'self' https://maps.google.com https://www.google.com",
           "frame-ancestors 'none'"
         ];
 
-        if (isDevelopment) {
-          publicCSP.push("script-src 'self' 'unsafe-inline' 'unsafe-eval' https://vercel.live https://va.vercel-scripts.com");
-          publicCSP.push("connect-src 'self' https: wss: ws://localhost:* http://localhost:*");
-        } else {
-          publicCSP.push("script-src 'self'");
-          publicCSP.push("connect-src 'self' https: wss:");
+        // Build script-src (optionally extend with analytics)
+        let publicScriptSrc = isDevelopment
+          ? "script-src 'self' 'unsafe-inline' 'unsafe-eval'"
+          : "script-src 'self'";
+        if (process.env.NEXT_PUBLIC_GA_ID) {
+          publicScriptSrc += " https://www.googletagmanager.com https://www.google-analytics.com";
         }
+        if (isDevelopment) {
+          publicScriptSrc += " https://vercel.live https://va.vercel-scripts.com";
+        }
+        publicCSP.push(publicScriptSrc);
+
+        // Build connect-src (optionally extend with analytics)
+        let publicConnectSrc = isDevelopment
+          ? "connect-src 'self' https: wss: ws://localhost:* http://localhost:*"
+          : "connect-src 'self' https: wss:";
+        if (process.env.NEXT_PUBLIC_GA_ID) {
+          publicConnectSrc += " https://www.google-analytics.com https://www.googletagmanager.com";
+        }
+        publicCSP.push(publicConnectSrc);
 
         return publicCSP.join('; ');
 

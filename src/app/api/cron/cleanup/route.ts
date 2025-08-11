@@ -5,9 +5,17 @@ import path from 'path';
 
 export async function GET(request: NextRequest) {
   // Verify this is a legitimate cron request
-  const authHeader = request.headers.get('authorization');
-  if (authHeader !== `Bearer ${process.env.CRON_SECRET}`) {
-    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+  const url = new URL(request.url);
+  const hasVercelCronHeader = !!request.headers.get('x-vercel-cron');
+  const authHeader = request.headers.get('authorization') || '';
+  const bearer = authHeader.startsWith('Bearer ')
+    ? authHeader.slice('Bearer '.length)
+    : undefined;
+  const secretParam = url.searchParams.get('secret') || request.headers.get('x-cron-secret') || bearer;
+  const isAuthorized = hasVercelCronHeader || (secretParam && secretParam === process.env.CRON_SECRET);
+
+  if (!isAuthorized) {
+    return NextResponse.json({ error: 'Unauthorized' }, { status: 401, headers: { 'Cache-Control': 'no-store' } });
   }
 
   try {
@@ -58,12 +66,16 @@ export async function GET(request: NextRequest) {
     results.cacheCleared = true;
 
     console.log('Cleanup cron job completed:', results);
-    
-    return NextResponse.json({
+
+    const response = NextResponse.json({
       success: true,
       message: 'Cleanup completed successfully',
       results
     });
+    response.headers.set('Cache-Control', 'no-store, no-cache, must-revalidate');
+    response.headers.set('Pragma', 'no-cache');
+    response.headers.set('Expires', '0');
+    return response;
 
   } catch (error) {
     console.error('Cleanup cron job error:', error);

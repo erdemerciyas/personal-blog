@@ -1,8 +1,7 @@
 export const runtime = 'nodejs';
 import { NextRequest, NextResponse } from 'next/server';
-import { getServerSession } from 'next-auth';
-import { authOptions } from '../../../../lib/auth';
 import { v2 as cloudinary } from 'cloudinary';
+import { withSecurity, SecurityConfigs } from '../../../../lib/security-middleware';
 
 interface CloudinaryResource {
   public_id: string;
@@ -13,13 +12,6 @@ interface CloudinaryResource {
   resource_type: string;
   created_at: string;
 }
-
-// Cloudinary config
-cloudinary.config({
-  cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
-  api_key: process.env.CLOUDINARY_API_KEY,
-  api_secret: process.env.CLOUDINARY_API_SECRET,
-});
 
 interface MediaItem {
   _id?: string;
@@ -34,15 +26,16 @@ interface MediaItem {
   publicId?: string;
 }
 
-// GET - List all media files from both Cloudinary and local storage
-export async function GET(request: NextRequest) {
-  try {
-    const session = await getServerSession(authOptions);
-    
-    if (!session?.user) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
-    }
+// Cloudinary config
+cloudinary.config({
+  cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
+  api_key: process.env.CLOUDINARY_API_KEY,
+  api_secret: process.env.CLOUDINARY_API_SECRET,
+});
 
+// GET - List all media files from both Cloudinary and local storage
+export const GET = withSecurity(SecurityConfigs.admin)(async (request: NextRequest) => {
+  try {
     // Get pageContext filter from query params
     // Supported values:
     // - 'site' (default): show only non-product site media
@@ -95,7 +88,7 @@ export async function GET(request: NextRequest) {
           // Admin API response'unu search API formatına çevir
           cloudinaryResult = {
             total_count: adminResult.resources.length,
-            resources: adminResult.resources.map((resource: any) => ({
+            resources: adminResult.resources.map((resource: CloudinaryResource) => ({
               ...resource,
               created_at: resource.created_at,
               secure_url: resource.secure_url,
@@ -161,17 +154,11 @@ export async function GET(request: NextRequest) {
     console.error('❌ Media listing error:', error);
     return NextResponse.json({ error: 'Failed to list media files' }, { status: 500 });
   }
-}
+});
 
 // DELETE - Delete selected media files
-export async function DELETE(request: NextRequest) {
+export const DELETE = withSecurity(SecurityConfigs.admin)(async (request: NextRequest) => {
   try {
-    const session = await getServerSession(authOptions);
-    
-    if (!session?.user || session.user.role !== 'admin') {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
-    }
-
     const { mediaIds } = await request.json();
     
     if (!Array.isArray(mediaIds) || mediaIds.length === 0) {
@@ -207,4 +194,4 @@ export async function DELETE(request: NextRequest) {
     console.error('Media deletion error:', error);
     return NextResponse.json({ error: 'Failed to delete media files' }, { status: 500 });
   }
-} 
+});

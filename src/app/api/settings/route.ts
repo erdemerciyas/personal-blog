@@ -1,12 +1,11 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { getServerSession } from 'next-auth';
+import { withSecurity, SecurityConfigs } from '@/lib/security-middleware';
 
 // Force dynamic rendering
 export const dynamic = 'force-dynamic';
-import { authOptions } from '../../../lib/auth';
 import connectDB from '../../../lib/mongoose';
 import Settings from '../../../models/Settings';
-import SiteSettings from '../../../models/SiteSettings';
+import SiteSettings, { type ISiteSettings } from '../../../models/SiteSettings';
 
 // GET Method
 export async function GET() {
@@ -55,32 +54,13 @@ export async function GET() {
 }
 
 // PUT Method
-export async function PUT(request: NextRequest) {
+export const PUT = withSecurity(SecurityConfigs.admin)(async (request: NextRequest) => {
   if (process.env.NODE_ENV === 'development') {
     console.log('🔥 PUT /api/settings called');
   }
   
   try {
-    const session = await getServerSession(authOptions);
-    if (process.env.NODE_ENV === 'development') {
-      console.log('👤 Session check:', !!session?.user, session?.user?.role);
-    }
-    
-    if (!session?.user) {
-      if (process.env.NODE_ENV === 'development') console.log('❌ No session');
-      return NextResponse.json(
-        { error: 'Bu işlem için yetkiniz yok' },
-        { status: 401 }
-      );
-    }
-
-    if (session.user.role !== 'admin') {
-      if (process.env.NODE_ENV === 'development') console.log('❌ Not admin:', session.user.role);
-      return NextResponse.json(
-        { error: 'Bu işlem için admin yetkisi gerekli' },
-        { status: 403 }
-      );
-    }
+    // Authorization enforced by withSecurity(SecurityConfigs.admin)
 
     const body = await request.json();
     if (process.env.NODE_ENV === 'development') console.log('📝 Body keys:', Object.keys(body));
@@ -105,13 +85,7 @@ export async function PUT(request: NextRequest) {
 
     // SiteSettings sync
     if (settings) {
-      const siteSettingsUpdate: Partial<{ 
-        logo: { url: string; alt: string; width: number; height: number };
-        siteName: string;
-        description: string;
-        seo: { metaTitle: string; metaDescription: string; keywords: string[] };
-        socialMedia: { twitter?: string; linkedin?: string; github?: string; instagram?: string };
-      }> = {};
+      const siteSettingsUpdate: Partial<ISiteSettings> = {};
       
       if (body.logo !== undefined) {
         siteSettingsUpdate.logo = {
@@ -141,9 +115,9 @@ export async function PUT(request: NextRequest) {
       if (body.twitterHandle !== undefined) {
         siteSettingsUpdate.socialMedia = {
           twitter: body.twitterHandle,
-          linkedin: '',
-          github: '',
-          instagram: ''
+          linkedin: settings.socialMedia?.linkedin ?? '',
+          github: settings.socialMedia?.github ?? '',
+          instagram: settings.socialMedia?.instagram ?? ''
         };
       }
 
@@ -165,35 +139,16 @@ export async function PUT(request: NextRequest) {
       { status: 500 }
     );
   }
-}
+});
 
 // POST Method
-export async function POST(request: NextRequest) {
+export const POST = withSecurity(SecurityConfigs.admin)(async (request: NextRequest) => {
   if (process.env.NODE_ENV === 'development') {
     console.log('📬 POST /api/settings called');
   }
   
   try {
-    const session = await getServerSession(authOptions);
-    if (process.env.NODE_ENV === 'development') {
-      console.log('👤 Session check:', !!session?.user, session?.user?.role);
-    }
-    
-    if (!session?.user) {
-      if (process.env.NODE_ENV === 'development') console.log('❌ No session');
-      return NextResponse.json(
-        { error: 'Bu işlem için yetkiniz yok' },
-        { status: 401 }
-      );
-    }
-
-    if (session.user.role !== 'admin') {
-      if (process.env.NODE_ENV === 'development') console.log('❌ Not admin:', session.user.role);
-      return NextResponse.json(
-        { error: 'Bu işlem için admin yetkisi gerekli' },
-        { status: 403 }
-      );
-    }
+    // Authorization enforced by withSecurity(SecurityConfigs.admin)
 
     const body = await request.json();
     if (process.env.NODE_ENV === 'development') console.log('📝 Body keys:', Object.keys(body));
@@ -218,13 +173,7 @@ export async function POST(request: NextRequest) {
 
     // SiteSettings sync
     if (settings) {
-      const siteSettingsUpdate: Partial<{ 
-        logo: { url: string; alt: string; width: number; height: number };
-        siteName: string;
-        description: string;
-        seo: { metaTitle: string; metaDescription: string; keywords: string[] };
-        socialMedia: { twitter?: string; linkedin?: string; github?: string; instagram?: string };
-      }> = {};
+      const siteSettingsUpdate: Partial<ISiteSettings> = {};
       
       if (body.logo !== undefined) {
         siteSettingsUpdate.logo = {
@@ -278,4 +227,4 @@ export async function POST(request: NextRequest) {
       { status: 500 }
     );
   }
-} 
+});

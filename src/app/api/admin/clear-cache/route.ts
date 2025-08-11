@@ -1,15 +1,8 @@
 import { NextResponse } from 'next/server';
-import { getServerSession } from 'next-auth/next';
-import { authOptions } from '../../../../lib/auth';
+import { withSecurity, SecurityConfigs } from '../../../../lib/security-middleware';
 
-export async function POST() {
+export const POST = withSecurity(SecurityConfigs.admin)(async () => {
   try {
-    const session = await getServerSession(authOptions);
-    
-    if (!session?.user || session.user.role !== 'admin') {
-      return NextResponse.json({ message: 'Yetkisiz erişim' }, { status: 401 });
-    }
-
     // Clear middleware cache by importing and calling the clear function
     try {
       const { clearPageSettingsCache } = await import('../../../../../middleware');
@@ -36,4 +29,4 @@ export async function POST() {
       { status: 500 }
     );
   }
-}
+});
