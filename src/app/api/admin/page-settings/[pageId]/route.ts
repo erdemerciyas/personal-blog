@@ -20,17 +20,23 @@ export async function GET(
       // Sayfa ayarı bulunamazsa, varsayılan değerleri döndür
       return NextResponse.json({
         title: pageId.charAt(0).toUpperCase() + pageId.slice(1), // 'portfolio' -> 'Portfolio'
-        description: ''
+        description: '',
+        isActive: true,
+        showInNavigation: pageId !== 'product-detail'
       });
     }
 
     return NextResponse.json(pageSettings);
   } catch (error) {
     console.error('Page settings getirme hatası:', error);
-    return NextResponse.json(
-      { error: 'Sayfa ayarları getirilemedi' },
-      { status: 500 }
-    );
+    // Graceful fallback: return minimal defaults so UI keeps working
+    const { pageId } = params;
+    return NextResponse.json({
+      title: pageId.charAt(0).toUpperCase() + pageId.slice(1),
+      description: '',
+      buttonText: '',
+      buttonLink: ''
+    });
   }
 }
 

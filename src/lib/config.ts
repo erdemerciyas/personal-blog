@@ -27,6 +27,7 @@ interface EnvironmentConfig {
   // App settings
   APP_NAME?: string;
   APP_URL?: string;
+  FREE_SHIPPING_THRESHOLD?: string;
   
   // Security
   RATE_LIMIT_MAX?: string;
@@ -61,6 +62,7 @@ class ConfigManager {
       OPENAI_API_KEY: process.env.OPENAI_API_KEY,
       APP_NAME: process.env.APP_NAME || 'Personal Blog',
       APP_URL: process.env.APP_URL || process.env.NEXTAUTH_URL,
+      FREE_SHIPPING_THRESHOLD: process.env.FREE_SHIPPING_THRESHOLD,
       RATE_LIMIT_MAX: process.env.RATE_LIMIT_MAX,
       RATE_LIMIT_WINDOW: process.env.RATE_LIMIT_WINDOW,
     };
@@ -218,6 +220,7 @@ class ConfigManager {
     return {
       name: this.config.APP_NAME || 'Personal Blog',
       url: this.config.APP_URL || this.config.NEXTAUTH_URL,
+      freeShippingThreshold: Number(this.config.FREE_SHIPPING_THRESHOLD) || 1500,
     };
   }
 

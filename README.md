@@ -14,9 +14,9 @@ Modern, güvenli ve performanslı kişisel blog ve portfolyo platformu. Next.js 
 
 ## 🌐 Live Demo
 
-**🚀 [Live Site](https://fixral-2ah66opij-erdem-erciyas-projects.vercel.app)** | **🔧 [Admin Panel](https://fixral-2ah66opij-erdem-erciyas-projects.vercel.app/admin)** | **📊 [API Health](https://fixral-2ah66opij-erdem-erciyas-projects.vercel.app/api/health)**
+**🚀 [Live Site](https://fixral-ao7clr42w-erdem-erciyas-projects.vercel.app)** | **🔧 [Admin Panel](https://fixral-ao7clr42w-erdem-erciyas-projects.vercel.app/admin)** | **📊 [API Health](https://fixral-ao7clr42w-erdem-erciyas-projects.vercel.app/api/health)**
 
-> **Status**: ✅ **LIVE** | **Last Deploy**: 2025-08-10 10:30 UTC | **Version**: v2.2.6 | **🚀 CI/CD Pipeline**: ✅ **OPTIMIZED**
+> **Status**: ✅ **LIVE** | **Last Deploy**: 2025-08-11 10:30 UTC | **Version**: v2.2.7 | **🚀 CI/CD Pipeline**: ✅ **OPTIMIZED**
 
 ## ✨ Özellikler
 
@@ -131,28 +131,19 @@ npm run dev
 
 Uygulama [http://localhost:3000](http://localhost:3000) adresinde çalışacaktır.
 
-## 🆕 Yeni Özellikler (v2.3.0)
+## 🆕 Yeni Özellikler (v2.2.7)
 
-### 🎨 Atlas UI/UX Yenilemesi (2025-08-10)
-- Atlas görsel dili: kurumsal degrade (`bg-gradient-primary`), `bg-blueprint` grid ve sade cam efektleri
-- Tüm kamu sayfalarında tasarım birliği: `section-header` yardımcı sınıfı
-- Erişilebilirlik: skip-link, `aria-label`/`aria-labelledby`, boş durum `role="status"`, gelişmiş filtrelerde `aria-expanded`
-- Mikro etkileşimler: hizmet ve portfolyo kartlarında hafif tilt (reduce-motion & pointer kontrolleri ile)
-- CTA’lar: `rounded-full` ve dengeli padding standardizasyonu
-- Slug/endpoint/veri modeli korunarak sadece UI/UX katmanı güncellendi
+### 🧩 Ürün Medyası Ayrıştırma ve Yönetim (2025-08-11)
+- Ürün görselleri/dosyaları Cloudinary'de `personal-blog/products/images|docs` klasörlerine alındı
+- Site geneli medya ile ürün medyası ayrıştırıldı; admin medya sayfasına kapsam filtresi eklendi (Site/Ürün/Hepsi)
+- `Ürün Medyası` admin sayfası: sadece ürün medyasını listeler; URL kopyalama ve silme aksiyonları
+- Ürün oluştur/düzenle’de tıklanarak görsel/dosya seçici açma düzeltildi
+- Dashboard ve üst barda ürün sayısı gösterimi eklendi
 
-### Teknik notlar
-- Tailwind: atlas tipografi boyutları (`atlas-2xl..5xl`)
-- Global helpers: `section-header`, `bg-gradient-primary`, `bg-blueprint`
-- Header: scroll durumunda sade arkaplan/blur; CTA `aria-label`
-- Portfolio: başlıklar `section-header`; benzer projeler bölümünde sade CTA
-
-### 🧹 Lint/TS Temizliği ve Tip Güçlendirme (2025-08-10)
-- **Typescript**: `any` kullanımları büyük ölçüde kaldırıldı, `unknown` ve dar tipler benimsendi
-- **Lib Katmanı**: `errorHandler`, `logger`, `performance`, `security-*`, `validation`, `cache*` dosyaları güçlendirildi
-- **UI**: `ImageUpload`, `PortfolioImageGallery`, `MediaBrowser`, `SmartLink` küçük lint/erişilebilirlik düzeltmeleri
-- **Hooks**: `usePortfolioFilters`, `usePerformance` sadeleştirme ve log temizlikleri
-- **Admin**: Portfolyo edit sayfasında çoklu kategori tipleri netleştirildi
+### 🔒 Güvenlik ve ⚡ Performans
+- `Product` ve `ProductCategory` için sorgu indeksleri eklendi
+- `GET /api/products` `lean()` + projection ile hızlandırıldı
+- `GET /api/product-categories` için `s-maxage` ve `stale-while-revalidate` cache header’ları eklendi
 
 ---
 

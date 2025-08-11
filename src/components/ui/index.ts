@@ -7,3 +7,4 @@ export { default as FixralCard } from './FixralCard';
 export { default as FixralInput } from './FixralInput';
 export { default as FixralTextarea } from './FixralTextarea';
 export { default as FixralSelect } from './FixralSelect'; 
+export { default as TagInput } from './TagInput';

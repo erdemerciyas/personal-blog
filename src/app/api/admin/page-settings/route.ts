@@ -19,12 +19,11 @@ export async function GET(request: NextRequest) {
     }
 
     await connectDB();
-    
+
     let pages = await PageSetting.find().sort({ order: 1 });
-    
-    // If no page settings exist, create default pages
-    if (pages.length === 0) {
-      const defaultPages = [
+
+    // Define default pages
+    const defaultPages = [
         {
           pageId: 'home',
           title: 'Ana Sayfa',
@@ -69,11 +68,35 @@ export async function GET(request: NextRequest) {
           isActive: true,
           showInNavigation: true,
           order: 4
+        },
+        {
+          pageId: 'products',
+          title: 'Ürünler',
+          path: '/products',
+          description: 'Sıfır ve ikinci el ürünlerimizi keşfedin',
+          isActive: true,
+          showInNavigation: true,
+          order: 5
         }
       ];
 
+    // If none exist, seed all; otherwise, upsert any missing pages
+    if (pages.length === 0) {
       pages = await PageSetting.insertMany(defaultPages);
+    } else {
+      const existingById = new Map<string, unknown>(pages.map((p: { pageId: string }) => [p.pageId, p]));
+      const upserts: Promise<unknown>[] = [];
+      for (const def of defaultPages) {
+        if (!existingById.has(def.pageId)) {
+          upserts.push(PageSetting.findOneAndUpdate({ pageId: def.pageId }, def, { new: true, upsert: true }));
+        }
+      }
+      if (upserts.length) await Promise.all(upserts);
+      pages = await PageSetting.find().sort({ order: 1 });
     }
+
+    // Do not expose internal-only page settings like product-detail in the admin list
+    pages = pages.filter((p: { pageId: string }) => p.pageId !== 'product-detail');
 
     const response = NextResponse.json(pages);
     
@@ -86,17 +109,22 @@ export async function GET(request: NextRequest) {
     return response;
   } catch (error) {
     console.error('Page settings fetch error:', error);
-    const errorResponse = NextResponse.json(
-      { message: 'Sayfa ayarları yüklenirken hata oluştu' },
-      { status: 500 }
-    );
-    
-    // Add cache control headers to error response too
-    errorResponse.headers.set('Cache-Control', 'no-store, no-cache, must-revalidate');
-    errorResponse.headers.set('Pragma', 'no-cache');
-    errorResponse.headers.set('Expires', '0');
-    
-    return errorResponse;
+    // Graceful fallback: return static defaults so UI doesn't break when DB is unreachable
+    const fallbackPages = [
+      { pageId: 'home', title: 'Ana Sayfa', path: '/', description: 'Mühendislik ve 3D tarama hizmetlerimizi keşfedin', isActive: true, showInNavigation: true, order: 0 },
+      { pageId: 'about', title: 'Hakkımda', path: '/about', description: 'Deneyimim ve uzmanlık alanlarım hakkında bilgi alın', isActive: true, showInNavigation: true, order: 1 },
+      { pageId: 'services', title: 'Hizmetler', path: '/services', description: 'Sunduğum profesyonel hizmetleri inceleyin', isActive: true, showInNavigation: true, order: 2 },
+      { pageId: 'portfolio', title: 'Portfolio', path: '/portfolio', description: 'Tamamladığım projeleri ve çalışmalarımı görün', isActive: true, showInNavigation: true, order: 3 },
+      { pageId: 'contact', title: 'İletişim', path: '/contact', description: 'Benimle iletişime geçin ve projelerinizi konuşalım', isActive: true, showInNavigation: true, order: 4 },
+      { pageId: 'products', title: 'Ürünler', path: '/products', description: 'Sıfır ve ikinci el ürünlerimizi keşfedin', isActive: true, showInNavigation: true, order: 5 },
+      { pageId: 'product-detail', title: 'Ürün Detayı', path: '/products/[slug]', description: 'Ürün detay sayfası ayarları', isActive: true, showInNavigation: false, order: 6 },
+    ];
+    const resp = NextResponse.json(fallbackPages, { status: 200 });
+    resp.headers.set('Cache-Control', 'no-store, no-cache, must-revalidate, proxy-revalidate');
+    resp.headers.set('Pragma', 'no-cache');
+    resp.headers.set('Expires', '0');
+    resp.headers.set('Surrogate-Control', 'no-store');
+    return resp;
   }
 }
 

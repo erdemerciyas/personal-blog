@@ -2,7 +2,7 @@ import React from 'react';
 import { clsx } from 'clsx';
 
 interface FixralButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
-  variant?: 'primary' | 'secondary' | 'outline' | 'ghost';
+  variant?: 'primary' | 'secondary' | 'outline' | 'ghost' | 'danger';
   size?: 'sm' | 'md' | 'lg';
   children: React.ReactNode;
   loading?: boolean;
@@ -17,13 +17,14 @@ const FixralButton: React.FC<FixralButtonProps> = ({
   disabled,
   ...props
 }) => {
-  const baseClasses = 'inline-flex items-center justify-center font-medium rounded-fixral transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed';
+  const baseClasses = 'inline-flex items-center justify-center font-medium rounded-fixral transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-offset-2 disabled:opacity-80 disabled:cursor-not-allowed disabled:!bg-slate-200 disabled:!text-slate-600 disabled:border disabled:border-slate-300 disabled:shadow-none';
   
   const variantClasses = {
-    primary: 'bg-fixral-turquoise text-white hover:bg-fixral-turquoise/90 focus:ring-fixral-turquoise/25',
-    secondary: 'bg-fixral-gray-blue text-white hover:bg-fixral-gray-blue/90 focus:ring-fixral-gray-blue/25',
-    outline: 'bg-transparent border-2 border-fixral-turquoise text-fixral-turquoise hover:bg-fixral-turquoise hover:text-white focus:ring-fixral-turquoise/25',
-    ghost: 'bg-transparent text-fixral-charcoal hover:text-fixral-turquoise hover:bg-fixral-light-gray focus:ring-fixral-turquoise/25'
+    primary: 'bg-emerald-600 text-white hover:bg-emerald-700 focus:ring-emerald-300',
+    secondary: 'bg-slate-700 text-white hover:bg-slate-800 focus:ring-slate-300',
+    outline: 'bg-transparent border-2 border-emerald-600 text-emerald-700 hover:bg-emerald-600 hover:text-white focus:ring-emerald-300',
+    ghost: 'bg-transparent text-slate-700 hover:text-emerald-700 hover:bg-slate-100 focus:ring-emerald-300',
+    danger: 'bg-red-600 text-white hover:bg-red-700 focus:ring-red-300'
   };
   
   const sizeClasses = {

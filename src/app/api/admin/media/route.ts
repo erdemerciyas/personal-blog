@@ -44,8 +44,12 @@ export async function GET(request: NextRequest) {
     }
 
     // Get pageContext filter from query params
+    // Supported values:
+    // - 'site' (default): show only non-product site media
+    // - 'products': show only product media
+    // - specific contexts (e.g., 'portfolio', 'services'): show only that folder
     const { searchParams } = new URL(request.url);
-    const pageContextFilter = searchParams.get('pageContext');
+    const pageContextFilter = (searchParams.get('pageContext') || 'site').toLowerCase();
 
     const mediaItems: MediaItem[] = [];
 
@@ -72,8 +76,15 @@ export async function GET(request: NextRequest) {
         };
 
         // PageContext filtresi varsa prefix ekle
-        if (pageContextFilter && pageContextFilter !== 'all') {
+        // 'products' -> sadece ürünler klasörü
+        // 'site' -> tüm site klasörleri (personal-blog/) fakat ürünler hariç (sonradan filtrelenecek)
+        // belirli klasör -> sadece o klasör
+        if (pageContextFilter === 'products') {
+          resourceOptions.prefix = 'personal-blog/products/';
+        } else if (pageContextFilter !== 'all' && pageContextFilter !== 'site') {
           resourceOptions.prefix = `personal-blog/${pageContextFilter}/`;
+        } else {
+          resourceOptions.prefix = 'personal-blog/';
         }
 
         const adminResult = await cloudinary.api.resources(resourceOptions);
@@ -84,7 +95,7 @@ export async function GET(request: NextRequest) {
           // Admin API response'unu search API formatına çevir
           cloudinaryResult = {
             total_count: adminResult.resources.length,
-            resources: adminResult.resources.map(resource => ({
+            resources: adminResult.resources.map((resource: any) => ({
               ...resource,
               created_at: resource.created_at,
               secure_url: resource.secure_url,
@@ -108,7 +119,13 @@ export async function GET(request: NextRequest) {
       console.log('📊 Cloudinary response:', JSON.stringify(cloudinaryResult, null, 2));
 
       if (cloudinaryResult.resources) {
+        // Ürün medyasını sadece 'site' kapsamındayken hariç tut
+        const shouldExcludeProducts = pageContextFilter === 'site';
         for (const resource of cloudinaryResult.resources as CloudinaryResource[]) {
+          const isProduct = resource.public_id?.startsWith('personal-blog/products/');
+          if (shouldExcludeProducts && isProduct) {
+            continue;
+          }
           const fileName = resource.display_name || resource.public_id.split('/').pop() || resource.public_id;
           
           mediaItems.push({

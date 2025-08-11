@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server';
 import connectDB from '@/lib/mongoose';
 import Portfolio from '@/models/Portfolio';
+import Product from '@/models/Product';
 
 export async function GET() {
   try {
@@ -8,8 +9,9 @@ export async function GET() {
     
     const baseUrl = process.env.NEXTAUTH_URL || 'https://erdemerciyas.com.tr';
     
-    // Get all portfolio items for dynamic URLs
+    // Get all portfolio and product items for dynamic URLs
     const portfolioItems = await Portfolio.find({ isActive: true }).select('slug updatedAt');
+    const productItems = await Product.find({ isActive: true }).select('slug updatedAt');
     
     const staticPages = [
       {
@@ -51,7 +53,14 @@ export async function GET() {
       priority: 0.6
     }));
     
-    const allPages = [...staticPages, ...portfolioPages];
+    const productPages = productItems.map(item => ({
+      url: `${baseUrl}/products/${item.slug}`,
+      lastModified: item.updatedAt.toISOString(),
+      changeFrequency: 'weekly',
+      priority: 0.7
+    }));
+
+    const allPages = [...staticPages, ...portfolioPages, ...productPages];
     
     const sitemap = `<?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">

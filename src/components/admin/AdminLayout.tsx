@@ -69,7 +69,8 @@ export default function AdminLayout({ children, title, breadcrumbs }: AdminLayou
     messagesCount: 0,
     portfolioCount: 0,
     mediaCount: 0,
-    usersCount: 0
+    usersCount: 0,
+    productsCount: 0
   });
   const [notifications, setNotifications] = useState<Array<{ id: string; title: string; message: string; time: string; type: string }>>([]);
 
@@ -91,6 +92,19 @@ export default function AdminLayout({ children, title, breadcrumbs }: AdminLayou
         { label: 'Hizmetler', href: '/admin/services' },
         { label: 'Sayfa Yönetimi', href: '/admin/pages' },
         { label: 'Slider', href: '/admin/slider' }
+      ]
+    },
+    {
+      id: 'products',
+      label: 'Ürün Yönetimi',
+      icon: FolderOpenIcon,
+      href: '/admin/products',
+      subItems: [
+        { label: 'Tüm Ürünler', href: '/admin/products' },
+        { label: 'Yeni Ürün Ekle', href: '/admin/products/new' },
+        { label: 'Ürün Kategorileri', href: '/admin/product-categories' },
+        { label: 'Ürün Yorumları', href: '/admin/products/reviews' },
+        { label: 'Ürün Medyası', href: '/admin/products/media' }
       ]
     },
     {
@@ -214,7 +228,8 @@ export default function AdminLayout({ children, title, breadcrumbs }: AdminLayou
             messagesCount: statsData.messagesCount || 0,
             portfolioCount: statsData.portfolioCount || 0,
             mediaCount: statsData.mediaCount || 0,
-            usersCount: statsData.usersCount || 0
+            usersCount: statsData.usersCount || 0,
+            productsCount: statsData.productsCount || 0
           });
 
           // Convert recent messages to notifications
@@ -245,7 +260,8 @@ export default function AdminLayout({ children, title, breadcrumbs }: AdminLayou
             messagesCount: unreadMessages.length || 0,
             portfolioCount: portfolioData.length || 0,
             mediaCount: mediaData.length || 0,
-            usersCount: 0
+            usersCount: 0,
+            productsCount: 0
           });
 
           const recentNotifications = messagesData && messagesData.length > 0
@@ -718,6 +734,12 @@ export default function AdminLayout({ children, title, breadcrumbs }: AdminLayou
                       {stats.portfolioCount}
                     </div>
                     <div className="text-xs text-slate-500 dark:text-slate-400">Projeler</div>
+                  </div>
+                  <div className="text-center">
+                    <div className="text-2xl font-bold text-emerald-600 dark:text-emerald-400">
+                      {stats.productsCount}
+                    </div>
+                    <div className="text-xs text-slate-500 dark:text-slate-400">Ürünler</div>
                   </div>
                   <div className="text-center">
                     <div className="text-2xl font-bold text-blue-600 dark:text-blue-400">

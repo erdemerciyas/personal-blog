@@ -28,6 +28,7 @@ const Breadcrumbs: React.FC = () => {
     if (label === 'services') label = 'Hizmetler';
     if (label === 'about') label = 'Hakkımda';
     if (label === 'contact') label = 'İletişim';
+    if (label === 'products') label = 'Ürünler';
     if (label === 'admin') label = 'Yönetim Paneli';
 
     breadcrumbs.push({ label: capitalizeFirstLetter(label), href: currentPath });

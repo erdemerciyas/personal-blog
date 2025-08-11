@@ -68,12 +68,8 @@ const nextConfig = {
     minimumCacheTTL: 60 * 60 * 24 * 30, // 30 days
   },
   experimental: {
-    esmExternals: true,
-    // Performance optimizations
+    // Keep minimal experiments to avoid chunking issues on Windows builds
     scrollRestoration: true,
-    // Vercel optimizations
-    optimizePackageImports: ['@heroicons/react', 'framer-motion'],
-    serverComponentsExternalPackages: ['mongoose', 'mongodb'],
   },
   // Performance: Enable compression
   compress: true,

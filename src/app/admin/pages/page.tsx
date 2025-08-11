@@ -48,11 +48,15 @@ export default function AdminPagesManagement() {
     description: string;
     buttonText: string;
     buttonLink: string;
+    isActive?: boolean;
+    showInNavigation?: boolean;
   }>({
     title: '',
     description: '',
     buttonText: '',
-    buttonLink: ''
+    buttonLink: '',
+    isActive: true,
+    showInNavigation: true,
   });
 
   useEffect(() => {
@@ -163,13 +167,15 @@ export default function AdminPagesManagement() {
       title: page.title,
       description: page.description,
       buttonText: page.buttonText || '',
-      buttonLink: page.buttonLink || ''
+      buttonLink: page.buttonLink || '',
+      isActive: page.isActive,
+      showInNavigation: page.showInNavigation,
     });
   };
 
   const cancelEditing = () => {
     setEditingPage(null);
-    setEditForm({ title: '', description: '', buttonText: '', buttonLink: '' });
+    setEditForm({ title: '', description: '', buttonText: '', buttonLink: '', isActive: true, showInNavigation: true });
   };
 
   const saveEditing = async () => {
@@ -187,7 +193,9 @@ export default function AdminPagesManagement() {
           title: editForm.title,
           description: editForm.description,
           buttonText: editForm.buttonText,
-          buttonLink: editForm.buttonLink
+          buttonLink: editForm.buttonLink,
+          isActive: editForm.isActive ?? true,
+          showInNavigation: editForm.showInNavigation ?? true
         }),
       });
 
@@ -343,6 +351,26 @@ export default function AdminPagesManagement() {
                           className="w-full px-3 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-brand-primary-600 focus:border-transparent"
                           placeholder="Buton linki (örn: #projects veya /contact)"
                         />
+                      </div>
+                      <div className="flex items-center gap-4">
+                        <div className="flex items-center gap-2">
+                          <span className="text-sm text-slate-600">Sayfa Aktif</span>
+                          <button
+                            onClick={() => setEditForm(prev => ({ ...prev, isActive: !(prev.isActive ?? true) }))}
+                            className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors ${(editForm.isActive ?? true) ? 'bg-brand-primary-700' : 'bg-slate-200'}`}
+                          >
+                            <span className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform ${(editForm.isActive ?? true) ? 'translate-x-6' : 'translate-x-1'}`} />
+                          </button>
+                        </div>
+                        <div className="flex items-center gap-2">
+                          <span className="text-sm text-slate-600">Menüde Göster</span>
+                          <button
+                            onClick={() => setEditForm(prev => ({ ...prev, showInNavigation: !(prev.showInNavigation ?? true) }))}
+                            className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors ${(editForm.showInNavigation ?? true) ? 'bg-brand-primary-700' : 'bg-slate-200'}`}
+                          >
+                            <span className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform ${(editForm.showInNavigation ?? true) ? 'translate-x-6' : 'translate-x-1'}`} />
+                          </button>
+                        </div>
                       </div>
                     </div>
 

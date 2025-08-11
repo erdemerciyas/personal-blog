@@ -3,7 +3,7 @@ export const dynamic = 'force-dynamic';
 import { NextRequest, NextResponse } from 'next/server';
 import { getServerSession } from 'next-auth/next';
 import { authOptions } from '../../../../lib/auth';
-import { v2 as cloudinary } from 'cloudinary';
+import { v2 as cloudinary, UploadApiResponse } from 'cloudinary';
 import { rateLimit, getClientIP } from '../../../../lib/rate-limit';
 import { Sanitizer } from '../../../../lib/validation';
 import { logger } from '../../../../lib/logger';
@@ -170,6 +170,7 @@ export async function POST(request: NextRequest) {
     const uniqueFileName = `${Date.now()}_${fileHash}_${sanitizedFileName}`;
 
     // Validate page context
+    // Only site-wide contexts allowed here. Product uploads use /api/admin/product-upload
     const allowedContexts = ['general', 'portfolio', 'services', 'slider', 'about', 'logo'];
     if (!allowedContexts.includes(pageContext)) {
       return NextResponse.json(
@@ -179,6 +180,7 @@ export async function POST(request: NextRequest) {
     }
 
     // Cloudinary'e güvenli yükleme
+    // Ensure uploads here never go under products/
     const folder = `personal-blog/${pageContext}`;
     const uploadResult = await new Promise<{ secure_url: string; public_id: string; width: number; height: number; format: string; resource_type: string; bytes: number }>((resolve, reject) => {
       cloudinary.uploader.upload_stream(
@@ -201,14 +203,14 @@ export async function POST(request: NextRequest) {
           height: 2048,
           crop: 'limit'
         },
-        (error, result) => {
-          if (error) {
+        (error, result: UploadApiResponse | undefined) => {
+          if (error || !result) {
             logger.error('Cloudinary upload failed', 'ERROR', {
               ip: clientIP,
-              error: error.message,
+              error: (error as Error | undefined)?.message || 'Unknown error',
               fileName: file.name
             });
-            reject(error);
+            reject(error || new Error('Upload failed'));
           } else {
             resolve(result);
           }

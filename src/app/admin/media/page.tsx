@@ -47,6 +47,7 @@ export default function AdminMediaPage() {
   const [message, setMessage] = useState<{ type: 'success' | 'error'; text: string } | null>(null);
   const [previewItem, setPreviewItem] = useState<MediaItem | null>(null);
   const [showPreviewModal, setShowPreviewModal] = useState(false);
+  const [contextFilter, setContextFilter] = useState<'site' | 'products' | 'all'>('site');
 
   // Authentication check
   useEffect(() => {
@@ -59,7 +60,9 @@ export default function AdminMediaPage() {
   const loadMedia = async () => {
     setLoadingMedia(true);
     try {
-      const response = await fetch('/api/admin/media');
+      const params = new URLSearchParams();
+      params.set('pageContext', contextFilter);
+      const response = await fetch(`/api/admin/media?${params.toString()}`);
       if (response.ok) {
         const data = await response.json();
         setMediaItems(data);
@@ -214,12 +217,12 @@ export default function AdminMediaPage() {
     }
   };
 
-  // Load media on component mount
+  // Load media on component mount and when context changes
   useEffect(() => {
     if (status === 'authenticated') {
       loadMedia();
     }
-  }, [status]);
+  }, [status, contextFilter]);
 
   if (status === 'loading') {
     return (
@@ -265,11 +268,16 @@ export default function AdminMediaPage() {
           </div>
           <button
             onClick={() => {
-              console.log('Yeni Yükle butonuna tıklandı');
+              if (contextFilter === 'products') return;
               setShowUploadModal(true);
-              console.log('showUploadModal true olarak ayarlandı');
             }}
-            className="bg-brand-primary-700 hover:bg-brand-primary-800 text-white px-6 py-3 rounded-xl font-semibold transition-all duration-200 flex items-center space-x-2 shadow-sm"
+            disabled={contextFilter === 'products'}
+            title={contextFilter === 'products' ? 'Ürün medyası, ürün sayfalarından yüklenir' : ''}
+            className={`px-6 py-3 rounded-xl font-semibold transition-all duration-200 flex items-center space-x-2 shadow-sm ${
+              contextFilter === 'products'
+                ? 'bg-slate-300 text-slate-500 cursor-not-allowed'
+                : 'bg-brand-primary-700 hover:bg-brand-primary-800 text-white'
+            }`}
           >
             <PlusIcon className="w-5 h-5" />
             <span>Dosya Yükle</span>
@@ -318,6 +326,19 @@ export default function AdminMediaPage() {
                   <option value="images">Sadece Resimler</option>
                   <option value="cloudinary">Cloudinary</option>
                   <option value="local">Yerel Dosyalar</option>
+                </select>
+              </div>
+
+              <div className="flex items-center space-x-2">
+                <span className="text-sm text-slate-600">Kapsam</span>
+                <select
+                  value={contextFilter}
+                  onChange={(e) => setContextFilter(e.target.value as 'site' | 'products' | 'all')}
+                  className="bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-slate-900 focus:outline-none focus:ring-2 focus:ring-brand-primary-600 focus:border-transparent"
+                >
+                  <option value="site">Site Medyası</option>
+                  <option value="products">Ürün Medyası</option>
+                  <option value="all">Hepsi (Site + Ürün)</option>
                 </select>
               </div>
 

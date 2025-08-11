@@ -133,8 +133,8 @@ const Header: React.FC = () => {
         
         if (response.ok) {
           const pages = await response.json();
-          
-          // Filter active pages that should show in navigation and sort by order
+
+          // Only show pages that are explicitly active AND marked to be shown in navigation
           const navPages = pages
             .filter((page: PageSetting) => page.isActive && page.showInNavigation)
             .sort((a: PageSetting, b: PageSetting) => a.order - b.order)
@@ -143,7 +143,7 @@ const Header: React.FC = () => {
               label: page.title,
               icon: getIconForPage(page.pageId)
             }));
-          
+
           setNavLinks(navPages);
         } else {
           // Fallback to default navigation if API fails
@@ -152,6 +152,7 @@ const Header: React.FC = () => {
             { href: '/about', label: 'Hakkımda', icon: UserIcon },
             { href: '/services', label: 'Hizmetler', icon: WrenchScrewdriverIcon },
             { href: '/portfolio', label: 'Portfolyo', icon: FolderOpenIcon },
+            { href: '/products', label: 'Ürünler', icon: FolderOpenIcon },
             { href: '/contact', label: 'İletişim', icon: PhoneIcon },
           ]);
         }
@@ -163,6 +164,7 @@ const Header: React.FC = () => {
           { href: '/about', label: 'Hakkımda', icon: UserIcon },
           { href: '/services', label: 'Hizmetler', icon: WrenchScrewdriverIcon },
           { href: '/portfolio', label: 'Portfolyo', icon: FolderOpenIcon },
+          { href: '/products', label: 'Ürünler', icon: FolderOpenIcon },
           { href: '/contact', label: 'İletişim', icon: PhoneIcon },
         ]);
       }

@@ -5,6 +5,7 @@ import { getServerSession } from 'next-auth';
 import { authOptions } from '../../../../lib/auth';
 import connectDB from '../../../../lib/mongoose';
 import Portfolio from '../../../../models/Portfolio';
+import Product from '../../../../models/Product';
 import Service from '../../../../models/Service';
 import Message from '../../../../models/Message';
 import User from '../../../../models/User';
@@ -54,7 +55,7 @@ export async function GET() {
     }
 
     // Paralel olarak tüm istatistikleri al
-    const [portfolioCount, servicesCount, messagesCount, usersCount, recentMessages] = await Promise.all([
+    const [portfolioCount, servicesCount, messagesCount, usersCount, recentMessages, productsCount] = await Promise.all([
       Portfolio.countDocuments(),
       Service.countDocuments(),
       Message.countDocuments(),
@@ -62,7 +63,8 @@ export async function GET() {
       Message.find()
         .sort({ createdAt: -1 })
         .limit(5)
-        .select('name email subject createdAt status')
+        .select('name email subject createdAt status'),
+      Product.countDocuments()
     ]);
 
     const stats = {
@@ -71,6 +73,7 @@ export async function GET() {
       messagesCount,
       usersCount,
       mediaCount,
+      productsCount,
       recentMessages: recentMessages.map(msg => ({
         _id: msg._id,
         name: msg.name,

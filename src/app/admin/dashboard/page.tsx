@@ -52,7 +52,8 @@ function AdminDashboardContent() {
     categoriesCount: 0,
     sliderCount: 0,
     cloudinaryCount: 0,
-    usersCount: 0
+    usersCount: 0,
+    productsCount: 0
   });
 
   const [recentActivity] = useState([
@@ -124,7 +125,7 @@ function AdminDashboardContent() {
         } else {
           console.warn('Dashboard stats API returned:', response.status);
           // Fallback stats for Vercel
-          setStats({
+            setStats({
             portfolioCount: 0,
             mediaCount: 0,
             messagesCount: 0,
@@ -132,7 +133,8 @@ function AdminDashboardContent() {
             categoriesCount: 0,
             sliderCount: 0,
             cloudinaryCount: 0,
-            usersCount: 0
+              usersCount: 0,
+              productsCount: 0
           });
         }
       } catch (error) {
@@ -146,7 +148,8 @@ function AdminDashboardContent() {
           categoriesCount: 0,
           sliderCount: 0,
           cloudinaryCount: 0,
-          usersCount: 0
+          usersCount: 0,
+          productsCount: 0
         });
       } finally {
         setLoading(false);
@@ -217,10 +220,14 @@ function AdminDashboardContent() {
             <div className="flex flex-col sm:flex-row items-start sm:items-center space-y-2 sm:space-y-0 sm:space-x-4">
               <div className="flex items-center space-x-2 text-sm text-slate-600">
                 <span className="w-2 h-2 bg-brand-primary-600 rounded-full"></span>
-                <span>Son giriş: Bugün 17:23</span>
+                <span>
+                  Son giriş: {typeof window !== 'undefined' ? new Date().toLocaleDateString('tr-TR', {
+                    year: 'numeric', month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit'
+                  }) : '-'}
+                </span>
               </div>
               <div className="px-3 py-1 bg-brand-primary-100 text-brand-primary-800 rounded-full text-sm font-medium">
-                v2.2.0
+                v2.2.7
               </div>
             </div>
           </div>
@@ -228,6 +235,23 @@ function AdminDashboardContent() {
 
         {/* Statistics Overview */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+          <div className="bg-white rounded-xl p-6 shadow-sm border border-slate-200 hover:shadow-md transition-shadow">
+            <div className="flex items-center justify-between">
+              <div className="flex-1">
+                <p className="text-slate-600 text-sm font-medium">Ürünler</p>
+                <p className="text-2xl font-bold text-slate-900 mt-1">{stats.productsCount}</p>
+                <div className="flex items-center space-x-1 mt-2">
+                  <ArrowTrendingUpIcon className="w-4 h-4 text-emerald-600" />
+                  <span className="text-emerald-700 text-sm font-medium">Canlı</span>
+                </div>
+              </div>
+              <div className="flex-shrink-0">
+                <div className="w-12 h-12 bg-emerald-100 rounded-xl flex items-center justify-center">
+                  <TagIcon className="w-6 h-6 text-emerald-600" />
+                </div>
+              </div>
+            </div>
+          </div>
           <div className="bg-white rounded-xl p-6 shadow-sm border border-slate-200 hover:shadow-md transition-shadow">
             <div className="flex items-center justify-between">
               <div className="flex-1">
