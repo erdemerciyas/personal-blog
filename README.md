@@ -16,7 +16,7 @@ Modern, güvenli ve performanslı kişisel blog ve portfolyo platformu. Next.js 
 
 **🚀 [Live Site](https://fixral-ao7clr42w-erdem-erciyas-projects.vercel.app)** | **🔧 [Admin Panel](https://fixral-ao7clr42w-erdem-erciyas-projects.vercel.app/admin)** | **📊 [API Health](https://fixral-ao7clr42w-erdem-erciyas-projects.vercel.app/api/health)**
 
-> **Status**: ✅ **LIVE** | **Last Deploy**: Pending | **Version**: v2.2.9 | **🚀 CI/CD Pipeline**: ✅ **OPTIMIZED**
+> **Status**: ✅ **LIVE** | **Last Deploy**: Pending | **Version**: v2.3.0 | **🚀 CI/CD Pipeline**: ✅ **OPTIMIZED**
 
 ## ✨ Özellikler
 
@@ -130,6 +130,14 @@ npm run dev
 ```
 
 Uygulama [http://localhost:3000](http://localhost:3000) adresinde çalışacaktır.
+
+## 🆕 Yeni Özellikler (v2.3.0)
+
+### 🧹 Çoklu Dil (i18n) Kaldırma ve Temizlik (2025-08-12)
+- next-i18next ve react-i18next bağımlılıkları kaldırıldı
+- `public/locales/` ve `src/i18n/` dizinleri temizlendi
+- Middleware ve konfigde i18n yönlendirmesi kalmadı
+- Dokümantasyon güncellendi
 
 ## 🆕 Yeni Özellikler (v2.2.9)
 
