@@ -1,7 +1,7 @@
 {
   "version": 2,
   "name": "extremeecu",
-  "alias": ["erdemerciyas.com.tr", "www.erdemerciyas.com.tr"],
+  "alias": ["extremeecu.com", "www.extremeecu.com"],
   "regions": ["fra1"],
   "functions": {
     "src/app/api/**/*.ts": {

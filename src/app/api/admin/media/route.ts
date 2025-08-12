@@ -70,14 +70,14 @@ export const GET = withSecurity(SecurityConfigs.admin)(async (request: NextReque
 
         // PageContext filtresi varsa prefix ekle
         // 'products' -> sadece ürünler klasörü
-        // 'site' -> tüm site klasörleri (personal-blog/) fakat ürünler hariç (sonradan filtrelenecek)
+        // 'site' -> tüm site klasörleri (extremeecu/) fakat ürünler hariç (sonradan filtrelenecek)
         // belirli klasör -> sadece o klasör
         if (pageContextFilter === 'products') {
-          resourceOptions.prefix = 'personal-blog/products/';
+          resourceOptions.prefix = 'extremeecu/products/';
         } else if (pageContextFilter !== 'all' && pageContextFilter !== 'site') {
-          resourceOptions.prefix = `personal-blog/${pageContextFilter}/`;
+          resourceOptions.prefix = `extremeecu/${pageContextFilter}/`;
         } else {
-          resourceOptions.prefix = 'personal-blog/';
+          resourceOptions.prefix = 'extremeecu/';
         }
 
         const adminResult = await cloudinary.api.resources(resourceOptions);
@@ -115,7 +115,7 @@ export const GET = withSecurity(SecurityConfigs.admin)(async (request: NextReque
         // Ürün medyasını sadece 'site' kapsamındayken hariç tut
         const shouldExcludeProducts = pageContextFilter === 'site';
         for (const resource of cloudinaryResult.resources as CloudinaryResource[]) {
-          const isProduct = resource.public_id?.startsWith('personal-blog/products/');
+          const isProduct = resource.public_id?.startsWith('extremeecu/products/');
           if (shouldExcludeProducts && isProduct) {
             continue;
           }

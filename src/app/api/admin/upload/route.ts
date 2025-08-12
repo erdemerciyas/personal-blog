@@ -181,7 +181,7 @@ export async function POST(request: NextRequest) {
 
     // Cloudinary'e güvenli yükleme
     // Ensure uploads here never go under products/
-    const folder = `personal-blog/${pageContext}`;
+    const folder = `extremeecu/${pageContext}`;
     const uploadResult = await new Promise<{ secure_url: string; public_id: string; width: number; height: number; format: string; resource_type: string; bytes: number }>((resolve, reject) => {
       cloudinary.uploader.upload_stream(
         {
@@ -190,7 +190,7 @@ export async function POST(request: NextRequest) {
           public_id: uniqueFileName,
           overwrite: false,
           unique_filename: false,
-          tags: [pageContext, 'personal-blog', 'secure-upload'],
+          tags: [pageContext, 'extremeecu', 'secure-upload'],
           // Security transformations
           transformation: [
             { quality: 'auto:good' },

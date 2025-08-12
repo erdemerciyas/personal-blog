@@ -70,8 +70,8 @@ export async function POST(request: NextRequest) {
   const publicId = `${sanitize(file.name)}-${Date.now()}`;
   // Force product media to dedicated folders
   const folder = isImage
-    ? 'personal-blog/products/images'
-    : 'personal-blog/products/docs';
+    ? 'extremeecu/products/images'
+    : 'extremeecu/products/docs';
 
   try {
     const upload = await new Promise<{ secure_url: string; public_id: string; bytes: number; format: string; resource_type: string }>((resolve, reject) => {
