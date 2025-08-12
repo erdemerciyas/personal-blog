@@ -56,7 +56,7 @@ export const GET = withSecurity(SecurityConfigs.admin)(async (request: NextReque
       });
       
       // Search API çalışmıyor, direkt Admin API kullan
-      let cloudinaryResult = { total_count: 0, resources: [] };
+      let cloudinaryResult: { total_count: number; resources: CloudinaryResource[] } = { total_count: 0, resources: [] };
       
       console.log('🔄 Using Admin API directly...');
       
@@ -68,27 +68,36 @@ export const GET = withSecurity(SecurityConfigs.admin)(async (request: NextReque
           type: 'upload'
         };
 
-        // PageContext filtresi varsa prefix ekle
-        // 'products' -> sadece ürünler klasörü
-        // 'site' -> tüm site klasörleri (extremeecu/) fakat ürünler hariç (sonradan filtrelenecek)
+        // PageContext filtresine göre birden fazla prefix tarayalım (geri uyumluluk)
+        // 'products' -> ürün klasörleri
+        // 'site' -> tüm site klasörleri fakat ürünler hariç (sonradan filtrelenecek)
         // belirli klasör -> sadece o klasör
+        const prefixes: string[] = [];
         if (pageContextFilter === 'products') {
-          resourceOptions.prefix = 'extremeecu/products/';
+          prefixes.push('extremeecu/products/');
+          prefixes.push('personal-blog/products/');
         } else if (pageContextFilter !== 'all' && pageContextFilter !== 'site') {
-          resourceOptions.prefix = `extremeecu/${pageContextFilter}/`;
+          prefixes.push(`extremeecu/${pageContextFilter}/`);
+          prefixes.push(`personal-blog/${pageContextFilter}/`);
         } else {
-          resourceOptions.prefix = 'extremeecu/';
+          prefixes.push('extremeecu/');
+          prefixes.push('personal-blog/');
         }
 
-        const adminResult = await cloudinary.api.resources(resourceOptions);
-        
-        console.log('📋 Admin API raw response:', JSON.stringify(adminResult, null, 2));
-        
-        if (adminResult.resources && adminResult.resources.length > 0) {
+        let aggregated: CloudinaryResource[] = [];
+        for (const pfx of prefixes) {
+          const adminResult = await cloudinary.api.resources({ ...resourceOptions, prefix: pfx });
+          console.log(`📋 Admin API raw response for ${pfx}:`, JSON.stringify(adminResult, null, 2));
+          if (adminResult.resources && adminResult.resources.length > 0) {
+            aggregated = aggregated.concat(adminResult.resources as CloudinaryResource[]);
+          }
+        }
+
+        if (aggregated.length > 0) {
           // Admin API response'unu search API formatına çevir
           cloudinaryResult = {
-            total_count: adminResult.resources.length,
-            resources: adminResult.resources.map((resource: CloudinaryResource) => ({
+            total_count: aggregated.length,
+            resources: aggregated.map((resource: CloudinaryResource) => ({
               ...resource,
               created_at: resource.created_at,
               secure_url: resource.secure_url,
@@ -98,10 +107,9 @@ export const GET = withSecurity(SecurityConfigs.admin)(async (request: NextReque
               resource_type: resource.resource_type
             }))
           };
-          
-          console.log('📋 Admin API files found:', cloudinaryResult.total_count);
+          console.log('📋 Admin API files found (aggregated):', cloudinaryResult.total_count);
         } else {
-          console.log('📋 No files found in Admin API');
+          console.log('📋 No files found in Admin API (all prefixes)');
         }
       } catch (adminError) {
         console.log('❌ Admin API error:', adminError);
@@ -115,7 +123,7 @@ export const GET = withSecurity(SecurityConfigs.admin)(async (request: NextReque
         // Ürün medyasını sadece 'site' kapsamındayken hariç tut
         const shouldExcludeProducts = pageContextFilter === 'site';
         for (const resource of cloudinaryResult.resources as CloudinaryResource[]) {
-          const isProduct = resource.public_id?.startsWith('extremeecu/products/');
+          const isProduct = resource.public_id?.startsWith('extremeecu/products/') || resource.public_id?.startsWith('personal-blog/products/');
           if (shouldExcludeProducts && isProduct) {
             continue;
           }
