@@ -42,13 +42,13 @@ This project adheres to a code of conduct. By participating, you are expected to
 
 2. **Clone your fork**
    ```bash
-   git clone https://github.com/YOUR_USERNAME/personal-blog.git
-   cd personal-blog
+   git clone https://github.com/YOUR_USERNAME/extremeecu.git
+   cd extremeecu
    ```
 
 3. **Add upstream remote**
    ```bash
-   git remote add upstream https://github.com/erdemerciyas/personal-blog.git
+   git remote add upstream https://github.com/erdemerciyas/extremeecu.git
    ```
 
 4. **Install dependencies**
