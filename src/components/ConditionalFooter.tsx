@@ -70,7 +70,7 @@ const ConditionalFooter: React.FC = () => {
         setSettings({
           mainDescription: 'Mühendislik ve teknoloji alanında yenilikçi çözümler sunarak projelerinizi hayata geçiriyoruz.',
           contactInfo: {
-            email: 'erdem.erciyas@gmail.com',
+            email: 'extremeecu34@gmail.com',
             phone: '+90 (500) 123 45 67',
             address: 'Teknoloji Vadisi, Ankara, Türkiye'
           },
@@ -89,14 +89,14 @@ const ConditionalFooter: React.FC = () => {
             youtube: ''
           },
           copyrightInfo: {
-            companyName: 'FIXRAL',
+            companyName: 'Extreme Ecu',
             year: new Date().getFullYear(),
             additionalText: 'Tüm Hakları Saklıdır.'
           },
           developerInfo: {
-            name: 'Erdem Erciyas',
-            website: 'https://www.erdemerciyas.com.tr',
-            companyName: 'Erciyas Engineering'
+            name: 'Extreme Ecu',
+            website: 'https://extremeecu.com',
+            companyName: 'Extreme Ecu'
           },
           visibility: {
             showQuickLinks: true,

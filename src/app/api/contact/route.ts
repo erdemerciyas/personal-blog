@@ -89,7 +89,7 @@ export async function POST(request: NextRequest) {
       // Size gönderilecek email (yeni mesaj bildirimi)
       const notificationMailOptions = {
         from: process.env.GMAIL_USER,
-        to: 'erdem.erciyas@gmail.com',
+        to: 'extremeecu34@gmail.com',
         subject: `🔔 Yeni İletişim Mesajı: ${subject}`,
         html: `
           <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px; background-color: #f8fafc; border-radius: 12px;">
@@ -132,7 +132,7 @@ export async function POST(request: NextRequest) {
             </div>
             
             <div style="text-align: center; margin-top: 20px; color: #6b7280; font-size: 14px;">
-              Bu mesaj www.fixral.com sitesinden gönderilmiştir.
+              Bu mesaj www.extremeecu.com sitesinden gönderilmiştir.
             </div>
           </div>
         `,
@@ -172,7 +172,7 @@ export async function POST(request: NextRequest) {
               </div>
               
               <div style="text-align: center; margin: 30px 0;">
-                <a href="https://fixral.com" 
+                <a href="https://www.extremeecu.com" 
                    style="background: linear-gradient(135deg, #0f766e, #0891b2); color: white; padding: 12px 24px; 
                           text-decoration: none; border-radius: 8px; font-weight: bold; display: inline-block;">
                   🌐 Web Sitemizi Ziyaret Edin
@@ -181,9 +181,9 @@ export async function POST(request: NextRequest) {
               
               <p style="color: #6b7280; font-size: 14px; line-height: 1.6; border-top: 1px solid #e2e8f0; padding-top: 20px; margin-bottom: 0;">
                 Saygılarımızla,<br>
-                <strong>FIXRAL Ekibi</strong><br>
-                📧 info@fixral.com<br>
-                🌐 www.fixral.com
+                <strong>Extreme Ecu Ekibi</strong><br>
+                📧 extremeecu34@gmail.com<br>
+                🌐 www.extremeecu.com
               </p>
             </div>
           </div>

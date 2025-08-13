@@ -1,13 +1,13 @@
 {
-  "name": "extremeecu",
+  "name": "extreme-ecu",
   "version": "2.3.0",
   "private": true,
   "author": {
-    "name": "Erdem Erciyas",
-    "email": "erdem.erciyas@gmail.com",
-    "url": "https://www.fixral.com"
+    "name": "Extreme Ecu",
+    "email": "extremeecu34@gmail.com",
+    "url": "https://extremeecu.com"
   },
-  "description": "Modern kişisel blog ve portfolio sitesi - Next.js ile geliştirilmiştir",
+  "description": "Extreme Ecu - Modern mühendislik, ECU ve performans odaklı web platformu",
   "keywords": [
     "nextjs",
     "react",
@@ -16,10 +16,10 @@
     "blog",
     "engineering"
   ],
-  "homepage": "https://github.com/erdemerciyas/extremeecu",
+  "homepage": "https://github.com/extreme-ecu/extreme-ecu",
   "repository": {
     "type": "git",
-    "url": "https://github.com/erdemerciyas/extremeecu"
+    "url": "https://github.com/extreme-ecu/extreme-ecu"
   },
   "license": "MIT",
   "scripts": {

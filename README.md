@@ -4,7 +4,7 @@
 [![TypeScript](https://img.shields.io/badge/TypeScript-5.8.3-blue?style=for-the-badge&logo=typescript)](https://www.typescriptlang.org/)
 [![MongoDB](https://img.shields.io/badge/MongoDB-Latest-003450?style=for-the-badge&logo=mongodb)](https://www.mongodb.com/)
 [![Tailwind CSS](https://img.shields.io/badge/Tailwind_CSS-3.4.0-003450?style=for-the-badge&logo=tailwind-css)](https://tailwindcss.com/)
-[![Vercel](https://img.shields.io/badge/Vercel-Live-black?style=for-the-badge&logo=vercel)](https://fixral-m8b3vn7k7-erdem-erciyas-projects.vercel.app)
+[![Vercel](https://img.shields.io/badge/Vercel-Live-black?style=for-the-badge&logo=vercel)](https://www.extremeecu.com)
 [![Security](https://img.shields.io/badge/Security-Hardened-003450?style=for-the-badge&logo=shield)](https://github.com/erdemerciyas/extremeecu/blob/main/SECURITY.md)
 [![License](https://img.shields.io/badge/License-MIT-yellow?style=for-the-badge)](https://github.com/erdemerciyas/extremeecu/blob/main/LICENSE)
 [![Build Status](https://img.shields.io/badge/Build-Passing-075985?style=for-the-badge&logo=github-actions)](https://github.com/erdemerciyas/extremeecu/actions)
@@ -14,7 +14,7 @@ Modern, güvenli ve performanslı kişisel blog ve portfolyo platformu. Next.js 
 
 ## Live Demo
 
-**[Live Site](https://fixral-ao7clr42w-erdem-erciyas-projects.vercel.app)** | **[Admin Panel](https://fixral-ao7clr42w-erdem-erciyas-projects.vercel.app/admin)** | **[API Health](https://fixral-ao7clr42w-erdem-erciyas-projects.vercel.app/api/health)**
+**[Live Site](https://www.extremeecu.com)** | **[Admin Panel](https://www.extremeecu.com/admin)** | **[API Health](https://www.extremeecu.com/api/health)**
 
 > **Status**: **LIVE** | **Last Deploy**: Pending | **Version**: v2.3.0 | **CI/CD Pipeline**: **OPTIMIZED**
 
@@ -208,7 +208,7 @@ Uygulama [http://localhost:3000](http://localhost:3000) adresinde çalışacakt�
 
 ### Footer UI/UX İyileştirmeleri (v2.2.2)
 - **Footer Başlık Renkleri**: Başlıklar artık net beyaz renkte görünüyor
-- **FIXRAL Logo Entegrasyonu**: Footer'a profesyonel logo eklendi
+- **Extreme Ecu Logo Entegrasyonu**: Footer'a profesyonel logo eklendi
 - **İletişim Bilgileri Tasarımı**: Icon background'ları ve hover efektleri
 - **Quick Links Bullet Points**: Görsel hiyerarşi iyileştirmeleri
 - **Typography Enhancement**: Daha iyi okunabilirlik ve spacing
@@ -537,10 +537,10 @@ This project is licensed under the MIT License - see the **[LICENSE](LICENSE)** 
 
 ## Author
 
-**Erdem Erciyas**
-- Website: [erdemerciyas.com.tr](https://www.erdemerciyas.com.tr)
-- Email: erdem.erciyas@gmail.com
-- Twitter: [@erdemerciyas](https://twitter.com/erdemerciyas)
+**Extreme Ecu**
+- Website: [extremeecu.com](https://www.extremeecu.com)
+- Email: extremeecu34@gmail.com
+- Twitter: [@extremeecu](https://twitter.com/extremeecu)
 
 ## Acknowledgments
 
@@ -596,15 +596,15 @@ This project is licensed under the MIT License - see the **[LICENSE](LICENSE)** 
 
 ## Useful Links
 
-- **[Live Demo](https://fixral-ao7clr42w-erdem-erciyas-projects.vercel.app)**
-- **[Admin Panel](https://fixral-ao7clr42w-erdem-erciyas-projects.vercel.app/admin)**
-- **[API Health](https://fixral-ao7clr42w-erdem-erciyas-projects.vercel.app/api/health)**
-- **[Sitemap](https://fixral-ao7clr42w-erdem-erciyas-projects.vercel.app/sitemap.xml)**
-- **[Robots](https://fixral-ao7clr42w-erdem-erciyas-projects.vercel.app/robots.txt)**
+- **[Live Demo](https://www.extremeecu.com)**
+- **[Admin Panel](https://www.extremeecu.com/admin)**
+- **[API Health](https://www.extremeecu.com/api/health)**
+- **[Sitemap](https://www.extremeecu.com/sitemap.xml)**
+- **[Robots](https://www.extremeecu.com/robots.txt)**
 
 ## Support
 
-- **Email**: erdem.erciyas@gmail.com
+- **Email**: extremeecu34@gmail.com
 - **Issues**: **[GitHub Issues](https://github.com/erdemerciyas/extremeecu/issues)**
 - **Discussions**: **[GitHub Discussions](https://github.com/erdemerciyas/extremeecu/discussions)**
 - **Documentation**: **[Project Docs](https://github.com/erdemerciyas/extremeecu/tree/master)**

@@ -8,7 +8,7 @@ export async function POST() {
     await connectDB();
     
     // Admin kullanıcısı zaten var mı kontrol et
-    const adminEmail = process.env.ADMIN_EMAIL || 'erdem.erciyas@gmail.com';
+    const adminEmail = process.env.ADMIN_EMAIL || 'extremeecu34@gmail.com';
     const existingAdmin = await User.findOne({ email: adminEmail });
     
     if (existingAdmin) {
@@ -30,7 +30,7 @@ export async function POST() {
     const adminUser = await User.create({
       email: adminEmail,
       password: hashedPassword,
-      name: process.env.ADMIN_NAME || 'FIXRAL Admin',
+      name: process.env.ADMIN_NAME || 'Extreme Ecu Admin',
       role: 'admin'
     });
     

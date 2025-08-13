@@ -48,7 +48,7 @@ export async function POST(request: Request) {
 
       const toOwner = {
         from: process.env.GMAIL_USER,
-        to: 'erdem.erciyas@gmail.com',
+        to: 'extremeecu34@gmail.com',
         subject: `🛒 Yeni Sipariş: ${productTitle} (${quantity} adet)`,
         html: `
           <div style="font-family: Arial, sans-serif; max-width: 700px; margin:0 auto; padding:20px; background:#f8fafc; border-radius:12px;">

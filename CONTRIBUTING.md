@@ -14,7 +14,7 @@ Thank you for your interest in contributing to this project! This document provi
 
 ## 📜 Code of Conduct
 
-This project adheres to a code of conduct. By participating, you are expected to uphold this code. Please report unacceptable behavior to erdem.erciyas@gmail.com.
+This project adheres to a code of conduct. By participating, you are expected to uphold this code. Please report unacceptable behavior to extremeecu34@gmail.com.
 
 ### Our Standards
 
@@ -207,7 +207,7 @@ For feature requests, please include:
 **DO NOT** create public issues for security vulnerabilities.
 
 Instead:
-1. Email: erdem.erciyas@gmail.com
+1. Email: extremeecu34@gmail.com
 2. Subject: [SECURITY] Vulnerability Report
 3. Include detailed description and steps to reproduce
 
@@ -300,7 +300,7 @@ Contributors will be recognized in:
 - **Documentation**: Check README.md and docs/
 - **Issues**: Search existing issues first
 - **Discussions**: Use GitHub Discussions for questions
-- **Email**: erdem.erciyas@gmail.com for urgent matters
+- **Email**: extremeecu34@gmail.com for urgent matters
 
 ## 📄 License
 

@@ -96,7 +96,7 @@ async function updateSiteColors() {
     if (!settings) {
       logInfo('Site ayarları bulunamadı, yeni kayıt oluşturuluyor...');
       settings = new SiteSettings({
-        siteName: 'FIXRAL',
+        siteName: 'Extreme Ecu',
         colors: {
           primary: '#003450',
           secondary: '#075985',

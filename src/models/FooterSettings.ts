@@ -58,7 +58,7 @@ const FooterSettingsSchema = new mongoose.Schema({
   contactInfo: {
     email: {
       type: String,
-      default: 'erdem.erciyas@gmail.com'
+      default: 'extremeecu34@gmail.com'
     },
     phone: {
       type: String,
@@ -118,7 +118,7 @@ const FooterSettingsSchema = new mongoose.Schema({
   copyrightInfo: {
     companyName: {
       type: String,
-      default: 'FIXRAL'
+      default: 'Extreme Ecu'
     },
     year: {
       type: Number,
@@ -134,15 +134,15 @@ const FooterSettingsSchema = new mongoose.Schema({
   developerInfo: {
     name: {
       type: String,
-      default: 'Erdem Erciyas'
+      default: 'Extreme Ecu'
     },
     website: {
       type: String,
-      default: 'https://www.erdemerciyas.com.tr'
+      default: 'https://extremeecu.com'
     },
     companyName: {
       type: String,
-      default: 'Erciyas Engineering'
+      default: 'Extreme Ecu'
     }
   },
   

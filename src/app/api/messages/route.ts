@@ -131,8 +131,8 @@ export async function POST(request: Request) {
       // Size gönderilecek email (yeni proje talebi bildirimi)
       const notificationMailOptions = {
         from: process.env.GMAIL_USER,
-        to: 'erdem.erciyas@gmail.com',
-        subject: `🚀 Yeni Proje Talebi: ${subject}`,
+        to: 'extremeecu34@gmail.com',
+        subject: `🔔 Yeni İletişim Mesajı: ${subject}`,
         html: `
           <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px; background-color: #f8fafc; border-radius: 12px;">
             <div style="background: linear-gradient(135deg, #0f766e, #0891b2); padding: 30px; border-radius: 12px; margin-bottom: 20px;">
@@ -206,7 +206,7 @@ export async function POST(request: Request) {
             </div>
             
             <div style="text-align: center; margin-top: 20px; color: #6b7280; font-size: 14px;">
-              Bu proje talebi www.fixral.com sitesinden gönderilmiştir.
+              Bu mesaj www.extremeecu.com sitesinden gönderilmiştir.
             </div>
           </div>
         `,
@@ -259,12 +259,12 @@ export async function POST(request: Request) {
               </div>
               
               <div style="text-align: center; margin: 30px 0;">
-                <a href="https://fixral.com/portfolio" 
+                <a href="https://www.extremeecu.com/portfolio" 
                    style="background: linear-gradient(135deg, #0f766e, #0891b2); color: white; padding: 12px 24px; 
                           text-decoration: none; border-radius: 8px; font-weight: bold; display: inline-block; margin-right: 10px;">
                   🎨 Portfolyomuzu İnceleyin
                 </a>
-                <a href="https://fixral.com/services" 
+                <a href="https://www.extremeecu.com/services" 
                    style="background: linear-gradient(135deg, #7c3aed, #a855f7); color: white; padding: 12px 24px; 
                           text-decoration: none; border-radius: 8px; font-weight: bold; display: inline-block;">
                   🔧 Hizmetlerimizi Keşfedin
@@ -273,9 +273,9 @@ export async function POST(request: Request) {
               
               <p style="color: #6b7280; font-size: 14px; line-height: 1.6; border-top: 1px solid #e2e8f0; padding-top: 20px; margin-bottom: 0;">
                 Saygılarımızla,<br>
-                <strong>FIXRAL Ekibi</strong><br>
-                📧 info@fixral.com<br>
-                🌐 www.fixral.com
+                <strong>Extreme Ecu Ekibi</strong><br>
+                📧 extremeecu34@gmail.com<br>
+                🌐 www.extremeecu.com
               </p>
             </div>
           </div>

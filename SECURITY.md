@@ -230,7 +230,7 @@ vercel env add CLOUDINARY_API_SECRET
 ## 📞 Güvenlik İletişimi
 
 Güvenlik açığı tespit ederseniz:
-1. **Email:** erdem.erciyas@gmail.com
+1. **Email:** extremeecu34@gmail.com
 2. **Subject:** [SECURITY] Vulnerability Report
 3. **Details:** Detaylı açıklama ve PoC
 
@@ -246,6 +246,6 @@ Güvenlik açığı tespit ederseniz:
 
 ---
 
-**Son Güncelleme:** 2025-01-15  
+**Son Güncelleme:** 2025-08-13  
 **Güvenlik Seviyesi:** HIGH  
 **Compliance:** OWASP Top 10 2021
