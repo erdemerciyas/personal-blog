@@ -26,7 +26,7 @@ const SettingsSchema = new mongoose.Schema({
   },
   logo: {
     type: String,
-    default: '/images/logo.png',
+    default: '/uploads/logos/logo-1753699141500.png',
   },
   favicon: {
     type: String,
