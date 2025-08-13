@@ -96,11 +96,11 @@ async function updateSiteColors() {
     if (!settings) {
       logInfo('Site ayarları bulunamadı, yeni kayıt oluşturuluyor...');
       settings = new SiteSettings({
-        siteName: 'Extreme Ecu',
+        siteName: 'Extreme',
         colors: {
-          primary: '#003450',
-          secondary: '#075985',
-          accent: '#0369a1'
+          primary: '#B91C1C',   // brand red
+          secondary: '#111827', // near-black
+          accent: '#EF4444'     // lighter red accent
         },
         isActive: true
       });
@@ -113,11 +113,11 @@ async function updateSiteColors() {
       log(`   Secondary: ${settings.colors?.secondary || 'Tanımlı değil'}`, 'yellow');
       log(`   Accent: ${settings.colors?.accent || 'Tanımlı değil'}`, 'yellow');
       
-      // Yeni renkleri uygula
+      // Yeni renkleri uygula (Extreme brand)
       settings.colors = {
-        primary: '#003450',   // brand-primary-900
-        secondary: '#075985', // brand-primary-800
-        accent: '#0369a1'     // brand-primary-700
+        primary: '#B91C1C',   // brand red
+        secondary: '#111827', // near-black
+        accent: '#EF4444'     // accent red
       };
     }
     
@@ -134,7 +134,7 @@ async function updateSiteColors() {
     
     // Doğrulama
     const updatedSettings = await SiteSettings.findOne({ isActive: true });
-    if (updatedSettings.colors.primary === '#003450') {
+    if (updatedSettings.colors.primary === '#B91C1C') {
       logSuccess('Doğrulama başarılı - Renkler veritabanında güncellendi');
     } else {
       logError('Doğrulama başarısız - Renkler güncellenemedi');

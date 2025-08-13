@@ -8,38 +8,38 @@ const SliderSchema = new mongoose.Schema({
   },
   subtitle: {
     type: String,
-    required: true,
+    required: false,
     trim: true,
   },
   description: {
     type: String,
-    required: true,
+    required: false,
   },
   buttonText: {
     type: String,
-    required: true,
+    required: false,
     default: 'Daha Fazla',
   },
   buttonLink: {
     type: String,
-    required: true,
+    required: false,
     default: '/contact',
   },
   badge: {
     type: String,
-    required: true,
+    required: false,
     default: 'Yenilik',
   },
   // Image configuration
   imageType: {
     type: String,
     enum: ['upload', 'url', 'ai-generated'],
-    required: true,
+    required: false,
     default: 'upload',
   },
   imageUrl: {
     type: String,
-    required: true,
+    required: false,
   },
   // AI generation settings
   aiPrompt: {

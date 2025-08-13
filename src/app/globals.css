@@ -6,25 +6,25 @@
 
 
 :root {
-  /* Fixral Design System Variables - Updated to Brand Primary */
-  --fixral-night-blue: 0, 52, 80; /* #003450 */
-  --fixral-primary: 0, 52, 80; /* #003450 */
+  /* Fixral Design System Variables - Extreme brand alignment */
+  --fixral-night-blue: 11, 11, 11; /* near-black */
+  --fixral-primary: 185, 28, 28; /* #B91C1C red */
   --fixral-light-gray: 248, 249, 250; /* #F8F9FA */
-  --fixral-charcoal: 61, 61, 61; /* #3D3D3D */
-  --fixral-gray-blue: 58, 80, 107; /* #3A506B */
+  --fixral-charcoal: 31, 41, 55; /* slate-800 */
+  --fixral-gray-blue: 55, 65, 81; /* slate-700 */
   
-  /* Brand Color System - CSS Custom Properties */
-  --brand-primary-50: #f0f9ff;
-  --brand-primary-100: #e0f2fe;
-  --brand-primary-200: #bae6fd;
-  --brand-primary-300: #7dd3fc;
-  --brand-primary-400: #38bdf8;
-  --brand-primary-500: #0ea5e9;
-  --brand-primary-600: #0284c7;
-  --brand-primary-700: #0369a1;
-  --brand-primary-800: #075985;
-  --brand-primary-900: #003450;
-  --brand-primary: var(--brand-primary-900);
+  /* Brand Color System - Red scale */
+  --brand-primary-50: #fef2f2;
+  --brand-primary-100: #fee2e2;
+  --brand-primary-200: #fecaca;
+  --brand-primary-300: #fca5a5;
+  --brand-primary-400: #f87171;
+  --brand-primary-500: #ef4444;
+  --brand-primary-600: #dc2626;
+  --brand-primary-700: #b91c1c;
+  --brand-primary-800: #991b1b;
+  --brand-primary-900: #7f1d1d;
+  --brand-primary: var(--brand-primary-700);
   
   /* Semantic color mappings */
   --foreground-rgb: var(--fixral-charcoal);
@@ -34,7 +34,7 @@
   --primary-dark: var(--fixral-night-blue);
   --secondary-color: var(--fixral-gray-blue);
   --accent-color: var(--fixral-primary);
-  --text-primary: var(--fixral-night-blue);
+  --text-primary: 17, 24, 39; /* #111827 */
   --text-secondary: var(--fixral-charcoal);
   --text-muted: var(--fixral-gray-blue);
   
@@ -91,10 +91,10 @@ body {
   -moz-osx-font-smoothing: grayscale;
 }
 
-/* Fixral Typography Classes */
+/* Extreme Ecu Typography */
 h1, h2, h3, h4, h5, h6 {
-  font-family: var(--font-inter);
-  color: rgb(var(--fixral-night-blue));
+  font-family: 'Oswald', var(--font-inter);
+  color: rgb(var(--text-primary));
   font-weight: 600;
   line-height: 1.2;
   font-display: swap;
@@ -117,22 +117,18 @@ h1, h2, h3, h4, h5, h6 {
 
 /* Design System Components */
 @layer components {
-  /* Fixral Buttons */
+  /* Extreme Ecu Buttons */
   .btn {
     @apply inline-flex items-center justify-center px-6 py-3 rounded-fixral text-base font-medium cursor-pointer transition-all duration-300 focus:outline-none transform-gpu;
   }
 
-  .btn-primary {
-    @apply btn bg-brand-primary-900 text-white border-none hover:bg-brand-primary-800 focus:ring-2 focus:ring-brand-primary-600/25 active:scale-95 w-auto;
-  }
+  .btn-primary { @apply btn bg-brand-primary-700 text-white border-none hover:bg-brand-primary-800 focus:ring-2 focus:ring-brand-primary-600/25 active:scale-95 w-auto; }
   
   .btn-secondary {
     @apply btn bg-slate-700 text-white border-none hover:bg-slate-800 hover:scale-105 focus:ring-2 focus:ring-slate-500/25 active:scale-95 w-auto;
   }
 
-  .btn-outline {
-    @apply inline-flex items-center justify-center px-8 py-4 bg-transparent border-2 border-brand-primary-600 text-brand-primary-700 font-semibold rounded-2xl hover:bg-brand-primary-600 hover:text-white transition-all duration-300 focus:outline-none focus:ring-4 focus:ring-brand-primary-500/30 active:scale-95 transform-gpu;
-  }
+  .btn-outline { @apply inline-flex items-center justify-center px-8 py-4 bg-transparent border-2 border-brand-primary-700 text-brand-primary-800 font-semibold rounded-2xl hover:bg-brand-primary-700 hover:text-white transition-all duration-300 focus:outline-none focus:ring-4 focus:ring-brand-primary-600/30 active:scale-95 transform-gpu; }
 
   .btn-ghost {
     @apply inline-flex items-center justify-center px-6 py-3 bg-transparent text-slate-600 hover:text-brand-primary-700 hover:bg-slate-100 hover:scale-105 font-medium rounded-xl transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-slate-400/50 active:scale-95 transform-gpu;
@@ -151,7 +147,7 @@ h1, h2, h3, h4, h5, h6 {
     @apply bg-white/90 backdrop-blur-sm rounded-lg border border-white/20 shadow-md hover:bg-white/95 hover:shadow-xl hover:-translate-y-1 transition-all duration-300 transform-gpu dark:bg-white/10 dark:border-white/10 dark:hover:bg-white/15;
   }
 
-  /* Fixral Form Elements */
+  /* Extreme Ecu Form Elements */
   .input-field {
     @apply w-full bg-white border border-gray-300 rounded-lg px-3 py-3 text-slate-800 placeholder-gray-400 focus:ring-2 focus:ring-brand-primary-600/25 focus:border-brand-primary-600 outline-none transition-all duration-200 font-sans text-base dark:bg-slate-800 dark:border-slate-600 dark:text-slate-100 dark:placeholder-slate-400;
   }
@@ -236,21 +232,9 @@ h1, h2, h3, h4, h5, h6 {
     @apply text-sm leading-relaxed text-slate-700 dark:text-slate-300;
   }
 
-  .text-gradient {
-    @apply bg-gradient-to-r from-brand-primary-700 via-brand-primary-600 to-brand-primary-800 bg-clip-text text-transparent;
-    line-height: 1.2;
-    padding: 0.1em 0;
-    -webkit-text-stroke: 0.5px transparent;
-    text-rendering: optimizeLegibility;
-  }
+  .text-gradient { @apply bg-gradient-to-r from-brand-primary-600 via-brand-primary-700 to-brand-primary-800 bg-clip-text text-transparent; line-height: 1.2; padding: 0.1em 0; -webkit-text-stroke: 0.5px transparent; text-rendering: optimizeLegibility; }
 
-  .text-gradient-hero {
-    @apply bg-gradient-to-r from-white via-brand-primary-100 to-brand-primary-200 bg-clip-text text-transparent drop-shadow-2xl;
-    line-height: 1.2;
-    padding: 0.1em 0;
-    -webkit-text-stroke: 0.5px transparent;
-    text-rendering: optimizeLegibility;
-  }
+  .text-gradient-hero { @apply bg-gradient-to-r from-white via-brand-primary-100 to-brand-primary-300 bg-clip-text text-transparent drop-shadow-2xl; line-height: 1.2; padding: 0.1em 0; -webkit-text-stroke: 0.5px transparent; text-rendering: optimizeLegibility; }
 
   /* Containers */
   .container-main {
@@ -296,10 +280,7 @@ h1, h2, h3, h4, h5, h6 {
 
 
   /* Backgrounds */
-  .bg-gradient-primary {
-    /* Daha rafine ve kurumsal bir ana degrade */
-    @apply bg-gradient-to-b from-[#0f1e2d] via-[#0f1b26] to-[#0b1520];
-  }
+  .bg-gradient-primary { @apply bg-gradient-to-b from-[#0b0b0b] via-[#111111] to-[#1f2937]; }
 
   .bg-gradient-subtle {
     @apply bg-gradient-to-b from-[#f6f7f9] via-white to-[#eef1f6] dark:from-slate-900 dark:via-slate-900 dark:to-slate-900;
@@ -634,7 +615,7 @@ select::-webkit-scrollbar-thumb:hover {
   }
 }
 
-/* Fixral Mobile Responsiveness */
+  /* Extreme Ecu Mobile Responsiveness */
 @media (max-width: 640px) {
   /* Mobile hero spacing and safe areas */
   .section-hero {

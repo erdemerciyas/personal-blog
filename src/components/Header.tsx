@@ -296,43 +296,30 @@ E-posta: ${projectForm.email}
   return (
     <header className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${
       isScrolled 
-        ? 'bg-white/90 backdrop-blur-md shadow border-b border-slate-200/60' 
-        : 'bg-transparent'
+        ? 'bg-[#0b0b0b]/90 backdrop-blur-md shadow border-b border-black/40' 
+        : 'bg-[#0b0b0b]/60'
     }`}>
       <div className="container-main">
         <div className="flex items-center justify-between h-16 sm:h-20">
-          {/* Logo */}
+          {/* Logo (text hidden for a cleaner brand-only header) */}
           <Link href="/" className="flex items-center space-x-3 group">
             {siteSettings?.logo?.url ? (
-              <div className="relative w-12 h-12 rounded-2xl overflow-hidden bg-white/10 backdrop-blur-sm p-1">
-                <Image
-                  src={siteSettings.logo.url}
-                  alt={siteSettings.logo.alt}
-                  fill
-                  className="object-contain"
-                  sizes="48px"
-                  priority
-                />
-              </div>
+              <Image
+                src={siteSettings.logo.url}
+                alt={siteSettings.logo.alt || 'Logo'}
+                width={siteSettings.logo.width || 180}
+                height={siteSettings.logo.height || 48}
+                className="h-10 sm:h-12 w-auto object-contain"
+                priority
+              />
             ) : (
-              <div className="w-12 h-12 bg-white/10 backdrop-blur-sm rounded-2xl flex items-center justify-center">
-                <SparklesIcon className="w-6 h-6 text-white" />
+              <div className="w-28 h-10 sm:h-12 flex items-center justify-center">
+                <SparklesIcon className={`w-8 h-8 ${isScrolled ? 'text-slate-900' : 'text-white'}`} />
+                <span className="sr-only">Extreme</span>
               </div>
             )}
-            <div className="hidden sm:block">
-              <h1 className={`text-xl font-bold tracking-tight transition-colors duration-300 ${
-                isScrolled ? 'text-slate-900' : 'text-white'
-              }`}>
-                {siteSettings?.siteName || 'Extreme Ecu'}
-              </h1>
-              {siteSettings?.slogan && (
-                <p className={`text-sm opacity-80 transition-colors duration-300 ${
-                  isScrolled ? 'text-slate-600' : 'text-white/80'
-                }`}>
-                  {siteSettings.slogan}
-                </p>
-              )}
-            </div>
+            {/* Accessible site name (visually hidden) */}
+            <span className="sr-only">{siteSettings?.siteName || 'Extreme'}</span>
           </Link>
 
           {/* Desktop Navigation */}
@@ -343,13 +330,9 @@ E-posta: ${projectForm.email}
                 <Link
                   key={index}
                   href={link.href}
-                  className={`relative overflow-hidden px-4 py-2 rounded-xl font-medium transition-all duration-200 group flex items-center space-x-2 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-primary-600 focus-visible:ring-offset-2 ${
+                  className={`relative overflow-hidden px-4 py-2 rounded-xl font-medium transition-all duration-200 group flex items-center space-x-2 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-primary-600/70 ${
                     isActive
-                      ? isScrolled
-                        ? 'bg-brand-primary-100 text-brand-primary-800'
-                        : 'bg-white text-brand-primary-800 shadow'
-                      : isScrolled
-                      ? 'text-slate-700 hover:bg-slate-100 hover:text-brand-primary-700'
+                      ? 'bg-brand-primary-700 text-white'
                       : 'text-white hover:text-white hover:bg-white/10'
                   }`}
                   aria-current={isActive ? 'page' : undefined}
@@ -359,11 +342,7 @@ E-posta: ${projectForm.email}
                   {/* underline animation */}
                   <span
                     aria-hidden="true"
-                    className={`pointer-events-none absolute left-4 right-4 bottom-1 h-[2px] origin-left scale-x-0 transition-transform duration-300 ${
-                      isScrolled
-                        ? 'bg-brand-primary-700'
-                        : 'bg-white/80'
-                    } ${isActive ? 'scale-x-100' : 'group-hover:scale-x-100'}`}
+                    className={`pointer-events-none absolute left-4 right-4 bottom-1 h-[2px] origin-left scale-x-0 transition-transform duration-300 bg-brand-primary-500 ${isActive ? 'scale-x-100' : 'group-hover:scale-x-100'}`}
                   />
                 </Link>
               );
@@ -375,11 +354,7 @@ E-posta: ${projectForm.email}
             <button
               onClick={openProjectModal}
               aria-label="Proje başvurusu formunu aç"
-              className={`px-5 py-2.5 rounded-full font-semibold transition-all duration-300 transform hover:scale-[1.02] flex items-center space-x-2 ${
-                isScrolled
-                  ? 'bg-slate-900 text-white shadow hover:shadow-lg'
-                  : 'bg-white/10 backdrop-blur-md text-white border border-white/20 hover:bg-white/20'
-              }`}
+              className={`px-5 py-2.5 rounded-full font-semibold transition-all duration-300 transform hover:scale-[1.02] flex items-center space-x-2 bg-brand-primary-700 text-white hover:bg-brand-primary-800 shadow`}
             >
               <PaperAirplaneIcon className="w-5 h-5" />
               <span>Proje Başvurusu</span>
@@ -392,11 +367,7 @@ E-posta: ${projectForm.email}
             aria-label="Mobil menüyü aç/kapat"
             aria-controls="mobile-menu"
             aria-expanded={isMobileMenuOpen}
-            className={`md:hidden p-2 rounded-xl transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-white/30 ${
-              isScrolled
-                ? 'text-slate-700 hover:bg-slate-100'
-                : 'text-white hover:bg-white/10'
-            }`}
+            className={`md:hidden p-2 rounded-xl transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-white/30 text-white hover:bg-white/10`}
           >
             {isMobileMenuOpen ? (
               <XMarkIcon className="w-6 h-6" />
@@ -408,7 +379,7 @@ E-posta: ${projectForm.email}
 
         {/* Mobile Menu */}
         {isMobileMenuOpen && (
-          <nav id="mobile-menu" aria-label="Mobil navigasyon" className="md:hidden absolute top-full left-0 right-0 bg-white/95 backdrop-blur-lg shadow-2xl border-t border-slate-200/50 max-h-[75vh] overflow-y-auto">
+          <nav id="mobile-menu" aria-label="Mobil navigasyon" className="md:hidden absolute top-full left-0 right-0 bg-[#0b0b0b]/95 text-white backdrop-blur-lg shadow-2xl border-t border-slate-800/70 max-h-[75vh] overflow-y-auto">
             <div className="py-4 px-6">
               {navLinks.map((link, index) => {
                 const isActive = pathname === link.href;
@@ -417,10 +388,10 @@ E-posta: ${projectForm.email}
                     key={index}
                     href={link.href}
                     onClick={closeMobileMenu}
-                    className={`flex items-center space-x-3 py-3 px-4 rounded-xl font-medium transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-primary-600/70 focus-visible:ring-offset-2 ${
+                    className={`flex items-center space-x-3 py-3 px-4 rounded-xl font-medium transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-primary-600/70 ${
                       isActive
-                        ? 'bg-brand-primary-100 text-brand-primary-800'
-                        : 'text-slate-700 hover:bg-slate-100 hover:text-brand-primary-700'
+                        ? 'bg-brand-primary-700 text-white'
+                        : 'text-white hover:bg-white/10'
                     }`}
                     aria-current={isActive ? 'page' : undefined}
                   >
@@ -429,10 +400,10 @@ E-posta: ${projectForm.email}
                   </Link>
                 );
               })}
-              <div className="mt-4 pt-4 border-t border-slate-200">
+              <div className="mt-4 pt-4 border-t border-slate-800/60">
                 <button
                   onClick={openProjectModal}
-                  className="flex items-center justify-center space-x-2 py-3 px-6 bg-gradient-primary text-white rounded-xl font-semibold w-full"
+                  className="flex items-center justify-center space-x-2 py-3 px-6 bg-brand-primary-700 hover:bg-brand-primary-800 text-white rounded-xl font-semibold w-full"
                 >
                   <PaperAirplaneIcon className="w-5 h-5" />
                   <span>Proje Başvurusu</span>
