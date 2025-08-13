@@ -22,7 +22,7 @@ const Logo: React.FC<LogoProps> = ({ className = '', width = 40, height = 40, is
         xmlns="http://www.w3.org/2000/svg"
         className="mr-3"
       >
-        {/* FIXRAL Logo - 3D Engineering Symbol */}
+        {/* Extreme Ecu Logo - 3D Engineering Symbol */}
         <path
           d="M20 5L35 13V27L20 35L5 27V13L20 5Z"
           fill="none"
@@ -53,7 +53,7 @@ const Logo: React.FC<LogoProps> = ({ className = '', width = 40, height = 40, is
       </svg>
       <div className="flex flex-col">
         <span className={`text-xl font-bold ${textColor} transition-colors duration-300`}>
-          FIXRAL
+          Extreme Ecu
         </span>
         <span className={`text-sm font-medium transition-colors duration-300 ${isDark ? 'text-fixral-gray-blue' : 'text-brand-primary-300'}`}>
           Engineering

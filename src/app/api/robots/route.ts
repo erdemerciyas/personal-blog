@@ -1,7 +1,7 @@
 import { NextResponse } from 'next/server';
 
 export async function GET() {
-  const baseUrl = process.env.NEXTAUTH_URL || 'https://erdemerciyas.com.tr';
+  const baseUrl = process.env.NEXTAUTH_URL || 'https://extremeecu.com';
   
   const robots = `User-agent: *
 Allow: /

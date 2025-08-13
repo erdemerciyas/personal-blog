@@ -15,13 +15,13 @@ export async function GET() {
     // Eğer hiç kayıt yoksa default kayıt oluştur
     if (!contact) {
       contact = await Contact.create({
-        email: 'erdem.erciyas@gmail.com',
+        email: 'extremeecu34@gmail.com',
         phone: '+90 (532) 123 45 67',
         address: 'Altay Mahallesi Bilgi sk No: 5 Turgutlu Manisa',
         workingHours: 'Pazartesi - Cuma: 09:00 - 18:00',
         socialLinks: {
           linkedin: '',
-          twitter: '@fixral',
+          twitter: '@extremeecu',
           instagram: '',
           facebook: '',
         },

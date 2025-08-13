@@ -209,12 +209,12 @@ git push origin main
 npm run deploy
 ```
 
-## 📞 Support
+## Support
 
 Deployment sorunları için:
-- 📧 **Email**: erdem.erciyas@gmail.com
-- 🐛 **Issues**: GitHub Issues
-- 📚 **Docs**: Project documentation
+- **Email**: extremeecu34@gmail.com
+- **Issues**: GitHub Issues
+- **Docs**: Project documentation
 
 ---
 

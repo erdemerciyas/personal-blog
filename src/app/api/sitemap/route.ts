@@ -7,7 +7,7 @@ export async function GET() {
   try {
     await connectDB();
     
-    const baseUrl = process.env.NEXTAUTH_URL || 'https://erdemerciyas.com.tr';
+    const baseUrl = process.env.NEXTAUTH_URL || 'https://extremeecu.com';
     
     // Get all portfolio and product items for dynamic URLs
     const portfolioItems = await Portfolio.find({ isActive: true }).select('slug updatedAt');

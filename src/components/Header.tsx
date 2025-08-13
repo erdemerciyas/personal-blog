@@ -323,7 +323,7 @@ E-posta: ${projectForm.email}
               <h1 className={`text-xl font-bold tracking-tight transition-colors duration-300 ${
                 isScrolled ? 'text-slate-900' : 'text-white'
               }`}>
-                {siteSettings?.siteName || 'FIXRAL'}
+                {siteSettings?.siteName || 'Extreme Ecu'}
               </h1>
               {siteSettings?.slogan && (
                 <p className={`text-sm opacity-80 transition-colors duration-300 ${

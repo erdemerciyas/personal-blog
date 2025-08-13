@@ -30,4 +30,4 @@ Yayın Tarihi: 2025-08-12
 ## Katkılar
 Teşekkürler: Tüm katkı sağlayanlara 🙏
 
-— Erdem Erciyas
+— Extreme Ecu

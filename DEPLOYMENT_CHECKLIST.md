@@ -269,7 +269,7 @@ Congratulations! Your Personal Blog Platform is now live and secure.
 5. Update documentation as needed
 
 ### Support
-- 📧 **Email**: erdem.erciyas@gmail.com
+- 📧 **Email**: extremeecu34@gmail.com
 - 🐛 **Issues**: GitHub Issues
 - 📚 **Docs**: Project documentation
 - 💬 **Community**: GitHub Discussions
