@@ -26,7 +26,7 @@ const FixralExamples: React.FC = () => {
         <div className="container-main py-16">
             <div className="max-w-4xl mx-auto">
                 <h1 className="text-4xl font-sans font-bold text-fixral-night-blue mb-8 text-center">
-                    Fixral Design System Örnekleri
+                    Extreme Ecu Tasarım Sistemi Örnekleri
                 </h1>
 
                 {/* Button Examples */}
@@ -68,7 +68,7 @@ const FixralExamples: React.FC = () => {
 
                     <div className="mt-6">
                         <h3 className="text-lg font-sans font-medium text-fixral-night-blue mb-4">
-                            Loading State
+                            Yüklenme Durumu
                         </h3>
                         <FixralButton variant="primary" loading>
                             Yükleniyor...
@@ -80,7 +80,7 @@ const FixralExamples: React.FC = () => {
                 <div className="grid md:grid-cols-3 gap-6 mb-8">
                     <FixralCard variant="default">
                         <h3 className="text-lg font-sans font-semibold text-fixral-night-blue mb-3">
-                            Default Card
+                            Varsayılan Kart
                         </h3>
                         <p className="text-fixral-charcoal">
                             Bu standart kart tasarımıdır. Temiz ve modern görünüm sunar.
@@ -89,7 +89,7 @@ const FixralExamples: React.FC = () => {
 
                     <FixralCard variant="glass">
                         <h3 className="text-lg font-sans font-semibold text-fixral-night-blue mb-3">
-                            Glass Card
+                            Cam Kart
                         </h3>
                         <p className="text-fixral-charcoal">
                             Cam efektli kart tasarımı. Şeffaflık ve bulanıklık efekti içerir.
@@ -98,7 +98,7 @@ const FixralExamples: React.FC = () => {
 
                     <FixralCard variant="elevated">
                         <h3 className="text-lg font-sans font-semibold text-fixral-night-blue mb-3">
-                            Elevated Card
+                            Yükseltilmiş Kart
                         </h3>
                         <p className="text-fixral-charcoal">
                             Yükseltilmiş kart tasarımı. Daha belirgin gölge efekti vardır.

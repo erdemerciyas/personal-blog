@@ -21,7 +21,7 @@ export async function GET() {
         workingHours: 'Pazartesi - Cuma: 09:00 - 18:00',
         socialLinks: {
           linkedin: '',
-          twitter: '@extremeecu',
+          twitter: 'https://twitter.com/extremeecu',
           instagram: '',
           facebook: '',
         },
@@ -80,6 +80,21 @@ export async function PUT(request: Request) {
       )
     ]);
 
+    // Helper: normalize URLs (accepts @handles and plain domains)
+    const normalizeUrl = (value: unknown, network?: 'twitter' | 'instagram' | 'linkedin' | 'facebook') => {
+      if (!value || typeof value !== 'string') return '';
+      const v = value.trim();
+      if (v.startsWith('@')) {
+        const handle = v.slice(1);
+        if (network === 'twitter') return `https://twitter.com/${handle}`;
+        if (network === 'instagram') return `https://instagram.com/${handle}`;
+        if (network === 'linkedin') return `https://linkedin.com/in/${handle}`;
+        if (network === 'facebook') return `https://facebook.com/${handle}`;
+      }
+      if (!/^https?:\/\//i.test(v)) return `https://${v}`;
+      return v;
+    };
+
     // Prepare update data
     const updateData = {
       email: body.email,
@@ -87,10 +102,10 @@ export async function PUT(request: Request) {
       address: body.address,
       workingHours: body.workingHours || 'Pazartesi - Cuma: 09:00 - 18:00',
       socialLinks: {
-        linkedin: body.socialLinks?.linkedin || '',
-        twitter: body.socialLinks?.twitter || '',
-        instagram: body.socialLinks?.instagram || '',
-        facebook: body.socialLinks?.facebook || '',
+        linkedin: normalizeUrl(body.socialLinks?.linkedin, 'linkedin'),
+        twitter: normalizeUrl(body.socialLinks?.twitter, 'twitter'),
+        instagram: normalizeUrl(body.socialLinks?.instagram, 'instagram'),
+        facebook: normalizeUrl(body.socialLinks?.facebook, 'facebook'),
       },
       isActive: true,
       updatedAt: new Date(),

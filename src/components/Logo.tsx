@@ -8,9 +8,9 @@ interface LogoProps {
 }
 
 const Logo: React.FC<LogoProps> = ({ className = '', width = 40, height = 40, isDark = false }) => {
-  const textColor = isDark ? 'text-fixral-night-blue' : 'text-white';
-  const iconColor = isDark ? '#003450' : '#38bdf8';
-  const accentColor = isDark ? '#0369a1' : '#7dd3fc';
+  const textColor = isDark ? 'text-slate-900' : 'text-white';
+  const iconColor = isDark ? '#B91C1C' : '#EF4444';
+  const accentColor = isDark ? '#991B1B' : '#FCA5A5';
 
   return (
     <div className={`flex items-center ${className}`}>
@@ -52,11 +52,11 @@ const Logo: React.FC<LogoProps> = ({ className = '', width = 40, height = 40, is
         />
       </svg>
       <div className="flex flex-col">
-        <span className={`text-xl font-bold ${textColor} transition-colors duration-300`}>
-          Extreme Ecu
+        <span className={`text-xl font-bold ${textColor} transition-colors duration-300 font-[Oswald] tracking-wide`}>
+          EXTREME
         </span>
-        <span className={`text-sm font-medium transition-colors duration-300 ${isDark ? 'text-fixral-gray-blue' : 'text-brand-primary-300'}`}>
-          Engineering
+        <span className={`text-sm font-medium transition-colors duration-300 ${isDark ? 'text-slate-600' : 'text-brand-primary-200'} tracking-widest`}>
+          GARAGE & PERFORMANCE PARTS
         </span>
       </div>
     </div>

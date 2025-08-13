@@ -9,57 +9,57 @@ module.exports = {
   theme: {
     extend: {
       colors: {
-        // Fixral Design System Colors - Updated to match brand primary
+        // Fixral Design System Colors - Re-aligned to Extreme brand (red/black/white)
         fixral: {
-          'night-blue': '#003450', // Updated to match brand primary
-          'primary': '#003450', // Main brand color
+          'night-blue': '#0B0B0B', // used as near-black base for headings/backgrounds
+          'primary': '#B91C1C', // brand red
           'light-gray': '#F8F9FA',
-          'charcoal': '#3D3D3D',
-          'gray-blue': '#3A506B',
-          // Extended palette for better design flexibility
-          'deep-blue': '#002235',
-          'ocean-blue': '#0369a1',
-          'sky-blue': '#7dd3fc',
-          'mint': '#38bdf8',
-          'slate': '#2F4F4F',
+          'charcoal': '#1F2937', // slate-800-ish for robust contrast
+          'gray-blue': '#374151', // slate-700 as neutral text
+          // Extended palette (kept for compatibility, tuned to brand)
+          'deep-blue': '#0B0B0B',
+          'ocean-blue': '#B91C1C',
+          'sky-blue': '#EF4444',
+          'mint': '#DC2626',
+          'slate': '#111827',
           'pearl': '#F5F5F5',
-          'graphite': '#2C2C2C',
+          'graphite': '#0F172A',
         },
-        // Backward compatibility
-        primary: '#003450', // Ana Brand Rengi
-        secondary: '#3A506B', // Gri Mavi
-        accent: '#003450', // Brand Primary
-        // Primary brand colors based on #003450
+        // Backward compatibility semantic aliases
+        primary: '#B91C1C', // Brand Red
+        secondary: '#111827', // Near-black
+        accent: '#B91C1C', // Brand accent = red
+        // Primary brand colors (red scale)
         'brand-primary': {
-          50: '#f0f9ff',
-          100: '#e0f2fe',
-          200: '#bae6fd',
-          300: '#7dd3fc',
-          400: '#38bdf8',
-          500: '#0ea5e9',
-          600: '#0284c7',
-          700: '#0369a1',
-          800: '#075985',
-          900: '#003450', // Main brand color
-          950: '#002235',
+          50: '#fef2f2',
+          100: '#fee2e2',
+          200: '#fecaca',
+          300: '#fca5a5',
+          400: '#f87171',
+          500: '#ef4444',
+          600: '#dc2626',
+          700: '#b91c1c',
+          800: '#991b1b',
+          900: '#7f1d1d',
+          950: '#450a0a',
         },
-        // Accessibility-focused colors
+        // Accessibility-focused colors (ensure contrast on light/dark)
         'accessible-brand': {
-          50: '#f0f9ff',
-          100: '#e0f2fe',
-          200: '#bae6fd',
-          300: '#7dd3fc',
-          400: '#38bdf8',
-          500: '#0ea5e9',
-          600: '#0284c7',
-          700: '#0369a1', // WCAG AA compliant
-          800: '#075985', // WCAG AAA compliant
-          900: '#003450',
+          50: '#fef2f2',
+          100: '#fee2e2',
+          200: '#fecaca',
+          300: '#fca5a5',
+          400: '#f87171',
+          500: '#ef4444',
+          600: '#dc2626',
+          700: '#991b1b', // WCAG AA compliant on white
+          800: '#7f1d1d', // WCAG AAA compliant on white
+          900: '#111111',
         }
       },
       fontFamily: {
         sans: ['Inter', 'var(--font-inter)', 'system-ui', 'sans-serif'],
-        display: ['Inter', 'var(--font-inter)', 'system-ui', 'sans-serif'],
+        display: ['Oswald', 'Inter', 'var(--font-inter)', 'system-ui', 'sans-serif'],
       },
       fontSize: {
         'fixral-xs': ['0.75rem', { lineHeight: '1rem' }],
@@ -89,7 +89,7 @@ module.exports = {
         'fixral-lg': '0 4px 12px rgba(0, 0, 0, 0.1)',
         'fixral-xl': '0 8px 24px rgba(0, 0, 0, 0.15)',
         'fixral-inner': 'inset 0 2px 4px rgba(0, 0, 0, 0.06)',
-        'fixral-glow': '0 0 20px rgba(0, 180, 216, 0.3)',
+        'fixral-glow': '0 0 20px rgba(185, 28, 28, 0.35)',
       },
       spacing: {
         'fixral-xs': '0.5rem',
@@ -116,9 +116,9 @@ module.exports = {
         'colors-transform': 'color, background-color, border-color, transform',
       },
       backgroundImage: {
-        'fixral-gradient': 'linear-gradient(135deg, #0D1B2A 0%, #3A506B 100%)',
+        'fixral-gradient': 'linear-gradient(135deg, #0b0b0b 0%, #1f2937 100%)',
         'fixral-gradient-light': 'linear-gradient(135deg, #F8F9FA 0%, #E9ECEF 100%)',
-        'fixral-gradient-turquoise': 'linear-gradient(135deg, #00B4D8 0%, #0077BE 100%)',
+        'fixral-gradient-turquoise': 'linear-gradient(135deg, #b91c1c 0%, #7f1d1d 100%)',
       },
       keyframes: {
         fadeIn: {

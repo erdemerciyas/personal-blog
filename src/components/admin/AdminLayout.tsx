@@ -392,33 +392,25 @@ export default function AdminLayout({ children, title, breadcrumbs }: AdminLayou
       {/* Sidebar */}
       <div className={`fixed inset-y-0 left-0 z-50 ${sidebarCollapsed ? 'w-20' : 'w-72'} bg-white dark:bg-slate-800 shadow-2xl transform transition-all duration-300 ease-in-out ${sidebarOpen ? 'translate-x-0' : '-translate-x-full'} lg:translate-x-0`}>
         <div className="flex h-full flex-col">
-          {/* Logo */}
+          {/* Logo only (no text) */}
           <div className={`flex items-center ${sidebarCollapsed ? 'justify-center px-4' : 'justify-between px-6'} py-4 border-b border-slate-200 dark:border-slate-700`}>
-            {!sidebarCollapsed && (
-              <Link href="/admin/dashboard" className="flex items-center space-x-3">
-                {siteSettings?.logo?.url ? (
-                  <div className="relative w-10 h-10 rounded-xl overflow-hidden bg-slate-200 dark:bg-slate-600 p-1">
-                    <Image
-                      src={siteSettings.logo.url}
-                      alt={siteSettings.logo.alt}
-                      fill
-                      className="object-contain"
-                      sizes="40px"
-                    />
-                  </div>
-                ) : (
-                  <div className="w-10 h-10 bg-slate-200 dark:bg-slate-600 rounded-xl flex items-center justify-center">
-                    <SparklesIcon className="w-5 h-5 text-slate-500 dark:text-slate-400" />
-                  </div>
-                )}
-                <div>
-                  <h1 className="text-lg font-bold text-slate-900 dark:text-slate-100">
-                    {siteSettings?.siteName || 'Admin Panel'}
-                  </h1>
-                  <p className="text-xs text-slate-500 dark:text-slate-400">Yönetim Paneli</p>
+            <Link href="/admin/dashboard" className="flex items-center">
+              {siteSettings?.logo?.url ? (
+                <Image
+                  src={siteSettings.logo.url}
+                  alt={siteSettings.logo.alt || 'Logo'}
+                  width={sidebarCollapsed ? 36 : 120}
+                  height={sidebarCollapsed ? 36 : 36}
+                  className={`${sidebarCollapsed ? 'h-9 w-auto' : 'h-9 w-auto'} object-contain`}
+                  priority
+                />
+              ) : (
+                <div className="w-9 h-9 bg-slate-200 dark:bg-slate-600 rounded-xl flex items-center justify-center">
+                  <SparklesIcon className="w-5 h-5 text-slate-500 dark:text-slate-400" />
                 </div>
-              </Link>
-            )}
+              )}
+              <span className="sr-only">Admin Panel</span>
+            </Link>
 
             {/* Collapse Button (Desktop) */}
             <button
@@ -554,15 +546,8 @@ export default function AdminLayout({ children, title, breadcrumbs }: AdminLayou
                   <Bars3Icon className="w-5 h-5 text-slate-600 dark:text-slate-300" />
                 </button>
 
-                {/* Welcome Message */}
-                <div className="hidden md:block">
-                  <h2 className="text-lg font-semibold text-slate-800 dark:text-slate-200">
-                    Admin Panel
-                  </h2>
-                  <p className="text-sm text-slate-500 dark:text-slate-400">
-                    Hoş geldiniz, {session?.user?.name || 'Admin'}
-                  </p>
-                </div>
+                {/* Hide topbar welcome text to emphasize logo-only look */}
+                <div className="hidden md:block" aria-hidden="true"></div>
               </div>
 
               {/* Breadcrumbs */}

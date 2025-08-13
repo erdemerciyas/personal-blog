@@ -33,7 +33,7 @@ function ContactPageContent() {
     workingHours: 'Pazartesi - Cuma: 09:00 - 18:00',
     socialLinks: {
       linkedin: '',
-      twitter: '@extremeecu',
+      twitter: 'https://twitter.com/extremeecu',
       instagram: '',
       facebook: '',
     }

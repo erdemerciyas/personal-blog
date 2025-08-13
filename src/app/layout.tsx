@@ -1,5 +1,5 @@
 import type { Metadata } from 'next'
-import { Inter } from 'next/font/google'
+import { Inter, Oswald } from 'next/font/google'
 import './globals.css'
 import { config } from '../lib/config'
 import Header from '../components/Header'
@@ -16,6 +16,13 @@ const inter = Inter({
   preload: true,
   fallback: ['system-ui', '-apple-system', 'BlinkMacSystemFont', 'Segoe UI', 'Roboto', 'sans-serif'],
   adjustFontFallback: true,
+})
+
+const oswald = Oswald({
+  subsets: ['latin', 'latin-ext'],
+  variable: '--font-oswald',
+  display: 'swap',
+  preload: true,
 })
 
 // Dynamic metadata function
@@ -140,7 +147,7 @@ export default function RootLayout({
         <link rel="dns-prefetch" href="//fonts.gstatic.com" />
         <link rel="dns-prefetch" href="//res.cloudinary.com" />
       </head>
-      <body className={`${inter.variable} font-sans min-h-screen bg-[#f6f7f9] flex flex-col text-fixral-charcoal antialiased`}>
+      <body className={`${inter.variable} ${oswald.variable} font-sans min-h-screen bg-[#f6f7f9] flex flex-col text-slate-800 antialiased`}>
         <a href="#main-content" className="sr-only focus:not-sr-only focus:fixed focus:top-2 focus:left-2 focus:z-[10000] focus:bg-white focus:text-slate-900 focus:px-4 focus:py-2 focus:rounded-lg focus:shadow">
           İçeriğe atla
         </a>

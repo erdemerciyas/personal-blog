@@ -54,10 +54,10 @@ export async function POST(request: Request) {
       duration 
     } = body;
 
-    // Validation
-    if (!title || !subtitle || !description || !imageUrl) {
+    // Validation: yalnızca başlık zorunlu, görsel boş ise devreye alınmaz (pasif veya default görsel kullanılabilir)
+    if (!title) {
       return NextResponse.json(
-        { error: 'Başlık, alt başlık, açıklama ve resim alanları zorunludur' },
+        { error: 'Başlık alanı zorunludur' },
         { status: 400 }
       );
     }
@@ -74,13 +74,13 @@ export async function POST(request: Request) {
     // Yeni slider oluştur
     const newSlider = await Slider.create({
       title: title.trim(),
-      subtitle: subtitle.trim(),
-      description: description.trim(),
+      subtitle: subtitle?.trim() || '',
+      description: description?.trim() || '',
       buttonText: buttonText?.trim() || 'Daha Fazla',
       buttonLink: buttonLink?.trim() || '/contact',
       badge: badge?.trim() || 'Yenilik',
-      imageType: imageType || 'url',
-      imageUrl: imageUrl.trim(),
+      imageType: imageType || (imageUrl ? 'url' : 'upload'),
+      imageUrl: imageUrl?.trim() || '',
       aiPrompt: aiPrompt?.trim() || '',
       aiProvider: aiProvider || 'unsplash',
       order: finalOrder,

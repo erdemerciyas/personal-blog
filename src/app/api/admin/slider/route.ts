@@ -41,14 +41,14 @@ export const POST = withSecurity(SecurityConfigs.admin)(async (request: Request)
     
     // Slider verilerini hazırla
     const sliderData = {
-      title: body.title,
-      subtitle: body.subtitle,
-      description: body.description,
+      title: (body.title || '').trim(),
+      subtitle: body.subtitle?.trim() || '',
+      description: body.description?.trim() || '',
       buttonText: body.buttonText || 'Daha Fazla',
       buttonLink: body.buttonLink || '/contact',
       badge: body.badge || 'Yenilik',
-      imageType: body.imageType || 'upload',
-      imageUrl: body.imageUrl,
+      imageType: body.imageType || (body.imageUrl ? 'url' : 'upload'),
+      imageUrl: body.imageUrl?.trim() || '',
       isActive: body.isActive !== undefined ? body.isActive : true,
       order: nextOrder,
       duration: body.duration || 5000,
@@ -57,6 +57,10 @@ export const POST = withSecurity(SecurityConfigs.admin)(async (request: Request)
     };
 
     // Yeni slider'ı oluştur
+    if (!sliderData.title) {
+      return NextResponse.json({ error: 'Başlık alanı zorunludur' }, { status: 400 });
+    }
+
     const slider = new Slider(sliderData);
     await slider.save();
     
