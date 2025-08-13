@@ -1,4 +1,4 @@
-# Modern Portfolio & Blog Platform
+# Extreme Ecu Performans Cars
 
 [![Next.js](https://img.shields.io/badge/Next.js-14.0.4-black?style=for-the-badge&logo=next.js)](https://nextjs.org/)
 [![TypeScript](https://img.shields.io/badge/TypeScript-5.8.3-blue?style=for-the-badge&logo=typescript)](https://www.typescriptlang.org/)
