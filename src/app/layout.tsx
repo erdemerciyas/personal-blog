@@ -6,7 +6,7 @@ import Header from '../components/Header'
 import ClientWrapper from '../components/ClientWrapper'
 import ConditionalFooter from '../components/ConditionalFooter'
 import Providers from '../components/Providers'
-import connectDB from '../lib/mongoose'
+import connectDB, { hasValidMongoUri } from '../lib/mongoose'
 import SiteSettings from '../models/SiteSettings'
 
 const inter = Inter({
@@ -21,7 +21,11 @@ const inter = Inter({
 // Dynamic metadata function
 export async function generateMetadata(): Promise<Metadata> {
   try {
+    if (!hasValidMongoUri()) {
+      throw new Error('DB_DISABLED');
+    }
     await connectDB();
+
     const siteSettings = await SiteSettings.getSiteSettings();
 
     const title = siteSettings?.seo?.metaTitle || siteSettings?.siteName || config.app.name;

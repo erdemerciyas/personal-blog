@@ -23,6 +23,12 @@ const MONGODB_URI = process.env.MONGODB_URI;
 // Do not throw at import time; validate when connecting
 const mongoUri = (MONGODB_URI || '') as string;
 
+// Helper: validate URI scheme
+export function hasValidMongoUri() {
+  const uri = mongoUri || '';
+  return uri.startsWith('mongodb://') || uri.startsWith('mongodb+srv://');
+}
+
 // Mongoose connection
 let cached = global.mongooseConnection;
 
@@ -37,7 +43,7 @@ async function connectDB() {
       if (cached!.conn.connection.readyState === 1) {
         return cached!.conn;
       }
-  } catch {
+    } catch {
       // Cached connection check failed, reconnecting
       cached!.conn = null;
       cached!.promise = null;
@@ -48,6 +54,11 @@ async function connectDB() {
     if (!mongoUri) {
       throw new Error('MONGODB_URI is not set');
     }
+    if (!hasValidMongoUri()) {
+      // Skip connecting when URI is a placeholder to prevent build-time crashes
+      throw new Error('DB_DISABLED');
+    }
+
     // Vercel serverless için optimize edilmiş ayarlar
     const opts = {
       bufferCommands: false,
@@ -99,6 +110,9 @@ export async function connectToDatabase() {
   if (!clientCached!.promise) {
     if (!mongoUri) {
       throw new Error('MONGODB_URI is not set');
+    }
+    if (!hasValidMongoUri()) {
+      throw new Error('DB_DISABLED');
     }
     // Vercel serverless için optimize edilmiş client ayarları
     const options = {

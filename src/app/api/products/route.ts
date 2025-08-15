@@ -1,10 +1,15 @@
 import { NextRequest, NextResponse } from 'next/server';
-import connectDB from '@/lib/mongoose';
+import connectDB, { hasValidMongoUri } from '@/lib/mongoose';
 import Product from '@/models/Product';
 import ProductCategory from '@/models/ProductCategory';
 import { appConfig } from '@/lib/config';
 
+export const dynamic = 'force-dynamic';
+
 export async function GET(req: NextRequest) {
+  if (!hasValidMongoUri()) {
+    return NextResponse.json({ items: [], total: 0, page: 1, limit: 0 });
+  }
   await connectDB();
   const { searchParams } = new URL(req.url);
   const q = searchParams.get('q') || '';
