@@ -1,0 +1,35 @@
+{
+  "timestamp": "2025-08-15T09:18:07.904Z",
+  "score": 100,
+  "details": {
+    "totalScore": 24,
+    "totalPossible": 24,
+    "results": [
+      {
+        "name": "Color Contrast",
+        "score": 7,
+        "total": 7
+      },
+      {
+        "name": "ARIA Labels",
+        "score": 2,
+        "total": 2
+      },
+      {
+        "name": "Focus Management",
+        "score": 4,
+        "total": 4
+      },
+      {
+        "name": "Semantic HTML",
+        "score": 10,
+        "total": 10
+      },
+      {
+        "name": "Reduced Motion",
+        "score": 1,
+        "total": 1
+      }
+    ]
+  }
+}

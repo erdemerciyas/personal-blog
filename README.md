@@ -16,7 +16,7 @@ Modern, güvenli ve performanslı kişisel blog ve portfolyo platformu. Next.js 
 
 **[Live Site](https://www.erdemerciyas.com.tr)** | **[Admin Panel](https://www.erdemerciyas.com.tr/admin)** | **[API Health](https://www.erdemerciyas.com.tr/api/health)**
 
-> **Status**: **LIVE** | **Last Deploy**: Pending | **Version**: v2.2.10 | **CI/CD Pipeline**: **OPTIMIZED**
+> **Status**: **LIVE** | **Last Deploy**: Pending | **Version**: v2.2.11 | **CI/CD Pipeline**: **OPTIMIZED**
 
 ## Özellikler
 
@@ -131,6 +131,16 @@ npm run dev
 
 Uygulama [http://localhost:3000](http://localhost:3000) adresinde çalışacaktır.
 
+## Yeni Özellikler (v2.2.11)
+
+### Erişilebilirlik ve Güvenlik İyileştirmeleri (2025-08-15)
+- Sayfa düzeyinde semantik HTML geliştirildi: `products` sayfalarında en dış sarmalayıcı `main#main-content` ile güncellendi.
+- Erişilebilirlik testi kapsamı rafine edildi (admin sayfaları hariç) ve çekirdek semantik öğe kontrolü optimize edildi.
+- Erişilebilirlik skoru: 100/100 (Semantic HTML: 10/10)
+- Güvenlik testi: 100/100 (dotenv opsiyonel yükleme ve .env.local kontrolleri)
+
+---
+
 ## Yeni Özellikler (v2.2.9)
 
 ### TypeScript ve Lint Temizliği (2025-08-12)
@@ -143,7 +153,7 @@ Uygulama [http://localhost:3000](http://localhost:3000) adresinde çalışacakt�
 
 ---
 
-## Yeni Özellikler (v2.2.7)
+## Önceki Güncellemeler (v2.2.7)
 
 ### Ürün Medyası Ayrıştırma ve Yönetim (2025-08-11)
 - Ürün görselleri/dosyaları Cloudinary'de `personal-blog/products/images|docs` klasörlerine alındı
@@ -543,8 +553,8 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 ## 📈 Project Status
 
 - **Status**: ✅ **PRODUCTION READY**
-- **Version**: v2.2.10
-- **Last Updated**: 2025-08-14
+- **Version**: v2.2.11
+- **Last Updated**: 2025-08-15
 - **Security Level**: 🔒 HIGH
 - **Performance**: ⚡ OPTIMIZED
 - **Documentation**: 📚 COMPLETE

@@ -18,7 +18,7 @@ export default async function OrderPage({ params }: { params: { slug: string } }
   if (!product) return notFound();
 
   return (
-    <div className="space-y-6">
+    <main className="space-y-6" id="main-content">
       <PageHero
         title={"Ürünler"}
         description={`${product.title} için sipariş oluşturun. Ürün bilgilerini kontrol edin ve formu doldurun.`}
@@ -129,7 +129,7 @@ export default async function OrderPage({ params }: { params: { slug: string } }
           </div>
         </div>
       </div>
-    </div>
+    </main>
   );
 }
 

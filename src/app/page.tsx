@@ -2,9 +2,11 @@
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
-import HTMLContent from '../components/HTMLContent';
+import dynamic from 'next/dynamic';
 import ContentSkeleton from '../components/ContentSkeleton';
-import HomePortfolioSection from '../components/portfolio/HomePortfolioSection';
+// Büyük bileşenleri dinamik yükleyerek başlangıç bundle boyutunu küçült
+const HomePortfolioSection = dynamic(() => import('../components/portfolio/HomePortfolioSection'), { ssr: false });
+const HTMLContent = dynamic(() => import('../components/HTMLContent'));
 import { useSliderItems, usePortfolioItems, useServices } from '../hooks/useApi';
 import { 
   ArrowRightIcon,

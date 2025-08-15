@@ -95,6 +95,7 @@
     "@next/bundle-analyzer": "^15.4.1",
     "@types/node": "^24.0.13",
     "cross-env": "^7.0.3",
+    "dotenv": "^17.2.1",
     "husky": "^9.1.7",
     "lighthouse": "^12.8.0",
     "prettier": "^3.0.0",

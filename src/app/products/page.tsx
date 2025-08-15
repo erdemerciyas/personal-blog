@@ -51,7 +51,7 @@ export default async function ProductsPage({ searchParams }: { searchParams: Rec
   const heroButtonLink = pageSettings?.buttonLink || '#product-list';
 
   return (
-    <div className="space-y-6">
+    <main className="space-y-6" id="main-content">
       <PageHero 
         title={heroTitle}
         description={heroDesc}
@@ -276,7 +276,7 @@ export default async function ProductsPage({ searchParams }: { searchParams: Rec
         </div>
       </div>
       </div>
-    </div>
+    </main>
   );
 }
 

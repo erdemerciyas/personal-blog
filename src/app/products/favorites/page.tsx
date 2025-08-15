@@ -23,7 +23,7 @@ export default function FavoritesPage() {
   }, []);
 
   return (
-    <div className="container mx-auto p-6 space-y-6">
+    <main className="container mx-auto p-6 space-y-6" id="main-content">
       <h1 className="text-2xl font-bold">Favorilerim</h1>
       <div className="grid gap-6 md:grid-cols-3">
         {items.map((p) => (
@@ -40,7 +40,7 @@ export default function FavoritesPage() {
         ))}
         {items.length === 0 && <div className="text-sm text-slate-500">Henüz favori ürün yok.</div>}
       </div>
-    </div>
+    </main>
   );
 }
 

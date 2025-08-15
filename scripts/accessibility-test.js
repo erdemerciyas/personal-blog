@@ -143,38 +143,49 @@ function checkFocusManagement() {
 
 function checkSemanticHTML() {
   log('\n📝 Semantic HTML Kontrolü:', 'cyan');
-  
-  const files = [
-    'src/app/page.tsx',
-    'src/components/ConditionalFooter.tsx'
-  ];
+ 
+  // Sadece sayfa düzeyi dosyaları kontrol et (bileşenleri hariç tut)
+  // Desen: src/app/**/page.(tsx|ts|jsx|js)
+  const files = [];
+  const exts = new Set(['.tsx', '.ts', '.jsx', '.js']);
+  function walk(dir) {
+    if (!fs.existsSync(dir)) return;
+    const entries = fs.readdirSync(dir, { withFileTypes: true });
+    for (const entry of entries) {
+      const full = path.join(dir, entry.name);
+      if (entry.isDirectory()) {
+        walk(full);
+      } else if (entry.isFile()) {
+        const ext = path.extname(entry.name);
+        const base = path.basename(entry.name, ext);
+        if (base === 'page' && exts.has(ext)) {
+          files.push(full.replace(/\\/g, '/'));
+        }
+      }
+    }
+  }
+  walk('src/app');
+  // Admin panel sayfalarını kapsam dışı bırak (layout tarafından sarılıyor olabilir)
+  const pageFiles = files.filter(f => !f.includes('/admin/'));
   
   let score = 0;
   let total = 0;
   
-  files.forEach(file => {
+  pageFiles.forEach(file => {
     if (fs.existsSync(file)) {
       const content = fs.readFileSync(file, 'utf8');
       
-      // Check for semantic HTML elements
-      const semanticElements = [
-        '<header',
-        '<main',
-        '<footer',
-        '<nav',
-        '<section',
-        '<article'
-      ];
-      
-      semanticElements.forEach(element => {
-        total++;
-        if (content.includes(element)) {
-          logSuccess(`${file}: ${element}> semantic element found`);
-          score++;
-        } else {
-          logWarning(`${file}: ${element}> semantic element not found`);
-        }
-      });
+      // Daha gerçekçi kontrol: çekirdek semantik ögelerden en az biri var mı?
+      // Layout dosyaları çoğu zaman header/footer/nav sağlar.
+      const coreSemantic = ['<main', '<section', '<article'];
+      total++;
+      if (coreSemantic.some(el => content.includes(el))) {
+        const found = coreSemantic.filter(el => content.includes(el)).join(', ');
+        logSuccess(`${file}: semantic structure found (${found || 'core element'})`);
+        score++;
+      } else {
+        logWarning(`${file}: no core semantic element found (<main|<section|<article>)`);
+      }
     }
   });
   

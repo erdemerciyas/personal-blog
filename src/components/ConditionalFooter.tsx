@@ -3,7 +3,12 @@
 import { usePathname } from 'next/navigation';
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
-import Version from './Version';
+import dynamic from 'next/dynamic';
+const Version = dynamic(() => import('./Version'), {
+  ssr: false,
+  loading: () => <span aria-hidden className="inline-block h-5" />
+});
+
 import {
   EnvelopeIcon,
   PhoneIcon,
@@ -146,10 +151,11 @@ const ConditionalFooter: React.FC = () => {
       <div className="container-main section-sm relative z-10">
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-8 md:gap-12 mb-12 md:mb-16">
           {/* About Section */}
-          <div>
+          <section aria-labelledby="footer-about">
             <div className="mb-6">
               <Logo isDark={false} width={56} height={56} className="mb-6" />
             </div>
+            <h2 id="footer-about" className="sr-only">Hakkında</h2>
             <p className="text-slate-300 leading-relaxed text-lg mb-4">
               {settings.mainDescription}
             </p>
@@ -178,11 +184,11 @@ const ConditionalFooter: React.FC = () => {
                 </ul>
               </nav>
             )}
-          </div>
+          </section>
 
           {/* Quick Links */}
           {settings.visibility.showQuickLinks && settings.quickLinks.length > 0 && (
-            <nav aria-label="Footer navigation">
+            <nav aria-label="Footer navigation" role="navigation">
               <h3 className="text-xl font-bold mb-6 text-white border-b border-white/10 pb-3">Hızlı Bağlantılar</h3>
               <ul className="space-y-4">
                 {settings.quickLinks.map((link, index) => (
@@ -214,7 +220,7 @@ const ConditionalFooter: React.FC = () => {
 
           {/* Contact Info */}
           {settings.visibility.showContactInfo && (
-            <div>
+            <section aria-labelledby="footer-contact">
               <h3 className="text-xl font-bold mb-6 text-white border-b border-white/10 pb-3">İletişim</h3>
               <div className="space-y-5">
                 <div className="flex items-center space-x-4 group">
@@ -248,17 +254,17 @@ const ConditionalFooter: React.FC = () => {
                   </span>
                 </div>
               </div>
-            </div>
+            </section>
           )}
         </div>
 
         {/* Bottom Section */}
-        <div className="pt-8 border-t border-white/10">
+        <article className="pt-8 border-t border-white/10">
           <div className="flex flex-col md:flex-row justify-between items-center space-y-4 md:space-y-0">
             {/* Copyright */}
             <div className="text-slate-400 text-sm">
               <p>
-                © {settings.copyrightInfo.year} {settings.copyrightInfo.companyName}.
+                &copy; {settings.copyrightInfo.year} {settings.copyrightInfo.companyName}.
                 {settings.copyrightInfo.additionalText}
               </p>
             </div>
@@ -302,10 +308,10 @@ const ConditionalFooter: React.FC = () => {
               Yukarı Çık
             </button>
           </div>
-        </div>
+        </article>
       </div>
     </footer>
   );
 };
 
-export default ConditionalFooter; 
+export default ConditionalFooter;

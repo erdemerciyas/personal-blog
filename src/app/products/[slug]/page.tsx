@@ -61,7 +61,7 @@ export default async function ProductDetail({ params }: { params: { slug: string
   const related = await getRelatedProducts(firstCategorySlug, product.slug as string);
 
   return (
-    <div className="space-y-6">
+    <main className="space-y-6" id="main-content">
       <PageHero
         title={product.title}
         description={description}
@@ -273,7 +273,7 @@ export default async function ProductDetail({ params }: { params: { slug: string
           </div>
         </div>
       )}
-    </div>
+    </main>
   );
 }
 

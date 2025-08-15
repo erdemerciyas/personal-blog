@@ -1,0 +1,52 @@
+{
+  "timestamp": "2025-08-15T08:37:05.365Z",
+  "tests": [
+    {
+      "name": "CSS Transform Optimizations",
+      "status": "pass",
+      "score": 15
+    },
+    {
+      "name": "Reduced Motion Support",
+      "status": "pass",
+      "score": 10
+    },
+    {
+      "name": "Brand Color System",
+      "status": "pass",
+      "score": 10
+    },
+    {
+      "name": "Skeleton Loading",
+      "status": "pass",
+      "score": 15
+    },
+    {
+      "name": "HOC Pattern",
+      "status": "pass",
+      "score": 10
+    },
+    {
+      "name": "Next.js Image Optimization",
+      "status": "pass",
+      "score": 15
+    },
+    {
+      "name": "Priority Image Loading",
+      "status": "pass",
+      "score": 10
+    },
+    {
+      "name": "Dynamic Imports",
+      "status": "pass",
+      "score": 15
+    },
+    {
+      "name": "Accessibility Score",
+      "status": "pass",
+      "score": 20
+    }
+  ],
+  "score": 120,
+  "recommendations": []
+}

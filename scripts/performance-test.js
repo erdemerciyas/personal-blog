@@ -157,17 +157,42 @@ async function runPerformanceTest() {
       const packageContent = JSON.parse(fs.readFileSync(packageFile, 'utf8'));
       
       // Dynamic imports kontrolü
+      let hasDynamicImports = false;
       if (pageFile && fs.existsSync(pageFile)) {
         const pageContent = fs.readFileSync(pageFile, 'utf8');
-        const hasDynamicImports = pageContent.includes('dynamic(');
-        if (hasDynamicImports) {
-          logSuccess('Dynamic imports kullanılıyor');
-          results.tests.push({ name: 'Dynamic Imports', status: 'pass', score: 15 });
-        } else {
-          logWarning('Dynamic imports kullanılmıyor');
-          results.tests.push({ name: 'Dynamic Imports', status: 'warning', score: 8 });
-          results.recommendations.push('Büyük componentler için dynamic import kullanın');
+        hasDynamicImports = pageContent.includes('dynamic(');
+      }
+
+      // Eğer page.tsx içinde bulunamadıysa tüm src dizininde ara (hızlı tarama)
+      if (!hasDynamicImports) {
+        const srcDir = path.join(process.cwd(), 'src');
+        const stack = [srcDir];
+        while (stack.length && !hasDynamicImports) {
+          const dir = stack.pop();
+          if (!dir || !fs.existsSync(dir)) continue;
+          const entries = fs.readdirSync(dir, { withFileTypes: true });
+          for (const entry of entries) {
+            const full = path.join(dir, entry.name);
+            if (entry.isDirectory()) {
+              // node_modules ve .next klasörlerini atla (her ihtimale karşı)
+              if (!/node_modules|\.next/.test(full)) stack.push(full);
+            } else if (/\.(tsx?|jsx?)$/.test(entry.name)) {
+              try {
+                const content = fs.readFileSync(full, 'utf8');
+                if (content.includes('dynamic(')) { hasDynamicImports = true; break; }
+              } catch (_) { /* ignore */ }
+            }
+          }
         }
+      }
+
+      if (hasDynamicImports) {
+        logSuccess('Dynamic imports kullanılıyor');
+        results.tests.push({ name: 'Dynamic Imports', status: 'pass', score: 15 });
+      } else {
+        logWarning('Dynamic imports kullanılmıyor');
+        results.tests.push({ name: 'Dynamic Imports', status: 'warning', score: 8 });
+        results.recommendations.push('Büyük componentler için dynamic import kullanın');
       }
     }
 

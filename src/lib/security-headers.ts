@@ -131,7 +131,6 @@ export class SecurityHeaders {
     response.headers.set('X-DNS-Prefetch-Control', 'off');
     response.headers.set('X-Download-Options', 'noopen');
     response.headers.set('X-Permitted-Cross-Domain-Policies', 'none');
-    response.headers.set('X-XSS-Protection', '1; mode=block');
 
     // Remove server information
     response.headers.delete('Server');

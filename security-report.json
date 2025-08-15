@@ -1,0 +1,282 @@
+{
+  "timestamp": "2025-08-15T08:55:29.002Z",
+  "score": 100,
+  "totals": {
+    "passed": 45,
+    "failed": 0,
+    "warnings": 0,
+    "total": 45
+  },
+  "tests": [
+    {
+      "name": "Rate Limiting Sistemi",
+      "status": "PASS",
+      "message": "✅ src/lib/rate-limit.ts mevcut",
+      "severity": "info"
+    },
+    {
+      "name": "Input Validation Sistemi",
+      "status": "PASS",
+      "message": "✅ src/lib/validation.ts mevcut",
+      "severity": "info"
+    },
+    {
+      "name": "CSRF Protection Sistemi",
+      "status": "PASS",
+      "message": "✅ src/lib/csrf.ts mevcut",
+      "severity": "info"
+    },
+    {
+      "name": "Security Headers Sistemi",
+      "status": "PASS",
+      "message": "✅ src/lib/security-headers.ts mevcut",
+      "severity": "info"
+    },
+    {
+      "name": "Güvenlik Dokümantasyonu",
+      "status": "PASS",
+      "message": "✅ SECURITY.md mevcut",
+      "severity": "info"
+    },
+    {
+      "name": "Environment Variable: NEXTAUTH_SECRET",
+      "status": "PASS",
+      "message": "✅ NEXTAUTH_SECRET tanımlı",
+      "severity": "info"
+    },
+    {
+      "name": "Environment Variable: MONGODB_URI",
+      "status": "PASS",
+      "message": "✅ MONGODB_URI tanımlı",
+      "severity": "info"
+    },
+    {
+      "name": "Environment Variable: NEXTAUTH_URL",
+      "status": "PASS",
+      "message": "✅ NEXTAUTH_URL tanımlı",
+      "severity": "info"
+    },
+    {
+      "name": "Middleware Rate Limiting",
+      "status": "PASS",
+      "message": "✅ Middleware Rate Limiting",
+      "severity": "info"
+    },
+    {
+      "name": "Middleware Security Headers",
+      "status": "PASS",
+      "message": "✅ Middleware Security Headers",
+      "severity": "info"
+    },
+    {
+      "name": "Suspicious Activity Detection",
+      "status": "PASS",
+      "message": "✅ Suspicious Activity Detection",
+      "severity": "info"
+    },
+    {
+      "name": "Security Header: X-Frame-Options mevcut",
+      "status": "PASS",
+      "message": "✅ Security Header: X-Frame-Options mevcut",
+      "severity": "info"
+    },
+    {
+      "name": "Security Header: X-Frame-Options=DENY",
+      "status": "PASS",
+      "message": "✅ Security Header: X-Frame-Options=DENY",
+      "severity": "info"
+    },
+    {
+      "name": "Security Header: HSTS mevcut",
+      "status": "PASS",
+      "message": "✅ Security Header: HSTS mevcut",
+      "severity": "info"
+    },
+    {
+      "name": "Security Header: HSTS max-age doğru",
+      "status": "PASS",
+      "message": "✅ Security Header: HSTS max-age doğru",
+      "severity": "info"
+    },
+    {
+      "name": "Security Header: HSTS includeSubDomains; preload",
+      "status": "PASS",
+      "message": "✅ Security Header: HSTS includeSubDomains; preload",
+      "severity": "info"
+    },
+    {
+      "name": "Security Header: COEP mevcut",
+      "status": "PASS",
+      "message": "✅ Security Header: COEP mevcut",
+      "severity": "info"
+    },
+    {
+      "name": "Security Header: COEP credentialless",
+      "status": "PASS",
+      "message": "✅ Security Header: COEP credentialless",
+      "severity": "info"
+    },
+    {
+      "name": "Security Header: COOP mevcut",
+      "status": "PASS",
+      "message": "✅ Security Header: COOP mevcut",
+      "severity": "info"
+    },
+    {
+      "name": "Security Header: COOP same-origin",
+      "status": "PASS",
+      "message": "✅ Security Header: COOP same-origin",
+      "severity": "info"
+    },
+    {
+      "name": "Security Header: CORP mevcut",
+      "status": "PASS",
+      "message": "✅ Security Header: CORP mevcut",
+      "severity": "info"
+    },
+    {
+      "name": "Security Header: CORP same-origin",
+      "status": "PASS",
+      "message": "✅ Security Header: CORP same-origin",
+      "severity": "info"
+    },
+    {
+      "name": "Security Header: X-Download-Options mevcut",
+      "status": "PASS",
+      "message": "✅ Security Header: X-Download-Options mevcut",
+      "severity": "info"
+    },
+    {
+      "name": "Security Header: X-Download-Options=noopen",
+      "status": "PASS",
+      "message": "✅ Security Header: X-Download-Options=noopen",
+      "severity": "info"
+    },
+    {
+      "name": "Security Header: X-Permitted-Cross-Domain-Policies mevcut",
+      "status": "PASS",
+      "message": "✅ Security Header: X-Permitted-Cross-Domain-Policies mevcut",
+      "severity": "info"
+    },
+    {
+      "name": "Security Header: X-Permitted-Cross-Domain-Policies=none",
+      "status": "PASS",
+      "message": "✅ Security Header: X-Permitted-Cross-Domain-Policies=none",
+      "severity": "info"
+    },
+    {
+      "name": "Security Header: X-DNS-Prefetch-Control mevcut",
+      "status": "PASS",
+      "message": "✅ Security Header: X-DNS-Prefetch-Control mevcut",
+      "severity": "info"
+    },
+    {
+      "name": "Security Header: X-DNS-Prefetch-Control=off",
+      "status": "PASS",
+      "message": "✅ Security Header: X-DNS-Prefetch-Control=off",
+      "severity": "info"
+    },
+    {
+      "name": "Security Header: Permissions-Policy mevcut",
+      "status": "PASS",
+      "message": "✅ Security Header: Permissions-Policy mevcut",
+      "severity": "info"
+    },
+    {
+      "name": "Security Header: Permissions-Policy interest-cohort=()",
+      "status": "PASS",
+      "message": "✅ Security Header: Permissions-Policy interest-cohort=()",
+      "severity": "info"
+    },
+    {
+      "name": "Security Header: Permissions-Policy accelerometer=()",
+      "status": "PASS",
+      "message": "✅ Security Header: Permissions-Policy accelerometer=()",
+      "severity": "info"
+    },
+    {
+      "name": "Powered-By Header Disabled",
+      "status": "PASS",
+      "message": "✅ Powered-By Header Disabled",
+      "severity": "info"
+    },
+    {
+      "name": "Strict SameSite Cookies",
+      "status": "PASS",
+      "message": "✅ Strict SameSite Cookies",
+      "severity": "info"
+    },
+    {
+      "name": "HttpOnly Cookies",
+      "status": "PASS",
+      "message": "✅ HttpOnly Cookies",
+      "severity": "info"
+    },
+    {
+      "name": "Contact API Rate Limiting",
+      "status": "PASS",
+      "message": "✅ Contact API Rate Limiting",
+      "severity": "info"
+    },
+    {
+      "name": "Contact API Input Validation",
+      "status": "PASS",
+      "message": "✅ Contact API Input Validation",
+      "severity": "info"
+    },
+    {
+      "name": "File Upload Magic Number Validation",
+      "status": "PASS",
+      "message": "✅ File Upload Magic Number Validation",
+      "severity": "info"
+    },
+    {
+      "name": "File Upload Filename Sanitization",
+      "status": "PASS",
+      "message": "✅ File Upload Filename Sanitization",
+      "severity": "info"
+    },
+    {
+      "name": "Password Reset Strong Password Check",
+      "status": "PASS",
+      "message": "✅ Password Reset Strong Password Check",
+      "severity": "info"
+    },
+    {
+      "name": "User Model Password Masking",
+      "status": "PASS",
+      "message": "✅ User Model Password Masking",
+      "severity": "info"
+    },
+    {
+      "name": "Password Hashing",
+      "status": "PASS",
+      "message": "✅ Password Hashing",
+      "severity": "info"
+    },
+    {
+      "name": "Security Dependency: bcryptjs",
+      "status": "PASS",
+      "message": "✅ bcryptjs yüklü",
+      "severity": "info"
+    },
+    {
+      "name": "Security Dependency: dompurify",
+      "status": "PASS",
+      "message": "✅ dompurify yüklü",
+      "severity": "info"
+    },
+    {
+      "name": "Security Dependency: jsdom",
+      "status": "PASS",
+      "message": "✅ jsdom yüklü",
+      "severity": "info"
+    },
+    {
+      "name": "File Permissions: Skipped on Windows",
+      "status": "PASS",
+      "message": "ℹ️ Windows ortamında dosya izinleri kontrolü atlandı",
+      "severity": "info"
+    }
+  ]
+}
