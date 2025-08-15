@@ -16,7 +16,7 @@ Modern, güvenli ve performanslı kişisel blog ve portfolyo platformu. Next.js 
 
 **[Live Site](https://www.erdemerciyas.com.tr)** | **[Admin Panel](https://www.erdemerciyas.com.tr/admin)** | **[API Health](https://www.erdemerciyas.com.tr/api/health)**
 
-> **Status**: **LIVE** | **Last Deploy**: Pending | **Version**: v2.2.11 | **CI/CD Pipeline**: **OPTIMIZED**
+> **Status**: **LIVE** | **Last Deploy**: 2025-08-15 | **Version**: v2.2.11 | **CI/CD Pipeline**: **OPTIMIZED**
 
 ## Özellikler
 
@@ -381,7 +381,7 @@ Permissions-Policy: camera=(), microphone=(), geolocation=()
 
 **Current Status**: **LIVE** on Vercel 
 **Deployment URL**: https://www.erdemerciyas.com.tr  
-**Last Deploy**: Pending  
+**Last Deploy**: 2025-08-15  
 **Build Time**: ~57 seconds  
 
 #### Quick Deploy
