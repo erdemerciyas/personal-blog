@@ -4,7 +4,7 @@
 [![TypeScript](https://img.shields.io/badge/TypeScript-5.8.3-blue?style=for-the-badge&logo=typescript)](https://www.typescriptlang.org/)
 [![MongoDB](https://img.shields.io/badge/MongoDB-Latest-003450?style=for-the-badge&logo=mongodb)](https://www.mongodb.com/)
 [![Tailwind CSS](https://img.shields.io/badge/Tailwind_CSS-3.4.0-003450?style=for-the-badge&logo=tailwind-css)](https://tailwindcss.com/)
-[![Vercel](https://img.shields.io/badge/Vercel-Live-black?style=for-the-badge&logo=vercel)](https://www.erdemerciyas.com.tr)
+[![Vercel](https://img.shields.io/badge/Vercel-Live-black?style=for-the-badge&logo=vercel)](https://www.fixral.com)
 [![Security](https://img.shields.io/badge/Security-Hardened-003450?style=for-the-badge&logo=shield)](https://github.com/erdemerciyas/personal-blog/blob/main/SECURITY.md)
 [![License](https://img.shields.io/badge/License-MIT-yellow?style=for-the-badge)](https://github.com/erdemerciyas/personal-blog/blob/main/LICENSE)
 [![Build Status](https://img.shields.io/badge/Build-Passing-075985?style=for-the-badge&logo=github-actions)](https://github.com/erdemerciyas/personal-blog/actions)
@@ -14,9 +14,9 @@ Modern, güvenli ve performanslı kişisel blog ve portfolyo platformu. Next.js 
 
 ## Live Demo
 
-**[Live Site](https://www.erdemerciyas.com.tr)** | **[Admin Panel](https://www.erdemerciyas.com.tr/admin)** | **[API Health](https://www.erdemerciyas.com.tr/api/health)**
+**[Live Site](https://www.fixral.com)** | **[Admin Panel](https://www.fixral.com/admin)** | **[API Health](https://www.fixral.com/api/health)**
 
-> **Status**: **LIVE** | **Last Deploy**: 2025-08-15 | **Version**: v2.2.11 | **CI/CD Pipeline**: **OPTIMIZED**
+> **Status**: **LIVE** | **Last Deploy**: 2025-08-16 | **Version**: v2.2.11 | **CI/CD Pipeline**: **OPTIMIZED**
 
 ## Özellikler
 
@@ -133,7 +133,7 @@ Uygulama [http://localhost:3000](http://localhost:3000) adresinde çalışacakt�
 
 ## Yeni Özellikler (v2.2.11)
 
-### Erişilebilirlik ve Güvenlik İyileştirmeleri (2025-08-15)
+### Erişilebilirlik ve Güvenlik İyileştirmeleri (2025-08-16)
 - Sayfa düzeyinde semantik HTML geliştirildi: `products` sayfalarında en dış sarmalayıcı `main#main-content` ile güncellendi.
 - Erişilebilirlik testi kapsamı rafine edildi (admin sayfaları hariç) ve çekirdek semantik öğe kontrolü optimize edildi.
 - Erişilebilirlik skoru: 100/100 (Semantic HTML: 10/10)
@@ -380,8 +380,8 @@ Permissions-Policy: camera=(), microphone=(), geolocation=()
 ### Production Deployment (Vercel)
 
 **Current Status**: **LIVE** on Vercel 
-**Deployment URL**: https://www.erdemerciyas.com.tr  
-**Last Deploy**: 2025-08-15  
+**Deployment URL**: https://www.fixral.com  
+**Last Deploy**: 2025-08-16  
 **Build Time**: ~57 seconds  
 
 #### Quick Deploy
@@ -538,7 +538,7 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 ## 👨‍💻 Author
 
 **Erdem Erciyas**
-- Website: [erdemerciyas.com.tr](https://www.erdemerciyas.com.tr)
+- Website: [fixral.com](https://www.fixral.com)
 - Email: erdem.erciyas@gmail.com
 - Twitter: [@erdemerciyas](https://twitter.com/erdemerciyas)
 
@@ -554,7 +554,7 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 - **Status**: ✅ **PRODUCTION READY**
 - **Version**: v2.2.11
-- **Last Updated**: 2025-08-15
+- **Last Updated**: 2025-08-16
 - **Security Level**: 🔒 HIGH
 - **Performance**: ⚡ OPTIMIZED
 - **Documentation**: 📚 COMPLETE

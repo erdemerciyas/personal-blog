@@ -1,3 +1,26 @@
+## [2.2.11] - 2025-08-16
+
+### Changed
+- Erişilebilirlik kapsamı iyileştirildi; `products` sayfalarında dış sarmalayıcı `main#main-content` olacak şekilde semantik yapı güncellendi.
+- Erişilebilirlik test kapsamı admin sayfaları hariç olacak şekilde rafine edildi; çekirdek semantik kontroller optimize edildi.
+
+### Scores
+- Accessibility: 100/100 (Semantic HTML: 10/10)
+- Security: 100/100 (dotenv opsiyonel yükleme ve `.env.local` kontrolleri)
+
+### Notes
+- Production deploy Vercel üzerinden başarılı.
+
+## [2.2.9] - 2025-08-12
+
+### Changed
+- Proje genelinde TypeScript tip hataları giderildi; `npm run type-check` hatasız.
+- ESLint uyarıları temizlendi; `no-explicit-any` azaltıldı.
+- Mongoose pre hook `this` tipleri eklendi; güvenli tip erişimleri.
+- `appConfig.freeShippingThreshold` erişimleri dar tiplerle güvence altına alındı.
+- Portfolio slug API için `lean()` sonuç arayüzleri düzenlendi.
+- `npm run build` başarıyla doğrulandı.
+
 ## [2.2.8] - 2025-08-12
 
 ### Changed

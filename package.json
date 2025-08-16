@@ -5,7 +5,7 @@
   "author": {
     "name": "Erdem Erciyas",
     "email": "erdem.erciyas@gmail.com",
-    "url": "https://www.erdemerciyas.com.tr"
+    "url": "https://www.fixral.com"
   },
   "description": "Modern kişisel blog ve portfolio sitesi - Next.js ile geliştirilmiştir",
   "keywords": [
@@ -16,7 +16,7 @@
     "blog",
     "engineering"
   ],
-  "homepage": "https://www.erdemerciyas.com.tr",
+  "homepage": "https://www.fixral.com",
   "repository": {
     "type": "git",
     "url": "https://github.com/erdemerciyas/personal-blog"
