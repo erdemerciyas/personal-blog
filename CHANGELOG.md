@@ -1,3 +1,16 @@
+## [2.3.1] - 2025-08-17
+
+### Added
+- Admin > Ayarlar > Genel: Google Site Verification alanı eklendi.
+- Google Analytics (GA4) ve Google Tag Manager (GTM) kimlik alanları eklendi; ID girildiğinde scriptler otomatik yüklenir.
+
+### Changed
+- `src/app/layout.tsx`: Google site doğrulama meta etiketi ve GA/GTM scriptleri DB’den dinamik okunacak şekilde güncellendi.
+- `src/app/api/sitemap/route.ts`: `baseUrl` artık `Settings.siteUrl` değerinden okunuyor; yoksa mevcut fallback kullanılıyor.
+
+### Notes
+- Admin panelden `siteUrl`, `googleSiteVerification`, `googleAnalyticsId`, `googleTagManagerId` alanlarını doldurarak entegrasyonları aktifleştirebilirsiniz.
+
 ## [2.3.0] - 2025-08-17
 
 ### Changed

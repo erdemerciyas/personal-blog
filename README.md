@@ -16,7 +16,7 @@ Modern, güvenli ve performanslı kişisel blog ve portfolyo platformu. Next.js 
 
 **[Live Site](https://www.fixral.com)** | **[Admin Panel](https://www.fixral.com/admin)** | **[API Health](https://www.fixral.com/api/health)**
 
-> **Status**: **LIVE** | **Last Deploy**: 2025-08-17 | **Version**: v2.3.0 | **CI/CD Pipeline**: **OPTIMIZED**
+> **Status**: **LIVE** | **Last Deploy**: 2025-08-17 | **Version**: v2.3.1 | **CI/CD Pipeline**: **OPTIMIZED**
 
 ## Özellikler
 
@@ -130,6 +130,16 @@ npm run dev
 ```
 
 Uygulama [http://localhost:3000](http://localhost:3000) adresinde çalışacaktır.
+
+## Yeni Özellikler (v2.3.1)
+
+### Admin Google Entegrasyonları (2025-08-17)
+- Admin > Ayarlar > Genel altında Google Site Verification alanı eklendi.
+- Google Analytics (GA4) ve Google Tag Manager (GTM) kimlik alanları eklendi; ID girildiğinde scriptler otomatik yüklenir.
+- Global `layout` içinde doğrulama meta ve GA/GTM scriptleri dinamik hale getirildi.
+- Sitemap `baseUrl` artık `Settings.siteUrl` değerinden okunuyor; DB yoksa mevcut fallback kullanılır.
+
+---
 
 ## Yeni Özellikler (v2.3.0)
 
@@ -556,7 +566,7 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 ## 📈 Project Status
 
 - **Status**: ✅ **PRODUCTION READY**
-- **Version**: v2.3.0
+- **Version**: v2.3.1
 - **Last Updated**: 2025-08-17
 - **Security Level**: 🔒 HIGH
 - **Performance**: ⚡ OPTIMIZED
