@@ -28,6 +28,7 @@ export async function GET() {
         favicon: '/favicon.ico',
         ogImage: 'https://picsum.photos/1200/630?blur=2',
         twitterHandle: '@erciyaseng',
+        googleSiteVerification: '',
         googleAnalyticsId: '',
         googleTagManagerId: '',
         adminSettings: {

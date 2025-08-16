@@ -11,6 +11,15 @@ import SiteSettings from '../models/SiteSettings'
 import Settings from '../models/Settings'
 import Script from 'next/script'
 
+// Force dynamic rendering and disable caching for layout/metadata
+export const dynamic = 'force-dynamic'
+export const revalidate = 0
+
+// Env fallbacks for Google integrations
+const ENV_GOOGLE_VERIFICATION = process.env.GOOGLE_SITE_VERIFICATION
+const ENV_GA_ID = process.env.NEXT_PUBLIC_GA_ID
+const ENV_GTM_ID = process.env.NEXT_PUBLIC_GTM_ID
+
 const inter = Inter({
   subsets: ['latin', 'latin-ext'],
   variable: '--font-inter',
@@ -70,7 +79,7 @@ export async function generateMetadata(): Promise<Metadata> {
         },
       },
       verification: {
-        google: settingsDoc?.googleSiteVerification || undefined,
+        google: settingsDoc?.googleSiteVerification || ENV_GOOGLE_VERIFICATION || undefined,
       },
       icons: {
         icon: logoUrl || '/favicon.svg',
@@ -138,7 +147,14 @@ export default async function RootLayout({
     } catch (e) {
       console.error('Layout settings load error:', e);
     }
+  } else {
+    // DB yoksa env değerlerini kullan
+    gaId = ENV_GA_ID || undefined;
+    gtmId = ENV_GTM_ID || undefined;
   }
+  // DB olsa bile boş dönerse env fallback uygula
+  gaId = gaId || ENV_GA_ID || undefined;
+  gtmId = gtmId || ENV_GTM_ID || undefined;
   return (
     <html lang="tr" className="scroll-smooth">
       <head>

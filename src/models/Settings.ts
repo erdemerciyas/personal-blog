@@ -41,6 +41,11 @@ const SettingsSchema = new mongoose.Schema({
     type: String,
     default: '@erciyaseng',
   },
+  // Search Console Verification
+  googleSiteVerification: {
+    type: String,
+    default: '',
+  },
   // Analytics
   googleAnalyticsId: {
     type: String,

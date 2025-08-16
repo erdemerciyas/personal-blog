@@ -18,6 +18,9 @@ interface Settings {
   logo: string;
   favicon: string;
   twitterHandle: string;
+  googleSiteVerification: string;
+  googleAnalyticsId: string;
+  googleTagManagerId: string;
   maintenanceMode: boolean;
   allowRegistration: boolean;
   maxUploadSize: number;
@@ -47,6 +50,9 @@ export default function AdminSettingsPage() {
     logo: '',
     favicon: '',
     twitterHandle: '',
+    googleSiteVerification: '',
+    googleAnalyticsId: '',
+    googleTagManagerId: '',
     maintenanceMode: false,
     allowRegistration: false,
     maxUploadSize: 10,
@@ -569,6 +575,58 @@ export default function AdminSettingsPage() {
                 </div>
               </div>
             )}
+          </div>
+        </div>
+
+        {/* SEO ve Analytics */}
+        <div className="bg-white rounded-xl shadow-sm border border-slate-200 p-6">
+          <h2 className="text-2xl font-bold text-slate-900 mb-6">SEO ve Analytics</h2>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div>
+              <label className="block text-sm font-medium text-slate-700 mb-2">
+                Google Site Verification Kodu
+              </label>
+              <input
+                type="text"
+                value={settings.googleSiteVerification}
+                onChange={(e) => handleInputChange('googleSiteVerification', e.target.value)}
+                className="w-full border border-slate-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-brand-primary-600"
+                placeholder="google-site-verification kodunuz"
+              />
+              <p className="text-xs text-slate-500 mt-1">Örnek: jXX7ASmYpD2OOlPo5cKqGptc9Zy1yLxl00b-JqlQHZE</p>
+            </div>
+
+            <div>
+              <label className="block text-sm font-medium text-slate-700 mb-2">
+                Google Analytics (GA4) Ölçüm Kimliği
+              </label>
+              <input
+                type="text"
+                value={settings.googleAnalyticsId}
+                onChange={(e) => handleInputChange('googleAnalyticsId', e.target.value)}
+                className="w-full border border-slate-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-brand-primary-600"
+                placeholder="G-XXXXXXXXXX"
+              />
+            </div>
+
+            <div>
+              <label className="block text-sm font-medium text-slate-700 mb-2">
+                Google Tag Manager (GTM) Kimliği
+              </label>
+              <input
+                type="text"
+                value={settings.googleTagManagerId}
+                onChange={(e) => handleInputChange('googleTagManagerId', e.target.value)}
+                className="w-full border border-slate-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-brand-primary-600"
+                placeholder="GTM-XXXXXXX"
+              />
+            </div>
+
+            <div className="md:col-span-2 bg-slate-50 border border-slate-200 rounded-lg p-4">
+              <h4 className="text-sm font-semibold text-slate-800 mb-2">Sitemap</h4>
+              <p className="text-sm text-slate-600">Sitemap otomatik oluşturulur: <code className="bg-white px-2 py-1 rounded border">/api/sitemap</code>. Google Search Console’a <code className="bg-white px-2 py-1 rounded border">{`${typeof window !== 'undefined' ? window.location.origin : ''}/api/sitemap`}</code> olarak ekleyebilirsiniz.</p>
+            </div>
           </div>
         </div>
 
