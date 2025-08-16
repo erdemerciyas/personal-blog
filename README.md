@@ -426,10 +426,19 @@ ADMIN_EMAIL=your-email@example.com
 ADMIN_NAME=Your Name
 ADMIN_DEFAULT_PASSWORD=SecurePassword123!
 
-# Optional
+# Optional - Media Defaults
+DEFAULT_LOGO_URL=__OPTIONAL__
+NEXT_PUBLIC_DEFAULT_PROJECT_IMAGE_URL=__OPTIONAL__
+
+# Optional - Cloudinary
 CLOUDINARY_CLOUD_NAME=your-cloud-name
 CLOUDINARY_API_KEY=your-api-key
 CLOUDINARY_API_SECRET=your-api-secret
+
+# Optional - Google (DB erişilemediğinde fallback olarak kullanılır)
+GOOGLE_SITE_VERIFICATION=__OPTIONAL__
+NEXT_PUBLIC_GA_ID=__OPTIONAL__
+NEXT_PUBLIC_GTM_ID=__OPTIONAL__
 ```
 
 ### Deployment Guides
