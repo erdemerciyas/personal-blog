@@ -20,10 +20,11 @@ async function getPageSettings(): Promise<any[]> {
 
   try {
     const baseUrl = process.env.NEXTAUTH_URL || 'http://localhost:3000';
-    const response = await fetch(`${baseUrl}/api/page-settings`, {
+    const response = await fetch(`${baseUrl}/api/admin/page-settings`, {
       method: 'GET',
       headers: { 'Content-Type': 'application/json' },
     });
+
     if (!response.ok) throw new Error('Failed to fetch page settings');
     const pages = await response.json();
     pageSettingsCache = { data: pages || [], timestamp: now };

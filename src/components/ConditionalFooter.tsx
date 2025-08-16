@@ -2,6 +2,7 @@
 
 import { usePathname } from 'next/navigation';
 import { useState, useEffect } from 'react';
+import Image from 'next/image';
 import Link from 'next/link';
 import dynamic from 'next/dynamic';
 const Version = dynamic(() => import('./Version'), {
@@ -15,7 +16,7 @@ import {
   MapPinIcon,
   HeartIcon
 } from '@heroicons/react/24/outline';
-import Logo from './Logo';
+// import Logo from './Logo'; // Removed static logo usage
 
 interface FooterSettings {
   mainDescription: string;
@@ -55,10 +56,21 @@ interface FooterSettings {
   };
 }
 
+interface SiteSettingsMinimal {
+  siteName: string;
+  logo?: {
+    url: string;
+    alt: string;
+    width: number;
+    height: number;
+  };
+}
+
 const ConditionalFooter: React.FC = () => {
   const pathname = usePathname();
   const [settings, setSettings] = useState<FooterSettings | null>(null);
   const [loading, setLoading] = useState(true);
+  const [site, setSite] = useState<SiteSettingsMinimal | null>(null);
 
   const isAdminPage = pathname?.startsWith('/admin');
 
@@ -122,6 +134,31 @@ const ConditionalFooter: React.FC = () => {
     }
   }, [isAdminPage]);
 
+  // Fetch public site settings for dynamic logo and name
+  useEffect(() => {
+    const fetchSiteSettings = async () => {
+      try {
+        const res = await fetch('/api/settings', { cache: 'no-store' });
+        if (res.ok) {
+          const data = await res.json();
+          setSite({
+            siteName: data?.siteName || '',
+            logo: {
+              url: typeof data?.logo === 'string' ? data.logo : (data?.logo?.url || ''),
+              alt: 'Logo',
+              width: 200,
+              height: 60,
+            },
+          });
+        }
+      } catch {
+        setSite(null);
+      }
+    };
+
+    if (!isAdminPage) fetchSiteSettings();
+  }, [isAdminPage]);
+
   if (isAdminPage || loading || !settings) {
     return null;
   }
@@ -152,8 +189,22 @@ const ConditionalFooter: React.FC = () => {
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-8 md:gap-12 mb-12 md:mb-16">
           {/* About Section */}
           <section aria-labelledby="footer-about">
-            <div className="mb-6">
-              <Logo isDark={false} width={56} height={56} className="mb-6" />
+            <div className="mb-6 flex items-center space-x-3 min-h-[56px]">
+              {site?.logo?.url && (
+                <div className="relative w-14 h-14 rounded-xl overflow-hidden bg-white/10 backdrop-blur-sm p-1">
+                  <Image
+                    src={site.logo.url}
+                    alt={site.logo.alt}
+                    fill
+                    className="object-contain"
+                    sizes="56px"
+                    priority={false}
+                  />
+                </div>
+              )}
+              {site?.siteName && (
+                <h2 className="text-2xl font-bold text-white">{site.siteName}</h2>
+              )}
             </div>
             <h2 id="footer-about" className="sr-only">Hakkında</h2>
             <p className="text-slate-300 leading-relaxed text-lg mb-4">

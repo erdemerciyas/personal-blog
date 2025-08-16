@@ -34,6 +34,8 @@ interface PageSetting {
   pageId: string;
   title: string;
   path: string;
+  icon?: string;
+  isExternal?: boolean;
   isActive: boolean;
   showInNavigation: boolean;
   order: number;
@@ -51,21 +53,27 @@ const getIconForPage = (pageId: string) => {
   return iconMap[pageId as keyof typeof iconMap] || HomeIcon;
 };
 
+// Resolve icon component by string name coming from API
+const resolveIcon = (name?: string) => {
+  const map: Record<string, React.ComponentType<React.SVGProps<SVGSVGElement>>> = {
+    HomeIcon,
+    UserIcon,
+    WrenchScrewdriverIcon,
+    FolderOpenIcon,
+    PhoneIcon,
+    SparklesIcon,
+  };
+  if (!name) return undefined;
+  return map[name] || undefined;
+};
+
 const Header: React.FC = () => {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isScrolled, setIsScrolled] = useState(false);
   const [isProjectModalOpen, setIsProjectModalOpen] = useState(false);
-  const [navLinks, setNavLinks] = useState<Array<{ href: string; label: string; icon: React.ComponentType<React.SVGProps<SVGSVGElement>> }>>([]);
-  const [siteSettings, setSiteSettings] = useState<SiteSettings | null>({
-    siteName: '',
-    slogan: '',
-    logo: {
-      url: '',
-      alt: 'Logo',
-      width: 200,
-      height: 60
-    }
-  });
+  const [navLinks, setNavLinks] = useState<Array<{ href: string; label: string; icon: React.ComponentType<React.SVGProps<SVGSVGElement>>; isExternal?: boolean }>>([]);
+  const [navLoaded, setNavLoaded] = useState(false);
+  const [siteSettings, setSiteSettings] = useState<SiteSettings | null>(null);
 
   // Project form state
   const [projectForm, setProjectForm] = useState({
@@ -96,22 +104,25 @@ const Header: React.FC = () => {
   useEffect(() => {
     const fetchSiteSettings = async () => {
       try {
-        const response = await fetch('/api/admin/site-settings');
+        // Public endpoint: anyone can fetch basic site settings (including logo)
+        const response = await fetch('/api/settings', { cache: 'no-store' });
         if (response.ok) {
           const data = await response.json();
-          setSiteSettings(data);
+          // Map API response to component state shape
+          setSiteSettings({
+            siteName: data?.siteName || '',
+            slogan: '',
+            logo: {
+              url: typeof data?.logo === 'string' ? data.logo : (data?.logo?.url || ''),
+              alt: 'Logo',
+              width: 200,
+              height: 60,
+            },
+          });
         }
       } catch {
-        setSiteSettings({
-          siteName: '',
-          slogan: '',
-          logo: {
-            url: '',
-            alt: 'Logo',
-            width: 200,
-            height: 60
-          }
-        });
+        // On error, keep null to avoid showing any placeholder
+        setSiteSettings(null);
       }
     };
 
@@ -143,10 +154,12 @@ const Header: React.FC = () => {
             .map((page: PageSetting) => ({
               href: page.path,
               label: page.title,
-              icon: getIconForPage(page.pageId)
+              icon: resolveIcon(page.icon) || getIconForPage(page.pageId),
+              isExternal: page.isExternal
             }));
 
           setNavLinks(navPages);
+          setNavLoaded(true);
         } else {
           // Fallback to default navigation if API fails
           setNavLinks([
@@ -157,6 +170,7 @@ const Header: React.FC = () => {
             { href: '/products', label: 'Ürünler', icon: FolderOpenIcon },
             { href: '/contact', label: 'İletişim', icon: PhoneIcon },
           ]);
+          setNavLoaded(true);
         }
       } catch (error) {
         console.error('Navigation fetch error:', error);
@@ -169,6 +183,7 @@ const Header: React.FC = () => {
           { href: '/products', label: 'Ürünler', icon: FolderOpenIcon },
           { href: '/contact', label: 'İletişim', icon: PhoneIcon },
         ]);
+        setNavLoaded(true);
       }
     };
 
@@ -303,7 +318,7 @@ E-posta: ${projectForm.email}
         <div className="flex items-center justify-between h-16 sm:h-20">
           {/* Logo */}
           <Link href="/" className="flex items-center space-x-3 group">
-            {siteSettings?.logo?.url ? (
+            {siteSettings?.logo?.url && (
               <div className="relative w-12 h-12 rounded-2xl overflow-hidden bg-white/10 backdrop-blur-sm p-1">
                 <Image
                   src={siteSettings.logo.url}
@@ -314,17 +329,15 @@ E-posta: ${projectForm.email}
                   priority
                 />
               </div>
-            ) : (
-              <div className="w-12 h-12 bg-white/10 backdrop-blur-sm rounded-2xl flex items-center justify-center">
-                <SparklesIcon className="w-6 h-6 text-white" />
-              </div>
             )}
             <div className="hidden sm:block">
-              <h1 className={`text-xl font-bold tracking-tight transition-colors duration-300 ${
-                isScrolled ? 'text-slate-900' : 'text-white'
-              }`}>
-                {siteSettings?.siteName || 'FIXRAL'}
-              </h1>
+              {siteSettings?.siteName && (
+                <h1 className={`text-xl font-bold tracking-tight transition-colors duration-300 ${
+                  isScrolled ? 'text-slate-900' : 'text-white'
+                }`}>
+                  {siteSettings.siteName}
+                </h1>
+              )}
               {siteSettings?.slogan && (
                 <p className={`text-sm opacity-80 transition-colors duration-300 ${
                   isScrolled ? 'text-slate-600' : 'text-white/80'
@@ -340,10 +353,13 @@ E-posta: ${projectForm.email}
             {navLinks.map((link, index) => {
               const isActive = pathname === link.href;
               return (
-                <Link
-                  key={index}
-                  href={link.href}
-                  className={`relative overflow-hidden px-4 py-2 rounded-xl font-medium transition-all duration-200 group flex items-center space-x-2 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-primary-600 focus-visible:ring-offset-2 ${
+                (link.isExternal ? (
+                  <a
+                    key={index}
+                    href={link.href}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className={`relative overflow-hidden px-4 py-2 rounded-xl font-medium transition-all duration-200 group flex items-center space-x-2 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-primary-600 focus-visible:ring-offset-2 ${
                     isActive
                       ? isScrolled
                         ? 'bg-brand-primary-100 text-brand-primary-800'
@@ -352,39 +368,67 @@ E-posta: ${projectForm.email}
                       ? 'text-slate-700 hover:bg-slate-100 hover:text-brand-primary-700'
                       : 'text-white hover:text-white hover:bg-white/10'
                   }`}
-                  aria-current={isActive ? 'page' : undefined}
-                >
-                  <link.icon className="w-4 h-4" />
-                  <span>{link.label}</span>
-                  {/* underline animation */}
-                  <span
-                    aria-hidden="true"
-                    className={`pointer-events-none absolute left-4 right-4 bottom-1 h-[2px] origin-left scale-x-0 transition-transform duration-300 ${
-                      isScrolled
-                        ? 'bg-brand-primary-700'
-                        : 'bg-white/80'
-                    } ${isActive ? 'scale-x-100' : 'group-hover:scale-x-100'}`}
-                  />
-                </Link>
+                    aria-current={isActive ? 'page' : undefined}
+                  >
+                    <link.icon className="w-4 h-4" />
+                    <span>{link.label}</span>
+                    <span
+                      aria-hidden="true"
+                      className={`pointer-events-none absolute left-4 right-4 bottom-1 h-[2px] origin-left scale-x-0 transition-transform duration-300 ${
+                        isScrolled
+                          ? 'bg-brand-primary-700'
+                          : 'bg-white/80'
+                      } ${isActive ? 'scale-x-100' : 'group-hover:scale-x-100'}`}
+                    />
+                  </a>
+                ) : (
+                  <Link
+                    key={index}
+                    href={link.href}
+                    className={`relative overflow-hidden px-4 py-2 rounded-xl font-medium transition-all duration-200 group flex items-center space-x-2 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-primary-600 focus-visible:ring-offset-2 ${
+                      isActive
+                        ? isScrolled
+                          ? 'bg-brand-primary-100 text-brand-primary-800'
+                          : 'bg-white text-brand-primary-800 shadow'
+                        : isScrolled
+                        ? 'text-slate-700 hover:bg-slate-100 hover:text-brand-primary-700'
+                        : 'text-white hover:text-white hover:bg-white/10'
+                    }`}
+                    aria-current={isActive ? 'page' : undefined}
+                  >
+                    <link.icon className="w-4 h-4" />
+                    <span>{link.label}</span>
+                    <span
+                      aria-hidden="true"
+                      className={`pointer-events-none absolute left-4 right-4 bottom-1 h-[2px] origin-left scale-x-0 transition-transform duration-300 ${
+                        isScrolled
+                          ? 'bg-brand-primary-700'
+                          : 'bg-white/80'
+                      } ${isActive ? 'scale-x-100' : 'group-hover:scale-x-100'}`}
+                    />
+                  </Link>
+                ))
               );
             })}
           </nav>
 
-          {/* CTA Button */}
-          <div className="hidden md:flex items-center space-x-4">
-            <button
-              onClick={openProjectModal}
-              aria-label="Proje başvurusu formunu aç"
-              className={`px-5 py-2.5 rounded-full font-semibold transition-all duration-300 transform hover:scale-[1.02] flex items-center space-x-2 ${
-                isScrolled
-                  ? 'bg-slate-900 text-white shadow hover:shadow-lg'
-                  : 'bg-white/10 backdrop-blur-md text-white border border-white/20 hover:bg-white/20'
-              }`}
-            >
-              <PaperAirplaneIcon className="w-5 h-5" />
-              <span>Proje Başvurusu</span>
-            </button>
-          </div>
+          {/* CTA Button - show when navigation is loaded */}
+          {navLoaded && (
+            <div className="hidden md:flex items-center space-x-4">
+              <button
+                onClick={openProjectModal}
+                aria-label="Proje başvurusu formunu aç"
+                className={`px-5 py-2.5 rounded-full font-semibold transition-all duration-300 transform hover:scale-[1.02] flex items-center space-x-2 ${
+                  isScrolled
+                    ? 'bg-slate-900 text-white shadow hover:shadow-lg'
+                    : 'bg-white/10 backdrop-blur-md text-white border border-white/20 hover:bg-white/20'
+                }`}
+              >
+                <PaperAirplaneIcon className="w-5 h-5" />
+                <span>Proje Başvurusu</span>
+              </button>
+            </div>
+          )}
 
           {/* Mobile Menu Button */}
           <button
@@ -413,31 +457,52 @@ E-posta: ${projectForm.email}
               {navLinks.map((link, index) => {
                 const isActive = pathname === link.href;
                 return (
-                  <Link
-                    key={index}
-                    href={link.href}
-                    onClick={closeMobileMenu}
-                    className={`flex items-center space-x-3 py-3 px-4 rounded-xl font-medium transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-primary-600/70 focus-visible:ring-offset-2 ${
-                      isActive
-                        ? 'bg-brand-primary-100 text-brand-primary-800'
-                        : 'text-slate-700 hover:bg-slate-100 hover:text-brand-primary-700'
-                    }`}
-                    aria-current={isActive ? 'page' : undefined}
-                  >
-                    <link.icon className="w-5 h-5" />
-                    <span>{link.label}</span>
-                  </Link>
+                  (link.isExternal ? (
+                    <a
+                      key={index}
+                      href={link.href}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      onClick={closeMobileMenu}
+                      className={`flex items-center space-x-3 py-3 px-4 rounded-xl font-medium transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-primary-600/70 focus-visible:ring-offset-2 ${
+                        isActive
+                          ? 'bg-brand-primary-100 text-brand-primary-800'
+                          : 'text-slate-700 hover:bg-slate-100 hover:text-brand-primary-700'
+                      }`}
+                      aria-current={isActive ? 'page' : undefined}
+                    >
+                      <link.icon className="w-5 h-5" />
+                      <span>{link.label}</span>
+                    </a>
+                  ) : (
+                    <Link
+                      key={index}
+                      href={link.href}
+                      onClick={closeMobileMenu}
+                      className={`flex items-center space-x-3 py-3 px-4 rounded-xl font-medium transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-primary-600/70 focus-visible:ring-offset-2 ${
+                        isActive
+                          ? 'bg-brand-primary-100 text-brand-primary-800'
+                          : 'text-slate-700 hover:bg-slate-100 hover:text-brand-primary-700'
+                      }`}
+                      aria-current={isActive ? 'page' : undefined}
+                    >
+                      <link.icon className="w-5 h-5" />
+                      <span>{link.label}</span>
+                    </Link>
+                  ))
                 );
               })}
-              <div className="mt-4 pt-4 border-t border-slate-200">
-                <button
-                  onClick={openProjectModal}
-                  className="flex items-center justify-center space-x-2 py-3 px-6 bg-gradient-primary text-white rounded-xl font-semibold w-full"
-                >
-                  <PaperAirplaneIcon className="w-5 h-5" />
-                  <span>Proje Başvurusu</span>
-                </button>
-              </div>
+              {navLoaded && (
+                <div className="mt-4 pt-4 border-t border-slate-200">
+                  <button
+                    onClick={openProjectModal}
+                    className="flex items-center justify-center space-x-2 py-3 px-6 bg-gradient-primary text-white rounded-xl font-semibold w-full"
+                  >
+                    <PaperAirplaneIcon className="w-5 h-5" />
+                    <span>Proje Başvurusu</span>
+                  </button>
+                </div>
+              )}
             </div>
           </nav>
         )}

@@ -5,9 +5,11 @@ interface LogoProps {
   width?: number;
   height?: number;
   isDark?: boolean;
+  name?: string; // optional brand name text
+  subtitle?: string; // optional subtitle text
 }
 
-const Logo: React.FC<LogoProps> = ({ className = '', width = 40, height = 40, isDark = false }) => {
+const Logo: React.FC<LogoProps> = ({ className = '', width = 40, height = 40, isDark = false, name, subtitle }) => {
   const textColor = isDark ? 'text-fixral-night-blue' : 'text-white';
   const iconColor = isDark ? '#003450' : '#38bdf8';
   const accentColor = isDark ? '#0369a1' : '#7dd3fc';
@@ -51,16 +53,22 @@ const Logo: React.FC<LogoProps> = ({ className = '', width = 40, height = 40, is
           strokeLinecap="round"
         />
       </svg>
-      <div className="flex flex-col">
-        <span className={`text-xl font-bold ${textColor} transition-colors duration-300`}>
-          FIXRAL
-        </span>
-        <span className={`text-sm font-medium transition-colors duration-300 ${isDark ? 'text-fixral-gray-blue' : 'text-brand-primary-300'}`}>
-          Engineering
-        </span>
-      </div>
+      {(name || subtitle) && (
+        <div className="flex flex-col">
+          {name && (
+            <span className={`text-xl font-bold ${textColor} transition-colors duration-300`}>
+              {name}
+            </span>
+          )}
+          {subtitle && (
+            <span className={`text-sm font-medium transition-colors duration-300 ${isDark ? 'text-fixral-gray-blue' : 'text-brand-primary-300'}`}>
+              {subtitle}
+            </span>
+          )}
+        </div>
+      )}
     </div>
   );
 };
 
-export default Logo; 
+export default Logo;

@@ -14,6 +14,14 @@ const PageSettingSchema = new mongoose.Schema({
     type: String,
     required: true
   },
+  icon: {
+    type: String,
+    default: '' // heroicon adı, örn: 'HomeIcon', 'UserIcon'
+  },
+  isExternal: {
+    type: Boolean,
+    default: false
+  },
   description: {
     type: String,
     required: true
