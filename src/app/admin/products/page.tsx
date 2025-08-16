@@ -1,6 +1,6 @@
 'use client';
 import Link from 'next/link';
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo, useState, useCallback } from 'react';
 import AdminLayout from '@/components/admin/AdminLayout';
 import { FixralButton, FixralInput, FixralSelect, FixralCard } from '@/components/ui';
 
@@ -23,7 +23,7 @@ export default function AdminProductsPage() {
     fetch('/api/admin/product-categories').then(r=>r.json()).then(d=>setCats((d.items as Array<{_id:string; name:string}>)||[])).catch(()=>setCats([]));
   }, []);
 
-  async function reload() {
+  const reload = useCallback(async () => {
     const sp = new URLSearchParams({ q, condition, category, sort, page: String(page), limit: String(limit) });
     setLoading(true);
     try {
@@ -37,11 +37,11 @@ export default function AdminProductsPage() {
     } finally {
       setLoading(false);
     }
-  }
+  }, [q, condition, category, sort, page, limit]);
 
   useEffect(() => {
     reload();
-  }, [q, condition, category, sort, page, limit]);
+  }, [reload]);
 
   const selectedIds = useMemo(() => Object.keys(selected).filter((k) => selected[k]), [selected]);
 
