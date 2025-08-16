@@ -430,11 +430,11 @@ const PortfolioImageGallery: React.FC<PortfolioImageGalleryProps> = ({
         }}
         allowedTypes={["image/"]}
         allowMultipleSelect={true}
-        theme="light"
         pageContext={pageContext}
+        variant="fullscreen"
       />
     </div>
   );
 };
 
-export default PortfolioImageGallery; 
+export default PortfolioImageGallery;

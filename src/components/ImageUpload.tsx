@@ -356,6 +356,7 @@ const ImageUpload: React.FC<ImageUploadProps> = ({
         allowedTypes={['image/']}
         pageContext={pageContext}
         allowMultipleSelect={allowMultipleSelect}
+        variant="fullscreen"
       />
 
       {/* URL Input Modal */}

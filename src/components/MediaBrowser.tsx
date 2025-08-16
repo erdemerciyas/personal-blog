@@ -33,6 +33,7 @@ interface MediaBrowserProps {
   theme?: 'dark' | 'light';
   pageContext?: string;
   allowMultipleSelect?: boolean;
+  variant?: 'fullscreen' | 'dialog';
 }
 
 const MediaBrowser: React.FC<MediaBrowserProps> = ({
@@ -44,7 +45,8 @@ const MediaBrowser: React.FC<MediaBrowserProps> = ({
   allowedTypes = ['image/'],
   theme = 'dark',
   pageContext = 'general',
-  allowMultipleSelect = false
+  allowMultipleSelect = false,
+  variant = 'fullscreen'
 }) => {
   const [mediaItems, setMediaItems] = useState<MediaItem[]>([]);
   const [loading, setLoading] = useState(false);
@@ -106,6 +108,43 @@ const MediaBrowser: React.FC<MediaBrowserProps> = ({
     document.addEventListener('mousedown', handleClickOutside);
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, [isOpen, onClose, previewItem]);
+
+  // Seçim işlemi (useCallback ile sabit referans)
+  const handleSelect = useCallback(() => {
+    if (allowMultipleSelect && selectedItems.length > 0) {
+      const urls = selectedItems
+        .map(id => mediaItems.find(item => item._id === id)?.url)
+        .filter((url): url is string => url !== undefined && isValidUrl(url));
+
+      if (urls.length > 0) {
+        onSelect(urls);
+        onClose();
+      }
+    } else if (selectedItem) {
+      const item = mediaItems.find(item => item._id === selectedItem);
+      if (item && isValidUrl(item.url)) {
+        onSelect(item.url);
+        onClose();
+      } else {
+        console.error('Invalid URL selected:', item?.url);
+      }
+    }
+  }, [allowMultipleSelect, selectedItems, mediaItems, selectedItem, onSelect, onClose]);
+
+  // Klavye kısayolları: Esc ile kapat, Enter ile seç
+  useEffect(() => {
+    if (!isOpen) return;
+    const handleKey = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') {
+        onClose();
+      } else if (e.key === 'Enter') {
+        e.preventDefault();
+        handleSelect();
+      }
+    };
+    document.addEventListener('keydown', handleKey);
+    return () => document.removeEventListener('keydown', handleKey);
+  }, [isOpen, handleSelect, onClose]);
 
   // URL validation helper
   const isValidUrl = (url: string): boolean => {
@@ -176,29 +215,7 @@ const MediaBrowser: React.FC<MediaBrowserProps> = ({
     return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
   };
 
-  const handleSelect = () => {
-    if (allowMultipleSelect && selectedItems.length > 0) {
-      const urls = selectedItems.map(id => {
-        const item = mediaItems.find(item => item._id === id);
-        return item?.url;
-      }).filter((url): url is string => url !== undefined && isValidUrl(url));
-      
-      if (urls.length > 0) {
-        onSelect(urls);
-        onClose();
-        setSelectedItems([]);
-      }
-    } else if (selectedItem) {
-      const item = mediaItems.find(item => item._id === selectedItem);
-      if (item && isValidUrl(item.url)) {
-        onSelect(item.url);
-        onClose();
-        setSelectedItem(null);
-      } else {
-        console.error('Invalid URL selected:', item?.url);
-      }
-    }
-  };
+  // Not: handleSelect yukarıda useCallback ile tanımlandı
 
   const handleItemClick = (itemId: string) => {
     if (allowMultipleSelect) {
@@ -269,24 +286,29 @@ const MediaBrowser: React.FC<MediaBrowserProps> = ({
   };
 
   return (
-    <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-[100] p-4">
-      {/* Modal dışı tıklama için ref */}
-      <div 
-        ref={modalRef}
-        className={`${themeStyles.modal} rounded-3xl overflow-hidden shadow-2xl w-[90vw] max-w-6xl h-[85vh] max-h-[800px] min-h-[600px] relative flex flex-col`}
-        style={{ minWidth: windowSize.width < 768 ? '320px' : '800px' }}
-      >
+    <div className={`fixed inset-0 bg-black/60 ${variant === 'fullscreen' ? '' : 'backdrop-blur-sm'} z-[100]` }>
+      <div className={`w-full h-full flex ${variant === 'fullscreen' ? 'items-stretch justify-center' : 'items-center justify-center'} p-0 md:p-6`}>
+        {/* Modal dışı tıklama için ref */}
+        <div 
+          ref={modalRef}
+          className={
+            `${themeStyles.modal} ${variant === 'fullscreen' 
+              ? 'rounded-none md:rounded-2xl w-full h-full md:h-[92vh] md:max-w-7xl md:overflow-hidden' 
+              : 'rounded-3xl w-[92vw] max-w-6xl h-[85vh] max-h-[860px] overflow-hidden'} ` +
+            'shadow-2xl relative flex flex-col'
+          }
+        >
         
         {/* Header */}
-        <div className={`${themeStyles.header} p-6 flex-shrink-0`}>
+        <div className={`${themeStyles.header} p-4 md:p-6 flex-shrink-0 sticky top-0 z-10` }>
           <div className="flex items-center justify-between">
             <div className="flex items-center space-x-3">
               <div className="w-10 h-10 bg-gradient-to-r from-brand-primary-600 to-blue-500 rounded-xl flex items-center justify-center">
                 <PhotoIcon className="w-6 h-6 text-white" />
               </div>
               <div>
-                <h3 className={`${themeStyles.text} text-xl font-bold`}>{title}</h3>
-                <p className={`${themeStyles.textSecondary} text-slate-400`}>Mevcut görselleri seçin veya yeni yükleyin</p>
+                <h3 className={`${themeStyles.text} text-lg md:text-xl font-bold`}>{title}</h3>
+                <p className={`${themeStyles.textSecondary} text-slate-400 text-xs md:text-sm`}>Mevcut görselleri seçin veya yeni yükleyin</p>
               </div>
             </div>
             <button
@@ -298,16 +320,16 @@ const MediaBrowser: React.FC<MediaBrowserProps> = ({
           </div>
 
           {/* Controls */}
-          <div className="flex flex-wrap items-center gap-4 mt-6">
+          <div className="flex flex-wrap items-center gap-3 md:gap-4 mt-4 md:mt-6">
             {/* Search */}
-            <div className="relative flex-1 min-w-64">
+            <div className="relative flex-1 min-w-56 md:min-w-64">
               <MagnifyingGlassIcon className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-slate-400" />
               <input
                 type="text"
                 placeholder="Görsel ara..."
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
-                className={`${themeStyles.input} w-full rounded-xl pl-10 pr-4 py-2 focus:outline-none focus:ring-2 focus:ring-brand-primary-600`}
+                className={`${themeStyles.input} w-full rounded-xl pl-10 pr-4 py-2 md:py-2.5 focus:outline-none focus:ring-2 focus:ring-brand-primary-600`}
               />
             </div>
 
@@ -315,7 +337,7 @@ const MediaBrowser: React.FC<MediaBrowserProps> = ({
             <select
               value={filter}
               onChange={(e) => setFilter(e.target.value)}
-              className={`${themeStyles.select} rounded-xl px-4 py-2 focus:outline-none focus:ring-2 focus:ring-brand-primary-600`}
+              className={`${themeStyles.select} rounded-xl px-4 py-2 md:py-2.5 focus:outline-none focus:ring-2 focus:ring-brand-primary-600`}
             >
               <option value="all" style={{ color: '#1e293b', backgroundColor: '#ffffff' }}>
                 Tüm Dosyalar
@@ -329,7 +351,7 @@ const MediaBrowser: React.FC<MediaBrowserProps> = ({
             <select
               value={pageFilter}
               onChange={(e) => setPageFilter(e.target.value)}
-              className={`${themeStyles.select} rounded-xl px-4 py-2 focus:outline-none focus:ring-2 focus:ring-brand-primary-600`}
+              className={`${themeStyles.select} rounded-xl px-4 py-2 md:py-2.5 focus:outline-none focus:ring-2 focus:ring-brand-primary-600`}
             >
               <option value="all" style={{ color: '#1e293b', backgroundColor: '#ffffff' }}>
                 Tüm Sayfalar
@@ -367,7 +389,7 @@ const MediaBrowser: React.FC<MediaBrowserProps> = ({
         </div>
 
         {/* Content */}
-        <div className="p-6 overflow-y-auto flex-1">
+        <div className="p-4 md:p-6 overflow-y-auto flex-1">
           {loading ? (
             <div className="flex items-center justify-center py-12">
               <InlineLoader text="Medya dosyaları yükleniyor..." />
@@ -390,7 +412,7 @@ const MediaBrowser: React.FC<MediaBrowserProps> = ({
               </button>
             </div>
           ) : (
-                            <div className="grid grid-cols-4 sm:grid-cols-6 md:grid-cols-8 lg:grid-cols-10 xl:grid-cols-12 gap-2">
+            <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-6 lg:grid-cols-8 xl:grid-cols-10 gap-3 md:gap-4">
               {filteredItems.map((item) => {
                 const isSelected = allowMultipleSelect 
                   ? selectedItems.includes(item._id)
@@ -399,7 +421,7 @@ const MediaBrowser: React.FC<MediaBrowserProps> = ({
                 return (
                   <div
                     key={item._id}
-                    className={`${themeStyles.card} rounded-xl p-2 transition-all duration-200 hover:scale-105 relative border h-24`}
+                    className={`${themeStyles.card} rounded-xl p-2 md:p-3 transition-all duration-200 hover:scale-[1.02] relative border h-28 md:h-36`}
                   >
                     {/* Sil butonu */}
                     <button
@@ -413,7 +435,7 @@ const MediaBrowser: React.FC<MediaBrowserProps> = ({
                     {/* Önizleme için tıklama */}
                     <div
                       onClick={() => setPreviewItem(item)}
-                      className="aspect-square mb-2 bg-slate-700 rounded-lg overflow-hidden relative cursor-zoom-in h-20 w-20"
+                      className="aspect-square mb-2 bg-slate-700 rounded-lg overflow-hidden relative cursor-zoom-in h-24 md:h-28 w-full"
                       tabIndex={0}
                       role="button"
                       aria-label="Önizle"
@@ -439,17 +461,17 @@ const MediaBrowser: React.FC<MediaBrowserProps> = ({
                     {/* Seçim butonu */}
                     <button
                       onClick={(e) => { e.stopPropagation(); handleItemClick(item._id); }}
-                      className={`w-full mt-1 py-1 rounded bg-brand-primary-700 hover:bg-brand-primary-800 text-white text-xs font-semibold transition-colors ${isSelected ? 'ring-2 ring-brand-primary-500' : ''}`}
+                      className={`w-full mt-1 py-1.5 rounded bg-brand-primary-700 hover:bg-brand-primary-800 text-white text-xs font-semibold transition-colors ${isSelected ? 'ring-2 ring-brand-primary-500' : ''}`}
                       tabIndex={0}
                     >
                       {isSelected ? 'Seçili' : 'Seç'}
                     </button>
                     {/* File Info */}
                     <div className="space-y-1 mt-2">
-                      <h5 className={`${themeStyles.text} text-xs font-medium truncate`} title={item.originalName}>
+                      <h5 className={`${themeStyles.text} text-xs md:text-sm font-medium truncate`} title={item.originalName}>
                         {item.originalName}
                       </h5>
-                      <div className="flex items-center justify-between text-xs text-slate-400">
+                      <div className="flex items-center justify-between text-[10px] md:text-xs text-slate-400">
                         <span>{formatFileSize(item.size)}</span>
                         <div className="flex items-center space-x-1">
                           {item.source === 'cloudinary' && (
@@ -474,7 +496,7 @@ const MediaBrowser: React.FC<MediaBrowserProps> = ({
 
         {/* Footer */}
         {filteredItems.length > 0 && (
-          <div className={`${themeStyles.footer} p-6 flex-shrink-0`}>
+          <div className={`${themeStyles.footer} p-4 md:p-6 flex-shrink-0 sticky bottom-0 z-10`}>
             <div className="flex items-center justify-between">
               <div className="flex flex-col space-y-1">
                 <p className={`${themeStyles.textSecondary} text-slate-400`}>
@@ -523,38 +545,39 @@ const MediaBrowser: React.FC<MediaBrowserProps> = ({
             </div>
           </div>
         )}
-      </div>
-      {/* Önizleme Modalı */}
-      {previewItem && (
-        <div className="fixed inset-0 z-[110] bg-black/70 flex items-center justify-center" onClick={() => setPreviewItem(null)}>
-          <div className="bg-white rounded-2xl shadow-2xl p-6 max-w-2xl w-full relative" onClick={e => e.stopPropagation()}>
-            <button className="absolute top-2 right-2 p-2 bg-slate-200 hover:bg-slate-300 rounded-full" onClick={() => setPreviewItem(null)}>
-              <XMarkIcon className="w-5 h-5 text-slate-600" />
-            </button>
-            <div className="flex flex-col items-center">
-              {previewItem.mimeType.startsWith('image/') && previewItem.url && isValidUrl(previewItem.url) ? (
-                <Image
-                  src={previewItem.url}
-                  alt={previewItem.originalName}
-                  width={600}
-                  height={600}
-                  className="object-contain rounded-xl max-h-[60vh]"
-                />
-              ) : (
-                <div className="w-full h-64 flex items-center justify-center text-2xl">
-                  {previewItem.mimeType.startsWith('image/') ? '🖼️' : '📄'}
+        {/* Önizleme Modalı */}
+        {previewItem && (
+          <div className="fixed inset-0 z-[110] bg-black/70 flex items-center justify-center" onClick={() => setPreviewItem(null)}>
+            <div className="bg-white rounded-2xl shadow-2xl p-6 max-w-2xl w-full relative" onClick={e => e.stopPropagation()}>
+              <button className="absolute top-2 right-2 p-2 bg-slate-200 hover:bg-slate-300 rounded-full" onClick={() => setPreviewItem(null)}>
+                <XMarkIcon className="w-5 h-5 text-slate-600" />
+              </button>
+              <div className="flex flex-col items-center">
+                {previewItem.mimeType.startsWith('image/') && previewItem.url && isValidUrl(previewItem.url) ? (
+                  <Image
+                    src={previewItem.url}
+                    alt={previewItem.originalName}
+                    width={600}
+                    height={600}
+                    className="object-contain rounded-xl max-h-[60vh]"
+                  />
+                ) : (
+                  <div className="w-full h-64 flex items-center justify-center text-2xl">
+                    {previewItem.mimeType.startsWith('image/') ? '🖼️' : '📄'}
+                  </div>
+                )}
+                <div className="mt-4 text-center">
+                  <div className="font-semibold text-slate-800">{previewItem.originalName}</div>
+                  <div className="text-xs text-slate-500">{formatFileSize(previewItem.size)}</div>
                 </div>
-              )}
-              <div className="mt-4 text-center">
-                <div className="font-semibold text-slate-800">{previewItem.originalName}</div>
-                <div className="text-xs text-slate-500">{formatFileSize(previewItem.size)}</div>
               </div>
             </div>
           </div>
+        )}
         </div>
-      )}
+      </div>
     </div>
   );
 };
 
-export default MediaBrowser; 
+export default MediaBrowser;

@@ -6,6 +6,7 @@ import { useRouter } from 'next/navigation';
 import Image from 'next/image';
 import AdminLayout from '../../../components/admin/AdminLayout';
 import { CheckIcon, ShieldCheckIcon, CloudArrowUpIcon, XMarkIcon, PhotoIcon } from '@heroicons/react/24/outline';
+import MediaBrowser from '../../../components/MediaBrowser';
 
 interface Settings {
   _id?: string;
@@ -35,6 +36,7 @@ export default function AdminSettingsPage() {
   const [logoPreview, setLogoPreview] = useState<string | null>(null);
   const [uploadingLogo, setUploadingLogo] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const [showMediaBrowser, setShowMediaBrowser] = useState(false);
 
   const [settings, setSettings] = useState<Settings>({
     siteName: '',
@@ -183,6 +185,24 @@ export default function AdminSettingsPage() {
     if (fileInputRef.current) {
       fileInputRef.current.value = '';
     }
+  };
+
+  // Medya kütüphanesi entegrasyonu
+  const handleBrowseMedia = () => {
+    setShowMediaBrowser(true);
+  };
+
+  const handleCloseMediaBrowser = () => {
+    setShowMediaBrowser(false);
+  };
+
+  const handleMediaSelect = (url: string | string[]) => {
+    const selectedUrl = Array.isArray(url) ? url[0] : url;
+    if (selectedUrl && (selectedUrl.startsWith('/') || selectedUrl.startsWith('http://') || selectedUrl.startsWith('https://'))) {
+      setSettings(prev => ({ ...prev, logo: selectedUrl }));
+      setMessage({ type: 'success', text: 'Medya kütüphanesinden logo seçildi.' });
+    }
+    setShowMediaBrowser(false);
   };
 
   if (status === 'loading' || loading) {
@@ -350,6 +370,24 @@ export default function AdminSettingsPage() {
                   onChange={handleLogoFileSelect}
                   className="hidden"
                 />
+
+                {/* Alternatif: Medya Kütüphanesi */}
+                <div className="flex gap-2">
+                  <button
+                    type="button"
+                    onClick={handleBrowseMedia}
+                    className="px-4 py-2 rounded-lg border border-slate-300 text-slate-700 hover:bg-slate-50"
+                  >
+                    Medya Kütüphanesi
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => fileInputRef.current?.click()}
+                    className="px-4 py-2 rounded-lg bg-brand-primary-600 text-white hover:bg-brand-primary-700"
+                  >
+                    Bilgisayardan Yükle
+                  </button>
+                </div>
 
                 {/* Dosya Önizleme */}
                 {logoPreview && (
@@ -555,6 +593,20 @@ export default function AdminSettingsPage() {
           </button>
         </div>
       </div>
+      {/* Media Browser Modal */}
+      {showMediaBrowser && (
+        <MediaBrowser
+          isOpen={showMediaBrowser}
+          onClose={handleCloseMediaBrowser}
+          onSelect={handleMediaSelect}
+          onUploadNew={() => fileInputRef.current?.click()}
+          title="Medya Seç"
+          allowedTypes={["image/"]}
+          pageContext="general"
+          allowMultipleSelect={false}
+          variant="fullscreen"
+        />
+      )}
     </AdminLayout>
   );
 }
