@@ -1,3 +1,16 @@
+## [2.3.0] - 2025-08-17
+
+### Changed
+- Logo upload akışı yerel dosya sisteminden Cloudinary'e taşındı (`src/app/api/admin/logo-upload/route.ts`).
+- Varsayılan görsel yolları yerelden uzak URL'lere güncellendi (`src/models/Settings.ts`, `src/app/api/settings/route.ts`).
+- Bileşenlerdeki lokal fallback görseller Cloudinary placeholder ile değiştirildi (`src/components/ProjectCard.tsx`, `src/components/portfolio/ModernProjectCard.tsx`).
+
+### Added
+- Yerel `public/uploads/logos/` içeriğini Cloudinary'e taşıyan script eklendi: `scripts/migrate-local-media-to-cloudinary.js` (`--delete` ile yükleme sonrası yerelleri silebilir).
+
+### Notes
+- Next.js Image için Cloudinary domaini kullanımı doğrulandı. Placeholder URL'leri proje Cloudinary hesabıyla değiştirmeniz önerilir.
+
 ## [2.2.11] - 2025-08-16
 
 ### Changed

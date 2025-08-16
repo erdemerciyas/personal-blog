@@ -16,7 +16,7 @@ Modern, güvenli ve performanslı kişisel blog ve portfolyo platformu. Next.js 
 
 **[Live Site](https://www.fixral.com)** | **[Admin Panel](https://www.fixral.com/admin)** | **[API Health](https://www.fixral.com/api/health)**
 
-> **Status**: **LIVE** | **Last Deploy**: 2025-08-16 | **Version**: v2.2.11 | **CI/CD Pipeline**: **OPTIMIZED**
+> **Status**: **LIVE** | **Last Deploy**: 2025-08-17 | **Version**: v2.3.0 | **CI/CD Pipeline**: **OPTIMIZED**
 
 ## Özellikler
 
@@ -131,13 +131,16 @@ npm run dev
 
 Uygulama [http://localhost:3000](http://localhost:3000) adresinde çalışacaktır.
 
-## Yeni Özellikler (v2.2.11)
+## Yeni Özellikler (v2.3.0)
 
-### Erişilebilirlik ve Güvenlik İyileştirmeleri (2025-08-16)
-- Sayfa düzeyinde semantik HTML geliştirildi: `products` sayfalarında en dış sarmalayıcı `main#main-content` ile güncellendi.
-- Erişilebilirlik testi kapsamı rafine edildi (admin sayfaları hariç) ve çekirdek semantik öğe kontrolü optimize edildi.
-- Erişilebilirlik skoru: 100/100 (Semantic HTML: 10/10)
-- Güvenlik testi: 100/100 (dotenv opsiyonel yükleme ve .env.local kontrolleri)
+### Medya Yönetimi: Cloudinary Geçişi (2025-08-17)
+- Tüm local logo yüklemeleri Cloudinary'e taşındı: `src/app/api/admin/logo-upload/route.ts` artık Cloudinary upload kullanıyor.
+- Varsayılan görsel yolları cloud'a alındı: `src/models/Settings.ts` ve `src/app/api/settings/route.ts` güncellendi.
+- Bileşen fallback görselleri uzak URL'lere taşındı: `ProjectCard.tsx` ve `ModernProjectCard.tsx` Cloudinary placeholder kullanıyor.
+- Yerel logoları otomatik taşımak için script eklendi: `scripts/migrate-local-media-to-cloudinary.js` (opsiyonel `--delete`).
+- Next Image için Cloudinary remote domain kullanımı doğrulandı.
+
+Not: Placeholder olarak `res.cloudinary.com/demo/...` kullanıldı. Kendi hesabınızda kalıcı bir default görsel oluşturup URL'leri güncellemeniz önerilir.
 
 ---
 
@@ -381,7 +384,7 @@ Permissions-Policy: camera=(), microphone=(), geolocation=()
 
 **Current Status**: **LIVE** on Vercel 
 **Deployment URL**: https://www.fixral.com  
-**Last Deploy**: 2025-08-16  
+**Last Deploy**: 2025-08-17  
 **Build Time**: ~57 seconds  
 
 #### Quick Deploy
@@ -553,8 +556,8 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 ## 📈 Project Status
 
 - **Status**: ✅ **PRODUCTION READY**
-- **Version**: v2.2.11
-- **Last Updated**: 2025-08-16
+- **Version**: v2.3.0
+- **Last Updated**: 2025-08-17
 - **Security Level**: 🔒 HIGH
 - **Performance**: ⚡ OPTIMIZED
 - **Documentation**: 📚 COMPLETE
