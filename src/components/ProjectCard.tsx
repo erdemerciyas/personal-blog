@@ -34,7 +34,7 @@ const ProjectCard: React.FC<ProjectCardProps> = ({ project }) => {
       <a className="card group block overflow-hidden transform transition-all duration-300 hover:shadow-2xl hover:-translate-y-1">
         <div className="relative w-full h-64 overflow-hidden rounded-t-xl">
           <Image 
-            src={project.coverImage || '/images/projects/default-project.jpg'}
+            src={project.coverImage || (process.env.NEXT_PUBLIC_DEFAULT_PROJECT_IMAGE_URL || 'https://res.cloudinary.com/demo/image/upload/c_fill,w_1200,h_800,q_auto,f_auto/sample.jpg')}
             alt={project.title}
             fill
             className="object-cover transition-transform duration-500"

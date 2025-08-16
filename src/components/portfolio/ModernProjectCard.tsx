@@ -109,7 +109,7 @@ export default function ModernProjectCard({
               animate={imageLoaded ? "visible" : "hidden"}
             >
               <Image
-                src={project.coverImage || '/images/projects/default-project.jpg'}
+                src={project.coverImage || (process.env.NEXT_PUBLIC_DEFAULT_PROJECT_IMAGE_URL || 'https://res.cloudinary.com/demo/image/upload/c_fill,w_1200,h_800,q_auto,f_auto/sample.jpg')}
                 alt={project.title}
                 fill
                 className="object-cover transition-transform duration-700 group-hover:scale-110"

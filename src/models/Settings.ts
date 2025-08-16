@@ -26,7 +26,7 @@ const SettingsSchema = new mongoose.Schema({
   },
   logo: {
     type: String,
-    default: '/uploads/logos/logo-1753699141500.png',
+    default: process.env.DEFAULT_LOGO_URL || 'https://res.cloudinary.com/demo/image/upload/v1700000000/personal-blog/site/logo/default-logo.png',
   },
   favicon: {
     type: String,
@@ -35,7 +35,7 @@ const SettingsSchema = new mongoose.Schema({
   // Social Media & SEO
   ogImage: {
     type: String,
-    default: '/images/og-image.jpg',
+    default: 'https://picsum.photos/1200/630?blur=2',
   },
   twitterHandle: {
     type: String,
