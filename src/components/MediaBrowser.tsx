@@ -55,33 +55,13 @@ const MediaBrowser: React.FC<MediaBrowserProps> = ({
   const [selectedItems, setSelectedItems] = useState<string[]>([]);
   const [filter, setFilter] = useState('all');
   const [pageFilter, setPageFilter] = useState(pageContext || 'all');
-  const [windowSize, setWindowSize] = useState({
-    width: 1024,
-    height: 768
-  });
   const [isMounted, setIsMounted] = useState(false);
   const [previewItem, setPreviewItem] = useState<MediaItem | null>(null);
   const modalRef = useRef<HTMLDivElement>(null);
 
-  // Mount and window size setup
+  // Mount flag
   useEffect(() => {
     setIsMounted(true);
-    if (typeof window !== 'undefined') {
-      setWindowSize({
-        width: window.innerWidth,
-        height: window.innerHeight
-      });
-
-      const handleResize = () => {
-        setWindowSize({
-          width: window.innerWidth,
-          height: window.innerHeight
-        });
-      };
-
-      window.addEventListener('resize', handleResize);
-      return () => window.removeEventListener('resize', handleResize);
-    }
   }, []);
 
   // Modal dışı tıklama ile kapatma

@@ -1,7 +1,7 @@
 {
   "version": 2,
-  "name": "personal-blog",
-  "alias": ["erdemerciyas.com.tr", "www.erdemerciyas.com.tr"],
+  "name": "fixral",
+  "alias": ["fixral.com", "www.fixral.com"],
   "regions": ["fra1"],
   "functions": {
     "src/app/api/**/*.ts": {

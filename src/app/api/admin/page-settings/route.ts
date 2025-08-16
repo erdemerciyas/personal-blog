@@ -4,7 +4,7 @@ import { authOptions } from '../../../../lib/auth';
 import connectDB from '../../../../lib/mongoose';
 import PageSetting from '../../../../models/PageSetting';
 
-export async function GET(request: NextRequest) {
+export async function GET(_request: NextRequest) {
   try {
     // Allow public access for navigation data (no auth check for public navigation)
     // const url = new URL(request.url); // Reserved for future query parameter handling

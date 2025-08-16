@@ -1,5 +1,5 @@
  "use client";
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useState } from "react";
 import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import AdminLayout from "../../../components/admin/AdminLayout";
@@ -87,7 +87,8 @@ export default function AdminPages() {
 
   useEffect(() => {
     if (status === "loading") return;
-    if (!session?.user || (session.user as any).role !== "admin") {
+    const role = (session?.user as { role?: string } | undefined)?.role;
+    if (!session?.user || role !== "admin") {
       router.replace("/admin/login");
       return;
     }
@@ -96,7 +97,7 @@ export default function AdminPages() {
         const res = await fetch("/api/admin/page-settings", { cache: "no-store" });
         const data = await res.json();
         setPages(Array.isArray(data) ? data : []);
-      } catch (e) {
+      } catch {
         setError("Sayfalar yüklenirken bir hata oluştu");
         setTimeout(() => setError(""), 3000);
       } finally {
@@ -121,7 +122,7 @@ export default function AdminPages() {
       setTimeout(() => setSuccess(""), 1500);
       await fetch("/api/admin/clear-cache", { method: "POST" }).catch(() => {});
       window.dispatchEvent(new CustomEvent("pageSettingsChanged"));
-    } catch (e) {
+    } catch {
       setError("Güncelleme sırasında hata oluştu");
       setTimeout(() => setError(""), 3000);
     } finally {
@@ -148,7 +149,7 @@ export default function AdminPages() {
       if (!res.ok) throw new Error("Sıralama başarısız");
       await fetch("/api/admin/clear-cache", { method: "POST" }).catch(() => {});
       window.dispatchEvent(new CustomEvent("pageSettingsChanged"));
-    } catch (e) {
+    } catch {
       setError("Sıralama kaydedilemedi");
       setTimeout(() => setError(""), 3000);
     } finally {
@@ -231,7 +232,7 @@ export default function AdminPages() {
       setTimeout(() => setSuccess(""), 1500);
       await fetch("/api/admin/clear-cache", { method: "POST" }).catch(() => {});
       window.dispatchEvent(new CustomEvent("pageSettingsChanged"));
-    } catch (e) {
+    } catch {
       setError("Yeni sayfa eklenirken bir hata oluştu");
       setTimeout(() => setError(""), 3000);
     } finally {
@@ -254,7 +255,7 @@ export default function AdminPages() {
       setTimeout(() => setSuccess(""), 1500);
       await fetch("/api/admin/clear-cache", { method: "POST" }).catch(() => {});
       window.dispatchEvent(new CustomEvent("pageSettingsChanged"));
-    } catch (e) {
+    } catch {
       setError("Sayfa silinirken bir hata oluştu");
       setTimeout(() => setError(""), 3000);
     } finally {

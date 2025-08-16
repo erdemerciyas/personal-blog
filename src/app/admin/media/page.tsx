@@ -1,5 +1,5 @@
 'use client';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { useSession } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
 import Image from 'next/image';
@@ -57,7 +57,7 @@ export default function AdminMediaPage() {
   }, [status, router]);
 
   // Media Management Functions
-  const loadMedia = async () => {
+  const loadMedia = useCallback(async () => {
     setLoadingMedia(true);
     try {
       const params = new URLSearchParams();
@@ -75,7 +75,7 @@ export default function AdminMediaPage() {
     } finally {
       setLoadingMedia(false);
     }
-  };
+  }, [contextFilter]);
 
   const handleMediaUpload = async (files: FileList) => {
     if (!files || files.length === 0) return;
@@ -222,7 +222,7 @@ export default function AdminMediaPage() {
     if (status === 'authenticated') {
       loadMedia();
     }
-  }, [status, contextFilter]);
+  }, [status, loadMedia]);
 
   if (status === 'loading') {
     return (
