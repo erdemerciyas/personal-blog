@@ -2,17 +2,28 @@ import { NextResponse } from 'next/server';
 import connectDB, { hasValidMongoUri } from '@/lib/mongoose';
 import Portfolio from '@/models/Portfolio';
 import Product from '@/models/Product';
+import Settings from '@/models/Settings';
 
 export const dynamic = 'force-dynamic';
 
+// Lean Settings sonucu için minimal tip
+interface ISettingsLeanForSitemap {
+  siteUrl?: string;
+}
+
 export async function GET() {
   try {
-    const baseUrl = process.env.NEXTAUTH_URL || 'https://erdemerciyas.com.tr';
+    let baseUrl = process.env.NEXTAUTH_URL || 'https://erdemerciyas.com.tr';
     let portfolioItems: Array<{ slug: string; updatedAt: Date }> = [];
     let productItems: Array<{ slug: string; updatedAt: Date }> = [];
 
     if (hasValidMongoUri()) {
       await connectDB();
+      // Base URL'i Settings'ten almayı dene
+      const settingsDoc = (await Settings.findOne({ isActive: true }).lean()) as ISettingsLeanForSitemap | null;
+      if (settingsDoc?.siteUrl) {
+        baseUrl = settingsDoc.siteUrl.replace(/\/$/, '');
+      }
       // Get all portfolio and product items for dynamic URLs
       portfolioItems = await Portfolio.find({ isActive: true }).select('slug updatedAt');
       productItems = await Product.find({ isActive: true }).select('slug updatedAt');

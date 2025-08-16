@@ -8,6 +8,8 @@ import ConditionalFooter from '../components/ConditionalFooter'
 import Providers from '../components/Providers'
 import connectDB, { hasValidMongoUri } from '../lib/mongoose'
 import SiteSettings from '../models/SiteSettings'
+import Settings from '../models/Settings'
+import Script from 'next/script'
 
 const inter = Inter({
   subsets: ['latin', 'latin-ext'],
@@ -18,6 +20,12 @@ const inter = Inter({
   adjustFontFallback: true,
 })
 
+// Lean Settings sonucu için minimal tip
+interface ISettingsLean {
+  googleAnalyticsId?: string;
+  googleTagManagerId?: string;
+}
+
 // Dynamic metadata function
 export async function generateMetadata(): Promise<Metadata> {
   try {
@@ -27,6 +35,7 @@ export async function generateMetadata(): Promise<Metadata> {
     await connectDB();
 
     const siteSettings = await SiteSettings.getSiteSettings();
+    const settingsDoc = await Settings.findOne({ isActive: true });
 
     const title = siteSettings?.seo?.metaTitle || siteSettings?.siteName || config.app.name;
     const description = siteSettings?.seo?.metaDescription || siteSettings?.description || 'Modern kişisel blog ve portfolio sitesi';
@@ -61,7 +70,7 @@ export async function generateMetadata(): Promise<Metadata> {
         },
       },
       verification: {
-        google: 'google-site-verification-code', // Add your Google verification code
+        google: settingsDoc?.googleSiteVerification || undefined,
       },
       icons: {
         icon: logoUrl || '/favicon.svg',
@@ -98,7 +107,7 @@ export async function generateMetadata(): Promise<Metadata> {
         },
       },
       verification: {
-        google: 'google-site-verification-code', // Add your Google verification code
+        google: undefined,
       },
       icons: {
         icon: '/favicon.svg',
@@ -113,11 +122,23 @@ import LoadingBar from '../components/LoadingBar';
 import { ToastProvider } from '../components/ui/useToast';
 import FixralToastViewport from '../components/ui/FixralToast';
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
 }: {
   children: React.ReactNode
 }) {
+  let gaId: string | undefined;
+  let gtmId: string | undefined;
+  if (hasValidMongoUri()) {
+    try {
+      await connectDB();
+      const settingsDoc = (await Settings.findOne({ isActive: true }).lean()) as ISettingsLean | null;
+      gaId = settingsDoc?.googleAnalyticsId || undefined;
+      gtmId = settingsDoc?.googleTagManagerId || undefined;
+    } catch (e) {
+      console.error('Layout settings load error:', e);
+    }
+  }
   return (
     <html lang="tr" className="scroll-smooth">
       <head>
@@ -127,7 +148,6 @@ export default function RootLayout({
         <meta name="mobile-web-app-capable" content="yes" />
         <meta name="apple-mobile-web-app-capable" content="yes" />
         <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
-        <meta name="google-site-verification" content="jXX7ASmYpD2OOlPo5cKqGptc9Zy1yLxl00b-JqlQHZE" />
 
         {/* Preconnect to external domains for performance */}
         <link rel="preconnect" href="https://fonts.googleapis.com" />
@@ -143,8 +163,45 @@ export default function RootLayout({
         <link rel="dns-prefetch" href="//fonts.googleapis.com" />
         <link rel="dns-prefetch" href="//fonts.gstatic.com" />
         <link rel="dns-prefetch" href="//res.cloudinary.com" />
+        {/* Google Tag Manager */}
+        {gtmId && (
+          <Script id="gtm-script" strategy="afterInteractive">
+            {`
+            (function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
+            new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
+            j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
+            'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
+            })(window,document,'script','dataLayer','${gtmId}');
+            `}
+          </Script>
+        )}
+        {/* Google Analytics */}
+        {gaId && (
+          <>
+            <Script src={`https://www.googletagmanager.com/gtag/js?id=${gaId}`} strategy="afterInteractive" />
+            <Script id="ga-gtag-init" strategy="afterInteractive">
+              {`
+              window.dataLayer = window.dataLayer || [];
+              function gtag(){dataLayer.push(arguments);}
+              gtag('js', new Date());
+              gtag('config', '${gaId}');
+              `}
+            </Script>
+          </>
+        )}
       </head>
       <body className={`${inter.variable} font-sans min-h-screen bg-[#f6f7f9] flex flex-col text-fixral-charcoal antialiased`}>
+        {/* GTM noscript */}
+        {gtmId && (
+          <noscript>
+            <iframe
+              src={`https://www.googletagmanager.com/ns.html?id=${gtmId}`}
+              height="0"
+              width="0"
+              style={{ display: 'none', visibility: 'hidden' }}
+            />
+          </noscript>
+        )}
         <a href="#main-content" className="sr-only focus:not-sr-only focus:fixed focus:top-2 focus:left-2 focus:z-[10000] focus:bg-white focus:text-slate-900 focus:px-4 focus:py-2 focus:rounded-lg focus:shadow">
           İçeriğe atla
         </a>
