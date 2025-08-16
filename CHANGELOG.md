@@ -1,3 +1,12 @@
+## [2.3.2] - 2025-08-17
+
+### Changed
+- README üretim ortamı değişkenleri bölümü `.env.production.example` ile hizalandı.
+- Aşağıdaki değişkenler README'ye eklendi: `DEFAULT_LOGO_URL`, `NEXT_PUBLIC_DEFAULT_PROJECT_IMAGE_URL`, `GOOGLE_SITE_VERIFICATION`, `NEXT_PUBLIC_GA_ID`, `NEXT_PUBLIC_GTM_ID`.
+
+### Notes
+- Bu sürüm çoğunlukla dokümantasyon ve yapılandırma görünürlüğünü artıran güncellemeler içerir.
+
 ## [2.3.1] - 2025-08-17
 
 ### Added
