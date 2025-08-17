@@ -10,7 +10,7 @@ import {
   MapPinIcon,
   HeartIcon
 } from '@heroicons/react/24/outline';
-import Logo from './Logo';
+import Image from 'next/image';
 
 interface FooterSettings {
   mainDescription: string;
@@ -50,9 +50,17 @@ interface FooterSettings {
   };
 }
 
+interface SiteSettingsLogo {
+  url: string;
+  alt: string;
+  width: number;
+  height: number;
+}
+
 const ConditionalFooter: React.FC = () => {
   const pathname = usePathname();
   const [settings, setSettings] = useState<FooterSettings | null>(null);
+  const [siteLogo, setSiteLogo] = useState<SiteSettingsLogo | null>(null);
   const [loading, setLoading] = useState(true);
 
   const isAdminPage = pathname?.startsWith('/admin');
@@ -106,6 +114,24 @@ const ConditionalFooter: React.FC = () => {
           }
         });
       } finally {
+        // parallel fetch site logo
+        try {
+          const resp = await fetch('/api/settings', { cache: 'no-store' });
+          if (resp.ok) {
+            const s = await resp.json();
+            const logoUrl = typeof s.logo === 'string' ? s.logo : (s.logo?.url || '');
+            if (logoUrl) {
+              setSiteLogo({
+                url: logoUrl,
+                alt: (typeof s.logo === 'object' && s.logo?.alt) ? s.logo.alt : 'Logo',
+                width: (typeof s.logo === 'object' && s.logo?.width) ? s.logo.width : 180,
+                height: (typeof s.logo === 'object' && s.logo?.height) ? s.logo.height : 48,
+              });
+            }
+          }
+        } catch {
+          // ignore
+        }
         setLoading(false);
       }
     };
@@ -148,7 +174,17 @@ const ConditionalFooter: React.FC = () => {
           {/* About Section */}
           <div>
             <div className="mb-6">
-              <Logo isDark={false} width={56} height={56} className="mb-6" />
+              {siteLogo?.url ? (
+                <Image
+                  src={siteLogo.url}
+                  alt={siteLogo.alt || 'Logo'}
+                  width={siteLogo.width || 180}
+                  height={siteLogo.height || 48}
+                  className="h-12 w-auto object-contain mb-6"
+                />
+              ) : (
+                <div className="h-12 mb-6" aria-hidden="true" />
+              )}
             </div>
             <p className="text-slate-300 leading-relaxed text-lg mb-4">
               {settings.mainDescription}

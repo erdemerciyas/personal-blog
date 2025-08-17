@@ -61,13 +61,13 @@ const ImageUpload: React.FC<ImageUploadProps> = ({
     const changeHandler = onChange || onImageUpload;
     if (typeof changeHandler === 'function') {
       if (Array.isArray(url)) {
-        const validUrls = url.filter(u => u && (u.startsWith('/') || u.startsWith('http://') || u.startsWith('https://')));
+        const validUrls = url.filter(u => u && (u.startsWith('http://') || u.startsWith('https://')));
         if (validUrls.length > 0) {
           changeHandler(validUrls);
         } else {
           setError('Geçersiz görsel URL\'leri');
         }
-      } else if (url && (url.startsWith('/') || url.startsWith('http://') || url.startsWith('https://'))) {
+      } else if (url && (url.startsWith('http://') || url.startsWith('https://'))) {
         changeHandler(url);
       } else {
         setError('Geçersiz görsel URL\'i');
@@ -96,7 +96,8 @@ const ImageUpload: React.FC<ImageUploadProps> = ({
 
       const formData = new FormData();
       formData.append('file', file);
-      formData.append('context', pageContext);
+      // API beklediği alan adı: pageContext
+      formData.append('pageContext', pageContext);
 
       const progressInterval = setInterval(() => {
         setUploadProgress(prev => {
@@ -108,7 +109,7 @@ const ImageUpload: React.FC<ImageUploadProps> = ({
         });
       }, 200);
 
-      const response = await fetch('/api/upload', {
+      const response = await fetch('/api/admin/upload', {
         method: 'POST',
         body: formData,
       });
@@ -117,11 +118,29 @@ const ImageUpload: React.FC<ImageUploadProps> = ({
       setUploadProgress(100);
 
       if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(errorData.error || 'Upload başarısız');
+        let message = 'Upload başarısız';
+        try {
+          const errorData = await response.json();
+          message = errorData?.error || message;
+        } catch {
+          try {
+            const text = await response.text();
+            message = `${message} (${response.status})`;
+            console.warn('Upload error response (non-JSON):', text);
+          } catch {
+            // ignore
+          }
+        }
+        throw new Error(message);
       }
 
-      const data = await response.json();
+      let data: { url: string };
+      try {
+        data = await response.json();
+      } catch {
+        await response.text();
+        throw new Error(`Sunucudan beklenmeyen yanıt alındı. (${response.status})`);
+      }
       handleOnChange(data.url);
       setSuccess('Resim başarıyla yüklendi!');
       
@@ -202,7 +221,7 @@ const ImageUpload: React.FC<ImageUploadProps> = ({
   const currentImageString = Array.isArray(currentImageValue) ? currentImageValue[0] : currentImageValue;
   const hasImage = currentImageString && 
                    currentImageString.trim() !== '' && 
-                   (currentImageString.startsWith('/') || currentImageString.startsWith('http://') || currentImageString.startsWith('https://'));
+                   (currentImageString.startsWith('http://') || currentImageString.startsWith('https://'));
 
   return (
     <div className={`space-y-3 ${className}`}>

@@ -30,6 +30,7 @@ export default function EditorPage() {
             onChange={setContent}
             placeholder="İçeriğinizi buraya yazın..."
             rows={8}
+            mode="rich"
           />
         </div>
 

@@ -28,22 +28,7 @@ export async function GET(request: NextRequest) {
       timestamp: new Date().toISOString()
     };
 
-    // Clean up temporary files
-    const tempDir = path.join(process.cwd(), 'public', 'uploads', 'temp');
-    if (fs.existsSync(tempDir)) {
-      const tempFiles = fs.readdirSync(tempDir);
-      const oneDayAgo = Date.now() - (24 * 60 * 60 * 1000);
-      
-      for (const file of tempFiles) {
-        const filePath = path.join(tempDir, file);
-        const stats = fs.statSync(filePath);
-        
-        if (stats.mtime.getTime() < oneDayAgo) {
-          fs.unlinkSync(filePath);
-          results.tempFilesDeleted++;
-        }
-      }
-    }
+    // No local temp uploads to clean anymore (Cloud-only). Keep section for future use.
 
     // Clean up old log files (if any)
     const logsDir = path.join(process.cwd(), 'logs');

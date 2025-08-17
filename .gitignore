@@ -78,3 +78,5 @@ jspm_packages/
 
 # Temporary commit message file
 temp_commit_message.txt
+.vercel
+.env*.local

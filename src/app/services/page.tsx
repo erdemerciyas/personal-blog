@@ -127,7 +127,7 @@ export default function ServicesPage() {
         description={hero.description || 'Modern teknoloji çözümleri ve profesyonel hizmetlerimizi keşfedin'}
         buttonText="Hizmetleri İncele"
         buttonLink="#services"
-        badge="Profesyonel Hizmetler"
+        badge=""
         backgroundGradient="bg-gradient-primary"
         showButton={true}
       />
@@ -137,8 +137,8 @@ export default function ServicesPage() {
         <div className="container mx-auto px-4">
           {/* Section Title */}
           <div className="section-header">
-            <h2 className="text-gray-900">Detaylı Hizmet Açıklamaları</h2>
-            <p className="text-gray-600 px-4">
+            <h2 className="text-slate-900">Detaylı Hizmet Açıklamaları</h2>
+            <p className="text-slate-700 px-4">
               Her bir hizmetimizin detaylarını inceleyin ve ihtiyaçlarınıza en uygun çözümü keşfedin.
             </p>
           </div>

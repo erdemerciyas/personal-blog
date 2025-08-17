@@ -24,7 +24,7 @@ export async function GET() {
         siteDescription: 'Profesyonel 3D tasarım, tersine mühendislik, 3D baskı ve mühendislik çözümleri ile projelerinizi hayata geçiriyoruz.',
         siteKeywords: '3D tasarım, tersine mühendislik, 3D baskı, CAD tasarım, mühendislik, Ankara',
         siteUrl: 'https://erciyas-engineering.com',
-        logo: '/images/logo.png',
+        logo: '',
         favicon: '/favicon.ico',
         ogImage: '/images/og-image.jpg',
         twitterHandle: '@erciyaseng',

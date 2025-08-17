@@ -20,6 +20,7 @@ import {
   LinkIcon,
   ArrowsUpDownIcon
 } from '@heroicons/react/24/outline';
+import UniversalEditor from '../../../components/ui/UniversalEditor';
 
 interface Slider {
   _id: string;
@@ -564,13 +565,12 @@ export default function AdminSliderPage() {
                   <label className="block text-sm font-medium text-slate-700 mb-2">
                     Açıklama
                   </label>
-                  <textarea
-                    name="description"
+                  <UniversalEditor
                     value={formData.description}
-                    onChange={handleFormChange}
-                    rows={3}
-                    className="w-full border border-slate-300 rounded-xl px-4 py-3 text-slate-900 focus:outline-none focus:ring-2 focus:ring-brand-primary-600 focus:border-transparent"
+                    onChange={(v)=> setFormData(prev=>({ ...prev, description: v }))}
                     placeholder="Slider açıklaması"
+                    mode="rich"
+                    minHeight="120px"
                   />
                 </div>
                 

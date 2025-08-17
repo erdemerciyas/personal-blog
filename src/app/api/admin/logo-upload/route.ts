@@ -1,9 +1,15 @@
 export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';
 import { NextRequest, NextResponse } from 'next/server';
-import { writeFile, mkdir } from 'fs/promises';
-import path from 'path';
 import { withSecurity, SecurityConfigs } from '../../../../lib/security-middleware';
+import { v2 as cloudinary, UploadApiResponse } from 'cloudinary';
+
+// Cloudinary config
+cloudinary.config({
+  cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
+  api_key: process.env.CLOUDINARY_API_KEY,
+  api_secret: process.env.CLOUDINARY_API_SECRET,
+});
 
 export const POST = withSecurity(SecurityConfigs.admin)(async (request: NextRequest) => {
   try {
@@ -34,30 +40,41 @@ export const POST = withSecurity(SecurityConfigs.admin)(async (request: NextRequ
       );
     }
 
-    // Dosya adı oluştur
-    const timestamp = Date.now();
-    const extension = path.extname(file.name);
-    const fileName = `logo-${timestamp}${extension}`;
-    
-    // Upload klasörü oluştur
-    const uploadDir = path.join(process.cwd(), 'public', 'uploads', 'logos');
-    await mkdir(uploadDir, { recursive: true });
-    
-    // Dosyayı kaydet
+    // Cloudinary'e yükle (base64 veya buffer stream)
     const bytes = await file.arrayBuffer();
     const buffer = Buffer.from(bytes);
-    const filePath = path.join(uploadDir, fileName);
-    await writeFile(filePath, buffer);
-    
-    // URL oluştur
-    const logoUrl = `/uploads/logos/${fileName}`;
-    
+    const uploadResult = await new Promise<UploadApiResponse>((resolve, reject) => {
+      const stream = cloudinary.uploader.upload_stream(
+        {
+          folder: 'extremeecu/logo',
+          resource_type: 'image',
+          overwrite: true,
+          // optimize
+          transformation: [
+            { quality: 'auto:good' },
+            { fetch_format: 'auto' },
+            { width: 800, height: 300, crop: 'limit' }
+          ],
+          tags: ['logo', 'extremeecu']
+        },
+        (error, result) => {
+          if (error || !result) return reject(error || new Error('Upload failed'));
+          resolve(result);
+        }
+      );
+      stream.end(buffer);
+    });
+
+    const logoUrl = uploadResult.secure_url;
+    const publicId = uploadResult.public_id;
+
     return NextResponse.json({
       message: 'Logo başarıyla yüklendi',
       logoUrl,
-      fileName,
-      fileSize: file.size,
-      fileType: file.type
+      publicId,
+      width: uploadResult.width,
+      height: uploadResult.height,
+      fileType: uploadResult.format
     });
     
   } catch (error) {

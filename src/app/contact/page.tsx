@@ -116,9 +116,9 @@ function ContactPageContent() {
       <PageHero
         title={hero.title || 'İletişim'}
         description={hero.description || 'Bizimle iletişime geçin ve projelerinizi konuşalım'}
-        buttonText="İletişim Formu"
+        buttonText=""
         buttonLink="#contact-form"
-        badge="İletişim"
+        badge=""
         backgroundGradient="bg-gradient-primary"
         showButton={true}
       />

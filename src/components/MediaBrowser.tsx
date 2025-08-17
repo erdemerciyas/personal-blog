@@ -109,7 +109,7 @@ const MediaBrowser: React.FC<MediaBrowserProps> = ({
 
   // URL validation helper
   const isValidUrl = (url: string): boolean => {
-    return Boolean(url && (url.startsWith('/') || url.startsWith('http://') || url.startsWith('https://')));
+    return Boolean(url && (url.startsWith('http://') || url.startsWith('https://')));
   };
 
   const fetchMediaItems = useCallback(async () => {

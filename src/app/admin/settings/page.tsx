@@ -5,6 +5,7 @@ import { useSession } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
 import Image from 'next/image';
 import AdminLayout from '../../../components/admin/AdminLayout';
+import UniversalEditor from '../../../components/ui/UniversalEditor';
 import { CheckIcon, ShieldCheckIcon, CloudArrowUpIcon, XMarkIcon, PhotoIcon } from '@heroicons/react/24/outline';
 
 interface Settings {
@@ -270,12 +271,12 @@ export default function AdminSettingsPage() {
               <label className="block text-sm font-medium text-slate-700 mb-2">
                 Site Açıklaması
               </label>
-              <textarea
+              <UniversalEditor
                 value={settings.siteDescription}
-                onChange={(e) => handleInputChange('siteDescription', e.target.value)}
-                rows={4}
-                className="w-full border border-slate-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-brand-primary-600"
+                onChange={(v) => handleInputChange('siteDescription', v)}
                 placeholder="Site açıklamanız..."
+                mode="rich"
+                minHeight="140px"
               />
             </div>
 

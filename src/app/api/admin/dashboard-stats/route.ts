@@ -13,7 +13,7 @@ export const GET = withSecurity(SecurityConfigs.admin)(async () => {
   try {
     await connectDB();
 
-    // Medya sayısını Cloudinary'den al (Search API ile hızlı toplam, Admin API ile geri dönüş)
+    // Medya sayısını Cloudinary'den al (önce Search API ile filtreli toplam, başarısız olursa Admin API sayfalı sayım)
     let mediaCount = 0;
     try {
       const cloudinary = await import('cloudinary').then(m => m.v2);
@@ -27,7 +27,7 @@ export const GET = withSecurity(SecurityConfigs.admin)(async () => {
       // 1) Tercihen Search API ile toplam sayıyı al (en hızlı yol)
       try {
         const searchResult = await cloudinary.search
-          .expression('resource_type:image AND type:upload')
+          .expression('(folder:extremeecu/* OR folder:personal-blog/*) AND resource_type:image AND type:upload')
           .max_results(1)
           .execute();
         if (typeof searchResult.total_count === 'number') {
@@ -37,7 +37,7 @@ export const GET = withSecurity(SecurityConfigs.admin)(async () => {
         console.warn('Cloudinary Search API not available, falling back to Admin API:', searchErr instanceof Error ? searchErr.message : searchErr);
       }
 
-      // 2) Fall back: Admin API ile sayfalamalı sayım
+      // 2) Fall back: Admin API ile sayfalamalı sayım (prefix bazlı)
       if (!mediaCount) {
         let total = 0;
         let nextCursor: string | undefined = undefined;

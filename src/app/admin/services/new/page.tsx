@@ -176,7 +176,7 @@ export default function NewServicePage() {
                   value={serviceDescription}
                   onChange={setServiceDescription}
                   placeholder="Servis hakkında detaylı açıklama yazınız"
-                  mode="text"
+                  mode="rich"
                   minHeight="200px"
                 />
               </div>

@@ -22,8 +22,8 @@ export default async function OrderPage({ params }: { params: { slug: string } }
       <PageHero
         title={"Ürünler"}
         description={`${product.title} için sipariş oluşturun. Ürün bilgilerini kontrol edin ve formu doldurun.`}
-        badge="Sipariş"
-        buttonText="Ürün Sayfasına Dön"
+        badge=""
+        buttonText=""
         buttonLink={`/products/${product.slug}`}
         variant="compact"
         minHeightVh={33}

@@ -222,7 +222,7 @@ export default function EditServicePage({ params }: { params: { id: string } }) 
                   value={serviceDescription}
                   onChange={setServiceDescription}
                   placeholder="Servis hakkında detaylı açıklama yazınız"
-                  mode="text"
+                  mode="rich"
                   minHeight="200px"
                 />
               </div>

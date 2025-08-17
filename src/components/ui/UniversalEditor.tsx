@@ -1,6 +1,9 @@
 'use client';
 
 import React, { useState, useRef, useCallback, useMemo } from 'react';
+import DOMPurify from 'dompurify';
+import dynamic from 'next/dynamic';
+import 'react-quill/dist/quill.snow.css';
 
 import {
   BoldIcon,
@@ -13,6 +16,7 @@ import {
   DocumentDuplicateIcon,
   CheckIcon
 } from '@heroicons/react/24/outline';
+import { ChatBubbleLeftRightIcon, CodeBracketIcon, HashtagIcon } from '@heroicons/react/24/outline';
 
 interface UniversalEditorProps extends Omit<React.TextareaHTMLAttributes<HTMLTextAreaElement>, 'value' | 'onChange' | 'placeholder' | 'disabled'> {
   value: string;
@@ -22,7 +26,7 @@ interface UniversalEditorProps extends Omit<React.TextareaHTMLAttributes<HTMLTex
   minHeight?: string;
   maxHeight?: string;
   disabled?: boolean;
-  mode?: 'text' | 'markdown';
+  mode?: 'text' | 'markdown' | 'rich';
   showPreview?: boolean;
   rows?: number;
 }
@@ -70,6 +74,7 @@ const UniversalEditor: React.FC<UniversalEditorProps> = ({
   rows,
   ...rest
 }) => {
+  const ReactQuill = useMemo(() => dynamic(() => import('react-quill'), { ssr: false }), []);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
   const [isPreview, setIsPreview] = useState(false);
   const [copied, setCopied] = useState(false);
@@ -149,13 +154,34 @@ const UniversalEditor: React.FC<UniversalEditorProps> = ({
       } else {
         insertText('<a href="https://">', '</a>', 'link metni');
       }
+    },
+    heading: () => {
+      if (mode === 'markdown') {
+        insertText('\n## ', '', 'Başlık');
+      } else {
+        insertText('\n<h2>', '</h2>', 'Başlık');
+      }
+    },
+    quote: () => {
+      if (mode === 'markdown') {
+        insertText('\n> ', '', 'alıntı');
+      } else {
+        insertText('\n<blockquote>', '</blockquote>', 'alıntı');
+      }
+    },
+    code: () => {
+      if (mode === 'markdown') {
+        insertText('`', '`', 'kod');
+      } else {
+        insertText('<code>', '</code>', 'kod');
+      }
     }
   }), [mode, insertText]);
 
   // Güvenli HTML render (sadece temel formatlar)
   const renderSafeHTML = useCallback((text: string): string => {
     if (mode === 'markdown') {
-      return text
+      const mdToHtml = text
         // Başlıklar
         .replace(/^### (.*$)/gim, '<h3>$1</h3>')
         .replace(/^## (.*$)/gim, '<h2>$1</h2>')
@@ -174,9 +200,14 @@ const UniversalEditor: React.FC<UniversalEditorProps> = ({
         })
         // Satır sonları
         .replace(/\n/g, '<br>');
+
+      return DOMPurify.sanitize(mdToHtml, {
+        ALLOWED_TAGS: ['p','br','strong','em','u','s','h1','h2','h3','ul','ol','li','blockquote','code','pre','a','div','span','hr'],
+        ALLOWED_ATTR: ['href','target','rel','class','style']
+      });
     } else {
       // Text modunda HTML'i olduğu gibi bırak ama güvenli hale getir
-      return text
+      const html = text
         // Paragrafları düzgün formatla
         .split('\n\n')
         .map(paragraph => paragraph.trim())
@@ -190,6 +221,11 @@ const UniversalEditor: React.FC<UniversalEditorProps> = ({
           return `<p>${paragraph.replace(/\n/g, '<br>')}</p>`;
         })
         .join('');
+
+      return DOMPurify.sanitize(html, {
+        ALLOWED_TAGS: ['p','br','strong','em','u','s','h1','h2','h3','ul','ol','li','blockquote','code','pre','a','img','div','span','hr'],
+        ALLOWED_ATTR: ['href','target','rel','src','alt','width','height','class','style']
+      });
     }
   }, [mode]);
 
@@ -291,9 +327,16 @@ const UniversalEditor: React.FC<UniversalEditorProps> = ({
   // Editör render
   const renderEditor = () => (
     <div className="border border-slate-300 rounded-xl overflow-hidden bg-white">
-      {/* Toolbar */}
+      {/* Toolbar for plain/markdown modes. Rich mode uses Quill toolbar */}
+      {mode !== 'rich' && (
       <div className="flex items-center justify-between p-3 border-b border-slate-200 bg-slate-50">
         <div className="flex items-center gap-1">
+          <ToolbarButton
+            icon={HashtagIcon}
+            title="Başlık"
+            onClick={actions.heading}
+            disabled={disabled}
+          />
           <ToolbarButton
             icon={BoldIcon}
             title="Kalın (Ctrl+B)"
@@ -304,6 +347,18 @@ const UniversalEditor: React.FC<UniversalEditorProps> = ({
             icon={ItalicIcon}
             title="İtalik (Ctrl+I)"
             onClick={actions.italic}
+            disabled={disabled}
+          />
+          <ToolbarButton
+            icon={ChatBubbleLeftRightIcon}
+            title="Alıntı"
+            onClick={actions.quote}
+            disabled={disabled}
+          />
+          <ToolbarButton
+            icon={CodeBracketIcon}
+            title="Kod"
+            onClick={actions.code}
             disabled={disabled}
           />
           
@@ -371,30 +426,59 @@ const UniversalEditor: React.FC<UniversalEditorProps> = ({
           )}
         </div>
       </div>
+      )}
 
       {/* Editor Content */}
-      <textarea
-        ref={textareaRef}
-        value={value}
-        onChange={handleChange}
-        onKeyDown={handleKeyDown}
-        placeholder={placeholder}
-        disabled={disabled}
-        className={`w-full p-4 resize-none focus:outline-none font-mono text-sm ${className}`}
-        style={{ 
-          minHeight, 
-          maxHeight,
-          opacity: disabled ? 0.6 : 1
-        }}
-        rows={rows}
-        {...rest}
-        spellCheck={false}
-      />
+      {mode === 'rich' ? (
+        <ReactQuill
+          value={value}
+          onChange={(html: string) => {
+            const clean = DOMPurify.sanitize(html, {
+              ALLOWED_TAGS: ['p','br','strong','em','u','s','h1','h2','h3','ul','ol','li','blockquote','code','pre','a','img','div','span','hr'],
+              ALLOWED_ATTR: ['href','target','rel','src','alt','width','height','class','style']
+            });
+            onChange(clean);
+          }}
+          placeholder={placeholder}
+          readOnly={disabled}
+          theme="snow"
+          modules={{
+            toolbar: [
+              [{ header: [1, 2, 3, false] }],
+              ['bold', 'italic', 'underline', 'strike'],
+              [{ list: 'ordered' }, { list: 'bullet' }],
+              ['blockquote', 'code-block'],
+              ['link', 'image'],
+              ['clean']
+            ]
+          }}
+          className={`rich-editor ${className}`}
+          style={{ minHeight, maxHeight }}
+        />
+      ) : (
+        <textarea
+          ref={textareaRef}
+          value={value}
+          onChange={handleChange}
+          onKeyDown={handleKeyDown}
+          placeholder={placeholder}
+          disabled={disabled}
+          className={`w-full p-4 resize-none focus:outline-none font-mono text-sm ${className}`}
+          style={{ 
+            minHeight, 
+            maxHeight,
+            opacity: disabled ? 0.6 : 1
+          }}
+          rows={rows}
+          {...rest}
+          spellCheck={false}
+        />
+      )}
 
       {/* Footer */}
       <div className="flex items-center justify-between px-4 py-2 border-t border-slate-200 bg-slate-50 text-xs text-slate-500">
         <div>
-          {value.length} karakter • {mode === 'markdown' ? 'Markdown' : 'HTML'} modu
+          {value.length} karakter • {mode === 'markdown' ? 'Markdown' : mode === 'rich' ? 'Zengin Metin' : 'HTML'} modu
         </div>
         <div className="flex items-center gap-4">
           <span>Ctrl+B: Kalın</span>

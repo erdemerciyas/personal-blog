@@ -8,7 +8,6 @@ Allow: /
 Disallow: /admin/
 Disallow: /api/
 Disallow: /_next/
-Disallow: /uploads/temp/
 
 # Sitemap
 Sitemap: ${baseUrl}/sitemap.xml

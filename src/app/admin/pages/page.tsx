@@ -324,7 +324,7 @@ export default function AdminPagesManagement() {
                           value={editForm.description}
                           onChange={(value) => setEditForm(prev => ({ ...prev, description: value }))}
                           placeholder="Sayfa hero açıklaması..."
-                          mode="text"
+                          mode="rich"
                           minHeight="150px"
                         />
                       </div>

@@ -84,6 +84,7 @@ export default function AdminMediaPage() {
     const uploadPromises = Array.from(files).map(async (file) => {
       const formData = new FormData();
       formData.append('file', file);
+      formData.append('pageContext', contextFilter === 'products' ? 'general' : 'general');
 
       const response = await fetch('/api/admin/upload', {
         method: 'POST',

@@ -57,7 +57,7 @@ export default function AdminProductNewPage() {
   async function uploadFile(file: File): Promise<{ url: string; resourceType: string; bytes: number; format: string }> {
     const fd = new FormData();
     fd.append('file', file);
-    fd.append('context', 'products');
+    // product-upload route pageContext/context kullanmıyor; ek alan gereksiz
     const res = await fetch('/api/admin/product-upload', { method: 'POST', body: fd });
     if (!res.ok) throw new Error('Yükleme başarısız');
     return res.json();

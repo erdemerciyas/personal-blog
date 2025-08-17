@@ -325,8 +325,8 @@ export default function HomePage() {
         <div className="container-main">
           {/* Header */}
           <div className="section-header">
-            <h2>Sunduğumuz Hizmetler</h2>
-            <p>
+            <h2 className="text-slate-900">Sunduğumuz Hizmetler</h2>
+            <p className="text-slate-700">
               Modern teknoloji ve uzman kadromuzla projelerinizi hayata geçirmek için
               kapsamlı mühendislik çözümleri sunuyoruz.
             </p>

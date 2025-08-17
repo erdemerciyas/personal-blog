@@ -3,6 +3,7 @@ import { useState, useEffect } from 'react';
 import { useSession } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
 import AdminLayout from '../../../components/admin/AdminLayout';
+import UniversalEditor from '../../../components/ui/UniversalEditor';
 import Toast from '../../../components/admin/Toast';
 import { useToast } from '../../../hooks/useToast';
 import { 
@@ -260,13 +261,12 @@ export default function AdminContactPage() {
                 <label className="block text-sm font-medium text-slate-700 mb-2">
                   Adres
                 </label>
-                <textarea
-                  name="address"
+                <UniversalEditor
                   value={contactData.address}
-                  onChange={handleInputChange}
-                  rows={3}
-                  className="w-full border border-slate-300 rounded-xl px-4 py-3 text-slate-900 focus:outline-none focus:ring-2 focus:ring-brand-primary-600 focus:border-transparent"
+                  onChange={(v)=> setContactData(prev=> ({ ...prev, address: v }))}
                   placeholder="Tam adres bilgisi..."
+                  mode="rich"
+                  minHeight="100px"
                 />
               </div>
               

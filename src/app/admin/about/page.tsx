@@ -12,6 +12,7 @@ import {
   SparklesIcon,
   EyeIcon
 } from '@heroicons/react/24/outline';
+import UniversalEditor from '../../../components/ui/UniversalEditor';
 
 interface Value {
   text: string;
@@ -270,12 +271,12 @@ export default function AdminAboutPage() {
               
               <div>
                 <label className="block text-sm font-medium text-slate-700 mb-2">Açıklama</label>
-                <textarea
+                <UniversalEditor
                   value={aboutData.heroDescription}
-                  onChange={(e) => setAboutData(prev => ({ ...prev, heroDescription: e.target.value }))}
-                  rows={4}
-                  className="w-full border border-slate-300 rounded-xl px-4 py-3 text-slate-900 focus:outline-none focus:ring-2 focus:ring-brand-primary-600 focus:border-transparent"
+                  onChange={(v)=> setAboutData(prev=> ({ ...prev, heroDescription: v }))}
                   placeholder="Kısa açıklama"
+                  mode="rich"
+                  minHeight="120px"
                 />
               </div>
             </div>
@@ -301,13 +302,15 @@ export default function AdminAboutPage() {
                 <label className="block text-sm font-medium text-slate-700 mb-2">Paragraflar</label>
                 {aboutData.storyParagraphs.map((paragraph, index) => (
                   <div key={index} className="flex items-start space-x-2 mb-3">
-                    <textarea
-                      value={paragraph}
-                      onChange={(e) => updateArrayItem('storyParagraphs', index, e.target.value)}
-                      rows={3}
-                      className="flex-1 border border-slate-300 rounded-xl px-4 py-3 text-slate-900 focus:outline-none focus:ring-2 focus:ring-brand-primary-600 focus:border-transparent"
-                      placeholder={`Paragraf ${index + 1}`}
-                    />
+                    <div className="flex-1">
+                      <UniversalEditor
+                        value={paragraph}
+                        onChange={(v)=> updateArrayItem('storyParagraphs', index, v)}
+                        placeholder={`Paragraf ${index + 1}`}
+                        mode="rich"
+                        minHeight="100px"
+                      />
+                    </div>
                     <button
                       type="button"
                       onClick={() => removeArrayItem('storyParagraphs', index)}
@@ -402,12 +405,12 @@ export default function AdminAboutPage() {
                     className="w-full border border-slate-300 rounded-xl px-4 py-2 text-slate-900 focus:outline-none focus:ring-2 focus:ring-brand-primary-600 focus:border-transparent"
                     placeholder="Dönem (örn: 2020-2023)"
                   />
-                  <textarea
+                  <UniversalEditor
                     value={exp.description}
-                    onChange={(e) => updateArrayItem('experience', index, { ...exp, description: e.target.value })}
-                    rows={3}
-                    className="w-full border border-slate-300 rounded-xl px-4 py-2 text-slate-900 focus:outline-none focus:ring-2 focus:ring-brand-primary-600 focus:border-transparent"
+                    onChange={(v) => updateArrayItem('experience', index, { ...exp, description: v })}
                     placeholder="Açıklama"
+                    mode="rich"
+                    minHeight="100px"
                   />
                 </div>
               </div>
@@ -520,12 +523,12 @@ export default function AdminAboutPage() {
               
               <div>
                 <label className="block text-sm font-medium text-slate-700 mb-2">Açıklama</label>
-                <textarea
+                <UniversalEditor
                   value={aboutData.contactDescription}
-                  onChange={(e) => setAboutData(prev => ({ ...prev, contactDescription: e.target.value }))}
-                  rows={3}
-                  className="w-full border border-slate-300 rounded-xl px-4 py-3 text-slate-900 focus:outline-none focus:ring-2 focus:ring-brand-primary-600 focus:border-transparent"
+                  onChange={(v) => setAboutData(prev => ({ ...prev, contactDescription: v }))}
                   placeholder="İletişim açıklaması"
+                  mode="rich"
+                  minHeight="100px"
                 />
               </div>
               

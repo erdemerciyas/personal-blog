@@ -55,7 +55,7 @@ export default async function ProductsPage({ searchParams }: { searchParams: Rec
       <PageHero 
         title={heroTitle}
         description={heroDesc}
-        badge="Ürün Kataloğu"
+        badge=""
         buttonText={heroButtonText}
         buttonLink={heroButtonLink}
         variant="compact"

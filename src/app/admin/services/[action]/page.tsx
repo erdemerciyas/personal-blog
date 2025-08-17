@@ -1,5 +1,6 @@
 'use client';
 import { useState, useEffect } from 'react';
+import UniversalEditor from '../../../../components/ui/UniversalEditor';
 import { useSession } from 'next-auth/react';
 import { useRouter, useParams } from 'next/navigation';
 import { IService } from '@/models/Service';
@@ -135,13 +136,12 @@ export default function ServiceFormPage() {
             <label htmlFor="description" className="block text-sm font-medium text-white">
               Açıklama
             </label>
-            <textarea
-              id="description"
-              value={formData.description}
-              onChange={(e) => setFormData({ ...formData, description: e.target.value })}
-              rows={4}
-              className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm"
-              required
+            <UniversalEditor
+              value={formData.description || ''}
+              onChange={(v) => setFormData({ ...formData, description: v })}
+              placeholder="Servis açıklaması"
+              mode="rich"
+              minHeight="140px"
             />
           </div>
 
@@ -163,13 +163,12 @@ export default function ServiceFormPage() {
             <label htmlFor="icon" className="block text-sm font-medium text-white">
               İkon SVG
             </label>
-            <textarea
-              id="icon"
-              value={formData.icon}
-              onChange={(e) => setFormData({ ...formData, icon: e.target.value })}
-              rows={4}
-              className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm font-mono"
-              required
+            <UniversalEditor
+              value={formData.icon || ''}
+              onChange={(v) => setFormData({ ...formData, icon: v })}
+              placeholder="SVG kodu"
+              mode="rich"
+              minHeight="100px"
             />
           </div>
 

@@ -13,21 +13,22 @@ import {
   FolderOpenIcon,
   PhoneIcon,
   UserIcon,
-  SparklesIcon,
   PaperAirplaneIcon,
   EnvelopeIcon
 } from '@heroicons/react/24/outline';
 import { useToast } from './ui/useToast';
 
+interface SiteSettingsLogo {
+  url: string;
+  alt: string;
+  width: number;
+  height: number;
+}
+
 interface SiteSettings {
   siteName: string;
   slogan: string;
-  logo: {
-    url: string;
-    alt: string;
-    width: number;
-    height: number;
-  };
+  logo: SiteSettingsLogo;
 }
 
 interface PageSetting {
@@ -56,16 +57,9 @@ const Header: React.FC = () => {
   const [isScrolled, setIsScrolled] = useState(false);
   const [isProjectModalOpen, setIsProjectModalOpen] = useState(false);
   const [navLinks, setNavLinks] = useState<Array<{ href: string; label: string; icon: React.ComponentType<React.SVGProps<SVGSVGElement>> }>>([]);
-  const [siteSettings, setSiteSettings] = useState<SiteSettings | null>({
-    siteName: '',
-    slogan: '',
-    logo: {
-      url: '',
-      alt: 'Logo',
-      width: 200,
-      height: 60
-    }
-  });
+  const [navLoaded, setNavLoaded] = useState(false);
+  const [settingsLoaded, setSettingsLoaded] = useState(false);
+  const [siteSettings, setSiteSettings] = useState<SiteSettings | null>(null);
 
   // Project form state
   const [projectForm, setProjectForm] = useState({
@@ -92,26 +86,33 @@ const Header: React.FC = () => {
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
-  // Fetch site settings
+  // Fetch public site settings (unauthenticated-safe)
   useEffect(() => {
     const fetchSiteSettings = async () => {
       try {
-        const response = await fetch('/api/admin/site-settings');
+        const response = await fetch('/api/settings', { cache: 'no-store' });
         if (response.ok) {
           const data = await response.json();
-          setSiteSettings(data);
+          // Support both shapes: Settings.logo as string OR SiteSettings.logo as object
+          const logoUrl = typeof data.logo === 'string' ? data.logo : (data.logo?.url || '');
+          const mapped: SiteSettings = {
+            siteName: data.siteName || '',
+            slogan: data.slogan || '',
+            logo: {
+              url: logoUrl,
+              alt: (typeof data.logo === 'object' && data.logo?.alt) ? data.logo.alt : 'Logo',
+              width: (typeof data.logo === 'object' && data.logo?.width) ? data.logo.width : 180,
+              height: (typeof data.logo === 'object' && data.logo?.height) ? data.logo.height : 48,
+            },
+          };
+          setSiteSettings(mapped);
+        } else {
+          setSiteSettings(null);
         }
       } catch {
-        setSiteSettings({
-          siteName: '',
-          slogan: '',
-          logo: {
-            url: '',
-            alt: 'Logo',
-            width: 200,
-            height: 60
-          }
-        });
+        setSiteSettings(null);
+      } finally {
+        setSettingsLoaded(true);
       }
     };
 
@@ -169,6 +170,8 @@ const Header: React.FC = () => {
           { href: '/products', label: 'Ürünler', icon: FolderOpenIcon },
           { href: '/contact', label: 'İletişim', icon: PhoneIcon },
         ]);
+      } finally {
+        setNavLoaded(true);
       }
     };
 
@@ -303,7 +306,7 @@ E-posta: ${projectForm.email}
         <div className="flex items-center justify-between h-16 sm:h-20">
           {/* Logo (text hidden for a cleaner brand-only header) */}
           <Link href="/" className="flex items-center space-x-3 group">
-            {siteSettings?.logo?.url ? (
+            {settingsLoaded && siteSettings?.logo?.url ? (
               <Image
                 src={siteSettings.logo.url}
                 alt={siteSettings.logo.alt || 'Logo'}
@@ -313,10 +316,8 @@ E-posta: ${projectForm.email}
                 priority
               />
             ) : (
-              <div className="w-28 h-10 sm:h-12 flex items-center justify-center">
-                <SparklesIcon className={`w-8 h-8 ${isScrolled ? 'text-slate-900' : 'text-white'}`} />
-                <span className="sr-only">Extreme</span>
-              </div>
+              // No static icon during loading; keep space to avoid layout shift
+              <div className="w-28 h-10 sm:h-12" aria-hidden="true" />
             )}
             {/* Accessible site name (visually hidden) */}
             <span className="sr-only">{siteSettings?.siteName || 'Extreme'}</span>
@@ -349,17 +350,19 @@ E-posta: ${projectForm.email}
             })}
           </nav>
 
-          {/* CTA Button */}
-          <div className="hidden md:flex items-center space-x-4">
-            <button
-              onClick={openProjectModal}
-              aria-label="Proje başvurusu formunu aç"
-              className={`px-5 py-2.5 rounded-full font-semibold transition-all duration-300 transform hover:scale-[1.02] flex items-center space-x-2 bg-brand-primary-700 text-white hover:bg-brand-primary-800 shadow`}
-            >
-              <PaperAirplaneIcon className="w-5 h-5" />
-              <span>Proje Başvurusu</span>
-            </button>
-          </div>
+          {/* CTA Button (render only after navigation is ready) */}
+          {navLoaded && (
+            <div className="hidden md:flex items-center space-x-4">
+              <button
+                onClick={openProjectModal}
+                aria-label="Proje başvurusu formunu aç"
+                className={`px-5 py-2.5 rounded-full font-semibold transition-all duration-300 transform hover:scale-[1.02] flex items-center space-x-2 bg-brand-primary-700 text-white hover:bg-brand-primary-800 shadow`}
+              >
+                <PaperAirplaneIcon className="w-5 h-5" />
+                <span>Proje Başvurusu</span>
+              </button>
+            </div>
+          )}
 
           {/* Mobile Menu Button */}
           <button

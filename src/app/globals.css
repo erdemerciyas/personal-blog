@@ -267,10 +267,10 @@ h1, h2, h3, h4, h5, h6 {
     @apply text-center mb-12 md:mb-16;
   }
   .section-header h2 {
-    @apply section-title;
+    @apply section-title text-slate-900 dark:text-slate-100;
   }
   .section-header p {
-    @apply section-subtitle max-w-3xl mx-auto;
+    @apply section-subtitle max-w-3xl mx-auto text-slate-600 dark:text-slate-300;
   }
 
 
