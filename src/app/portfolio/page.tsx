@@ -20,12 +20,10 @@ function PortfolioPageContent() {
   const [hero, setHero] = useState<{ 
     title: string; 
     description: string; 
-    buttonText: string; 
     buttonLink: string; 
   }>({ 
     title: 'Portfolyo', 
     description: 'Tamamladığımız başarılı projeler ve yaratıcı çözümler',
-    buttonText: 'Projeleri İncele',
     buttonLink: '#projects'
   });
 
@@ -53,14 +51,12 @@ function PortfolioPageContent() {
           setHero({
             title: heroData.title || 'Portfolyo',
             description: heroData.description || 'Tamamladığımız başarılı projeler ve yaratıcı çözümler',
-            buttonText: heroData.buttonText || 'Projeleri İncele',
             buttonLink: heroData.buttonLink || '#projects'
           });
         } else {
           setHero({ 
             title: 'Portfolyo', 
             description: 'Tamamladığımız başarılı projeler ve yaratıcı çözümler',
-            buttonText: 'Projeleri İncele',
             buttonLink: '#projects'
           });
         }
@@ -125,7 +121,6 @@ function PortfolioPageContent() {
       <PortfolioHero
         title={hero.title}
         description={hero.description}
-        buttonText={hero.buttonText}
         buttonLink={hero.buttonLink}
       />
 
