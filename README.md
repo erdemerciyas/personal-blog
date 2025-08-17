@@ -16,7 +16,7 @@ Modern, güvenli ve performanslı kişisel blog ve portfolyo platformu. Next.js 
 
 **[Live Site](https://www.extremeecu.com)** | **[Admin Panel](https://www.extremeecu.com/admin)** | **[API Health](https://www.extremeecu.com/api/health)**
 
-> **Status**: **LIVE** | **Last Deploy**: Pending | **Version**: v2.3.0 | **CI/CD Pipeline**: **OPTIMIZED**
+> **Status**: **LIVE** | **Last Deploy**: 2025-08-17 | **Version**: v2.3.1 | **CI/CD Pipeline**: **OPTIMIZED**
 
 ## Özellikler
 
@@ -130,6 +130,16 @@ npm run dev
 ```
 
 Uygulama [http://localhost:3000](http://localhost:3000) adresinde çalışacaktır.
+
+## Yeni Özellikler (v2.3.1)
+
+### Editör, Medya ve UI İyileştirmeleri (2025-08-17)
+- Admin’in tamamında tek tip zengin metin editörü (Quill tabanlı `UniversalEditor – rich` modu)
+- Medya yönetimi cloud-only (Cloudinary); local `public/uploads` bağımlılıkları kaldırıldı
+- Upload akışları düzeltildi; servis ve medya yüklemelerinde doğru endpoint/alan adları
+- Medya sayaçları Cloudinary’e göre gerçek sayım ile güncellendi
+- Hero alanları sadeleştirildi; rozet/ek bilgi çipleri kaldırıldı, tema kontrastları iyileştirildi
+- Header/Footer logo ve CTA yüklenme sırası/dinamik logo düzenlemeleri
 
 ## Yeni Özellikler (v2.3.0)
 
@@ -553,8 +563,8 @@ This project is licensed under the MIT License - see the **[LICENSE](LICENSE)** 
 ## Project Status
 
 - **Status**: **PRODUCTION READY**
-- **Version**: v2.3.0
-- **Last Updated**: 2025-08-12
+- **Version**: v2.3.1
+- **Last Updated**: 2025-08-17
 - **Security Level**: HIGH
 - **Performance**: OPTIMIZED
 - **Documentation**: COMPLETE
