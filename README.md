@@ -1,27 +1,30 @@
-# 🚀 Modern Portfolio & Blog Platform
+# 🚀 Extreme ECU - Modern Mühendislik Platformu
 
 [![Next.js](https://img.shields.io/badge/Next.js-14.0.4-black?style=for-the-badge&logo=next.js)](https://nextjs.org/)
 [![TypeScript](https://img.shields.io/badge/TypeScript-5.8.3-blue?style=for-the-badge&logo=typescript)](https://www.typescriptlang.org/)
 [![MongoDB](https://img.shields.io/badge/MongoDB-Latest-003450?style=for-the-badge&logo=mongodb)](https://www.mongodb.com/)
 [![Tailwind CSS](https://img.shields.io/badge/Tailwind_CSS-3.4.0-003450?style=for-the-badge&logo=tailwind-css)](https://tailwindcss.com/)
-[![Vercel](https://img.shields.io/badge/Vercel-Live-black?style=for-the-badge&logo=vercel)](https://fixral-m8b3vn7k7-erdem-erciyas-projects.vercel.app)
-[![Security](https://img.shields.io/badge/Security-Hardened-003450?style=for-the-badge&logo=shield)](https://github.com/erdemerciyas/personal-blog/blob/main/SECURITY.md)
-[![License](https://img.shields.io/badge/License-MIT-yellow?style=for-the-badge)](https://github.com/erdemerciyas/personal-blog/blob/main/LICENSE)
-[![Build Status](https://img.shields.io/badge/Build-Passing-075985?style=for-the-badge&logo=github-actions)](https://github.com/erdemerciyas/personal-blog/actions)
-[![Code Quality](https://img.shields.io/badge/Code_Quality-Optimized-075985?style=for-the-badge&logo=codeclimate)](https://github.com/erdemerciyas/personal-blog)
+[![Vercel](https://img.shields.io/badge/Vercel-Live-black?style=for-the-badge&logo=vercel)](https://extremeecu.com)
+[![Security](https://img.shields.io/badge/Security-Hardened-003450?style=for-the-badge&logo=shield)](https://github.com/extreme-ecu/extreme-ecu/blob/main/SECURITY.md)
+[![License](https://img.shields.io/badge/License-MIT-yellow?style=for-the-badge)](https://github.com/extreme-ecu/extreme-ecu/blob/main/LICENSE)
+[![Build Status](https://img.shields.io/badge/Build-Passing-075985?style=for-the-badge&logo=github-actions)](https://github.com/extreme-ecu/extreme-ecu/actions)
+[![Code Quality](https://img.shields.io/badge/Code_Quality-Optimized-075985?style=for-the-badge&logo=codeclimate)](https://github.com/extreme-ecu/extreme-ecu)
 
-Modern, güvenli ve performanslı kişisel blog ve portfolyo platformu. Next.js 14, TypeScript, MongoDB ve Tailwind CSS ile geliştirilmiştir.
+Modern ECU tuning, performans optimizasyonu ve mühendislik çözümleri platformu. Next.js 14, TypeScript, MongoDB ve Tailwind CSS ile geliştirilmiş profesyonel web uygulaması.
 
 ## Live Demo
 
-**🚀 [Live Site](https://fixral-ao7clr42w-erdem-erciyas-projects.vercel.app)** | **🔧 [Admin Panel](https://fixral-ao7clr42w-erdem-erciyas-projects.vercel.app/admin)** | **📊 [API Health](https://fixral-ao7clr42w-erdem-erciyas-projects.vercel.app/api/health)**
+**🚀 [Live Site](https://extremeecu.com)** | **🔧 [Admin Panel](https://extremeecu.com/admin)** | **📊 [API Health](https://extremeecu.com/api/health)**
 
-> **Status**: ✅ **LIVE** | **Last Deploy**: Pending | **Version**: v2.2.9 | **🚀 CI/CD Pipeline**: ✅ **OPTIMIZED**
+> **Status**: ✅ **LIVE** | **Last Deploy**: 2025-01-27 | **Version**: v2.3.3 | **🚀 CI/CD Pipeline**: ✅ **OPTIMIZED**
 
 ## Özellikler
 
-### Modern Portfolyo Sistemi
-- **Gelişmiş Filtreleme**: Kategori, teknoloji, tarih aralığı ve arama
+### ECU Tuning ve Performans Sistemi
+- **Profesyonel Portfolyo**: ECU tuning projeleri showcase
+- **Ürün Kataloğu**: Performans parçaları ve yazılımları
+- **Servis Yönetimi**: ECU tuning hizmetleri
+- **Gelişmiş Filtreleme**: Kategori, marka, model bazlı arama
 - **3 Farklı Layout**: Grid, Masonry ve Liste görünümleri
 - **Lightbox Galeri**: Tam ekran görsel görüntüleme
 - **Responsive Tasarım**: Tüm cihazlarda mükemmel görünüm
@@ -96,8 +99,8 @@ Modern, güvenli ve performanslı kişisel blog ve portfolyo platformu. Next.js 
 
 ### 1. Projeyi Klonlayın
 ```bash
-git clone https://github.com/erdemerciyas/extremeecu.git
-cd extremeecu
+git clone https://github.com/extreme-ecu/extreme-ecu.git
+cd extreme-ecu
 ```
 
 ### 2. Bağımlılıkları Yükleyin
@@ -117,8 +120,8 @@ NEXTAUTH_URL=http://localhost:3000
 NEXTAUTH_SECRET=your-secret-key
 
 # Admin User
-ADMIN_EMAIL=your-email@example.com
-ADMIN_NAME=Your Name
+ADMIN_EMAIL=extremeecu34@gmail.com
+ADMIN_NAME=Extreme ECU
 ADMIN_DEFAULT_PASSWORD=SecurePassword123!
 
 # Cloudinary (Optional)
@@ -138,15 +141,17 @@ npm run dev
 
 Uygulama [http://localhost:3000](http://localhost:3000) adresinde çalışacaktır.
 
-## 🆕 Yeni Özellikler (v2.2.9)
+## 🆕 Yeni Özellikler (v2.3.3)
 
-### TypeScript ve Lint Temizliği (2025-08-12)
-- Proje genelinde TypeScript tip hataları giderildi, `npm run type-check` hatasız
-- `no-explicit-any` ve ilgili ESLint uyarıları temizlendi
-- Mongoose pre hook'larında `this` tipleri tanımlanarak güvenli hale getirildi
-- `appConfig.freeShippingThreshold` erişimleri dar tiplerle güvence altına alındı
-- Portfolio slug API için lean sonuç arayüzleri eklendi, güvenli erişim sağlandı
-- `npm run build` başarıyla doğrulandı
+### Extreme ECU Rebrand ve Optimizasyon (2025-01-27)
+- **Marka Güncellemesi**: Extreme ECU kimliği ile yeniden markalandı
+- **ECU Tuning Odaklı**: Otomotiv performans ve ECU tuning'e özel içerik yapısı
+- **Ürün Kataloğu**: Performans parçaları ve ECU yazılımları için gelişmiş katalog sistemi
+- **Profesyonel Portfolyo**: ECU tuning projeleri için özelleştirilmiş showcase
+- **GitHub Repository**: `extreme-ecu/extreme-ecu` olarak yeniden organize edildi
+- **Domain Güncellemesi**: extremeecu.com domain'i ile production deployment
+- **Performance Optimizasyonu**: Bundle size ve loading time iyileştirmeleri
+- **Security Hardening**: Güvenlik katmanları güçlendirildi
 
 ---
 
@@ -379,8 +384,8 @@ Permissions-Policy: camera=(), microphone=(), geolocation=()
 ### ✅ Production Deployment (Vercel)
 
 **Current Status**: ✅ **LIVE** on Vercel 
-**Deployment URL**: https://fixral-ao7clr42w-erdem-erciyas-projects.vercel.app  
-**Last Deploy**: 2025-08-01 07:30 UTC  
+**Deployment URL**: https://extremeecu.com  
+**Last Deploy**: 2025-01-27 15:30 UTC  
 **Build Time**: ~57 seconds  
 
 #### Quick Deploy
@@ -545,10 +550,11 @@ This project is licensed under the MIT License - see the **[LICENSE](LICENSE)** 
 
 ## Author
 
-**Erdem Erciyas**
-- Website: [erdemerciyas.com.tr](https://www.erdemerciyas.com.tr)
-- Email: erdem.erciyas@gmail.com
-- Twitter: [@erdemerciyas](https://twitter.com/erdemerciyas)
+**Extreme ECU Team**
+- Website: [extremeecu.com](https://www.extremeecu.com)
+- Email: extremeecu34@gmail.com
+- Instagram: [@extremeecu](https://instagram.com/extremeecu)
+- WhatsApp: [+90 XXX XXX XX XX](https://wa.me/90XXXXXXXXX)
 
 ## Acknowledgments
 
@@ -561,19 +567,21 @@ This project is licensed under the MIT License - see the **[LICENSE](LICENSE)** 
 ## Project Status
 
 - **Status**: ✅ **PRODUCTION READY**
-- **Version**: v2.2.5
-- **Last Updated**: 2025-08-10
+- **Version**: v2.3.3
+- **Last Updated**: 2025-01-27
 - **Security Level**: 🔒 HIGH
 - **Performance**: ⚡ OPTIMIZED
 - **Documentation**: 📚 COMPLETE
+- **Industry Focus**: 🚗 ECU TUNING & PERFORMANCE
 
-### Recent Updates (v2.2.4)
-- ✅ **Code Organization**: Debug ve test dosyaları güvenlik riski nedeniyle kaldırıldı
-- ✅ **Security Hardening**: Test authentication endpoints ve debug pages temizlendi
-- ✅ **API Optimization**: Contact info ve services endpoints iyileştirildi
-- ✅ **Admin Panel Enhancement**: Portfolio ve services yönetimi geliştirildi
-- ✅ **Media System Upgrade**: MediaBrowser ve Toast notification sistemi iyileştirildi
-- ✅ **Production Deployment**: Final organization ve GitHub deployment hazırlığı
+### Recent Updates (v2.3.3)
+- ✅ **Extreme ECU Rebrand**: Marka kimliği ve domain güncellemesi
+- ✅ **ECU Tuning Focus**: Otomotiv performans odaklı içerik yapısı
+- ✅ **GitHub Migration**: extreme-ecu/extreme-ecu repository'sine taşındı
+- ✅ **Production Deployment**: extremeecu.com domain'i ile live
+- ✅ **Performance Optimization**: Bundle size ve loading time iyileştirmeleri
+- ✅ **Security Enhancement**: Güvenlik katmanları güçlendirildi
+- ✅ **Documentation Update**: Yeni marka kimliği ile dokümantasyon güncellendi
 
 ### Previous Updates (v2.2.1)
 - **GitHub Preparation**: Proje GitHub'a yayın için hazırlandı
@@ -602,18 +610,20 @@ This project is licensed under the MIT License - see the **[LICENSE](LICENSE)** 
 
 ## Useful Links
 
-- **[Live Demo](https://www.extremeecu.com)**
-- **[Admin Panel](https://www.extremeecu.com/admin)**
-- **[API Health](https://www.extremeecu.com/api/health)**
-- **[Sitemap](https://www.extremeecu.com/sitemap.xml)**
-- **[Robots](https://www.extremeecu.com/robots.txt)**
+- **[Live Demo](https://extremeecu.com)**
+- **[Admin Panel](https://extremeecu.com/admin)**
+- **[API Health](https://extremeecu.com/api/health)**
+- **[Sitemap](https://extremeecu.com/sitemap.xml)**
+- **[Robots](https://extremeecu.com/robots.txt)**
+- **[ECU Tuning Services](https://extremeecu.com/services)**
+- **[Performance Products](https://extremeecu.com/products)**
 
 ## Support
 
 - **Email**: extremeecu34@gmail.com
-- **Issues**: **[GitHub Issues](https://github.com/erdemerciyas/extremeecu/issues)**
-- **Discussions**: **[GitHub Discussions](https://github.com/erdemerciyas/extremeecu/discussions)**
-- **Documentation**: **[Project Docs](https://github.com/erdemerciyas/extremeecu/tree/master)**
+- **Issues**: **[GitHub Issues](https://github.com/extreme-ecu/extreme-ecu/issues)**
+- **Discussions**: **[GitHub Discussions](https://github.com/extreme-ecu/extreme-ecu/discussions)**
+- **Documentation**: **[Project Docs](https://github.com/extreme-ecu/extreme-ecu/tree/main)**
 
 ---
 
