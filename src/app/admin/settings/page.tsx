@@ -604,8 +604,8 @@ export default function AdminSettingsPage() {
               <div className="mt-2 p-3 bg-slate-50 rounded-lg">
                 <p className="text-xs font-medium text-slate-700 mb-1">Örnek kullanımlar:</p>
                 <code className="text-xs text-slate-600 block">
-                  &lt;meta name="google-site-verification" content="..."&gt;<br/>
-                  &lt;link rel="stylesheet" href="custom.css"&gt;<br/>
+                  &lt;meta name=&quot;google-site-verification&quot; content=&quot;...&quot;&gt;<br/>
+                  &lt;link rel=&quot;stylesheet&quot; href=&quot;custom.css&quot;&gt;<br/>
                   &lt;script&gt;/* Analytics kodu */&lt;/script&gt;
                 </code>
               </div>
@@ -629,8 +629,8 @@ export default function AdminSettingsPage() {
               <div className="mt-2 p-3 bg-slate-50 rounded-lg">
                 <p className="text-xs font-medium text-slate-700 mb-1">Örnek kullanımlar:</p>
                 <code className="text-xs text-slate-600 block">
-                  &lt;noscript&gt;&lt;iframe src="gtm..."&gt;&lt;/iframe&gt;&lt;/noscript&gt;<br/>
-                  &lt;div id="custom-banner"&gt;...&lt;/div&gt;<br/>
+                  &lt;noscript&gt;&lt;iframe src=&quot;gtm...&quot;&gt;&lt;/iframe&gt;&lt;/noscript&gt;<br/>
+                  &lt;div id=&quot;custom-banner&quot;&gt;...&lt;/div&gt;<br/>
                   &lt;script&gt;/* Tracking kodu */&lt;/script&gt;
                 </code>
               </div>
@@ -649,14 +649,14 @@ export default function AdminSettingsPage() {
                 spellCheck={false}
               />
               <p className="text-xs text-slate-500 mt-1">
-                &lt;/body&gt; etiketinden hemen önce eklenecek kodlar: analytics, chat widget'ları, footer script'leri
+                &lt;/body&gt; etiketinden hemen önce eklenecek kodlar: analytics, chat widget&apos;ları, footer script&apos;leri
               </p>
               <div className="mt-2 p-3 bg-slate-50 rounded-lg">
                 <p className="text-xs font-medium text-slate-700 mb-1">Örnek kullanımlar:</p>
                 <code className="text-xs text-slate-600 block">
                   &lt;script&gt;/* Google Analytics */&lt;/script&gt;<br/>
-                  &lt;div id="chat-widget"&gt;...&lt;/div&gt;<br/>
-                  &lt;script src="external-library.js"&gt;&lt;/script&gt;
+                  &lt;div id=&quot;chat-widget&quot;&gt;...&lt;/div&gt;<br/>
+                  &lt;script src=&quot;external-library.js&quot;&gt;&lt;/script&gt;
                 </code>
               </div>
             </div>

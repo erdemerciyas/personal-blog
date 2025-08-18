@@ -1,23 +1,22 @@
-# Extreme Ecu Performans Cars
+# 🚀 Modern Portfolio & Blog Platform
 
 [![Next.js](https://img.shields.io/badge/Next.js-14.0.4-black?style=for-the-badge&logo=next.js)](https://nextjs.org/)
 [![TypeScript](https://img.shields.io/badge/TypeScript-5.8.3-blue?style=for-the-badge&logo=typescript)](https://www.typescriptlang.org/)
 [![MongoDB](https://img.shields.io/badge/MongoDB-Latest-003450?style=for-the-badge&logo=mongodb)](https://www.mongodb.com/)
 [![Tailwind CSS](https://img.shields.io/badge/Tailwind_CSS-3.4.0-003450?style=for-the-badge&logo=tailwind-css)](https://tailwindcss.com/)
-[![Vercel](https://img.shields.io/badge/Vercel-Live-black?style=for-the-badge&logo=vercel)](https://www.extremeecu.com)
-[![Security](https://img.shields.io/badge/Security-Hardened-003450?style=for-the-badge&logo=shield)](https://github.com/erdemerciyas/extremeecu/blob/main/SECURITY.md)
-[![License](https://img.shields.io/badge/License-MIT-yellow?style=for-the-badge)](https://github.com/erdemerciyas/extremeecu/blob/main/LICENSE)
-[![Build Status](https://img.shields.io/badge/Build-Passing-075985?style=for-the-badge&logo=github-actions)](https://github.com/erdemerciyas/extremeecu/actions)
-[![Code Quality](https://img.shields.io/badge/Code_Quality-Optimized-075985?style=for-the-badge&logo=codeclimate)](https://github.com/erdemerciyas/extremeecu)
-[![Analytics](https://img.shields.io/badge/Analytics-Integrated-28a745?style=for-the-badge&logo=google-analytics)](https://analytics.google.com/)
+[![Vercel](https://img.shields.io/badge/Vercel-Live-black?style=for-the-badge&logo=vercel)](https://fixral-m8b3vn7k7-erdem-erciyas-projects.vercel.app)
+[![Security](https://img.shields.io/badge/Security-Hardened-003450?style=for-the-badge&logo=shield)](https://github.com/erdemerciyas/personal-blog/blob/main/SECURITY.md)
+[![License](https://img.shields.io/badge/License-MIT-yellow?style=for-the-badge)](https://github.com/erdemerciyas/personal-blog/blob/main/LICENSE)
+[![Build Status](https://img.shields.io/badge/Build-Passing-075985?style=for-the-badge&logo=github-actions)](https://github.com/erdemerciyas/personal-blog/actions)
+[![Code Quality](https://img.shields.io/badge/Code_Quality-Optimized-075985?style=for-the-badge&logo=codeclimate)](https://github.com/erdemerciyas/personal-blog)
 
 Modern, güvenli ve performanslı kişisel blog ve portfolyo platformu. Next.js 14, TypeScript, MongoDB ve Tailwind CSS ile geliştirilmiştir.
 
 ## Live Demo
 
-**[Live Site](https://www.extremeecu.com)** | **[Admin Panel](https://www.extremeecu.com/admin)** | **[API Health](https://www.extremeecu.com/api/health)**
+**🚀 [Live Site](https://fixral-ao7clr42w-erdem-erciyas-projects.vercel.app)** | **🔧 [Admin Panel](https://fixral-ao7clr42w-erdem-erciyas-projects.vercel.app/admin)** | **📊 [API Health](https://fixral-ao7clr42w-erdem-erciyas-projects.vercel.app/api/health)**
 
-> **Status**: **LIVE** | **Last Deploy**: 2025-08-18 | **Version**: v2.3.3 | **CI/CD Pipeline**: **OPTIMIZED**
+> **Status**: ✅ **LIVE** | **Last Deploy**: Pending | **Version**: v2.2.9 | **🚀 CI/CD Pipeline**: ✅ **OPTIMIZED**
 
 ## Özellikler
 
@@ -139,46 +138,7 @@ npm run dev
 
 Uygulama [http://localhost:3000](http://localhost:3000) adresinde çalışacaktır.
 
-## Yeni Özellikler (v2.3.3)
-
-### Raw HTML Injection Sistemi (2025-08-18)
-- **Hiçbir Wrapper Element Yok**: Girilen HTML kodları aynen sayfaya ekleniyor
-- **Client-Side Injection**: `insertAdjacentHTML` ile hydration-safe rendering
-- **Tam Kontrol**: Meta taglar, CSS, JavaScript, HTML elementleri - her şey destekleniyor
-- **Üç Farklı Alan**: Head, Body Start ve Body End için ayrı kod alanları
-- **Security Bypass**: Admin kullanıcılar için input validation devre dışı
-- **Performance Optimized**: afterInteractive stratejisi ile optimal yükleme
-- **Debug-Free**: Production-ready, temiz HTML output
-
-### Google Site Araçları ve Analytics Entegrasyonu (v2.3.2)
-- **Google Analytics 4**: GA4 Measurement ID desteği ve otomatik entegrasyon
-- **Google Tag Manager**: GTM Container ID desteği ve NoScript fallback
-- **Google Site Verification**: Search Console doğrulama kodu entegrasyonu
-- **Facebook Pixel**: Facebook Ads tracking ve conversion tracking
-- **Hotjar Analytics**: Heatmap ve user behavior analytics
-- **Özel HTML Kod Yönetimi**: Head, Body Start ve Body End için özel kodlar
-- **Admin Panel Entegrasyonu**: Tüm analytics araçları admin panelinden yönetilebilir
-- **Otomatik HTML Entegrasyonu**: Girilen kodlar otomatik olarak site genelinde aktif
-- **Performance Optimized**: Script loading stratejileri (afterInteractive, lazyOnload)
-- **Debug Sistemi**: Development modunda detaylı analytics debug bilgileri
-
-### Editör, Medya ve UI İyileştirmeleri (2025-08-17)
-- Admin’in tamamında tek tip zengin metin editörü (Quill tabanlı `UniversalEditor – rich` modu)
-- Medya yönetimi cloud-only (Cloudinary); local `public/uploads` bağımlılıkları kaldırıldı
-- Upload akışları düzeltildi; servis ve medya yüklemelerinde doğru endpoint/alan adları
-- Medya sayaçları Cloudinary’e göre gerçek sayım ile güncellendi
-- Hero alanları sadeleştirildi; rozet/ek bilgi çipleri kaldırıldı, tema kontrastları iyileştirildi
-- Header/Footer logo ve CTA yüklenme sırası/dinamik logo düzenlemeleri
-
-## Yeni Özellikler (v2.3.0)
-
-### Çoklu Dil (i18n) Kaldırma ve Temizlik (2025-08-12)
-- next-i18next ve react-i18next bağımlılıkları kaldırıldı
-- `public/locales/` ve `src/i18n/` dizinleri temizlendi
-- Middleware ve konfigde i18n yönlendirmesi kalmadı
-- Dokümantasyon güncellendi
-
-## Yeni Özellikler (v2.2.9)
+## 🆕 Yeni Özellikler (v2.2.9)
 
 ### TypeScript ve Lint Temizliği (2025-08-12)
 - Proje genelinde TypeScript tip hataları giderildi, `npm run type-check` hatasız
@@ -190,10 +150,10 @@ Uygulama [http://localhost:3000](http://localhost:3000) adresinde çalışacakt�
 
 ---
 
-## Yeni Özellikler (v2.2.7)
+## 🆕 Yeni Özellikler (v2.2.7)
 
-### Ürün Medyası Ayrıştırma ve Yönetim (2025-08-11)
-- Ürün görselleri/dosyaları Cloudinary'de `extremeecu/products/images|docs` klasörlerine alındı
+### 🧩 Ürün Medyası Ayrıştırma ve Yönetim (2025-08-11)
+- Ürün görselleri/dosyaları Cloudinary'de `personal-blog/products/images|docs` klasörlerine alındı
 - Site geneli medya ile ürün medyası ayrıştırıldı; admin medya sayfasına kapsam filtresi eklendi (Site/Ürün/Hepsi)
 - `Ürün Medyası` admin sayfası: sadece ürün medyasını listeler; URL kopyalama ve silme aksiyonları
 - Ürün oluştur/düzenle’de tıklanarak görsel/dosya seçici açma düzeltildi
@@ -367,7 +327,7 @@ src/
 
 ### Security Headers (Production)
 ```http
-X-Frame-Options: SAMEORIGIN
+X-Frame-Options: DENY
 X-Content-Type-Options: nosniff
 Referrer-Policy: strict-origin-when-cross-origin
 Content-Security-Policy: [Comprehensive CSP]
@@ -376,12 +336,12 @@ Permissions-Policy: camera=(), microphone=(), geolocation=()
 ```
 
 ### Security Compliance
-- **OWASP Top 10 2021** compliance
-- **Security audit** passed
-- **Vulnerability scanning** active
-- **Dependency monitoring** enabled
+- ✅ **OWASP Top 10 2021** compliance
+- ✅ **Security audit** passed
+- ✅ **Vulnerability scanning** active
+- ✅ **Dependency monitoring** enabled
 
-**[Detaylı Güvenlik Raporu](SECURITY.md)**
+📋 [Detaylı Güvenlik Raporu](SECURITY.md)
 
 ## Performans
 
@@ -416,13 +376,12 @@ Permissions-Policy: camera=(), microphone=(), geolocation=()
 
 ## Deployment
 
-### **Production Deployment (Vercel)**
+### ✅ Production Deployment (Vercel)
 
-**Current Status**: **LIVE** on Vercel 
-**Production URL**: https://extremeecu.com  
-**Latest Deployment**: https://extremeecu-bg1uf85cb-erdem-erciyas-projects.vercel.app  
-**Last Deploy**: 2025-08-18 17:10 UTC  
-**Build Time**: ~2 minutes  
+**Current Status**: ✅ **LIVE** on Vercel 
+**Deployment URL**: https://fixral-ao7clr42w-erdem-erciyas-projects.vercel.app  
+**Last Deploy**: 2025-08-01 07:30 UTC  
+**Build Time**: ~57 seconds  
 
 #### Quick Deploy
 ```bash
@@ -453,10 +412,19 @@ ADMIN_EMAIL=your-email@example.com
 ADMIN_NAME=Your Name
 ADMIN_DEFAULT_PASSWORD=SecurePassword123!
 
-# Optional
+# Optional - Media Defaults
+DEFAULT_LOGO_URL=__OPTIONAL__
+NEXT_PUBLIC_DEFAULT_PROJECT_IMAGE_URL=__OPTIONAL__
+
+# Optional - Cloudinary
 CLOUDINARY_CLOUD_NAME=your-cloud-name
 CLOUDINARY_API_KEY=your-api-key
 CLOUDINARY_API_SECRET=your-api-secret
+
+# Optional - Google (DB erişilemediğinde fallback olarak kullanılır)
+GOOGLE_SITE_VERIFICATION=__OPTIONAL__
+NEXT_PUBLIC_GA_ID=__OPTIONAL__
+NEXT_PUBLIC_GTM_ID=__OPTIONAL__
 ```
 
 ### Deployment Guides
@@ -577,10 +545,10 @@ This project is licensed under the MIT License - see the **[LICENSE](LICENSE)** 
 
 ## Author
 
-**Extreme Ecu**
-- Website: [extremeecu.com](https://www.extremeecu.com)
-- Email: extremeecu34@gmail.com
-- Twitter: [@extremeecu](https://twitter.com/extremeecu)
+**Erdem Erciyas**
+- Website: [erdemerciyas.com.tr](https://www.erdemerciyas.com.tr)
+- Email: erdem.erciyas@gmail.com
+- Twitter: [@erdemerciyas](https://twitter.com/erdemerciyas)
 
 ## Acknowledgments
 
@@ -592,22 +560,20 @@ This project is licensed under the MIT License - see the **[LICENSE](LICENSE)** 
 
 ## Project Status
 
-- **Status**: **PRODUCTION READY**
-- **Version**: v2.3.3
-- **Last Updated**: 2025-08-18
-- **Security Level**: HIGH
-- **Performance**: OPTIMIZED
-- **Documentation**: COMPLETE
+- **Status**: ✅ **PRODUCTION READY**
+- **Version**: v2.2.5
+- **Last Updated**: 2025-08-10
+- **Security Level**: 🔒 HIGH
+- **Performance**: ⚡ OPTIMIZED
+- **Documentation**: 📚 COMPLETE
 
 ### Recent Updates (v2.2.4)
-- **Code Organization**: Debug ve test dosyaları güvenlik riski nedeniyle kaldırıldı
-- **Security Hardening**: Test authentication endpoints ve debug pages temizlendi
-- **API Optimization**: Contact info ve services endpoints iyileştirildi
-- **Admin Panel Enhancement**: Portfolio ve services yönetimi geliştirildi
-- **Media System Upgrade**: MediaBrowser ve Toast notification sistemi iyileştirildi
-- **Production Deployment**: Final organization ve GitHub deployment hazırlığı
-- **Media System Upgrade**: MediaBrowser ve Toast notification sistemi iyileştirildi
-- **Production Deployment**: Final organization ve GitHub deployment hazırlığı
+- ✅ **Code Organization**: Debug ve test dosyaları güvenlik riski nedeniyle kaldırıldı
+- ✅ **Security Hardening**: Test authentication endpoints ve debug pages temizlendi
+- ✅ **API Optimization**: Contact info ve services endpoints iyileştirildi
+- ✅ **Admin Panel Enhancement**: Portfolio ve services yönetimi geliştirildi
+- ✅ **Media System Upgrade**: MediaBrowser ve Toast notification sistemi iyileştirildi
+- ✅ **Production Deployment**: Final organization ve GitHub deployment hazırlığı
 
 ### Previous Updates (v2.2.1)
 - **GitHub Preparation**: Proje GitHub'a yayın için hazırlandı
