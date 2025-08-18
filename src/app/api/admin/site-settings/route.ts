@@ -40,7 +40,8 @@ export const PUT = withSecurity(SecurityConfigs.admin)(async (request: NextReque
       'colors',
       'socialMedia',
       'seo',
-      'contact'
+      'contact',
+      'analytics'
     ];
     
     const filteredData: Record<string, unknown> = {};

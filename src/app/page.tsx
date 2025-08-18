@@ -292,15 +292,21 @@ export default function HomePage() {
                 
                 {/* Subtitle */}
                 {currentSlide.subtitle && (
-                  <p className="text-2xl sm:text-3xl font-semibold text-brand-primary-200 mb-8 animate-slide-in-right px-2" style={{ animationDelay: '0.6s' }}>
-                    {currentSlide.subtitle}
-                  </p>
+                  <div className="text-2xl sm:text-3xl font-semibold text-brand-primary-200 mb-8 animate-slide-in-right px-2" style={{ animationDelay: '0.6s' }}>
+                    <HTMLContent 
+                      content={currentSlide.subtitle}
+                      className="text-brand-primary-200"
+                    />
+                  </div>
                 )}
                 
                 {/* Description */}
-                <p className="text-lg sm:text-xl leading-relaxed text-slate-200/90 max-w-3xl sm:max-w-4xl mx-auto mb-12 animate-fade-in px-2" style={{ animationDelay: '0.8s' }}>
-                  {currentSlide.description}
-                </p>
+                <div className="text-lg sm:text-xl leading-relaxed text-slate-200/90 max-w-3xl sm:max-w-4xl mx-auto mb-12 animate-fade-in px-2" style={{ animationDelay: '0.8s' }}>
+                  <HTMLContent 
+                    content={currentSlide.description}
+                    className="text-slate-200/90"
+                  />
+                </div>
                 
                 {/* CTAs */}
                 <nav className="flex flex-col sm:flex-row gap-4 sm:gap-6 justify-center items-center animate-fade-in" style={{ animationDelay: '1s' }} aria-label="Hero eylem navigasyonu">

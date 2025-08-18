@@ -41,7 +41,7 @@ export default function AdminProductsPage() {
 
   useEffect(() => {
     reload();
-  }, [q, condition, category, sort, page, limit]);
+  }, [q, condition, category, sort, page, limit, reload]);
 
   const selectedIds = useMemo(() => Object.keys(selected).filter((k) => selected[k]), [selected]);
 

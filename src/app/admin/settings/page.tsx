@@ -18,6 +18,14 @@ interface Settings {
   logo: string;
   favicon: string;
   twitterHandle: string;
+  googleAnalyticsId?: string;
+  googleTagManagerId?: string;
+  googleSiteVerification?: string;
+  facebookPixelId?: string;
+  hotjarId?: string;
+  customHeadScripts?: string;
+  customBodyStartScripts?: string;
+  customBodyEndScripts?: string;
   maintenanceMode: boolean;
   allowRegistration: boolean;
   maxUploadSize: number;
@@ -46,6 +54,14 @@ export default function AdminSettingsPage() {
     logo: '',
     favicon: '',
     twitterHandle: '',
+    googleAnalyticsId: '',
+    googleTagManagerId: '',
+    googleSiteVerification: '',
+    facebookPixelId: '',
+    hotjarId: '',
+    customHeadScripts: '',
+    customBodyStartScripts: '',
+    customBodyEndScripts: '',
     maintenanceMode: false,
     allowRegistration: false,
     maxUploadSize: 10,
@@ -73,6 +89,7 @@ export default function AdminSettingsPage() {
       const response = await fetch('/api/settings');
       if (response.ok) {
         const data = await response.json();
+        console.log('Loaded settings:', data);
         setSettings(data);
       }
     } catch (error) {
@@ -93,6 +110,8 @@ export default function AdminSettingsPage() {
     setSaving(true);
     setMessage(null);
 
+    console.log('Saving settings:', settings);
+
     try {
       const response = await fetch('/api/settings', {
         method: 'POST',
@@ -103,8 +122,20 @@ export default function AdminSettingsPage() {
       });
 
       if (response.ok) {
+        const result = await response.json();
+        console.log('Save result:', result);
+        
+        // Kaydedilen ayarları state'e güncelle
+        if (result.settings) {
+          setSettings(result.settings);
+        }
+        
         setMessage({ type: 'success', text: 'Ayarlar başarıyla kaydedildi!' });
+        // Başarı mesajını 3 saniye sonra temizle
+        setTimeout(() => setMessage(null), 3000);
       } else {
+        const errorData = await response.json();
+        console.error('Save error response:', errorData);
         throw new Error('Ayarlar kaydedilirken hata oluştu');
       }
     } catch (error) {
@@ -472,6 +503,159 @@ export default function AdminSettingsPage() {
               </div>
             </div>
           </div>
+        </div>
+
+        {/* Google Site Araçları */}
+        <div className="bg-white rounded-xl shadow-sm border border-slate-200 p-6">
+          <h2 className="text-2xl font-bold text-slate-900 mb-6">Google Site Araçları ve Analytics</h2>
+          
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+            <div>
+              <label className="block text-sm font-medium text-slate-700 mb-2">
+                Google Analytics ID
+              </label>
+              <input
+                type="text"
+                value={settings.googleAnalyticsId || ''}
+                onChange={(e) => handleInputChange('googleAnalyticsId', e.target.value)}
+                className="w-full border border-slate-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-brand-primary-600"
+                placeholder="G-XXXXXXXXXX"
+              />
+              <p className="text-xs text-slate-500 mt-1">Google Analytics 4 Measurement ID</p>
+            </div>
+
+            <div>
+              <label className="block text-sm font-medium text-slate-700 mb-2">
+                Google Tag Manager ID
+              </label>
+              <input
+                type="text"
+                value={settings.googleTagManagerId || ''}
+                onChange={(e) => handleInputChange('googleTagManagerId', e.target.value)}
+                className="w-full border border-slate-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-brand-primary-600"
+                placeholder="GTM-XXXXXXX"
+              />
+              <p className="text-xs text-slate-500 mt-1">Google Tag Manager Container ID</p>
+            </div>
+
+            <div>
+              <label className="block text-sm font-medium text-slate-700 mb-2">
+                Google Site Verification
+              </label>
+              <input
+                type="text"
+                value={settings.googleSiteVerification || ''}
+                onChange={(e) => handleInputChange('googleSiteVerification', e.target.value)}
+                className="w-full border border-slate-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-brand-primary-600"
+                placeholder="google-site-verification kodu"
+              />
+              <p className="text-xs text-slate-500 mt-1">Google Search Console doğrulama kodu</p>
+            </div>
+
+            <div>
+              <label className="block text-sm font-medium text-slate-700 mb-2">
+                Facebook Pixel ID
+              </label>
+              <input
+                type="text"
+                value={settings.facebookPixelId || ''}
+                onChange={(e) => handleInputChange('facebookPixelId', e.target.value)}
+                className="w-full border border-slate-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-brand-primary-600"
+                placeholder="Facebook Pixel ID"
+              />
+              <p className="text-xs text-slate-500 mt-1">Facebook Ads için pixel ID</p>
+            </div>
+
+            <div>
+              <label className="block text-sm font-medium text-slate-700 mb-2">
+                Hotjar Site ID
+              </label>
+              <input
+                type="text"
+                value={settings.hotjarId || ''}
+                onChange={(e) => handleInputChange('hotjarId', e.target.value)}
+                className="w-full border border-slate-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-brand-primary-600"
+                placeholder="Hotjar Site ID"
+              />
+              <p className="text-xs text-slate-500 mt-1">Hotjar heatmap ve analytics için</p>
+            </div>
+          </div>
+
+          {/* Custom Scripts */}
+          <div className="mt-8 space-y-6">
+            <h3 className="text-lg font-semibold text-slate-800">Özel Script Kodları</h3>
+            
+            <div>
+              <label className="block text-sm font-medium text-slate-700 mb-2">
+                Head Bölümü Scripts
+              </label>
+              <UniversalEditor
+                value={settings.customHeadScripts || ''}
+                onChange={(v) => handleInputChange('customHeadScripts', v)}
+                placeholder="<script> kodlarınızı buraya ekleyin..."
+                mode="text"
+                minHeight="120px"
+              />
+              <p className="text-xs text-slate-500 mt-1">&lt;head&gt; bölümüne eklenecek kodlar (meta taglar, CSS, JS)</p>
+            </div>
+
+            <div>
+              <label className="block text-sm font-medium text-slate-700 mb-2">
+                Body Başlangıç Scripts
+              </label>
+              <UniversalEditor
+                value={settings.customBodyStartScripts || ''}
+                onChange={(v) => handleInputChange('customBodyStartScripts', v)}
+                placeholder="<script> kodlarınızı buraya ekleyin..."
+                mode="text"
+                minHeight="120px"
+              />
+              <p className="text-xs text-slate-500 mt-1">&lt;body&gt; etiketinin hemen sonrasına eklenecek kodlar (GTM, tracking)</p>
+            </div>
+
+            <div>
+              <label className="block text-sm font-medium text-slate-700 mb-2">
+                Body Bitiş Scripts
+              </label>
+              <UniversalEditor
+                value={settings.customBodyEndScripts || ''}
+                onChange={(v) => handleInputChange('customBodyEndScripts', v)}
+                placeholder="<script> kodlarınızı buraya ekleyin..."
+                mode="text"
+                minHeight="120px"
+              />
+              <p className="text-xs text-slate-500 mt-1">&lt;/body&gt; etiketinden hemen önce eklenecek kodlar (analytics, chat widgets)</p>
+            </div>
+          </div>
+
+          {/* Analytics Preview */}
+          {(settings.googleAnalyticsId || settings.googleTagManagerId || settings.facebookPixelId) && (
+            <div className="mt-6 bg-blue-50 border border-blue-200 rounded-lg p-4">
+              <h4 className="text-sm font-medium text-blue-800 mb-2">Aktif Analytics Araçları</h4>
+              <div className="flex flex-wrap gap-2">
+                {settings.googleAnalyticsId && (
+                  <span className="bg-blue-100 text-blue-800 px-2 py-1 rounded-full text-xs font-medium">
+                    Google Analytics
+                  </span>
+                )}
+                {settings.googleTagManagerId && (
+                  <span className="bg-blue-100 text-blue-800 px-2 py-1 rounded-full text-xs font-medium">
+                    Google Tag Manager
+                  </span>
+                )}
+                {settings.facebookPixelId && (
+                  <span className="bg-blue-100 text-blue-800 px-2 py-1 rounded-full text-xs font-medium">
+                    Facebook Pixel
+                  </span>
+                )}
+                {settings.hotjarId && (
+                  <span className="bg-blue-100 text-blue-800 px-2 py-1 rounded-full text-xs font-medium">
+                    Hotjar
+                  </span>
+                )}
+              </div>
+            </div>
+          )}
         </div>
 
         {/* System Settings */}

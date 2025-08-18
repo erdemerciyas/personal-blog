@@ -50,6 +50,30 @@ const SettingsSchema = new mongoose.Schema({
     type: String,
     default: '',
   },
+  googleSiteVerification: {
+    type: String,
+    default: '',
+  },
+  facebookPixelId: {
+    type: String,
+    default: '',
+  },
+  hotjarId: {
+    type: String,
+    default: '',
+  },
+  customHeadScripts: {
+    type: String,
+    default: '',
+  },
+  customBodyStartScripts: {
+    type: String,
+    default: '',
+  },
+  customBodyEndScripts: {
+    type: String,
+    default: '',
+  },
   // Admin User Settings
   adminSettings: {
     defaultLanguage: {

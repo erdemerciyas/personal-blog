@@ -31,6 +31,18 @@ interface ISiteSettings {
     phone: string;
     address: string;
   };
+  analytics: {
+    googleAnalyticsId: string;
+    googleTagManagerId: string;
+    googleSiteVerification: string;
+    facebookPixelId: string;
+    hotjarId: string;
+    customScripts: {
+      head: string;
+      bodyStart: string;
+      bodyEnd: string;
+    };
+  };
   isActive: boolean;
   createdAt?: Date;
   updatedAt?: Date;
@@ -150,6 +162,50 @@ const SiteSettingsSchema = new mongoose.Schema<ISiteSettings>({
       type: String,
       required: false,
       default: ''
+    }
+  },
+  analytics: {
+    googleAnalyticsId: {
+      type: String,
+      required: false,
+      default: ''
+    },
+    googleTagManagerId: {
+      type: String,
+      required: false,
+      default: ''
+    },
+    googleSiteVerification: {
+      type: String,
+      required: false,
+      default: ''
+    },
+    facebookPixelId: {
+      type: String,
+      required: false,
+      default: ''
+    },
+    hotjarId: {
+      type: String,
+      required: false,
+      default: ''
+    },
+    customScripts: {
+      head: {
+        type: String,
+        required: false,
+        default: ''
+      },
+      bodyStart: {
+        type: String,
+        required: false,
+        default: ''
+      },
+      bodyEnd: {
+        type: String,
+        required: false,
+        default: ''
+      }
     }
   },
   isActive: {

@@ -16,7 +16,7 @@ Modern, güvenli ve performanslı kişisel blog ve portfolyo platformu. Next.js 
 
 **[Live Site](https://www.extremeecu.com)** | **[Admin Panel](https://www.extremeecu.com/admin)** | **[API Health](https://www.extremeecu.com/api/health)**
 
-> **Status**: **LIVE** | **Last Deploy**: 2025-08-17 | **Version**: v2.3.1 | **CI/CD Pipeline**: **OPTIMIZED**
+> **Status**: **LIVE** | **Last Deploy**: 2025-08-18 | **Version**: v2.3.2 | **CI/CD Pipeline**: **OPTIMIZED**
 
 ## Özellikler
 
@@ -50,6 +50,11 @@ Modern, güvenli ve performanslı kişisel blog ve portfolyo platformu. Next.js 
   - Canlı önizleme özelliği
   - Syntax highlighting
   - Auto-save functionality
+- **Google Site Araçları Yönetimi**: Kapsamlı analytics yönetim sistemi
+  - Google Analytics 4, GTM, Facebook Pixel entegrasyonu
+  - Özel script kodları yönetimi (Head, Body Start, Body End)
+  - Aktif araçlar önizlemesi ve real-time validation
+  - Otomatik HTML entegrasyonu
 - **Full-Width Layout**: Tam genişlik admin arayüzü
 - **Responsive Design**: Mobil uyumlu admin paneli
 - **Accessibility Ready**: WCAG 2.1 AA uyumlu renk kontrastı
@@ -131,7 +136,19 @@ npm run dev
 
 Uygulama [http://localhost:3000](http://localhost:3000) adresinde çalışacaktır.
 
-## Yeni Özellikler (v2.3.1)
+## Yeni Özellikler (v2.3.2)
+
+### Google Site Araçları ve Analytics Entegrasyonu (2025-08-18)
+- **Google Analytics 4**: GA4 Measurement ID desteği ve otomatik entegrasyon
+- **Google Tag Manager**: GTM Container ID desteği ve NoScript fallback
+- **Google Site Verification**: Search Console doğrulama kodu entegrasyonu
+- **Facebook Pixel**: Facebook Ads tracking ve conversion tracking
+- **Hotjar Analytics**: Heatmap ve user behavior analytics
+- **Özel Script Yönetimi**: Head, Body Start ve Body End için özel kodlar
+- **Admin Panel Entegrasyonu**: Tüm analytics araçları admin panelinden yönetilebilir
+- **Otomatik HTML Entegrasyonu**: Girilen kodlar otomatik olarak site genelinde aktif
+- **Performance Optimized**: Script loading stratejileri (afterInteractive, lazyOnload)
+- **Debug Sistemi**: Development modunda detaylı analytics debug bilgileri
 
 ### Editör, Medya ve UI İyileştirmeleri (2025-08-17)
 - Admin’in tamamında tek tip zengin metin editörü (Quill tabanlı `UniversalEditor – rich` modu)
@@ -563,8 +580,8 @@ This project is licensed under the MIT License - see the **[LICENSE](LICENSE)** 
 ## Project Status
 
 - **Status**: **PRODUCTION READY**
-- **Version**: v2.3.1
-- **Last Updated**: 2025-08-17
+- **Version**: v2.3.2
+- **Last Updated**: 2025-08-18
 - **Security Level**: HIGH
 - **Performance**: OPTIMIZED
 - **Documentation**: COMPLETE

@@ -19,17 +19,23 @@ export async function GET() {
     
     if (!settings) {
       settings = await Settings.create({
-        siteName: 'Erciyas Engineering',
-        siteTitle: 'Erciyas Engineering - 3D Tasarım ve Mühendislik Çözümleri',
-        siteDescription: 'Profesyonel 3D tasarım, tersine mühendislik, 3D baskı ve mühendislik çözümleri ile projelerinizi hayata geçiriyoruz.',
-        siteKeywords: '3D tasarım, tersine mühendislik, 3D baskı, CAD tasarım, mühendislik, Ankara',
-        siteUrl: 'https://erciyas-engineering.com',
+        siteName: 'Extreme Ecu',
+        siteTitle: 'Extreme Ecu - Modern Mühendislik ve Performans Çözümleri',
+        siteDescription: 'Profesyonel ECU tuning, performans optimizasyonu ve mühendislik çözümleri ile araçlarınızı güçlendiriyoruz.',
+        siteKeywords: 'ECU tuning, performans, mühendislik, otomotiv, chip tuning',
+        siteUrl: 'https://extremeecu.com',
         logo: '',
         favicon: '/favicon.ico',
         ogImage: '/images/og-image.jpg',
-        twitterHandle: '@erciyaseng',
+        twitterHandle: '@extremeecu',
         googleAnalyticsId: '',
         googleTagManagerId: '',
+        googleSiteVerification: '',
+        facebookPixelId: '',
+        hotjarId: '',
+        customHeadScripts: '',
+        customBodyStartScripts: '',
+        customBodyEndScripts: '',
         adminSettings: {
           defaultLanguage: 'tr',
           timezone: 'Europe/Istanbul',
@@ -121,6 +127,20 @@ export const PUT = withSecurity(SecurityConfigs.admin)(async (request: NextReque
         };
       }
 
+      // Analytics sync - her zaman güncelle
+      siteSettingsUpdate.analytics = {
+        googleAnalyticsId: body.googleAnalyticsId || settings.googleAnalyticsId || '',
+        googleTagManagerId: body.googleTagManagerId || settings.googleTagManagerId || '',
+        googleSiteVerification: body.googleSiteVerification || settings.googleSiteVerification || '',
+        facebookPixelId: body.facebookPixelId || settings.facebookPixelId || '',
+        hotjarId: body.hotjarId || settings.hotjarId || '',
+        customScripts: {
+          head: body.customHeadScripts || settings.customHeadScripts || '',
+          bodyStart: body.customBodyStartScripts || settings.customBodyStartScripts || '',
+          bodyEnd: body.customBodyEndScripts || settings.customBodyEndScripts || ''
+        }
+      };
+
       if (Object.keys(siteSettingsUpdate).length > 0) {
         await SiteSettings.updateSiteSettings(siteSettingsUpdate);
         if (process.env.NODE_ENV === 'development') console.log('✅ SiteSettings synced');
@@ -208,6 +228,20 @@ export const POST = withSecurity(SecurityConfigs.admin)(async (request: NextRequ
           instagram: ''
         };
       }
+
+      // Analytics sync - her zaman güncelle
+      siteSettingsUpdate.analytics = {
+        googleAnalyticsId: body.googleAnalyticsId || settings.googleAnalyticsId || '',
+        googleTagManagerId: body.googleTagManagerId || settings.googleTagManagerId || '',
+        googleSiteVerification: body.googleSiteVerification || settings.googleSiteVerification || '',
+        facebookPixelId: body.facebookPixelId || settings.facebookPixelId || '',
+        hotjarId: body.hotjarId || settings.hotjarId || '',
+        customScripts: {
+          head: body.customHeadScripts || settings.customHeadScripts || '',
+          bodyStart: body.customBodyStartScripts || settings.customBodyStartScripts || '',
+          bodyEnd: body.customBodyEndScripts || settings.customBodyEndScripts || ''
+        }
+      };
 
       if (Object.keys(siteSettingsUpdate).length > 0) {
         await SiteSettings.updateSiteSettings(siteSettingsUpdate);

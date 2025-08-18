@@ -8,6 +8,7 @@ import ConditionalFooter from '../components/ConditionalFooter'
 import Providers from '../components/Providers'
 import connectDB from '../lib/mongoose'
 import SiteSettings from '../models/SiteSettings'
+import Analytics from '../components/Analytics'
 
 const inter = Inter({
   subsets: ['latin', 'latin-ext'],
@@ -25,17 +26,35 @@ const oswald = Oswald({
   preload: true,
 })
 
+// Get site settings for analytics
+async function getSiteSettings() {
+  try {
+    await connectDB();
+    const settings = await SiteSettings.getSiteSettings();
+    if (process.env.NODE_ENV === 'development') {
+      console.log('Layout - Site settings loaded:', {
+        analytics: settings?.analytics,
+        hasAnalytics: !!settings?.analytics
+      });
+    }
+    return settings;
+  } catch (error) {
+    console.error('Site settings fetch error:', error);
+    return null;
+  }
+}
+
 // Dynamic metadata function
 export async function generateMetadata(): Promise<Metadata> {
   try {
-    await connectDB();
-    const siteSettings = await SiteSettings.getSiteSettings();
+    const siteSettings = await getSiteSettings();
 
     const title = siteSettings?.seo?.metaTitle || siteSettings?.siteName || config.app.name;
     const description = siteSettings?.seo?.metaDescription || siteSettings?.description || 'Modern kişisel blog ve portfolio sitesi';
     const keywords = siteSettings?.seo?.keywords || ['nextjs', 'react', 'typescript', 'portfolio', 'blog', 'engineering'];
     const siteName = siteSettings?.siteName || config.app.name;
     const logoUrl = siteSettings?.logo?.url;
+    const googleSiteVerification = siteSettings?.analytics?.googleSiteVerification;
 
     return {
       title,
@@ -64,7 +83,7 @@ export async function generateMetadata(): Promise<Metadata> {
         },
       },
       verification: {
-        google: 'google-site-verification-code', // Add your Google verification code
+        google: googleSiteVerification || 'jXX7ASmYpD2OOlPo5cKqGptc9Zy1yLxl00b-JqlQHZE',
       },
       icons: {
         icon: logoUrl || '/favicon.svg',
@@ -101,7 +120,7 @@ export async function generateMetadata(): Promise<Metadata> {
         },
       },
       verification: {
-        google: 'google-site-verification-code', // Add your Google verification code
+        google: 'jXX7ASmYpD2OOlPo5cKqGptc9Zy1yLxl00b-JqlQHZE',
       },
       icons: {
         icon: '/favicon.svg',
@@ -116,11 +135,14 @@ import LoadingBar from '../components/LoadingBar';
 import { ToastProvider } from '../components/ui/useToast';
 import FixralToastViewport from '../components/ui/FixralToast';
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
 }: {
   children: React.ReactNode
 }) {
+  // Get site settings for analytics
+  const siteSettings = await getSiteSettings();
+  
   return (
     <html lang="tr" className="scroll-smooth">
       <head>
@@ -130,7 +152,6 @@ export default function RootLayout({
         <meta name="mobile-web-app-capable" content="yes" />
         <meta name="apple-mobile-web-app-capable" content="yes" />
         <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
-        <meta name="google-site-verification" content="jXX7ASmYpD2OOlPo5cKqGptc9Zy1yLxl00b-JqlQHZE" />
 
         {/* Preconnect to external domains for performance */}
         <link rel="preconnect" href="https://fonts.googleapis.com" />
@@ -146,6 +167,18 @@ export default function RootLayout({
         <link rel="dns-prefetch" href="//fonts.googleapis.com" />
         <link rel="dns-prefetch" href="//fonts.gstatic.com" />
         <link rel="dns-prefetch" href="//res.cloudinary.com" />
+
+        {/* Analytics and Custom Scripts */}
+        <Analytics
+          googleAnalyticsId={siteSettings?.analytics?.googleAnalyticsId}
+          googleTagManagerId={siteSettings?.analytics?.googleTagManagerId}
+          googleSiteVerification={siteSettings?.analytics?.googleSiteVerification}
+          facebookPixelId={siteSettings?.analytics?.facebookPixelId}
+          hotjarId={siteSettings?.analytics?.hotjarId}
+          customHeadScripts={siteSettings?.analytics?.customScripts?.head}
+          customBodyStartScripts={siteSettings?.analytics?.customScripts?.bodyStart}
+          customBodyEndScripts={siteSettings?.analytics?.customScripts?.bodyEnd}
+        />
       </head>
       <body className={`${inter.variable} ${oswald.variable} font-sans min-h-screen bg-[#f6f7f9] flex flex-col text-slate-800 antialiased`}>
         <a href="#main-content" className="sr-only focus:not-sr-only focus:fixed focus:top-2 focus:left-2 focus:z-[10000] focus:bg-white focus:text-slate-900 focus:px-4 focus:py-2 focus:rounded-lg focus:shadow">

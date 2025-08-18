@@ -223,7 +223,7 @@ export default function AdminMediaPage() {
     if (status === 'authenticated') {
       loadMedia();
     }
-  }, [status, contextFilter]);
+  }, [status, contextFilter, loadMedia]);
 
   if (status === 'loading') {
     return (
