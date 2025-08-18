@@ -407,9 +407,10 @@ Permissions-Policy: camera=(), microphone=(), geolocation=()
 ### **Production Deployment (Vercel)**
 
 **Current Status**: **LIVE** on Vercel 
-**Deployment URL**: https://fixral-ao7clr42w-erdem-erciyas-projects.vercel.app  
-**Last Deploy**: 2025-08-01 07:30 UTC  
-**Build Time**: ~57 seconds  
+**Production URL**: https://extremeecu.com  
+**Latest Deployment**: https://extremeecu-bg1uf85cb-erdem-erciyas-projects.vercel.app  
+**Last Deploy**: 2025-08-18 17:10 UTC  
+**Build Time**: ~2 minutes  
 
 #### Quick Deploy
 ```bash
