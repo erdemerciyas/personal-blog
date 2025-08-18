@@ -9,6 +9,7 @@ import Providers from '../components/Providers'
 import connectDB from '../lib/mongoose'
 import SiteSettings from '../models/SiteSettings'
 import Analytics from '../components/Analytics'
+import Script from 'next/script'
 
 const inter = Inter({
   subsets: ['latin', 'latin-ext'],
@@ -135,6 +136,8 @@ import LoadingBar from '../components/LoadingBar';
 import { ToastProvider } from '../components/ui/useToast';
 import FixralToastViewport from '../components/ui/FixralToast';
 
+
+
 export default async function RootLayout({
   children,
 }: {
@@ -168,19 +171,53 @@ export default async function RootLayout({
         <link rel="dns-prefetch" href="//fonts.gstatic.com" />
         <link rel="dns-prefetch" href="//res.cloudinary.com" />
 
-        {/* Analytics and Custom Scripts */}
+
+
+        {/* Analytics Scripts */}
         <Analytics
           googleAnalyticsId={siteSettings?.analytics?.googleAnalyticsId}
           googleTagManagerId={siteSettings?.analytics?.googleTagManagerId}
           googleSiteVerification={siteSettings?.analytics?.googleSiteVerification}
           facebookPixelId={siteSettings?.analytics?.facebookPixelId}
           hotjarId={siteSettings?.analytics?.hotjarId}
-          customHeadScripts={siteSettings?.analytics?.customScripts?.head}
-          customBodyStartScripts={siteSettings?.analytics?.customScripts?.bodyStart}
-          customBodyEndScripts={siteSettings?.analytics?.customScripts?.bodyEnd}
         />
+
+        {/* Custom HTML Injection - Raw HTML exactly as entered */}
+        {(siteSettings?.analytics?.customScripts?.head || 
+          siteSettings?.analytics?.customScripts?.bodyStart || 
+          siteSettings?.analytics?.customScripts?.bodyEnd) && (
+          <Script
+            id="custom-html-injector"
+            strategy="afterInteractive"
+            dangerouslySetInnerHTML={{
+              __html: `
+                (function() {
+                  // Head HTML - inject exactly as provided
+                  const headHTML = ${JSON.stringify(siteSettings?.analytics?.customScripts?.head || '')};
+                  if (headHTML) {
+                    document.head.insertAdjacentHTML('beforeend', headHTML);
+                  }
+
+                  // Body start HTML - inject at beginning of body
+                  const bodyStartHTML = ${JSON.stringify(siteSettings?.analytics?.customScripts?.bodyStart || '')};
+                  if (bodyStartHTML) {
+                    document.body.insertAdjacentHTML('afterbegin', bodyStartHTML);
+                  }
+
+                  // Body end HTML - inject at end of body
+                  const bodyEndHTML = ${JSON.stringify(siteSettings?.analytics?.customScripts?.bodyEnd || '')};
+                  if (bodyEndHTML) {
+                    document.body.insertAdjacentHTML('beforeend', bodyEndHTML);
+                  }
+                })();
+              `
+            }}
+          />
+        )}
       </head>
       <body className={`${inter.variable} ${oswald.variable} font-sans min-h-screen bg-[#f6f7f9] flex flex-col text-slate-800 antialiased`}>
+
+        
         <a href="#main-content" className="sr-only focus:not-sr-only focus:fixed focus:top-2 focus:left-2 focus:z-[10000] focus:bg-white focus:text-slate-900 focus:px-4 focus:py-2 focus:rounded-lg focus:shadow">
           İçeriğe atla
         </a>
@@ -214,6 +251,8 @@ export default async function RootLayout({
             </div>
           </div>
         )}
+
+
       </body>
     </html>
   )

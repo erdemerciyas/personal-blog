@@ -60,7 +60,7 @@ export async function GET() {
 }
 
 // PUT Method
-export const PUT = withSecurity(SecurityConfigs.admin)(async (request: NextRequest) => {
+export const PUT = withSecurity(SecurityConfigs.adminWithScripts)(async (request: NextRequest) => {
   if (process.env.NODE_ENV === 'development') {
     console.log('🔥 PUT /api/settings called');
   }
@@ -162,7 +162,7 @@ export const PUT = withSecurity(SecurityConfigs.admin)(async (request: NextReque
 });
 
 // POST Method
-export const POST = withSecurity(SecurityConfigs.admin)(async (request: NextRequest) => {
+export const POST = withSecurity(SecurityConfigs.adminWithScripts)(async (request: NextRequest) => {
   if (process.env.NODE_ENV === 'development') {
     console.log('📬 POST /api/settings called');
   }
@@ -171,7 +171,14 @@ export const POST = withSecurity(SecurityConfigs.admin)(async (request: NextRequ
     // Authorization enforced by withSecurity(SecurityConfigs.admin)
 
     const body = await request.json();
-    if (process.env.NODE_ENV === 'development') console.log('📝 Body keys:', Object.keys(body));
+    if (process.env.NODE_ENV === 'development') {
+      console.log('📝 Body keys:', Object.keys(body));
+      console.log('📝 Custom scripts in body:', {
+        customHeadScripts: body.customHeadScripts,
+        customBodyStartScripts: body.customBodyStartScripts,
+        customBodyEndScripts: body.customBodyEndScripts
+      });
+    }
     
     await connectDB();
     if (process.env.NODE_ENV === 'development') console.log('🔗 Database connected');
@@ -189,7 +196,14 @@ export const POST = withSecurity(SecurityConfigs.admin)(async (request: NextRequ
       }
     );
 
-    if (process.env.NODE_ENV === 'development') console.log('✅ Settings updated:', !!settings);
+    if (process.env.NODE_ENV === 'development') {
+      console.log('✅ Settings updated:', !!settings);
+      console.log('✅ Saved custom scripts:', {
+        customHeadScripts: settings?.customHeadScripts,
+        customBodyStartScripts: settings?.customBodyStartScripts,
+        customBodyEndScripts: settings?.customBodyEndScripts
+      });
+    }
 
     // SiteSettings sync
     if (settings) {

@@ -9,6 +9,7 @@
 [![License](https://img.shields.io/badge/License-MIT-yellow?style=for-the-badge)](https://github.com/erdemerciyas/extremeecu/blob/main/LICENSE)
 [![Build Status](https://img.shields.io/badge/Build-Passing-075985?style=for-the-badge&logo=github-actions)](https://github.com/erdemerciyas/extremeecu/actions)
 [![Code Quality](https://img.shields.io/badge/Code_Quality-Optimized-075985?style=for-the-badge&logo=codeclimate)](https://github.com/erdemerciyas/extremeecu)
+[![Analytics](https://img.shields.io/badge/Analytics-Integrated-28a745?style=for-the-badge&logo=google-analytics)](https://analytics.google.com/)
 
 Modern, güvenli ve performanslı kişisel blog ve portfolyo platformu. Next.js 14, TypeScript, MongoDB ve Tailwind CSS ile geliştirilmiştir.
 
@@ -16,7 +17,7 @@ Modern, güvenli ve performanslı kişisel blog ve portfolyo platformu. Next.js 
 
 **[Live Site](https://www.extremeecu.com)** | **[Admin Panel](https://www.extremeecu.com/admin)** | **[API Health](https://www.extremeecu.com/api/health)**
 
-> **Status**: **LIVE** | **Last Deploy**: 2025-08-18 | **Version**: v2.3.2 | **CI/CD Pipeline**: **OPTIMIZED**
+> **Status**: **LIVE** | **Last Deploy**: 2025-08-18 | **Version**: v2.3.3 | **CI/CD Pipeline**: **OPTIMIZED**
 
 ## Özellikler
 
@@ -52,7 +53,9 @@ Modern, güvenli ve performanslı kişisel blog ve portfolyo platformu. Next.js 
   - Auto-save functionality
 - **Google Site Araçları Yönetimi**: Kapsamlı analytics yönetim sistemi
   - Google Analytics 4, GTM, Facebook Pixel entegrasyonu
-  - Özel script kodları yönetimi (Head, Body Start, Body End)
+  - Özel HTML kod alanları (Head, Body Start, Body End)
+  - Raw HTML injection - hiçbir wrapper element olmadan
+  - Client-side injection ile hydration-safe rendering
   - Aktif araçlar önizlemesi ve real-time validation
   - Otomatik HTML entegrasyonu
 - **Full-Width Layout**: Tam genişlik admin arayüzü
@@ -136,15 +139,24 @@ npm run dev
 
 Uygulama [http://localhost:3000](http://localhost:3000) adresinde çalışacaktır.
 
-## Yeni Özellikler (v2.3.2)
+## Yeni Özellikler (v2.3.3)
 
-### Google Site Araçları ve Analytics Entegrasyonu (2025-08-18)
+### Raw HTML Injection Sistemi (2025-08-18)
+- **Hiçbir Wrapper Element Yok**: Girilen HTML kodları aynen sayfaya ekleniyor
+- **Client-Side Injection**: `insertAdjacentHTML` ile hydration-safe rendering
+- **Tam Kontrol**: Meta taglar, CSS, JavaScript, HTML elementleri - her şey destekleniyor
+- **Üç Farklı Alan**: Head, Body Start ve Body End için ayrı kod alanları
+- **Security Bypass**: Admin kullanıcılar için input validation devre dışı
+- **Performance Optimized**: afterInteractive stratejisi ile optimal yükleme
+- **Debug-Free**: Production-ready, temiz HTML output
+
+### Google Site Araçları ve Analytics Entegrasyonu (v2.3.2)
 - **Google Analytics 4**: GA4 Measurement ID desteği ve otomatik entegrasyon
 - **Google Tag Manager**: GTM Container ID desteği ve NoScript fallback
 - **Google Site Verification**: Search Console doğrulama kodu entegrasyonu
 - **Facebook Pixel**: Facebook Ads tracking ve conversion tracking
 - **Hotjar Analytics**: Heatmap ve user behavior analytics
-- **Özel Script Yönetimi**: Head, Body Start ve Body End için özel kodlar
+- **Özel HTML Kod Yönetimi**: Head, Body Start ve Body End için özel kodlar
 - **Admin Panel Entegrasyonu**: Tüm analytics araçları admin panelinden yönetilebilir
 - **Otomatik HTML Entegrasyonu**: Girilen kodlar otomatik olarak site genelinde aktif
 - **Performance Optimized**: Script loading stratejileri (afterInteractive, lazyOnload)
@@ -581,7 +593,7 @@ This project is licensed under the MIT License - see the **[LICENSE](LICENSE)** 
 ## Project Status
 
 - **Status**: **PRODUCTION READY**
-- **Version**: v2.3.2
+- **Version**: v2.3.3
 - **Last Updated**: 2025-08-18
 - **Security Level**: HIGH
 - **Performance**: OPTIMIZED

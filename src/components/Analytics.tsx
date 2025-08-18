@@ -8,9 +8,6 @@ interface AnalyticsProps {
   googleSiteVerification?: string;
   facebookPixelId?: string;
   hotjarId?: string;
-  customHeadScripts?: string;
-  customBodyStartScripts?: string;
-  customBodyEndScripts?: string;
 }
 
 export default function Analytics({
@@ -19,9 +16,6 @@ export default function Analytics({
   googleSiteVerification,
   facebookPixelId,
   hotjarId,
-  customHeadScripts,
-  customBodyStartScripts,
-  customBodyEndScripts,
 }: AnalyticsProps) {
   
   // Debug analytics props
@@ -32,9 +26,6 @@ export default function Analytics({
       googleSiteVerification,
       facebookPixelId,
       hotjarId,
-      hasCustomHeadScripts: !!customHeadScripts,
-      hasCustomBodyStartScripts: !!customBodyStartScripts,
-      hasCustomBodyEndScripts: !!customBodyEndScripts,
     });
   }
   
@@ -124,42 +115,7 @@ export default function Analytics({
     );
   };
 
-  // Custom Scripts
-  const renderCustomScripts = () => {
-    const scripts = [];
 
-    if (customHeadScripts) {
-      scripts.push(
-        <div key="custom-head" dangerouslySetInnerHTML={{ __html: customHeadScripts }} />
-      );
-    }
-
-    if (customBodyStartScripts) {
-      scripts.push(
-        <Script
-          key="custom-body-start"
-          id="custom-body-start-scripts"
-          strategy="afterInteractive"
-        >
-          {customBodyStartScripts}
-        </Script>
-      );
-    }
-
-    if (customBodyEndScripts) {
-      scripts.push(
-        <Script
-          key="custom-body-end"
-          id="custom-body-end-scripts"
-          strategy="lazyOnload"
-        >
-          {customBodyEndScripts}
-        </Script>
-      );
-    }
-
-    return scripts;
-  };
 
   return (
     <>
@@ -173,7 +129,6 @@ export default function Analytics({
       {renderGoogleTagManager()}
       {renderFacebookPixel()}
       {renderHotjar()}
-      {renderCustomScripts()}
 
       {/* GTM NoScript Fallback */}
       {googleTagManagerId && (

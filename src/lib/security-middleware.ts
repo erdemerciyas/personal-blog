@@ -198,6 +198,14 @@ export const SecurityConfigs = {
     validateInput: true,
     logRequests: true,
     rateLimitType: 'STRICT'
+  },
+  
+  // Admin endpoints that allow script content (settings, etc.)
+  adminWithScripts: {
+    requireAuth: true,
+    requireAdmin: true,
+    validateInput: false, // Disable input validation for script content
+    logRequests: true
   }
 };
 

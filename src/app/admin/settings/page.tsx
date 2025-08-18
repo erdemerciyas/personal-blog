@@ -5,7 +5,6 @@ import { useSession } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
 import Image from 'next/image';
 import AdminLayout from '../../../components/admin/AdminLayout';
-import UniversalEditor from '../../../components/ui/UniversalEditor';
 import { CheckIcon, ShieldCheckIcon, CloudArrowUpIcon, XMarkIcon, PhotoIcon } from '@heroicons/react/24/outline';
 
 interface Settings {
@@ -100,6 +99,7 @@ export default function AdminSettingsPage() {
   };
 
   const handleInputChange = (field: string, value: string | number | boolean) => {
+    console.log('🔄 Input change:', field, '=', value);
     setSettings(prev => ({
       ...prev,
       [field]: value
@@ -302,12 +302,12 @@ export default function AdminSettingsPage() {
               <label className="block text-sm font-medium text-slate-700 mb-2">
                 Site Açıklaması
               </label>
-              <UniversalEditor
+              <textarea
                 value={settings.siteDescription}
-                onChange={(v) => handleInputChange('siteDescription', v)}
+                onChange={(e) => handleInputChange('siteDescription', e.target.value)}
                 placeholder="Site açıklamanız..."
-                mode="rich"
-                minHeight="140px"
+                className="w-full border border-slate-300 rounded-lg px-4 py-3 focus:outline-none focus:ring-2 focus:ring-brand-primary-600 resize-vertical"
+                rows={4}
               />
             </div>
 
@@ -581,50 +581,84 @@ export default function AdminSettingsPage() {
             </div>
           </div>
 
-          {/* Custom Scripts */}
+          {/* Custom HTML Code */}
           <div className="mt-8 space-y-6">
-            <h3 className="text-lg font-semibold text-slate-800">Özel Script Kodları</h3>
+            <h3 className="text-lg font-semibold text-slate-800">Özel HTML Kodları</h3>
+            <p className="text-sm text-slate-600">Bu alanları kullanarak sitenizin farklı bölümlerine özel HTML kodları ekleyebilirsiniz.</p>
             
             <div>
               <label className="block text-sm font-medium text-slate-700 mb-2">
-                Head Bölümü Scripts
+                Head Bölümü HTML Kodları
               </label>
-              <UniversalEditor
+              <textarea
                 value={settings.customHeadScripts || ''}
-                onChange={(v) => handleInputChange('customHeadScripts', v)}
-                placeholder="<script> kodlarınızı buraya ekleyin..."
-                mode="text"
-                minHeight="120px"
+                onChange={(e) => handleInputChange('customHeadScripts', e.target.value)}
+                placeholder="HTML kodlarınızı buraya ekleyin... (meta taglar, CSS, script, link vb.)"
+                className="w-full border border-slate-300 rounded-lg px-4 py-3 focus:outline-none focus:ring-2 focus:ring-brand-primary-600 font-mono text-sm resize-vertical"
+                rows={8}
+                spellCheck={false}
               />
-              <p className="text-xs text-slate-500 mt-1">&lt;head&gt; bölümüne eklenecek kodlar (meta taglar, CSS, JS)</p>
+              <p className="text-xs text-slate-500 mt-1">
+                &lt;head&gt; bölümüne eklenecek kodlar: meta taglar, CSS stilleri, JavaScript kodları, external linkler
+              </p>
+              <div className="mt-2 p-3 bg-slate-50 rounded-lg">
+                <p className="text-xs font-medium text-slate-700 mb-1">Örnek kullanımlar:</p>
+                <code className="text-xs text-slate-600 block">
+                  &lt;meta name="google-site-verification" content="..."&gt;<br/>
+                  &lt;link rel="stylesheet" href="custom.css"&gt;<br/>
+                  &lt;script&gt;/* Analytics kodu */&lt;/script&gt;
+                </code>
+              </div>
             </div>
 
             <div>
               <label className="block text-sm font-medium text-slate-700 mb-2">
-                Body Başlangıç Scripts
+                Body Başlangıç HTML Kodları
               </label>
-              <UniversalEditor
+              <textarea
                 value={settings.customBodyStartScripts || ''}
-                onChange={(v) => handleInputChange('customBodyStartScripts', v)}
-                placeholder="<script> kodlarınızı buraya ekleyin..."
-                mode="text"
-                minHeight="120px"
+                onChange={(e) => handleInputChange('customBodyStartScripts', e.target.value)}
+                placeholder="HTML kodlarınızı buraya ekleyin... (tracking kodları, noscript tagları vb.)"
+                className="w-full border border-slate-300 rounded-lg px-4 py-3 focus:outline-none focus:ring-2 focus:ring-brand-primary-600 font-mono text-sm resize-vertical"
+                rows={8}
+                spellCheck={false}
               />
-              <p className="text-xs text-slate-500 mt-1">&lt;body&gt; etiketinin hemen sonrasına eklenecek kodlar (GTM, tracking)</p>
+              <p className="text-xs text-slate-500 mt-1">
+                &lt;body&gt; etiketinin hemen sonrasına eklenecek kodlar: GTM noscript, tracking pixelleri, banner kodları
+              </p>
+              <div className="mt-2 p-3 bg-slate-50 rounded-lg">
+                <p className="text-xs font-medium text-slate-700 mb-1">Örnek kullanımlar:</p>
+                <code className="text-xs text-slate-600 block">
+                  &lt;noscript&gt;&lt;iframe src="gtm..."&gt;&lt;/iframe&gt;&lt;/noscript&gt;<br/>
+                  &lt;div id="custom-banner"&gt;...&lt;/div&gt;<br/>
+                  &lt;script&gt;/* Tracking kodu */&lt;/script&gt;
+                </code>
+              </div>
             </div>
 
             <div>
               <label className="block text-sm font-medium text-slate-700 mb-2">
-                Body Bitiş Scripts
+                Body Bitiş HTML Kodları
               </label>
-              <UniversalEditor
+              <textarea
                 value={settings.customBodyEndScripts || ''}
-                onChange={(v) => handleInputChange('customBodyEndScripts', v)}
-                placeholder="<script> kodlarınızı buraya ekleyin..."
-                mode="text"
-                minHeight="120px"
+                onChange={(e) => handleInputChange('customBodyEndScripts', e.target.value)}
+                placeholder="HTML kodlarınızı buraya ekleyin... (analytics, chat widget, footer kodları vb.)"
+                className="w-full border border-slate-300 rounded-lg px-4 py-3 focus:outline-none focus:ring-2 focus:ring-brand-primary-600 font-mono text-sm resize-vertical"
+                rows={8}
+                spellCheck={false}
               />
-              <p className="text-xs text-slate-500 mt-1">&lt;/body&gt; etiketinden hemen önce eklenecek kodlar (analytics, chat widgets)</p>
+              <p className="text-xs text-slate-500 mt-1">
+                &lt;/body&gt; etiketinden hemen önce eklenecek kodlar: analytics, chat widget'ları, footer script'leri
+              </p>
+              <div className="mt-2 p-3 bg-slate-50 rounded-lg">
+                <p className="text-xs font-medium text-slate-700 mb-1">Örnek kullanımlar:</p>
+                <code className="text-xs text-slate-600 block">
+                  &lt;script&gt;/* Google Analytics */&lt;/script&gt;<br/>
+                  &lt;div id="chat-widget"&gt;...&lt;/div&gt;<br/>
+                  &lt;script src="external-library.js"&gt;&lt;/script&gt;
+                </code>
+              </div>
             </div>
           </div>
 
