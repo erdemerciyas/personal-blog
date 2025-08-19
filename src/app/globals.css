@@ -309,23 +309,6 @@ h1, h2, h3, h4, h5, h6 {
     @apply bg-white/70 backdrop-blur-md border border-white/60;
   }
 
-  /* Projeye özgü blueprint grid arka planı */
-  .bg-blueprint {
-    position: relative;
-    background-color: #0f1b26;
-  }
-
-  .bg-blueprint::before {
-    content: "";
-    position: absolute;
-    inset: 0;
-    background-image:
-      linear-gradient(rgba(255,255,255,0.04) 1px, transparent 1px),
-      linear-gradient(90deg, rgba(255,255,255,0.04) 1px, transparent 1px);
-    background-size: 24px 24px, 24px 24px;
-    background-position: -1px -1px, -1px -1px;
-    pointer-events: none;
-  }
 }
 
 /* Add better focus states */

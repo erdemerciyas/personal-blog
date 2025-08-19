@@ -123,7 +123,6 @@ export default function AboutPage() {
     <div className="min-h-screen">
       {/* Hero Section */}
       <section className="bg-gradient-primary text-white py-28 md:py-32 relative overflow-hidden">
-        <div className="absolute inset-0 opacity-[0.08] bg-blueprint" />
         <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
             {/* Left Content */}
@@ -291,9 +290,6 @@ export default function AboutPage() {
 
   {/* Contact CTA */}
   <section className="section bg-gradient-primary text-white relative overflow-hidden">
-        {/* Background Pattern */}
-        <div className="absolute inset-0 opacity-[0.08] bg-blueprint" />
-
         <div className="container-content text-center relative z-10">
           <div className="max-w-3xl mx-auto">
             <h2 className="section-title text-white mb-6">

@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
+import { createPortal } from 'react-dom';
 import Link from 'next/link';
 import Image from 'next/image';
 // import { Loader } from './ui'; // kaldırıldı
@@ -74,6 +75,7 @@ const Header: React.FC = () => {
   const [navLinks, setNavLinks] = useState<Array<{ href: string; label: string; icon: React.ComponentType<React.SVGProps<SVGSVGElement>>; isExternal?: boolean }>>([]);
   const [navLoaded, setNavLoaded] = useState(false);
   const [siteSettings, setSiteSettings] = useState<SiteSettings | null>(null);
+  const [mounted, setMounted] = useState(false);
 
   // Project form state
   const [projectForm, setProjectForm] = useState({
@@ -98,6 +100,11 @@ const Header: React.FC = () => {
     };
     window.addEventListener('scroll', handleScroll);
     return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
+
+  // Mark as mounted for portal usage
+  useEffect(() => {
+    setMounted(true);
   }, []);
 
   // Fetch site settings
@@ -203,6 +210,13 @@ const Header: React.FC = () => {
       clearInterval(refreshInterval);
       window.removeEventListener('pageSettingsChanged', handlePageSettingsChange);
     };
+  }, []);
+
+  // Listen for global openProjectModal event (from FloatingCta)
+  useEffect(() => {
+    const handleOpen: EventListener = () => openProjectModal();
+    window.addEventListener('openProjectModal', handleOpen);
+    return () => window.removeEventListener('openProjectModal', handleOpen);
   }, []);
 
   // Hide header on admin pages
@@ -317,15 +331,15 @@ E-posta: ${projectForm.email}
       <div className="container-main">
         <div className="flex items-center justify-between h-16 sm:h-20">
           {/* Logo */}
-          <Link href="/" className="flex items-center space-x-3 group">
+          <Link href="/" className="flex items-center space-x-3 group shrink-0 -ml-2 sm:-ml-4 lg:-ml-6">
             {siteSettings?.logo?.url && (
-              <div className="relative w-12 h-12 rounded-2xl overflow-hidden bg-white/10 backdrop-blur-sm p-1">
+              <div className="relative w-12 h-12 sm:w-14 sm:h-14 rounded-2xl overflow-hidden bg-white/10 backdrop-blur-sm p-1">
                 <Image
                   src={siteSettings.logo.url}
                   alt={siteSettings.logo.alt}
                   fill
                   className="object-contain"
-                  sizes="48px"
+                  sizes="(min-width: 640px) 56px, 48px"
                   priority
                 />
               </div>
@@ -349,7 +363,7 @@ E-posta: ${projectForm.email}
           </Link>
 
           {/* Desktop Navigation */}
-          <nav role="navigation" aria-label="Ana navigasyon" className="hidden md:flex items-center space-x-2">
+          <nav role="navigation" aria-label="Ana navigasyon" className="hidden md:flex items-center gap-2 flex-1 min-w-0 justify-center overflow-x-auto">
             {navLinks.map((link, index) => {
               const isActive = pathname === link.href;
               return (
@@ -359,7 +373,7 @@ E-posta: ${projectForm.email}
                     href={link.href}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className={`relative overflow-hidden px-4 py-2 rounded-xl font-medium transition-all duration-200 group flex items-center space-x-2 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-primary-600 focus-visible:ring-offset-2 ${
+                    className={`relative overflow-hidden px-3 lg:px-4 py-2 rounded-xl font-medium transition-all duration-200 group flex items-center space-x-2 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-primary-600 focus-visible:ring-offset-2 ${
                     isActive
                       ? isScrolled
                         ? 'bg-brand-primary-100 text-brand-primary-800'
@@ -385,7 +399,7 @@ E-posta: ${projectForm.email}
                   <Link
                     key={index}
                     href={link.href}
-                    className={`relative overflow-hidden px-4 py-2 rounded-xl font-medium transition-all duration-200 group flex items-center space-x-2 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-primary-600 focus-visible:ring-offset-2 ${
+                    className={`relative overflow-hidden px-3 lg:px-4 py-2 rounded-xl font-medium transition-all duration-200 group flex items-center space-x-2 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-primary-600 focus-visible:ring-offset-2 ${
                       isActive
                         ? isScrolled
                           ? 'bg-brand-primary-100 text-brand-primary-800'
@@ -411,24 +425,6 @@ E-posta: ${projectForm.email}
               );
             })}
           </nav>
-
-          {/* CTA Button - show when navigation is loaded */}
-          {navLoaded && (
-            <div className="hidden md:flex items-center space-x-4">
-              <button
-                onClick={openProjectModal}
-                aria-label="Proje başvurusu formunu aç"
-                className={`px-5 py-2.5 rounded-full font-semibold transition-all duration-300 transform hover:scale-[1.02] flex items-center space-x-2 ${
-                  isScrolled
-                    ? 'bg-slate-900 text-white shadow hover:shadow-lg'
-                    : 'bg-white/10 backdrop-blur-md text-white border border-white/20 hover:bg-white/20'
-                }`}
-              >
-                <PaperAirplaneIcon className="w-5 h-5" />
-                <span>Proje Başvurusu</span>
-              </button>
-            </div>
-          )}
 
           {/* Mobile Menu Button */}
           <button
@@ -508,8 +504,8 @@ E-posta: ${projectForm.email}
         )}
       </div>
 
-      {/* Project Request Modal */}
-      {isProjectModalOpen && (
+      {/* Project Request Modal via Portal */}
+      {mounted && isProjectModalOpen && createPortal(
         <div className="fixed inset-0 bg-black/50 backdrop-blur-sm z-[9999] flex items-center justify-center p-4">
           <div className="bg-white rounded-3xl shadow-2xl w-full max-w-2xl max-h-[90vh] overflow-y-auto">
             <div className="p-6 border-b border-gray-200 flex items-center justify-between">
@@ -658,7 +654,7 @@ E-posta: ${projectForm.email}
               </div>
 
               <div>
-                <label htmlFor="description" className="block text-sm font-medium text-gray-700 mb-2">
+                <label htmlFor="description" className="block text sm font-medium text-gray-700 mb-2">
                   Proje Detayları *
                 </label>
                 <textarea
@@ -698,8 +694,8 @@ E-posta: ${projectForm.email}
               </div>
             </form>
           </div>
-        </div>
-      )}
+        </div>, document.body)
+      }
     </header>
   );
 };

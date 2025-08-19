@@ -19,11 +19,7 @@ interface PortfolioDetailHeroProps {
 export default function PortfolioDetailHero({ project }: PortfolioDetailHeroProps) {
   return (
     <section className="relative overflow-hidden bg-gradient-primary text-white">
-      {/* Background Pattern */}
-      <div className="absolute inset-0 opacity-[0.12]">
-        <div className="bg-blueprint absolute inset-0"></div>
-      </div>
-
+      
       <div className="section-hero relative z-10">
         <div className="container-content">
           {/* Navigation */}

@@ -16,7 +16,7 @@ Modern, güvenli ve performanslı kişisel blog ve portfolyo platformu. Next.js 
 
 **[Live Site](https://www.fixral.com)** | **[Admin Panel](https://www.fixral.com/admin)** | **[API Health](https://www.fixral.com/api/health)**
 
-> **Status**: **LIVE** | **Last Deploy**: 2025-08-17 | **Version**: v2.3.1 | **CI/CD Pipeline**: **OPTIMIZED**
+> **Status**: **LIVE** | **Last Deploy**: 2025-08-19 | **Version**: v2.3.2 | **CI/CD Pipeline**: **OPTIMIZED**
 
 ## Özellikler
 
@@ -130,6 +130,16 @@ npm run dev
 ```
 
 Uygulama [http://localhost:3000](http://localhost:3000) adresinde çalışacaktır.
+
+## Yeni Özellikler (v2.3.2)
+
+### Pattern Sistemi Temizliği (2025-08-19)
+- Arka plan pattern tasarımı tamamen kaldırıldı: `data-pattern`, `PatternToggle` bileşeni ve `.bg-pattern*` CSS sınıfları temizlendi.
+- `layout.tsx` dekoratif radial blob katmanı da kaldırılarak düz arka plan tercih edildi.
+- Kullanılmayan CSS ve bileşen izleri temizlendi; dokümantasyon güncellendi.
+- Breaking change yok; UI arkaplanı sadeleştirildi.
+
+---
 
 ## Yeni Özellikler (v2.3.1)
 
@@ -394,7 +404,7 @@ Permissions-Policy: camera=(), microphone=(), geolocation=()
 
 **Current Status**: **LIVE** on Vercel 
 **Deployment URL**: https://www.fixral.com  
-**Last Deploy**: 2025-08-17  
+**Last Deploy**: 2025-08-19  
 **Build Time**: ~57 seconds  
 
 #### Quick Deploy
@@ -519,6 +529,17 @@ npm run deploy:preview   # Preview deployment
 npm run deploy:production # Production deployment
 ```
 
+## 🔀 GitHub Push & CI Notları
+
+- **Push öncesi hızlı kontrol**:
+  - `npm run type-check` (TS hatası olmamalı)
+  - `npm run lint:fix` (ESLint otomatik düzeltme)
+  - `npm run build` (lokalde hatasız build)
+- **GitHub Actions**: Repo'daki `./.github/workflows/ci.yml` Next.js build ve kalite kontrollerini çalıştırır. Hata alırsanız lokaldeki üç komuta tekrar bakın.
+- **Vercel CLI**: `npm run deploy` komutu Vercel CLI kullanır. İlk kez kullanıyorsanız `vercel login` yapın. Kurumsal token gerekiyorsa `VERCEL_TOKEN` tanımlayın.
+- **Env değişkenleri**: Production build için `.env` değerlerinin Vercel Dashboard veya GitHub Secrets üzerinden tanımlı olduğundan emin olun (bkz. README > Environment Variables (Production)).
+- **Node sürümü**: CI runner Node 18+ kullanır. Lokalde farklı sürüm kullanıyorsanız `nvm use 18` ile eşitleyin.
+
 ### Maintenance
 ```bash
 npm run clean            # Clean build files
@@ -575,8 +596,8 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 ## 📈 Project Status
 
 - **Status**: ✅ **PRODUCTION READY**
-- **Version**: v2.3.1
-- **Last Updated**: 2025-08-17
+- **Version**: v2.3.2
+- **Last Updated**: 2025-08-19
 - **Security Level**: 🔒 HIGH
 - **Performance**: ⚡ OPTIMIZED
 - **Documentation**: 📚 COMPLETE

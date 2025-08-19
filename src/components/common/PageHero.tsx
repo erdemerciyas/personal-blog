@@ -51,15 +51,7 @@ export default function PageHero({
 
   return (
     <section className={`relative overflow-hidden ${backgroundGradient} text-white ${variant === 'compact' ? 'py-12 md:py-16' : ''}`} style={variant === 'compact' && minHeightVh ? { minHeight: `${minHeightVh}vh` } : undefined}>
-      {/* Background Pattern */}
-      <div className="absolute inset-0 opacity-[0.12]">
-        <div className="bg-blueprint absolute inset-0"></div>
-        <div className="absolute inset-0" style={{
-          background:
-            'radial-gradient(1200px 400px at 20% -10%, rgba(255,255,255,0.08) 0%, transparent 60%),\
-             radial-gradient(800px 300px at 80% 110%, rgba(0,180,216,0.15) 0%, transparent 60%)'
-        }} />
-      </div>
+
 
       <div className={`${variant === 'compact' ? '' : 'section-hero'} relative z-10`}>
         <div className="container-content text-center">

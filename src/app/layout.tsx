@@ -10,6 +10,7 @@ import connectDB, { hasValidMongoUri } from '../lib/mongoose'
 import SiteSettings from '../models/SiteSettings'
 import Settings from '../models/Settings'
 import Script from 'next/script'
+import FloatingCta from '../components/FloatingCta';
 
 // Force dynamic rendering and disable caching for layout/metadata
 export const dynamic = 'force-dynamic'
@@ -227,11 +228,13 @@ export default async function RootLayout({
             <Providers>
               <ClientWrapper>
                 <Header />
-
-                {/* Main content area with consistent container */}
-                <main id="main-content" className="flex-grow">
-                  <div>{children}</div>
-                </main>
+                <FloatingCta />
+                {/* Main content area (flat background) */}
+                <div className="relative flex-grow">
+                  <main id="main-content" className="relative z-10">
+                    <div>{children}</div>
+                  </main>
+                </div>
 
                 <ConditionalFooter />
               </ClientWrapper>

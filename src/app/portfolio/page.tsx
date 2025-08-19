@@ -225,35 +225,32 @@ function PortfolioPageContent() {
               >
                 Filtreleri Temizle
               </button>
-            </motion.div>
-          )}
-        </div>
-      </section>
+          </motion.div>
+        )}
+      </div>
+    </section>
 
-      {/* CTA Section */}
-      <section className="section bg-gradient-primary text-white relative overflow-hidden" aria-labelledby="portfolio-cta-title">
-        {/* Background Pattern */}
-        <div className="absolute inset-0 opacity-[0.08] bg-blueprint" />
-
-        <div className="container-content text-center relative z-10">
-          <div className="section-header">
-            <h2 id="portfolio-cta-title" className="text-white">Projenizi Birlikte Gerçekleştirelim</h2>
-            <p className="text-brand-primary-100">
-              Portföyümüzdeki projeler gibi sizin de fikirlerinizi hayata geçirmeye hazırız.
-            </p>
-          </div>
-          <div className="flex flex-col sm:flex-row gap-6 justify-center">
-            <Link href="/contact" className="btn-primary">
-              <SparklesIcon className="w-5 h-5 mr-2" />
-              Proje Başlatalım
-            </Link>
-            <Link href="/services" className="btn-secondary">
-              Hizmetlerimizi İnceleyin
-              <ArrowRightIcon className="w-5 h-5 ml-2" />
-            </Link>
-          </div>
+    {/* CTA Section */}
+    <section className="section bg-gradient-primary text-white relative overflow-hidden" aria-labelledby="portfolio-cta-title">
+      <div className="container-content text-center relative z-10">
+        <div className="section-header">
+          <h2 id="portfolio-cta-title" className="text-white">Projenizi Birlikte Gerçekleştirelim</h2>
+          <p className="text-brand-primary-100">
+            Portföyümüzdeki projeler gibi sizin de fikirlerinizi hayata geçirmeye hazırız.
+          </p>
         </div>
-      </section>
+        <div className="flex flex-col sm:flex-row gap-6 justify-center">
+          <Link href="/contact" className="btn-primary">
+            <SparklesIcon className="w-5 h-5 mr-2" />
+            Proje Başlatalım
+          </Link>
+          <Link href="/services" className="btn-secondary">
+            Hizmetlerimizi İnceleyin
+            <ArrowRightIcon className="w-5 h-5 ml-2" />
+          </Link>
+        </div>
+      </div>
+    </section>
     </div>
   );
 }
