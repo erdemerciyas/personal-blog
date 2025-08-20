@@ -6,6 +6,8 @@ import FixralCard from '@/components/ui/FixralCard';
 import TiltHover from '@/components/TiltHover';
 const PageHero = dynamic(() => import('@/components/common/PageHero'), { ssr: false });
 import { Squares2X2Icon, AdjustmentsHorizontalIcon, StarIcon, CurrencyDollarIcon, CheckCircleIcon, MagnifyingGlassIcon } from '@heroicons/react/24/outline';
+import BreadcrumbsJsonLd from '@/components/seo/BreadcrumbsJsonLd';
+import Breadcrumbs from '@/components/Breadcrumbs';
 
 async function getData(searchParams: Record<string, string>) {
   const qs = new URLSearchParams(searchParams as Record<string, string>).toString();
@@ -60,6 +62,19 @@ export default async function ProductsPage({ searchParams }: { searchParams: Rec
         buttonLink={heroButtonLink}
         variant="compact"
         minHeightVh={33}
+      />
+      {/* Breadcrumbs under Hero */}
+      <section className="py-4">
+        <div className="container mx-auto px-4">
+          <Breadcrumbs />
+        </div>
+      </section>
+      {/* JSON-LD: Breadcrumbs for Products list */}
+      <BreadcrumbsJsonLd
+        items={[
+          { name: 'Anasayfa', item: '/' },
+          { name: 'Ürünler', item: '/products' },
+        ]}
       />
       <div className="container mx-auto p-6 space-y-6">
       {/* Filters */}

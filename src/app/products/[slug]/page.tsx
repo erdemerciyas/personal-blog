@@ -4,12 +4,14 @@ import Link from 'next/link';
 import FixralCard from '@/components/ui/FixralCard';
 import TiltHover from '@/components/TiltHover';
 import sanitizeHtml from 'sanitize-html';
-import { appConfig } from '@/lib/config';
+import { appConfig, config } from '@/lib/config';
 const PageHero = dynamic(() => import('@/components/common/PageHero'), { ssr: false });
 // Avoid importing client-only image component in server page
 import { ApprovedReviews, ProductReviewForm } from './ReviewClient';
 const ProductGallery = dynamic(() => import('./GalleryClient'), { ssr: false });
 import Breadcrumbs from '@/components/Breadcrumbs';
+import BreadcrumbsJsonLd from '@/components/seo/BreadcrumbsJsonLd';
+import ProductJsonLd from '@/components/seo/ProductJsonLd';
 import {
   SparklesIcon,
   CubeIcon,
@@ -59,6 +61,7 @@ export default async function ProductDetail({ params }: { params: { slug: string
   const description = pageSettings?.description ? `${baseDesc} • ${pageSettings.description}` : baseDesc;
   const firstCategorySlug = Array.isArray(product.categoryIds) && product.categoryIds.length > 0 ? (product.categoryIds[0]?.slug as string | undefined) : undefined;
   const related = await getRelatedProducts(firstCategorySlug, product.slug as string);
+  const baseUrl = (config.app.url || process.env.NEXTAUTH_URL || '').replace(/\/$/, '');
 
   return (
     <main className="space-y-6" id="main-content">
@@ -71,8 +74,37 @@ export default async function ProductDetail({ params }: { params: { slug: string
         variant="compact"
         minHeightVh={33}
       />
+      {/* Breadcrumbs under Hero */}
+      <section className="py-4">
+        <div className="container mx-auto px-4">
+          <Breadcrumbs />
+        </div>
+      </section>
+      {/* JSON-LD: Breadcrumbs */}
+      <BreadcrumbsJsonLd
+        items={[
+          { name: 'Anasayfa', item: '/' },
+          { name: 'Ürünler', item: '/products' },
+          { name: product.title, item: `/products/${params.slug}` },
+        ]}
+      />
+      {/* JSON-LD: Product */}
+      <ProductJsonLd
+        name={product.title}
+        description={description}
+        url={`${baseUrl}/products/${product.slug}`}
+        images={[product.coverImage, ...(Array.isArray(product.images) ? product.images : [])].filter(Boolean)}
+        condition={product.condition}
+        aggregateRating={product.ratingCount > 0 ? { ratingValue: Number(product.ratingAverage || 0), reviewCount: Number(product.ratingCount) } : undefined}
+        offers={typeof product.price === 'number' && product.currency ? {
+          price: Number(product.price),
+          priceCurrency: String(product.currency),
+          availability: product.stock > 0 ? 'https://schema.org/InStock' : 'https://schema.org/OutOfStock',
+          url: `${baseUrl}/products/${product.slug}`,
+        } : undefined}
+        baseUrl={baseUrl}
+      />
          <div className="container mx-auto p-6 space-y-6" id="product-detail">
-        <Breadcrumbs />
         <div className="grid lg:grid-cols-[1fr_380px] gap-8 items-start">
           <ProductGallery cover={product.coverImage} images={product.images || []} title={product.title} />
           <div className="space-y-5">

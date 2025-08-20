@@ -40,7 +40,8 @@ User-agent: MJ12bot
 Disallow: /
 
 User-agent: DotBot
-Disallow: /`;
+Disallow: /
+`;
 
   return new NextResponse(robots, {
     headers: {

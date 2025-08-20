@@ -11,6 +11,7 @@ import SiteSettings from '../models/SiteSettings'
 import Settings from '../models/Settings'
 import Script from 'next/script'
 import FloatingCta from '../components/FloatingCta';
+import GlobalBreadcrumbsJsonLd from '../components/seo/GlobalBreadcrumbsJsonLd';
 
 // Force dynamic rendering and disable caching for layout/metadata
 export const dynamic = 'force-dynamic'
@@ -52,6 +53,9 @@ export async function generateMetadata(): Promise<Metadata> {
     const keywords = siteSettings?.seo?.keywords || ['nextjs', 'react', 'typescript', 'portfolio', 'blog', 'engineering'];
     const siteName = siteSettings?.siteName || config.app.name;
     const logoUrl = siteSettings?.logo?.url;
+    const ogImage =
+      (logoUrl && (logoUrl.startsWith('http') ? logoUrl : `${config.app.url}${logoUrl}`)) ||
+      `${config.app.url}/favicon.svg`;
 
     return {
       title,
@@ -67,6 +71,7 @@ export async function generateMetadata(): Promise<Metadata> {
         title,
         description,
         siteName,
+        images: [ogImage],
       },
       robots: {
         index: true,
@@ -81,6 +86,15 @@ export async function generateMetadata(): Promise<Metadata> {
       },
       verification: {
         google: settingsDoc?.googleSiteVerification || ENV_GOOGLE_VERIFICATION || undefined,
+      },
+      alternates: {
+        canonical: config.app.url,
+      },
+      twitter: {
+        card: 'summary_large_image',
+        title,
+        description,
+        images: [ogImage],
       },
       icons: {
         icon: logoUrl || '/favicon.svg',
@@ -104,6 +118,7 @@ export async function generateMetadata(): Promise<Metadata> {
         title: config.app.name,
         description: 'Modern kişisel blog ve portfolio sitesi',
         siteName: config.app.name,
+        images: [`${config.app.url}/favicon.svg`],
       },
       robots: {
         index: true,
@@ -118,6 +133,15 @@ export async function generateMetadata(): Promise<Metadata> {
       },
       verification: {
         google: undefined,
+      },
+      alternates: {
+        canonical: config.app.url,
+      },
+      twitter: {
+        card: 'summary_large_image',
+        title: config.app.name,
+        description: 'Modern kişisel blog ve portfolio sitesi',
+        images: [`${config.app.url}/favicon.svg`],
       },
       icons: {
         icon: '/favicon.svg',
@@ -180,6 +204,36 @@ export default async function RootLayout({
         <link rel="dns-prefetch" href="//fonts.googleapis.com" />
         <link rel="dns-prefetch" href="//fonts.gstatic.com" />
         <link rel="dns-prefetch" href="//res.cloudinary.com" />
+
+        {/* JSON-LD: Organization */}
+        <Script id="ld-organization" type="application/ld+json" strategy="afterInteractive">
+          {JSON.stringify({
+            '@context': 'https://schema.org',
+            '@type': 'Organization',
+            name: config.app.name,
+            url: config.app.url,
+            logo: `${config.app.url}/favicon.svg`,
+            sameAs: [
+              'https://www.linkedin.com',
+              'https://github.com/erdemerciyas'
+            ]
+          })}
+        </Script>
+
+        {/* JSON-LD: WebSite with SearchAction */}
+        <Script id="ld-website" type="application/ld+json" strategy="afterInteractive">
+          {JSON.stringify({
+            '@context': 'https://schema.org',
+            '@type': 'WebSite',
+            name: config.app.name,
+            url: config.app.url,
+            potentialAction: {
+              '@type': 'SearchAction',
+              target: `${config.app.url}/?q={search_term_string}`,
+              'query-input': 'required name=search_term_string'
+            }
+          })}
+        </Script>
         {/* Google Tag Manager */}
         {gtmId && (
           <Script id="gtm-script" strategy="afterInteractive">
@@ -228,6 +282,7 @@ export default async function RootLayout({
             <Providers>
               <ClientWrapper>
                 <Header />
+                <GlobalBreadcrumbsJsonLd />
                 <FloatingCta />
                 {/* Main content area (flat background) */}
                 <div className="relative flex-grow">

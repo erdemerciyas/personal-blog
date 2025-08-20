@@ -28,8 +28,13 @@ export default async function OrderPage({ params }: { params: { slug: string } }
         variant="compact"
         minHeightVh={33}
       />
+      {/* Breadcrumbs under Hero */}
+      <section className="py-4">
+        <div className="container mx-auto px-4">
+          <Breadcrumbs />
+        </div>
+      </section>
       <div className="container mx-auto p-6 space-y-6">
-        <Breadcrumbs />
         <div className="space-y-2">
           <h1 className="text-2xl font-bold">Sipariş Ver</h1>
           <p className="text-slate-600">Lütfen aşağıdaki bilgileri doldurarak siparişinizi tamamlayın.</p>

@@ -3,6 +3,7 @@
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import React from 'react';
+import { HomeIcon, ChevronRightIcon } from '@heroicons/react/20/solid';
 
 interface BreadcrumbItem {
   label: string;
@@ -46,20 +47,41 @@ const Breadcrumbs: React.FC = () => {
   }
 
   return (
-    <nav className="bg-gray-100 py-3 px-4 rounded-lg shadow-sm text-sm text-gray-600 mb-6">
-      <ol className="flex space-x-2 items-center">
-        {breadcrumbs.map((crumb, index) => (
-          <li key={crumb.href} className="flex items-center">
-            {index > 0 && <span className="text-gray-400 mx-1">/</span>}
-            {index === breadcrumbs.length - 1 ? (
-              <span className="font-semibold text-gray-800">{crumb.label}</span>
-            ) : (
-              <Link href={crumb.href} className="hover:text-blue-600 transition-colors">
-                {crumb.label}
-              </Link>
-            )}
-          </li>
-        ))}
+    <nav
+      aria-label="Breadcrumb"
+      className="relative mt-0 mb-6 rounded-2xl border border-slate-200 bg-white/80 shadow-sm supports-[backdrop-filter]:bg-white/60 backdrop-blur px-4 py-3 text-sm text-slate-600"
+    >
+      <ol className="flex flex-wrap items-center gap-x-2 gap-y-1">
+        {breadcrumbs.map((crumb, index) => {
+          const isLast = index === breadcrumbs.length - 1;
+          return (
+            <li key={crumb.href} className="flex items-center">
+              {index === 0 ? (
+                <Link
+                  href={crumb.href}
+                  className="inline-flex items-center gap-1 text-slate-600 hover:text-slate-900 transition-colors"
+                >
+                  <HomeIcon className="h-4 w-4" aria-hidden="true" />
+                  <span className="sr-only">Anasayfa</span>
+                </Link>
+              ) : null}
+              {index > 0 ? (
+                <ChevronRightIcon className="h-4 w-4 mx-2 text-slate-300" aria-hidden="true" />
+              ) : null}
+              {index > 0 && !isLast ? (
+                <Link
+                  href={crumb.href}
+                  className="text-slate-600 hover:text-slate-900 transition-colors"
+                >
+                  {crumb.label}
+                </Link>
+              ) : null}
+              {isLast && index > 0 ? (
+                <span className="font-medium text-slate-900">{crumb.label}</span>
+              ) : null}
+            </li>
+          );
+        })}
       </ol>
     </nav>
   );

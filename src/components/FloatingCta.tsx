@@ -21,7 +21,26 @@ export default function FloatingCta() {
     };
   }, [isMounted]);
 
+  // GA4 güvenli çağrı yardımcıları (tipli)
+  type GtagFn = (command: 'event', eventName: string, params?: Record<string, unknown>) => void;
+  const getGtag = (): GtagFn | undefined => {
+    if (typeof window === 'undefined') return undefined;
+    const w = window as typeof window & { gtag?: GtagFn };
+    return w.gtag;
+  };
+  const trackEvent = (eventName: string, params?: Record<string, unknown>) => {
+    const gtag = getGtag();
+    if (gtag) {
+      gtag('event', eventName, params);
+    }
+  };
+
   const handleClick = () => {
+    // GA4: CTA tıklandığında modal açılma niyeti
+    trackEvent('open_project_modal', {
+      location: 'floating_cta',
+    });
+
     if (typeof window !== 'undefined') {
       window.dispatchEvent(new Event('openProjectModal'));
     }

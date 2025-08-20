@@ -4,6 +4,7 @@ import { useState, useEffect, Suspense } from 'react';
 import { EnvelopeIcon, PhoneIcon, MapPinIcon, PaperAirplaneIcon, CheckCircleIcon, ExclamationCircleIcon, ClockIcon } from '@heroicons/react/24/outline';
 import ContentSkeleton from '../../components/ContentSkeleton';
 import PageHero from '../../components/common/PageHero';
+import Breadcrumbs from '../../components/Breadcrumbs';
 
 interface ContactInfo {
   email: string;
@@ -122,6 +123,13 @@ function ContactPageContent() {
         backgroundGradient="bg-gradient-primary"
         showButton={true}
       />
+
+      {/* Breadcrumbs under Hero */}
+      <section className="py-4">
+        <div className="container mx-auto px-4">
+          <Breadcrumbs />
+        </div>
+      </section>
 
       {/* Main Content */}
       <section id="contact-form" className="py-12 md:py-16 lg:py-20 bg-gray-50">

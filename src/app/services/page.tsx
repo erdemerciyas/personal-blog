@@ -6,6 +6,10 @@ import ContentSkeleton from '../../components/ContentSkeleton';
 import PageHero from '../../components/common/PageHero';
 import Image from 'next/image';
 import HTMLContent from '../../components/HTMLContent';
+import ServicesListJsonLd from '../../components/seo/ServicesListJsonLd';
+import BreadcrumbsJsonLd from '../../components/seo/BreadcrumbsJsonLd';
+import Breadcrumbs from '../../components/Breadcrumbs';
+
 import { 
   ArrowRightIcon,
   CheckCircleIcon,
@@ -130,6 +134,34 @@ export default function ServicesPage() {
         badge="Profesyonel Hizmetler"
         backgroundGradient="bg-gradient-primary"
         showButton={true}
+      />
+
+      {/* Breadcrumbs under Hero */}
+      <section className="py-4">
+        <div className="container mx-auto px-4">
+          <Breadcrumbs />
+        </div>
+      </section>
+
+      {/* JSON-LD: Breadcrumbs */}
+      <BreadcrumbsJsonLd
+        items={[
+          { name: 'Anasayfa', item: '/' },
+          { name: 'Hizmetler', item: '/services' },
+        ]}
+      />
+
+      {/* JSON-LD: Services ItemList */}
+      <ServicesListJsonLd
+        items={services.map((s) => {
+          const anchor = s.title.toLowerCase().replace(/\s+/g, '-').replace(/&/g, '');
+          return {
+            name: s.title,
+            url: `/services#${anchor}`,
+            description: s.description,
+            image: s.image,
+          };
+        })}
       />
 
       {/* Main Content */}

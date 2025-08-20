@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { createPortal } from 'react-dom';
 import Link from 'next/link';
 import Image from 'next/image';
@@ -101,6 +101,26 @@ const Header: React.FC = () => {
     window.addEventListener('scroll', handleScroll);
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
+
+  // GA4 güvenli çağrı yardımcıları (tipli)
+  type GtagFn = (command: 'event', eventName: string, params?: Record<string, unknown>) => void;
+  const getGtag = useCallback((): GtagFn | undefined => {
+    if (typeof window === 'undefined') return undefined;
+    const w = window as typeof window & { gtag?: GtagFn };
+    return w.gtag;
+  }, []);
+  const trackEvent = useCallback((eventName: string, params?: Record<string, unknown>) => {
+    const gtag = getGtag();
+    if (gtag) gtag('event', eventName, params);
+  }, [getGtag]);
+
+  // Stable opener for Project Modal (used in effects and handlers)
+  const openProjectModal = useCallback(() => {
+    // GA4: Modal açılış niyeti
+    trackEvent('open_project_modal', { location: 'header' });
+    setIsProjectModalOpen(true);
+    setIsMobileMenuOpen(false);
+  }, [trackEvent]);
 
   // Mark as mounted for portal usage
   useEffect(() => {
@@ -217,7 +237,7 @@ const Header: React.FC = () => {
     const handleOpen: EventListener = () => openProjectModal();
     window.addEventListener('openProjectModal', handleOpen);
     return () => window.removeEventListener('openProjectModal', handleOpen);
-  }, []);
+  }, [openProjectModal]);
 
   // Hide header on admin pages
   if (pathname?.startsWith('/admin')) {
@@ -232,10 +252,7 @@ const Header: React.FC = () => {
     setIsMobileMenuOpen(false);
   };
 
-  const openProjectModal = () => {
-    setIsProjectModalOpen(true);
-    setIsMobileMenuOpen(false);
-  };
+  
 
   const closeProjectModal = () => {
     setIsProjectModalOpen(false);
@@ -286,6 +303,11 @@ E-posta: ${projectForm.email}
           description: 'Size en kısa sürede geri dönüş yapacağım.',
           variant: 'success',
           duration: 4000,
+        });
+        // GA4: Başarılı başvuru
+        trackEvent('lead', {
+          method: 'project_request_form',
+          page_path: typeof window !== 'undefined' ? window.location.pathname : undefined,
         });
         setProjectForm({
           name: '',

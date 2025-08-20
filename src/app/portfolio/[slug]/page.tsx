@@ -10,6 +10,10 @@ import ModernProjectGrid from '../../../components/portfolio/ModernProjectGrid';
 import HTMLContent from '../../../components/HTMLContent';
 import ContentSkeleton from '../../../components/ContentSkeleton';
 import { cachedFetch } from '../../../lib/client-cache';
+import BreadcrumbsJsonLd from '../../../components/seo/BreadcrumbsJsonLd';
+import PortfolioJsonLd from '../../../components/seo/PortfolioJsonLd';
+import { config } from '../../../lib/config';
+import Breadcrumbs from '../../../components/Breadcrumbs';
 
 // removed unused Metadata import
 
@@ -189,10 +193,37 @@ function PortfolioDetailPageContent({ params }: { params: { slug: string } }) {
     ? [portfolioItem.coverImage, ...(portfolioItem.images || []).filter(img => img !== portfolioItem.coverImage)]
     : (portfolioItem.images || []);
 
+  const baseUrl = (config.app.url || (typeof window !== 'undefined' ? window.location.origin : '') || '').replace(/\/$/, '');
+  const safeDescription = (portfolioItem.description || '').replace(/<[^>]*>/g, '').slice(0, 200);
+
   return (
     <div className="min-h-screen bg-gray-50">
       {/* Hero Section */}
       <PortfolioDetailHero project={portfolioItem} />
+
+      {/* Breadcrumbs under Hero */}
+      <section className="py-4">
+        <div className="container mx-auto px-4">
+          <Breadcrumbs />
+        </div>
+      </section>
+
+      {/* JSON-LD: Breadcrumbs */}
+      <BreadcrumbsJsonLd
+        items={[
+          { name: 'Anasayfa', item: '/' },
+          { name: 'Portfolyo', item: '/portfolio' },
+          { name: portfolioItem.title, item: `/portfolio/${params.slug}` },
+        ]}
+      />
+      {/* JSON-LD: CreativeWork for portfolio/project */}
+      <PortfolioJsonLd
+        name={portfolioItem.title}
+        description={safeDescription}
+        url={`${baseUrl}/portfolio/${params.slug}`}
+        images={allImages}
+        baseUrl={baseUrl}
+      />
 
       {/* Main Content */}
       <section className="py-12 md:py-16 lg:py-20">

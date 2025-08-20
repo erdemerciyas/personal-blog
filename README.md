@@ -16,7 +16,7 @@ Modern, güvenli ve performanslı kişisel blog ve portfolyo platformu. Next.js 
 
 **[Live Site](https://www.fixral.com)** | **[Admin Panel](https://www.fixral.com/admin)** | **[API Health](https://www.fixral.com/api/health)**
 
-> **Status**: **LIVE** | **Last Deploy**: 2025-08-19 | **Version**: v2.3.2 | **CI/CD Pipeline**: **OPTIMIZED**
+> **Status**: **LIVE** | **Last Deploy**: 2025-08-20 | **Version**: v2.3.3 | **CI/CD Pipeline**: **OPTIMIZED**
 
 ## Özellikler
 
@@ -130,6 +130,19 @@ npm run dev
 ```
 
 Uygulama [http://localhost:3000](http://localhost:3000) adresinde çalışacaktır.
+
+## Yeni Özellikler (v2.3.3)
+
+### Breadcrumbs Yerleşimi ve Hydration Fix (2025-08-20)
+- Görsel Breadcrumbs, tüm alt sayfalarda hero bölümünün hemen altında, içerik konteyneri içinde tutarlı şekilde gösteriliyor:
+  - `products/page.tsx`, `products/[slug]/order/page.tsx`, `portfolio/page.tsx`, `services/page.tsx`, `contact/page.tsx`, `products/[slug]/page.tsx`
+- JSON-LD hydration uyarısı düzeltildi:
+  - `GlobalBreadcrumbsJsonLd.tsx` mutlak URL üretimini `config.app.url` üzerinden yapıyor.
+  - `BreadcrumbsJsonLd.tsx` istemci taraflı `window` tabanlı normalizasyon kaldırıldı.
+- Breadcrumbs görsel tasarımı güçlendirildi: kart stili, ikonlu ayıraçlar, artırılmış kontrast ve erişilebilirlik (`aria-label`).
+- Hero alanına taşma kaldırıldı; Breadcrumbs içerik alanında kalacak şekilde konumlandırıldı.
+
+---
 
 ## Yeni Özellikler (v2.3.2)
 
@@ -404,7 +417,7 @@ Permissions-Policy: camera=(), microphone=(), geolocation=()
 
 **Current Status**: **LIVE** on Vercel 
 **Deployment URL**: https://www.fixral.com  
-**Last Deploy**: 2025-08-19  
+**Last Deploy**: 2025-08-20  
 **Build Time**: ~57 seconds  
 
 #### Quick Deploy
@@ -596,8 +609,8 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 ## 📈 Project Status
 
 - **Status**: ✅ **PRODUCTION READY**
-- **Version**: v2.3.2
-- **Last Updated**: 2025-08-19
+- **Version**: v2.3.3
+- **Last Updated**: 2025-08-20
 - **Security Level**: 🔒 HIGH
 - **Performance**: ⚡ OPTIMIZED
 - **Documentation**: 📚 COMPLETE

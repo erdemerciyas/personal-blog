@@ -4,6 +4,8 @@ import { useState, useEffect, Suspense } from 'react';
 import { motion } from 'framer-motion';
 import Link from 'next/link';
 import { ArrowRightIcon, SparklesIcon } from '@heroicons/react/24/outline';
+import Breadcrumbs from '../../components/Breadcrumbs';
+
 import PortfolioHero from '../../components/portfolio/PortfolioHero';
 import PortfolioFilters from '../../components/portfolio/PortfolioFilters';
 import ModernProjectGrid from '../../components/portfolio/ModernProjectGrid';
@@ -128,6 +130,12 @@ function PortfolioPageContent() {
         buttonText={hero.buttonText}
         buttonLink={hero.buttonLink}
       />
+      {/* Breadcrumbs under Hero */}
+      <section className="py-4">
+        <div className="container mx-auto px-4">
+          <Breadcrumbs />
+        </div>
+      </section>
 
       {/* Main Content */}
       <section id="projects" className="py-12 md:py-16 lg:py-20">

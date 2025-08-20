@@ -45,9 +45,9 @@ export default function PortfolioDetailHero({ project }: PortfolioDetailHeroProp
             )}
           </motion.div>
 
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-12 items-start">
+          <div className="grid grid-cols-1 lg:grid-cols-[minmax(0,1.2fr)_minmax(380px,560px)] gap-10 items-start">
             {/* Main Content */}
-            <div className="lg:col-span-2">
+            <div>
               {/* Title */}
               <motion.h1 
                 initial={{ opacity: 0, y: 30 }}
@@ -99,9 +99,9 @@ export default function PortfolioDetailHero({ project }: PortfolioDetailHeroProp
               initial={{ opacity: 0, x: 20 }}
               animate={{ opacity: 1, x: 0 }}
               transition={{ duration: 0.8, delay: 0.8 }}
-              className="lg:col-span-1"
+              className=""
             >
-              <div className="bg-white/10 backdrop-blur-xl border border-white/20 rounded-3xl p-8 space-y-6">
+              <div className="bg-white/10 backdrop-blur-xl border border-white/20 rounded-3xl p-8 md:p-10 space-y-6">
                 <h3 className="text-2xl font-bold text-white mb-6 border-b border-white/20 pb-4">
                   Proje Bilgileri
                 </h3>
