@@ -54,7 +54,6 @@ export default async function ProductDetail({ params }: { params: { slug: string
   const product = await getProduct(params.slug);
   if (!product) return notFound();
   const pageSettings = await getPageSettings('product-detail');
-  const badge = pageSettings?.title || 'Ürün Detayı';
   const buttonText = pageSettings?.buttonText || 'Detaylara İn';
   const buttonLink = pageSettings?.buttonLink || '#product-detail';
   const baseDesc = `${product.condition === 'new' ? 'Sıfır ürün' : 'İkinci el ürün'}${product.price ? ` • ${product.price} ${product.currency}` : ''}`;
@@ -68,7 +67,6 @@ export default async function ProductDetail({ params }: { params: { slug: string
       <PageHero
         title={product.title}
         description={description}
-        badge={badge}
         buttonText={buttonText}
         buttonLink={buttonLink}
         variant="compact"
