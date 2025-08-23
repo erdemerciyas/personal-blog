@@ -19,7 +19,6 @@ export default function PortfolioHero({
       description={description}
       buttonText={buttonText}
       buttonLink={buttonLink}
-      badge="Yaratıcı Çözümler"
       backgroundGradient="bg-gradient-primary"
       showButton={true}
     />

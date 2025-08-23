@@ -4,7 +4,6 @@ import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import Link from 'next/link';
 import { 
-  SparklesIcon,
   ArrowRightIcon
 } from '@heroicons/react/24/outline';
 import HTMLContent from '../HTMLContent';
@@ -14,7 +13,6 @@ interface PageHeroProps {
   description?: string;
   buttonText?: string;
   buttonLink?: string;
-  badge?: string;
   backgroundGradient?: string;
   showButton?: boolean;
   variant?: 'default' | 'compact';
@@ -26,7 +24,6 @@ export default function PageHero({
   description = "Sayfa açıklaması",
   buttonText = "Keşfet",
   buttonLink = "#content",
-  badge = "Yaratıcı Çözümler",
   backgroundGradient = "bg-gradient-primary",
   showButton = true,
   variant = 'default',
@@ -55,21 +52,6 @@ export default function PageHero({
 
       <div className={`${variant === 'compact' ? '' : 'section-hero'} relative z-10`}>
         <div className="container-content text-center">
-          {/* Badge */}
-          {badge && (
-            <motion.div 
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.6 }}
-              className="mb-8"
-            >
-              <span className="inline-flex items-center px-6 py-3 bg-white/10 backdrop-blur-md border border-white/30 rounded-full text-sm font-semibold">
-                <SparklesIcon className="w-4 h-4 mr-2" />
-                {badge}
-              </span>
-            </motion.div>
-          )}
-
           {/* Title */}
           <motion.h1 
             initial={{ opacity: 0, y: 30 }}

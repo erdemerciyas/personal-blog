@@ -131,7 +131,6 @@ export default function ServicesPage() {
         description={hero.description || 'Modern teknoloji çözümleri ve profesyonel hizmetlerimizi keşfedin'}
         buttonText="Hizmetleri İncele"
         buttonLink="#services"
-        badge="Profesyonel Hizmetler"
         backgroundGradient="bg-gradient-primary"
         showButton={true}
       />

@@ -119,7 +119,6 @@ function ContactPageContent() {
         description={hero.description || 'Bizimle iletişime geçin ve projelerinizi konuşalım'}
         buttonText="İletişim Formu"
         buttonLink="#contact-form"
-        badge="İletişim"
         backgroundGradient="bg-gradient-primary"
         showButton={true}
       />

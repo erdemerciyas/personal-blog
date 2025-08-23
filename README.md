@@ -16,7 +16,7 @@ Modern, güvenli ve performanslı kişisel blog ve portfolyo platformu. Next.js 
 
 **[Live Site](https://www.fixral.com)** | **[Admin Panel](https://www.fixral.com/admin)** | **[API Health](https://www.fixral.com/api/health)**
 
-> **Status**: **LIVE** | **Last Deploy**: 2025-08-23 | **Version**: v2.3.3 | **CI/CD Pipeline**: **OPTIMIZED**
+> **Status**: **LIVE** | **Last Deploy**: 2025-08-23 | **Version**: v2.3.4 | **CI/CD Pipeline**: **OPTIMIZED**
 
 ## Özellikler
 
@@ -130,6 +130,22 @@ npm run dev
 ```
 
 Uygulama [http://localhost:3000](http://localhost:3000) adresinde çalışacaktır.
+
+## Yeni Özellikler (v2.3.4)
+
+### Hero Badge Temizliği (2025-08-23)
+- **Hero Alanları Sadeleştirme**: Tüm sayfalardaki hero alanlarından badge elementleri kaldırıldı
+  - Ana sayfa slider badge'i temizlendi ("Yenilikçi" etiketi)
+  - Services sayfası "Profesyonel Hizmetler" badge'i kaldırıldı
+  - Contact sayfası "İletişim" badge'i kaldırıldı
+  - Portfolio sayfası "Yaratıcı Çözümler" badge'i kaldırıldı
+  - About sayfası hero subtitle badge'i (yeşil nokta + metin) temizlendi
+- **Component Optimizasyonu**: PageHero component'inden badge prop'u ve gösterimi tamamen çıkarıldı
+- **Code Cleanup**: Kullanılmayan SparklesIcon import'ları temizlendi
+- **UI Basitleştirme**: Hero alanları artık sadece başlık, açıklama ve CTA butonları içeriyor
+- **Performans**: Gereksiz elementlerin kaldırılmasıyla daha temiz ve hızlı hero alanları
+
+---
 
 ## Yeni Özellikler (v2.3.3)
 
@@ -621,7 +637,7 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 ## 📈 Project Status
 
 - **Status**: ✅ **PRODUCTION READY**
-- **Version**: v2.3.3
+- **Version**: v2.3.4
 - **Last Updated**: 2025-08-23
 - **Security Level**: 🔒 HIGH
 - **Performance**: ⚡ OPTIMIZED

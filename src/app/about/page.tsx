@@ -127,12 +127,6 @@ export default function AboutPage() {
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
             {/* Left Content */}
             <div>
-              <div className="flex items-center space-x-3 mb-8">
-                <div className="w-4 h-4 bg-brand-primary-400 rounded-full animate-pulse"></div>
-                <span className="text-brand-primary-300 font-semibold text-sm uppercase tracking-wider">
-                  {aboutData.heroSubtitle}
-                </span>
-              </div>
               <h1 className="hero-title text-white mb-10 leading-none">
                 {hero.title || aboutData.heroTitle}
               </h1>

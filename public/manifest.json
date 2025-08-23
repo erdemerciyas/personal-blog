@@ -1,7 +1,7 @@
 {
   "name": "Personal Blog - FIXRAL",
-  "short_name": "FIXRAL Blog",
-  "description": "Modern kişisel blog ve portfolio sitesi - Next.js ile geliştirilmiştir",
+  "short_name": "FIXRAL",
+  "description": "Modern kişisel blog ve portfolio sitesi",
   "start_url": "/",
   "display": "standalone",
   "background_color": "#0f172a",
@@ -9,9 +9,18 @@
   "orientation": "portrait-primary",
   "scope": "/",
   "lang": "tr",
-  "dir": "ltr",
-  "categories": ["portfolio", "blog", "engineering", "technology"],
+  "categories": ["portfolio", "blog", "engineering"],
   "icons": [
+    {
+      "src": "/favicon.ico",
+      "sizes": "16x16 32x32",
+      "type": "image/x-icon"
+    },
+    {
+      "src": "/favicon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml"
+    },
     {
       "src": "/icons/icon-72x72.png",
       "sizes": "72x72",
@@ -67,22 +76,22 @@
       "sizes": "1280x720",
       "type": "image/png",
       "form_factor": "wide",
-      "label": "Homepage on desktop"
+      "label": "FIXRAL Desktop Görünümü"
     },
     {
       "src": "/screenshots/mobile-home.png",
       "sizes": "375x667",
       "type": "image/png",
       "form_factor": "narrow",
-      "label": "Homepage on mobile"
+      "label": "FIXRAL Mobil Görünümü"
     }
   ],
   "shortcuts": [
     {
       "name": "Portfolio",
       "short_name": "Portfolio",
-      "description": "View portfolio projects",
-      "url": "/portfolio",
+      "description": "Projeleri görüntüle",
+      "url": "/tr/portfolio",
       "icons": [
         {
           "src": "/icons/shortcut-portfolio.png",
@@ -91,10 +100,10 @@
       ]
     },
     {
-      "name": "Services",
-      "short_name": "Services",
-      "description": "View available services",
-      "url": "/services",
+      "name": "Servisler",
+      "short_name": "Servisler",
+      "description": "Sunulan hizmetleri görüntüle",
+      "url": "/tr/services",
       "icons": [
         {
           "src": "/icons/shortcut-services.png",
@@ -103,10 +112,10 @@
       ]
     },
     {
-      "name": "Contact",
-      "short_name": "Contact",
-      "description": "Contact information",
-      "url": "/contact",
+      "name": "İletişim",
+      "short_name": "İletişim",
+      "description": "İletişim bilgileri",
+      "url": "/tr/contact",
       "icons": [
         {
           "src": "/icons/shortcut-contact.png",
@@ -116,15 +125,5 @@
     }
   ],
   "related_applications": [],
-  "prefer_related_applications": false,
-  "protocol_handlers": [],
-  "edge_side_panel": {
-    "preferred_width": 400
-  },
-  "launch_handler": {
-    "client_mode": "navigate-existing"
-  },
-  "handle_links": "preferred",
-  "display_override": ["window-controls-overlay", "standalone", "minimal-ui"],
-  "iarc_rating_id": "e84b072d-71b3-4d3e-86ae-31a8ce4e53b7"
+  "prefer_related_applications": false
 }

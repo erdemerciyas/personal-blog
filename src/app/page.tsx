@@ -53,8 +53,7 @@ const defaultSlider: SliderItem[] = [
     description: 'Yenilikçi teknolojilerle projelerinizi hayata geçirin. Profesyonel 3D tarama ve tersine mühendislik hizmetleri.',
     image: 'https://images.unsplash.com/photo-1581091226825-a6a2a5aee158?ixlib=rb-4.0.3&auto=format&fit=crop&w=2070&q=80',
     buttonText: 'Projelerimi Görüntüle',
-    buttonLink: '/portfolio',
-    badge: 'Yenilikçi'
+    buttonLink: '/portfolio'
   }
 ];
 
@@ -273,16 +272,6 @@ export default function HomePage() {
             {/* Content */}
             <div className="section-hero relative z-10">
               <div className="container-content text-center text-white px-4 pb-24 sm:pb-0">
-                {/* Badge */}
-                {currentSlide.badge && (
-                  <div className="mb-8 animate-fade-in" style={{ animationDelay: '0.2s' }}>
-                    <span className="inline-flex items-center px-6 py-3 bg-white/10 border border-white/30 rounded-full text-sm font-semibold backdrop-blur-md">
-                      <SparklesIcon className="w-4 h-4 mr-2" />
-                      {currentSlide.badge}
-                    </span>
-                  </div>
-                )}
-                
                 {/* Title */}
                 <h1 className={`${
                   currentSlide.title.length > 30 ? 'hero-title-compact' : 
