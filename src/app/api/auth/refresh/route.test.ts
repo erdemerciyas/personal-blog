@@ -31,7 +31,8 @@ describe('/api/auth/refresh', () => {
 
   beforeEach(() => {
     jest.clearAllMocks();
-    mockConnectDB.mockResolvedValue({} as unknown);
+    // Mock successful connection with proper mongoose type
+    mockConnectDB.mockResolvedValue({} as typeof import('mongoose'));
   });
 
   it('should refresh token successfully with valid refresh token in cookie', async () => {

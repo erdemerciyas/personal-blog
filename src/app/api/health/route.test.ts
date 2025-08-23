@@ -26,7 +26,7 @@ describe('/api/health', () => {
 
   it('should return healthy status when database connection is successful', async () => {
     // Mock successful database connection
-    mockConnectDB.mockResolvedValueOnce({} as unknown);
+    mockConnectDB.mockResolvedValueOnce({} as typeof import('mongoose'));
 
     const response = await GET();
     const data = await response.json();
@@ -67,7 +67,7 @@ describe('/api/health', () => {
     process.env.VERCEL = '1';
     process.env.VERCEL_REGION = 'iad1';
     
-    mockConnectDB.mockResolvedValueOnce({} as unknown);
+    mockConnectDB.mockResolvedValueOnce({} as typeof import('mongoose'));
 
     const response = await GET();
     const data = await response.json();
