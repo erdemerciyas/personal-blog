@@ -1,5 +1,8 @@
 import '@testing-library/jest-dom'
 
+// Extend Jest with Testing Library matchers
+expect.extend(require('@testing-library/jest-dom/matchers'))
+
 // Mock Next.js router
 jest.mock('next/router', () => ({
   useRouter: () => ({

@@ -34,9 +34,9 @@ jest.mock('@/lib/monitoring', () => {
 });
 
 import { PerformanceMonitor } from '@/lib/monitoring';
-import { hasValidMongoUri } from '@/lib/mongoose';
 
 const mockConnectDB = jest.fn();
+const mockHasValidMongoUri = hasValidMongoUri as jest.MockedFunction<typeof hasValidMongoUri>;
 
 describe('/api/monitoring/performance', () => {
   beforeEach(() => {
@@ -58,7 +58,7 @@ describe('/api/monitoring/performance', () => {
 
   describe('GET /api/monitoring/performance', () => {
     it('should return performance metrics when database is available', async () => {
-      hasValidMongoUri.mockReturnValue(true);
+      mockHasValidMongoUri.mockReturnValue(true);
       mockConnectDB.mockResolvedValue(undefined);
 
       const request = new NextRequest('http://localhost:3000/api/monitoring/performance');
@@ -79,7 +79,7 @@ describe('/api/monitoring/performance', () => {
     });
 
     it('should return metrics with disabled database when URI is not valid', async () => {
-      hasValidMongoUri.mockReturnValue(false);
+      mockHasValidMongoUri.mockReturnValue(false);
 
       const request = new NextRequest('http://localhost:3000/api/monitoring/performance');
       const response = await GET(request);
@@ -91,8 +91,8 @@ describe('/api/monitoring/performance', () => {
     });
 
     it('should handle database connection errors', async () => {
-      hasValidMongoUri.mockReturnValue(true);
-      PerformanceMonitor.measureDatabaseQuery.mockRejectedValue(new Error('Database connection failed'));
+      mockHasValidMongoUri.mockReturnValue(true);
+      (PerformanceMonitor.measureDatabaseQuery as jest.Mock).mockRejectedValue(new Error('Database connection failed'));
 
       const request = new NextRequest('http://localhost:3000/api/monitoring/performance');
       const response = await GET(request);

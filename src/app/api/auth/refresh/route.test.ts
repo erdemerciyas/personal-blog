@@ -31,7 +31,7 @@ describe('/api/auth/refresh', () => {
 
   beforeEach(() => {
     jest.clearAllMocks();
-    mockConnectDB.mockResolvedValue(undefined);
+    mockConnectDB.mockResolvedValue({} as unknown);
   });
 
   it('should refresh token successfully with valid refresh token in cookie', async () => {
@@ -43,9 +43,9 @@ describe('/api/auth/refresh', () => {
     });
 
     // Mock user lookup
-    mockUser.findById.mockReturnValue({
+    (mockUser.findById as jest.Mock).mockReturnValue({
       select: jest.fn().mockResolvedValue(mockUserData)
-    } as { select: jest.MockedFunction<() => Promise<typeof mockUserData>> });
+    });
 
     // Create request with refresh token cookie
     const request = new NextRequest('http://localhost:3000/api/auth/refresh', {
@@ -76,9 +76,9 @@ describe('/api/auth/refresh', () => {
       role: mockUserData.role
     });
 
-    mockUser.findById.mockReturnValue({
+    (mockUser.findById as jest.Mock).mockReturnValue({
       select: jest.fn().mockResolvedValue(mockUserData)
-    } as { select: jest.MockedFunction<() => Promise<typeof mockUserData>> });
+    });
 
     const request = new NextRequest('http://localhost:3000/api/auth/refresh', {
       method: 'POST',
@@ -136,9 +136,9 @@ describe('/api/auth/refresh', () => {
       email: 'nonexistent@example.com'
     });
 
-    mockUser.findById.mockReturnValue({
+    (mockUser.findById as jest.Mock).mockReturnValue({
       select: jest.fn().mockResolvedValue(null)
-    } as { select: jest.MockedFunction<() => Promise<null>> });
+    });
 
     const request = new NextRequest('http://localhost:3000/api/auth/refresh', {
       method: 'POST',
@@ -168,9 +168,9 @@ describe('/api/auth/refresh', () => {
       role: deactivatedUser.role
     });
 
-    mockUser.findById.mockReturnValue({
+    (mockUser.findById as jest.Mock).mockReturnValue({
       select: jest.fn().mockResolvedValue(deactivatedUser)
-    } as { select: jest.MockedFunction<() => Promise<typeof deactivatedUser>> });
+    });
 
     const request = new NextRequest('http://localhost:3000/api/auth/refresh', {
       method: 'POST',
