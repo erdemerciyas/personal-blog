@@ -1,4 +1,5 @@
 const path = require('path');
+const { withSentryConfig } = require('@sentry/nextjs');
 
 // Bundle analyzer için
 const withBundleAnalyzer = require('@next/bundle-analyzer')({
@@ -70,6 +71,8 @@ const nextConfig = {
   experimental: {
     // Keep minimal experiments to avoid chunking issues on Windows builds
     scrollRestoration: true,
+    // Enable instrumentation for Sentry
+    instrumentationHook: true,
   },
   // Performance: Enable compression
   compress: true,
@@ -82,4 +85,15 @@ const nextConfig = {
   trailingSlash: false,
 }
 
-module.exports = withBundleAnalyzer(nextConfig)
+// Sentry configuration
+const sentryWebpackPluginOptions = {
+  // Additional config options for the Sentry Webpack plugin
+  silent: process.env.NODE_ENV === 'production',
+  hideSourceMaps: true,
+  widenClientFileUpload: true,
+};
+
+module.exports = withSentryConfig(
+  withBundleAnalyzer(nextConfig),
+  sentryWebpackPluginOptions
+);

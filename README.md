@@ -1,6 +1,6 @@
 # Modern Portfolio & Blog Platform
 
-[![Next.js](https://img.shields.io/badge/Next.js-14.0.4-black?style=for-the-badge&logo=next.js)](https://nextjs.org/)
+[![Next.js](https://img.shields.io/badge/Next.js-14.2.30-black?style=for-the-badge&logo=next.js)](https://nextjs.org/)
 [![TypeScript](https://img.shields.io/badge/TypeScript-5.8.3-blue?style=for-the-badge&logo=typescript)](https://www.typescriptlang.org/)
 [![MongoDB](https://img.shields.io/badge/MongoDB-Latest-003450?style=for-the-badge&logo=mongodb)](https://www.mongodb.com/)
 [![Tailwind CSS](https://img.shields.io/badge/Tailwind_CSS-3.4.0-003450?style=for-the-badge&logo=tailwind-css)](https://tailwindcss.com/)
@@ -16,7 +16,7 @@ Modern, güvenli ve performanslı kişisel blog ve portfolyo platformu. Next.js 
 
 **[Live Site](https://www.fixral.com)** | **[Admin Panel](https://www.fixral.com/admin)** | **[API Health](https://www.fixral.com/api/health)**
 
-> **Status**: **LIVE** | **Last Deploy**: 2025-08-20 | **Version**: v2.3.3 | **CI/CD Pipeline**: **OPTIMIZED**
+> **Status**: **LIVE** | **Last Deploy**: 2025-08-23 | **Version**: v2.3.3 | **CI/CD Pipeline**: **OPTIMIZED**
 
 ## Özellikler
 
@@ -132,6 +132,18 @@ npm run dev
 Uygulama [http://localhost:3000](http://localhost:3000) adresinde çalışacaktır.
 
 ## Yeni Özellikler (v2.3.3)
+
+### Sentry Konfigürasyonu ve Build Hataları Düzeltmesi (2025-08-23)
+- Deprecated Sentry API'lerinden yeni SDK yapısına geçiş tamamlandı:
+  - `Sentry.Integrations.Http()` → `Sentry.httpIntegration()` güncellemesi
+  - `Sentry.startTransaction()` → `Sentry.startSpan()` API değişikliği
+  - Instrumentation dosyaları Next.js 14.2.30 standartlarına uygun hale getirildi
+- TypeScript ve ESLint uyumluluk sorunları giderildi:
+  - JWT library type overload sorunları `@ts-expect-error` ile çözüldü
+  - Circular dependency hatası useJWTAuth hook'unda düzeltildi
+  - React JSX parsing hatası usePerformanceMonitoring'de giderildi
+- Build başarılı: ✅ 93 sayfa derlendi, tüm lint ve type kontrolleri geçti
+- Sentry yapılandırması güncel API'ler ile optimize edildi
 
 ### Breadcrumbs Yerleşimi ve Hydration Fix (2025-08-20)
 - Görsel Breadcrumbs, tüm alt sayfalarda hero bölümünün hemen altında, içerik konteyneri içinde tutarlı şekilde gösteriliyor:
@@ -417,7 +429,7 @@ Permissions-Policy: camera=(), microphone=(), geolocation=()
 
 **Current Status**: **LIVE** on Vercel 
 **Deployment URL**: https://www.fixral.com  
-**Last Deploy**: 2025-08-20  
+**Last Deploy**: 2025-08-23  
 **Build Time**: ~57 seconds  
 
 #### Quick Deploy
@@ -610,7 +622,7 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 - **Status**: ✅ **PRODUCTION READY**
 - **Version**: v2.3.3
-- **Last Updated**: 2025-08-20
+- **Last Updated**: 2025-08-23
 - **Security Level**: 🔒 HIGH
 - **Performance**: ⚡ OPTIMIZED
 - **Documentation**: 📚 COMPLETE

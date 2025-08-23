@@ -8,6 +8,127 @@ import connectDB from '../../../lib/mongoose';
 import Portfolio from '../../../models/Portfolio';
 import Category from '../../../models/Category';
 
+/**
+ * @swagger
+ * /api/portfolio:
+ *   get:
+ *     tags:
+ *       - Portfolio
+ *     summary: Get all portfolio items
+ *     description: Retrieve all portfolio items with optional category filtering
+ *     parameters:
+ *       - in: query
+ *         name: category
+ *         schema:
+ *           type: string
+ *         description: Filter by single category slug
+ *       - in: query
+ *         name: categories
+ *         schema:
+ *           type: string
+ *         description: Filter by multiple category slugs (comma-separated)
+ *     responses:
+ *       200:
+ *         description: Successfully retrieved portfolio items
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: array
+ *               items:
+ *                 $ref: '#/components/schemas/Portfolio'
+ *       500:
+ *         description: Server error
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Error'
+ *   post:
+ *     tags:
+ *       - Portfolio
+ *     summary: Create new portfolio item
+ *     description: Create a new portfolio item (requires authentication)
+ *     security:
+ *       - sessionAuth: []
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - title
+ *               - slug
+ *               - description
+ *             properties:
+ *               title:
+ *                 type: string
+ *                 description: Portfolio item title
+ *               slug:
+ *                 type: string
+ *                 description: URL-friendly slug
+ *               description:
+ *                 type: string
+ *                 description: Portfolio item description
+ *               content:
+ *                 type: string
+ *                 description: Detailed content
+ *               categoryId:
+ *                 type: string
+ *                 description: Single category ID (legacy)
+ *               categoryIds:
+ *                 type: array
+ *                 items:
+ *                   type: string
+ *                 description: Multiple category IDs
+ *               technologies:
+ *                 type: array
+ *                 items:
+ *                   type: string
+ *                 description: Technologies used
+ *               images:
+ *                 type: array
+ *                 items:
+ *                   type: object
+ *                   properties:
+ *                     url:
+ *                       type: string
+ *                     alt:
+ *                       type: string
+ *                     caption:
+ *                       type: string
+ *               featured:
+ *                 type: boolean
+ *                 description: Featured item flag
+ *               isActive:
+ *                 type: boolean
+ *                 description: Active status
+ *     responses:
+ *       201:
+ *         description: Portfolio item created successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Portfolio'
+ *       400:
+ *         description: Invalid request data
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Error'
+ *       401:
+ *         description: Unauthorized
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Error'
+ *       500:
+ *         description: Server error
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Error'
+ */
+
 // GET - Tüm portfolyo öğelerini getir (çok dilli alanlar dahil)
 export async function GET(request: Request) {
   try {

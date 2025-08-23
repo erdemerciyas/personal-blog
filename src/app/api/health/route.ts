@@ -1,6 +1,48 @@
 import { NextResponse } from 'next/server';
 import connectDB from '@/lib/mongoose';
 
+/**
+ * @swagger
+ * /api/health:
+ *   get:
+ *     tags:
+ *       - System
+ *     summary: System health check
+ *     description: Returns the health status of the application and database connection
+ *     responses:
+ *       200:
+ *         description: System is healthy
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/HealthCheck'
+ *             example:
+ *               status: "healthy"
+ *               timestamp: "2024-01-01T00:00:00.000Z"
+ *               platform: "vercel"
+ *               region: "iad1"
+ *               database: "connected"
+ *       500:
+ *         description: System is unhealthy
+ *         content:
+ *           application/json:
+ *             schema:
+ *               allOf:
+ *                 - $ref: '#/components/schemas/HealthCheck'
+ *                 - type: object
+ *                   properties:
+ *                     error:
+ *                       type: string
+ *                       description: Error message
+ *             example:
+ *               status: "unhealthy"
+ *               timestamp: "2024-01-01T00:00:00.000Z"
+ *               platform: "local"
+ *               region: "unknown"
+ *               database: "disconnected"
+ *               error: "Database connection failed"
+ */
+
 export async function GET() {
   try {
     // Database bağlantısını test et
