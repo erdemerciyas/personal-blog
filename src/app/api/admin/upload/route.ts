@@ -166,7 +166,7 @@ export async function POST(request: NextRequest) {
     const sanitizedFileName = sanitizeFileName(file.name);
     
     // Generate unique filename with hash
-    const fileHash = crypto.createHash('md5').update(Buffer.from(buffer)).digest('hex').substring(0, 8);
+    const fileHash = crypto.createHash('md5').update(new Uint8Array(buffer)).digest('hex').substring(0, 8);
     const uniqueFileName = `${Date.now()}_${fileHash}_${sanitizedFileName}`;
 
     // Validate page context

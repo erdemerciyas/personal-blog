@@ -58,7 +58,7 @@ const getIconForPage = (pageId: string) => {
 
 // Resolve icon component by string name coming from API
 const resolveIcon = (name?: string) => {
-  const map: Record<string, React.ComponentType<React.SVGProps<SVGSVGElement>>> = {
+  const map: Record<string, any> = {
     HomeIcon,
     UserIcon,
     WrenchScrewdriverIcon,
@@ -75,7 +75,7 @@ const Header: React.FC = () => {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isScrolled, setIsScrolled] = useState(false);
   const [isProjectModalOpen, setIsProjectModalOpen] = useState(false);
-  const [navLinks, setNavLinks] = useState<Array<{ href: string; label: string; icon: React.ComponentType<React.SVGProps<SVGSVGElement>>; isExternal?: boolean }>>([]);
+  const [navLinks, setNavLinks] = useState<Array<{ href: string; label: string; icon: any; isExternal?: boolean }>>([]);
   const [navLoaded, setNavLoaded] = useState(false);
   const [siteSettings, setSiteSettings] = useState<SiteSettings | null>(null);
   const [mounted, setMounted] = useState(false);

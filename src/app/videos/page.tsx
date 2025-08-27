@@ -136,52 +136,6 @@ export default function VideosPage() {
     setFilteredVideos(result);
   }, [videos, searchTerm, selectedTags]);
 
-  // Infinite scroll implementation
-  useEffect(() => {
-    if (loading || loadingMore) return;
-    
-    observer.current = new IntersectionObserver(entries => {
-      if (entries[0].isIntersecting && hasMore) {
-        loadMoreVideos();
-      }
-    });
-
-    if (lastVideoElementRef.current) {
-      observer.current.observe(lastVideoElementRef.current);
-    }
-
-    return () => {
-      if (observer.current) {
-        observer.current.disconnect();
-      }
-    };
-  }, [loading, loadingMore, hasMore, loadMoreVideos]);
-
-  const loadVideos = useCallback(async () => {
-    try {
-      const params = new URLSearchParams();
-      if (typeFilter) params.append('type', typeFilter);
-      params.append('status', 'visible'); // Only show visible videos
-      params.append('limit', '12'); // Load 12 videos initially
-      
-      const response = await fetch(`/api/youtube?${params.toString()}`);
-      if (response.ok) {
-        const data = await response.json();
-        setVideos(data.videos);
-        setFilteredVideos(data.videos);
-        setNextPageToken(data.nextPageToken || null);
-        setHasMore(!!data.nextPageToken);
-        
-        // Extract unique tags from all videos
-        const allTags = data.videos.flatMap((video: Video) => video.tags);
-        const uniqueTags = [...new Set(allTags)];
-        setAvailableTags(uniqueTags);
-      }
-    } catch (error) {
-      console.error('Videos load error:', error);
-    }
-  }, [typeFilter]);
-
   const loadMoreVideos = useCallback(async () => {
     if (!hasMore || !nextPageToken) return;
     
@@ -206,6 +160,27 @@ export default function VideosPage() {
       setLoadingMore(false);
     }
   }, [typeFilter, hasMore, nextPageToken]);
+
+  // Infinite scroll implementation
+  useEffect(() => {
+    if (loading || loadingMore) return;
+    
+    observer.current = new IntersectionObserver(entries => {
+      if (entries[0].isIntersecting && hasMore) {
+        loadMoreVideos();
+      }
+    });
+
+    if (lastVideoElementRef.current) {
+      observer.current.observe(lastVideoElementRef.current);
+    }
+
+    return () => {
+      if (observer.current) {
+        observer.current.disconnect();
+      }
+    };
+  }, [loading, loadingMore, hasMore, loadMoreVideos]);
 
   const toggleTag = (tag: string) => {
     setSelectedTags(prev => 

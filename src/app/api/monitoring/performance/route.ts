@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { PerformanceMonitor, ErrorTracker } from '@/lib/monitoring';
+import { PerformanceMonitor, ErrorBoundary } from '@/lib/monitoring';
 import connectDB, { hasValidMongoUri } from '@/lib/mongoose';
 
 /**
@@ -138,11 +138,10 @@ export async function GET(request: NextRequest) {
         metrics.database.connectionTime = Date.now() - dbStart;
       } catch (error) {
         metrics.database.status = 'error';
-        ErrorTracker.captureDatabaseError(
-          error as Error,
-          'health_check',
-          'connection'
-        );
+        PerformanceMonitor.captureException(error as Error, {
+          operation: 'health_check',
+          type: 'database_connection'
+        });
       }
     } else {
       metrics.database.status = 'disabled';
@@ -161,11 +160,10 @@ export async function GET(request: NextRequest) {
     transaction.setTag('status', 'error');
     transaction.finish();
     
-    ErrorTracker.captureApiError(
-      error as Error,
-      request,
-      '/api/monitoring/performance'
-    );
+    PerformanceMonitor.captureException(error as Error, {
+      operation: 'get_performance_metrics',
+      route: '/api/monitoring/performance'
+    });
 
     return NextResponse.json({
       error: 'Failed to retrieve performance metrics',
@@ -202,29 +200,22 @@ export async function POST(request: NextRequest) {
     };
 
     // Send metrics to monitoring (in a real scenario, you'd store these)
-    await PerformanceMonitor.measureFunction(
-      'process_client_metrics',
-      async () => {
-        // Here you could store metrics in database, send to analytics service, etc.
-        console.log('Client performance metrics:', clientMetrics);
-        
-        // Add performance breadcrumb
-        if (clientMetrics.loadTime > 3000) {
-          ErrorTracker.captureWarning(
-            'Slow page load detected',
-            {
-              loadTime: clientMetrics.loadTime.toString(),
-              route: clientMetrics.route,
-              url: clientMetrics.url
-            }
-          );
-        }
-      },
-      { 
-        operation: 'client_metrics',
-        route: clientMetrics.route 
-      }
-    );
+    // Here you could store metrics in database, send to analytics service, etc.
+    console.log('Client performance metrics:', clientMetrics);
+    
+    // Add performance breadcrumb
+    if (clientMetrics.loadTime > 3000) {
+      PerformanceMonitor.addBreadcrumb(
+        'Slow page load detected',
+        'performance',
+        'warning'
+      );
+      PerformanceMonitor.setTags({
+        loadTime: clientMetrics.loadTime.toString(),
+        route: clientMetrics.route,
+        url: clientMetrics.url
+      });
+    }
 
     transaction.setTag('status', 'success');
     transaction.finish();
@@ -238,11 +229,10 @@ export async function POST(request: NextRequest) {
     transaction.setTag('status', 'error');
     transaction.finish();
     
-    ErrorTracker.captureApiError(
-      error as Error,
-      request,
-      '/api/monitoring/performance'
-    );
+    PerformanceMonitor.captureException(error as Error, {
+      operation: 'post_performance_metrics',
+      route: '/api/monitoring/performance'
+    });
 
     return NextResponse.json({
       error: 'Failed to process performance metrics',

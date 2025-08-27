@@ -136,6 +136,50 @@ export class PerformanceMonitor {
     // Always log to console as fallback
     console.log(`[${level.toUpperCase()}] ${message}`, context);
   }
+
+  /**
+   * Measure database query performance
+   */
+  static async measureDatabaseQuery<T>(
+    queryName: string,
+    queryFn: () => Promise<T>,
+    context?: Record<string, any>
+  ): Promise<T> {
+    const startTime = Date.now();
+    
+    try {
+      const result = await queryFn();
+      const duration = Date.now() - startTime;
+      
+      this.addBreadcrumb(
+        `Database query ${queryName} completed in ${duration}ms`,
+        'database',
+        'info'
+      );
+      
+      if (context) {
+        this.setTags({ ...context, query_name: queryName, duration: duration.toString() });
+      }
+      
+      return result;
+    } catch (error) {
+      const duration = Date.now() - startTime;
+      
+      this.addBreadcrumb(
+        `Database query ${queryName} failed after ${duration}ms`,
+        'database',
+        'error'
+      );
+      
+      this.captureException(error as Error, { 
+        query_name: queryName, 
+        duration,
+        ...context 
+      });
+      
+      throw error;
+    }
+  }
 }
 
 // API monitoring utilities
