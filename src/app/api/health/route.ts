@@ -1,5 +1,7 @@
 import { NextResponse } from 'next/server';
-import connectDB from '@/lib/mongoose';
+import mongoose from 'mongoose';
+// connectDB from '@/lib/mongoose';  // Commenting out unused import
+// Video from '@/models/Video';  // Commenting out unused import
 
 /**
  * @swagger
@@ -45,16 +47,22 @@ import connectDB from '@/lib/mongoose';
 
 export async function GET() {
   try {
-    // Database bağlantısını test et
-    await connectDB();
+    // Check MongoDB connection
+    const dbConnection = await mongoose.connection.readyState;
     
-    return NextResponse.json({
-      status: 'healthy',
+    // Check YouTube API health if configured
+    const youtubeHealth = await checkYouTubeAPIHealth();
+    
+    const healthData = {
+      status: 'ok',
       timestamp: new Date().toISOString(),
-      platform: process.env.VERCEL ? 'vercel' : 'local',
-      region: process.env.VERCEL_REGION || 'unknown',
-      database: 'connected'
-    });
+      mongodb: dbConnection === 1 ? 'connected' : 'disconnected',
+      youtube: youtubeHealth.status,
+      youtubeMessage: youtubeHealth.message,
+      version: process.env.npm_package_version || 'unknown'
+    };
+    
+    return NextResponse.json(healthData);
   } catch (error) {
     return NextResponse.json({
       status: 'unhealthy',
@@ -70,3 +78,29 @@ export async function GET() {
 // Vercel için edge runtime kullanmıyoruz - MongoDB ile uyumsuz
 export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';
+
+async function checkYouTubeAPIHealth() {
+  const apiKey = process.env.YOUTUBE_API_KEY;
+  const channelId = process.env.YOUTUBE_CHANNEL_ID;
+  
+  if (!apiKey || !channelId) {
+    return { status: 'not configured', message: 'YouTube API key or channel ID not set' };
+  }
+  
+  try {
+    const url = `https://www.googleapis.com/youtube/v3/channels?key=${apiKey}&id=${channelId}&part=snippet`;
+    const response = await fetch(url, { signal: AbortSignal.timeout(5000) });
+    
+    if (!response.ok) {
+      return { status: 'unreachable', message: 'YouTube API is not accessible' };
+    }
+    
+    const data = await response.json();
+    const videoCount = data.items[0]?.snippet?.title ? 1 : 0;
+    
+    return { status: 'ok', message: `YouTube API is accessible, ${videoCount} video(s) found` };
+  } catch (error) {
+    console.error("YouTube health check failed:", error);
+    return { status: 'error', message: 'YouTube health check failed' };
+  }
+}

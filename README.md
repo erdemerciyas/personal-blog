@@ -16,7 +16,7 @@ Modern, güvenli ve performanslı kişisel blog ve portfolyo platformu. Next.js 
 
 **[Live Site](https://www.fixral.com)** | **[Admin Panel](https://www.fixral.com/admin)** | **[API Health](https://www.fixral.com/api/health)**
 
-> **Status**: **LIVE** | **Last Deploy**: 2025-08-23 | **Version**: v2.3.4 | **CI/CD Pipeline**: **OPTIMIZED**
+> **Status**: **LIVE** | **Last Deploy**: 2025-08-27 | **Version**: v2.3.4 | **CI/CD Pipeline**: **OPTIMIZED**
 
 ## Özellikler
 
@@ -26,6 +26,14 @@ Modern, güvenli ve performanslı kişisel blog ve portfolyo platformu. Next.js 
 - **Lightbox Galeri**: Tam ekran görsel görüntüleme
 - **Responsive Tasarım**: Tüm cihazlarda mükemmel görünüm
 - **SEO Optimized**: Slug-based URL yapısı
+
+### YouTube Video Entegrasyonu
+- **Otomatik Senkronizasyon**: YouTube kanalınızdan videoları otomatik olarak çekme
+- **Manuel Video Ekleme**: Belirli videoları manuel olarak ekleme
+- **Video Yönetimi**: Başlık, açıklama, etiketler ve görünürlük ayarları
+- **Filtreleme**: Video türüne (normal/short) ve görünürlüğe göre filtreleme
+- **Arama**: Başlık, açıklama ve etiketlere göre arama
+- **Admin Paneli**: Tüm video işlemlerini yapabileceğiniz kullanıcı dostu arayüz
 
 ### Güvenlik Özellikleri
 - **Rate Limiting**: API endpoint koruması (akıllı bypass sistemi)
@@ -57,6 +65,7 @@ Modern, güvenli ve performanslı kişisel blog ve portfolyo platformu. Next.js 
 - **Footer Settings**: Dinamik footer ayarları
 - **Image Upload**: Drag & drop görsel yükleme
 - **Real-time Preview**: Canlı önizleme
+- **Video Management**: YouTube videolarını yönetme
 
 ## Teknoloji Stack
 
@@ -114,6 +123,10 @@ ADMIN_EMAIL=your-email@example.com
 ADMIN_NAME=Your Name
 ADMIN_DEFAULT_PASSWORD=SecurePassword123!
 
+# YouTube API (Opsiyonel - Video entegrasyonu için)
+YOUTUBE_API_KEY=your_youtube_api_key_here
+YOUTUBE_CHANNEL_ID=your_youtube_channel_id_here
+
 # Cloudinary (Optional)
 CLOUDINARY_CLOUD_NAME=your-cloud-name
 CLOUDINARY_API_KEY=your-api-key
@@ -122,6 +135,7 @@ CLOUDINARY_API_SECRET=your-api-secret
 
 Notlar:
 - MongoDB kurulu değilse uygulama public sayfalar ve varsayılan metadata ile açılır; admin ve veri yazma işlemleri çalışmaz.
+- YouTube entegrasyonu için YouTube Data API v3 key'i ve kanal ID'si gereklidir.
 - Production build artık ESLint/TS hatalarında durur. Geliştirme için `npm run dev` yeterlidir; build için önce `npm run lint:fix && npm run type-check` çalıştırın.
 
 ### 4. Geliştirme Sunucusunu Başlatın
@@ -130,6 +144,54 @@ npm run dev
 ```
 
 Uygulama [http://localhost:3000](http://localhost:3000) adresinde çalışacaktır.
+
+## YouTube Video Entegrasyonu
+
+Bu proje, YouTube kanalınızdan videoları otomatik olarak çekme ve yönetme özelliğine sahiptir.
+
+### Özellikler
+- Otomatik YouTube video senkronizasyonu
+- Manuel video ekleme
+- Video düzenleme (başlık, açıklama, etiketler)
+- Video görünürlüğü ayarlama
+- Video türü belirleme (normal/short)
+- Arama ve filtreleme
+- Admin paneli üzerinden yönetim
+
+### Kurulum
+
+1. YouTube Data API v3 key'i alın:
+   - Google Cloud Console'a gidin
+   - Yeni bir proje oluşturun veya mevcut bir projeyi seçin
+   - YouTube Data API v3'ü etkinleştirin
+   - Kimlik bilgileri oluşturun ve API key'i alın
+
+2. YouTube kanal ID'nizi bulun:
+   - YouTube kanalınızın ana sayfasına gidin
+   - Sayfa kaynağını görüntüleyin (Ctrl+U)
+   - "channelId" ifadesini arayın
+   - Alternatif olarak, kullanıcı adınız varsa: `https://www.youtube.com/c/{kullaniciAdi}/about` adresine gidin ve sayfa kaynağında channelId'yi bulun
+
+3. `.env.local` dosyasına aşağıdaki değişkenleri ekleyin:
+   ```
+   YOUTUBE_API_KEY=your_youtube_api_key_here
+   YOUTUBE_CHANNEL_ID=your_youtube_channel_id_here
+   ```
+
+### Kullanım
+
+1. Otomatik senkronizasyon:
+   - Videolar her gün otomatik olarak senkronize edilir
+   - Manuel olarak senkronize etmek için: `npm run sync-videos`
+
+2. Admin paneli:
+   - Admin paneline giriş yapın
+   - "Video Yönetimi" sekmesine gidin
+   - Videoları görüntüleyin, düzenleyin veya yeni video ekleyin
+
+3. Public sayfa:
+   - `/videos` adresinden tüm videoları görüntüleyin
+   - Arama ve filtreleme özelliklerini kullanın
 
 ## Yeni Özellikler (v2.3.4)
 
@@ -638,7 +700,7 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 - **Status**: ✅ **PRODUCTION READY**
 - **Version**: v2.3.4
-- **Last Updated**: 2025-08-23
+- **Last Updated**: 2025-08-27
 - **Security Level**: 🔒 HIGH
 - **Performance**: ⚡ OPTIMIZED
 - **Documentation**: 📚 COMPLETE
