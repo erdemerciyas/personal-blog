@@ -41,7 +41,7 @@ export function usePerformanceMonitoring() {
     const metrics: PerformanceMetrics = {
       loadTime: Math.round(loadTime),
       renderTime: Math.round(renderTime),
-      route: pathname,
+      route: pathname || '/',
       userAgent: navigator.userAgent,
       url: window.location.href,
     };
@@ -57,7 +57,7 @@ export function usePerformanceMonitoring() {
 
     const metrics: PerformanceMetrics = {
       [name]: value,
-      route: pathname,
+      route: pathname || '/',
       userAgent: navigator.userAgent,
       url: window.location.href,
     };
@@ -81,41 +81,15 @@ export function usePerformanceMonitoring() {
   };
 }
 
-// Web Vitals monitoring hook
+// Web Vitals monitoring hook (requires web-vitals package)
 export function useWebVitals() {
   const pathname = usePathname();
 
   useEffect(() => {
     if (typeof window === 'undefined') return;
 
-    // Dynamically import web-vitals to avoid SSR issues
-    import('web-vitals').then(({ getCLS, getFID, getFCP, getLCP, getTTFB }) => {
-      const sendVital = (metric: any) => {
-        fetch('/api/monitoring/performance', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({
-            [metric.name]: metric.value,
-            route: pathname,
-            userAgent: navigator.userAgent,
-            url: window.location.href,
-            vitalsMetric: true,
-          }),
-        }).catch(() => {
-          // Silently fail
-        });
-      };
-
-      // Measure all Web Vitals
-      getCLS(sendVital);
-      getFID(sendVital);
-      getFCP(sendVital);
-      getLCP(sendVital);
-      getTTFB(sendVital);
-    }).catch(() => {
-      // web-vitals not available, skip
-    });
+    // Web Vitals monitoring is disabled - install web-vitals package to enable
+    // npm install web-vitals
+    console.log('Web Vitals monitoring disabled - install web-vitals package to enable');
   }, [pathname]);
 }
