@@ -1,277 +1,121 @@
-import React, { useEffect, useCallback, useRef } from 'react';
-
-interface PerformanceEventTiming extends PerformanceEntry {
-  processingStart: number;
-}
-
-interface LayoutShift extends PerformanceEntry {
-  value: number;
-  hadRecentInput: boolean;
-}
+import { useEffect, useCallback } from 'react';
+import { usePathname } from 'next/navigation';
 
 interface PerformanceMetrics {
   loadTime?: number;
   renderTime?: number;
   route: string;
   userAgent: string;
-  timestamp: string;
+  url: string;
 }
 
-interface WebVitals {
-  FCP?: number; // First Contentful Paint
-  LCP?: number; // Largest Contentful Paint
-  FID?: number; // First Input Delay
-  CLS?: number; // Cumulative Layout Shift
-  TTFB?: number; // Time to First Byte
-}
+export function usePerformanceMonitoring() {
+  const pathname = usePathname();
 
-interface UsePerformanceMonitoringOptions {
-  enabled?: boolean;
-  reportInterval?: number; // Report every N route changes
-  reportThreshold?: number; // Only report if load time > N ms
-  endpoint?: string;
-}
-
-export function usePerformanceMonitoring(options: UsePerformanceMonitoringOptions = {}) {
-  const {
-    enabled = process.env.NODE_ENV === 'production',
-    reportInterval = 1,
-    reportThreshold = 0,
-    endpoint = '/api/monitoring/performance'
-  } = options;
-
-  const metricsRef = useRef<PerformanceMetrics[]>([]);
-  const vitalsRef = useRef<WebVitals>({});
-  const routeChangeCountRef = useRef(0);
-  const startTimeRef = useRef<number>(Date.now());
-
-  // Collect Web Vitals
-  const collectWebVitals = useCallback(() => {
-    if (typeof window === 'undefined') return;
-
+  const sendMetrics = useCallback(async (metrics: PerformanceMetrics) => {
     try {
-      // First Contentful Paint
-      const navigation = performance.getEntriesByType('navigation')[0] as PerformanceNavigationTiming;
-      if (navigation) {
-        vitalsRef.current.TTFB = navigation.responseStart - navigation.requestStart;
-      }
-
-      // Performance Observer for other vitals
-      if ('PerformanceObserver' in window) {
-        const observer = new PerformanceObserver((list) => {
-          for (const entry of list.getEntries()) {
-            if (entry.entryType === 'paint') {
-              if (entry.name === 'first-contentful-paint') {
-                vitalsRef.current.FCP = entry.startTime;
-              }
-            } else if (entry.entryType === 'largest-contentful-paint') {
-              vitalsRef.current.LCP = entry.startTime;
-            } else if (entry.entryType === 'first-input') {
-              vitalsRef.current.FID = (entry as PerformanceEventTiming).processingStart - entry.startTime;
-            } else if (entry.entryType === 'layout-shift') {
-              if (!(entry as LayoutShift).hadRecentInput) {
-                vitalsRef.current.CLS = (vitalsRef.current.CLS || 0) + (entry as LayoutShift).value;
-              }
-            }
-          }
-        });
-
-        observer.observe({ entryTypes: ['paint', 'largest-contentful-paint', 'first-input', 'layout-shift'] });
-
-        // Clean up observer after 10 seconds
-        setTimeout(() => observer.disconnect(), 10000);
-      }
+      await fetch('/api/monitoring/performance', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(metrics),
+      });
     } catch (error) {
-      console.warn('Failed to collect Web Vitals:', error);
+      // Silently fail in production to avoid disrupting user experience
+      if (process.env.NODE_ENV === 'development') {
+        console.warn('Failed to send performance metrics:', error);
+      }
     }
   }, []);
 
-  // Report metrics to server
-  const reportMetrics = useCallback(async (metrics: PerformanceMetrics) => {
-    if (!enabled) return;
-
-    try {
-      await fetch(endpoint, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({
-          metrics: {
-            ...metrics,
-            webVitals: vitalsRef.current
-          },
-          url: window.location.href,
-          timestamp: new Date().toISOString()
-        })
-      });
-    } catch (error) {
-      console.warn('Failed to report performance metrics:', error);
-    }
-  }, [enabled, endpoint]);
-
-  // Measure page load performance
   const measurePageLoad = useCallback(() => {
     if (typeof window === 'undefined') return;
 
-    try {
-      const navigation = performance.getEntriesByType('navigation')[0] as PerformanceNavigationTiming;
-      
-      if (navigation) {
-        const loadTime = navigation.loadEventEnd - navigation.fetchStart;
-        const renderTime = navigation.domContentLoadedEventEnd - navigation.fetchStart;
+    const navigation = performance.getEntriesByType('navigation')[0] as PerformanceNavigationTiming;
+    if (!navigation) return;
 
-        const metrics: PerformanceMetrics = {
-          loadTime,
-          renderTime,
-          route: window.location.pathname,
-          userAgent: navigator.userAgent,
-          timestamp: new Date().toISOString()
-        };
-
-        // Only report if above threshold
-        if (loadTime >= reportThreshold) {
-          metricsRef.current.push(metrics);
-          
-          // Report immediately or batch
-          if (routeChangeCountRef.current % reportInterval === 0) {
-            reportMetrics(metrics);
-          }
-        }
-      }
-    } catch (error) {
-      console.warn('Failed to measure page load:', error);
-    }
-  }, [reportThreshold, reportInterval, reportMetrics]);
-
-  // Measure route change performance
-  const measureRouteChange = useCallback(() => {
-    const endTime = Date.now();
-    const loadTime = endTime - startTimeRef.current;
+    const loadTime = navigation.loadEventEnd - navigation.fetchStart;
+    const renderTime = navigation.domContentLoadedEventEnd - navigation.fetchStart;
 
     const metrics: PerformanceMetrics = {
-      loadTime,
-      route: window.location.pathname,
+      loadTime: Math.round(loadTime),
+      renderTime: Math.round(renderTime),
+      route: pathname,
       userAgent: navigator.userAgent,
-      timestamp: new Date().toISOString()
+      url: window.location.href,
     };
 
-    if (loadTime >= reportThreshold) {
-      metricsRef.current.push(metrics);
-      routeChangeCountRef.current++;
-      
-      if (routeChangeCountRef.current % reportInterval === 0) {
-        reportMetrics(metrics);
-      }
+    // Only send metrics if they seem reasonable
+    if (loadTime > 0 && loadTime < 60000) {
+      sendMetrics(metrics);
     }
+  }, [pathname, sendMetrics]);
 
-    startTimeRef.current = Date.now();
-  }, [reportThreshold, reportInterval, reportMetrics]);
-
-  // Manual performance measurement
-  const measureCustom = useCallback((name: string, startTime: number) => {
-    const endTime = Date.now();
-    const duration = endTime - startTime;
+  const measureCustomMetric = useCallback((name: string, value: number) => {
+    if (typeof window === 'undefined') return;
 
     const metrics: PerformanceMetrics = {
-      loadTime: duration,
-      route: `custom:${name}`,
+      [name]: value,
+      route: pathname,
       userAgent: navigator.userAgent,
-      timestamp: new Date().toISOString()
+      url: window.location.href,
     };
 
-    if (duration >= reportThreshold) {
-      metricsRef.current.push(metrics);
-      reportMetrics(metrics);
-    }
+    sendMetrics(metrics);
+  }, [pathname, sendMetrics]);
 
-    return duration;
-  }, [reportThreshold, reportMetrics]);
-
-  // Start custom measurement
-  const startMeasurement = useCallback(() => {
-    return Date.now();
-  }, []);
-
-  // Get performance summary
-  const getPerformanceSummary = useCallback(() => {
-    const metrics = metricsRef.current;
-    if (metrics.length === 0) return null;
-
-    const loadTimes = metrics.map(m => m.loadTime || 0);
-    const avgLoadTime = loadTimes.reduce((a, b) => a + b, 0) / loadTimes.length;
-    const maxLoadTime = Math.max(...loadTimes);
-    const minLoadTime = Math.min(...loadTimes);
-
-    return {
-      totalMeasurements: metrics.length,
-      averageLoadTime: Math.round(avgLoadTime),
-      maxLoadTime: Math.round(maxLoadTime),
-      minLoadTime: Math.round(minLoadTime),
-      webVitals: vitalsRef.current
-    };
-  }, []);
-
-  // Initialize monitoring
   useEffect(() => {
-    if (!enabled || typeof window === 'undefined') return;
-
-    // Collect initial metrics
-    collectWebVitals();
-    
-    // Measure initial page load
+    // Measure page load performance after the page is fully loaded
     if (document.readyState === 'complete') {
       measurePageLoad();
     } else {
       window.addEventListener('load', measurePageLoad);
+      return () => window.removeEventListener('load', measurePageLoad);
     }
-
-    // Track route changes
-    const handleRouteChange = () => {
-      measureRouteChange();
-    };
-
-    // Listen for navigation events (this is a basic implementation)
-    window.addEventListener('popstate', handleRouteChange);
-
-    return () => {
-      window.removeEventListener('load', measurePageLoad);
-      window.removeEventListener('popstate', handleRouteChange);
-    };
-  }, [enabled, collectWebVitals, measurePageLoad, measureRouteChange]);
+  }, [measurePageLoad]);
 
   return {
-    measureCustom,
-    startMeasurement,
-    getPerformanceSummary,
-    metrics: metricsRef.current,
-    webVitals: vitalsRef.current
+    measureCustomMetric,
+    sendMetrics,
   };
 }
 
-// Higher-order component for automatic performance monitoring
-export function withPerformanceMonitoring<P extends object>(
-  Component: React.ComponentType<P>,
-  componentName?: string
-): React.ComponentType<P> {
-  const PerformanceMonitoredComponent = (props: P) => {
-    const { startMeasurement, measureCustom } = usePerformanceMonitoring();
+// Web Vitals monitoring hook
+export function useWebVitals() {
+  const pathname = usePathname();
 
-    useEffect(() => {
-      const startTime = startMeasurement();
-      const name = componentName || Component.displayName || Component.name || 'Unknown';
+  useEffect(() => {
+    if (typeof window === 'undefined') return;
 
-      return () => {
-        measureCustom(`component:${name}`, startTime);
+    // Dynamically import web-vitals to avoid SSR issues
+    import('web-vitals').then(({ getCLS, getFID, getFCP, getLCP, getTTFB }) => {
+      const sendVital = (metric: any) => {
+        fetch('/api/monitoring/performance', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            [metric.name]: metric.value,
+            route: pathname,
+            userAgent: navigator.userAgent,
+            url: window.location.href,
+            vitalsMetric: true,
+          }),
+        }).catch(() => {
+          // Silently fail
+        });
       };
-    }, [startMeasurement, measureCustom]);
 
-    return React.createElement(Component, props);
-  };
-
-  PerformanceMonitoredComponent.displayName = `withPerformanceMonitoring(${componentName || Component.displayName || Component.name || 'Component'})`;
-
-  return PerformanceMonitoredComponent;
+      // Measure all Web Vitals
+      getCLS(sendVital);
+      getFID(sendVital);
+      getFCP(sendVital);
+      getLCP(sendVital);
+      getTTFB(sendVital);
+    }).catch(() => {
+      // web-vitals not available, skip
+    });
+  }, [pathname]);
 }
-
-export default usePerformanceMonitoring;

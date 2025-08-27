@@ -201,7 +201,9 @@ export async function POST(request: NextRequest) {
 
     // Send metrics to monitoring (in a real scenario, you'd store these)
     // Here you could store metrics in database, send to analytics service, etc.
-    console.log('Client performance metrics:', clientMetrics);
+    if (process.env.NODE_ENV === 'development') {
+      console.log('Client performance metrics:', clientMetrics);
+    }
     
     // Add performance breadcrumb
     if (clientMetrics.loadTime > 3000) {

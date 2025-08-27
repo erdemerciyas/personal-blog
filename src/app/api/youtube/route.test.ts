@@ -58,10 +58,11 @@ describe('YouTube API Route', () => {
 
     // Assertions
     expect(response.status).toBe(200);
-    expect(Array.isArray(data)).toBe(true);
-    expect(data.length).toBe(1);
-    expect(data[0].videoId).toBe('test123');
-    expect(data[0].title).toBe('Test Video');
+    expect(data).toHaveProperty('videos');
+    expect(Array.isArray(data.videos)).toBe(true);
+    expect(data.videos.length).toBe(1);
+    expect(data.videos[0].videoId).toBe('test123');
+    expect(data.videos[0].title).toBe('Test Video');
   });
 
   it('should handle YouTube API errors gracefully', async () => {

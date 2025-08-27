@@ -3,7 +3,10 @@ let Sentry: any = null;
 try {
   Sentry = require('@sentry/nextjs');
 } catch (_e) {
-  console.warn('Sentry not installed, monitoring features disabled');
+  // Only warn in development
+  if (process.env.NODE_ENV === 'development') {
+    console.warn('Sentry not installed, monitoring features disabled');
+  }
 }
 
 import { NextRequest } from 'next/server';
@@ -151,14 +154,26 @@ export class PerformanceMonitor {
       const result = await queryFn();
       const duration = Date.now() - startTime;
       
-      this.addBreadcrumb(
-        `Database query ${queryName} completed in ${duration}ms`,
-        'database',
-        'info'
-      );
+      // Only log slow queries in production
+      if (duration > 1000 || process.env.NODE_ENV === 'development') {
+        this.addBreadcrumb(
+          `Database query ${queryName} completed in ${duration}ms`,
+          'database',
+          duration > 1000 ? 'warning' : 'info'
+        );
+      }
       
       if (context) {
         this.setTags({ ...context, query_name: queryName, duration: duration.toString() });
+      }
+      
+      // Alert on very slow queries
+      if (duration > 5000) {
+        this.captureMessage(
+          `Slow database query detected: ${queryName} took ${duration}ms`,
+          'warning',
+          { query_name: queryName, duration, ...context }
+        );
       }
       
       return result;

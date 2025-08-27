@@ -136,13 +136,12 @@ describe('/api/auth/refresh', () => {
       select: jest.fn().mockResolvedValue(mockUserData)
     });
 
-    const request = new NextRequest('http://localhost:3000/api/auth/refresh', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify({ refreshToken })
-    });
+    const request = {
+      json: async () => ({ refreshToken }),
+      cookies: {
+        get: () => null
+      }
+    } as any;
 
     const response = await POST(request);
     const data = await response.json();
@@ -154,12 +153,12 @@ describe('/api/auth/refresh', () => {
   });
 
   it('should return 400 when refresh token is missing', async () => {
-    const request = new NextRequest('http://localhost:3000/api/auth/refresh', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json'
+    const request = {
+      json: async () => ({}),
+      cookies: {
+        get: () => null
       }
-    });
+    } as any;
 
     const response = await POST(request);
     const data = await response.json();
@@ -170,13 +169,19 @@ describe('/api/auth/refresh', () => {
   });
 
   it('should return 401 when refresh token is invalid', async () => {
-    const request = new NextRequest('http://localhost:3000/api/auth/refresh', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify({ refreshToken: 'invalid-token' })
+    // Mock JWT utils to throw error for invalid token
+    const jwtUtils = require('@/lib/jwt-utils');
+    jwtUtils.extractRefreshTokenFromCookies.mockReturnValue(null);
+    jwtUtils.verifyRefreshToken.mockImplementation(() => {
+      throw new Error('Invalid token');
     });
+
+    const request = {
+      json: async () => ({ refreshToken: 'invalid-token' }),
+      cookies: {
+        get: () => null
+      }
+    } as any;
 
     const response = await POST(request);
     const data = await response.json();

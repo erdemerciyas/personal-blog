@@ -22,7 +22,10 @@
     "build:analyze": "ANALYZE=true next build",
     "deploy": "vercel --prod",
     "deploy:preview": "vercel",
-    "sync-videos": "node scripts/sync-youtube-videos.js"
+    "sync-videos": "node scripts/sync-youtube-videos.js",
+    "health:check": "curl -f http://localhost:3000/api/health || exit 1",
+    "monitoring:test": "curl -f http://localhost:3000/api/monitoring/performance || exit 1",
+    "monitoring:dashboard": "open http://localhost:3000/admin/monitoring"
   },
   "dependencies": {
     "@headlessui/react": "^1.7.17",
