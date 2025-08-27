@@ -20,6 +20,7 @@
     "perf:check": "next build --profile",
     "perf:analyze": "ANALYZE=true next build",
     "build:analyze": "ANALYZE=true next build",
+    "vercel-build": "next build",
     "deploy": "vercel --prod",
     "deploy:preview": "vercel",
     "sync-videos": "node scripts/sync-youtube-videos.js",

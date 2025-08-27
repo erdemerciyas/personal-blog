@@ -57,7 +57,7 @@ describe('Video Model', () => {
 
     // Assertions
     expect(error).toBeDefined();
-    expect(error.name).toBe('ValidationError');
+    expect((error as any).name).toBe('ValidationError');
   });
 
   it('should use default values for type and status', async () => {
@@ -92,6 +92,6 @@ describe('Video Model', () => {
 
     // Assertions
     expect(error).toBeDefined();
-    expect(error.name).toBe('ValidationError');
+    expect((error as any).name).toBe('ValidationError');
   });
 });

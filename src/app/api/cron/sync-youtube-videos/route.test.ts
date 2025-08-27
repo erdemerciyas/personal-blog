@@ -5,7 +5,7 @@ jest.mock('@/models/Video', () => {
   const mockVideo = jest.fn().mockImplementation(() => ({
     save: jest.fn().mockResolvedValue({ _id: 'test123', videoId: 'new123' }),
   }));
-  mockVideo.find = jest.fn();
+  (mockVideo as any).find = jest.fn();
   return {
     __esModule: true,
     default: mockVideo,
