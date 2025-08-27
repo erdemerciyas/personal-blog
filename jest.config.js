@@ -52,8 +52,18 @@ const config = {
   
   // Transform ignore patterns for ES modules
   transformIgnorePatterns: [
-    'node_modules/(?!(.*\\.mjs$|@heroicons|bson|mongodb))',
+    'node_modules/(?!(.*\\.mjs$|@heroicons|bson|mongodb|@mongodb-js))',
   ],
+  
+  // Add extensionsToTreatAsEsm for better ES module support
+  extensionsToTreatAsEsm: ['.ts', '.tsx'],
+  
+  // Add globals for ES modules
+  globals: {
+    'ts-jest': {
+      useESM: true,
+    },
+  },
   
   // Module file extensions
   moduleFileExtensions: ['ts', 'tsx', 'js', 'jsx', 'json'],

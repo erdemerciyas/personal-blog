@@ -49,6 +49,26 @@ jest.mock('next/link', () => {
   }
 })
 
+// Mock MongoDB and BSON completely
+jest.mock('mongodb', () => ({
+  MongoClient: jest.fn().mockImplementation(() => ({
+    connect: jest.fn(),
+    db: jest.fn(),
+    close: jest.fn(),
+  })),
+  ObjectId: jest.fn().mockImplementation((id) => ({ toString: () => id || '507f1f77bcf86cd799439011' })),
+}))
+
+jest.mock('bson', () => ({
+  ObjectId: jest.fn().mockImplementation((id) => ({ toString: () => id || '507f1f77bcf86cd799439011' })),
+}))
+
+// Mock connectDB function
+jest.mock('@/lib/mongoose', () => ({
+  __esModule: true,
+  default: jest.fn().mockResolvedValue({}),
+}))
+
 // Mock environment variables
 process.env.NEXTAUTH_URL = 'http://localhost:3000'
 process.env.NEXTAUTH_SECRET = 'test-secret'
@@ -93,11 +113,21 @@ jest.mock('mongoose', () => ({
         this.options = options
       }
     },
-    model: jest.fn(),
+    model: jest.fn(() => ({
+      find: jest.fn(),
+      findOne: jest.fn(),
+      findById: jest.fn(),
+      create: jest.fn(),
+      save: jest.fn(),
+      updateOne: jest.fn(),
+      deleteOne: jest.fn(),
+    })),
     connect: jest.fn(),
     connection: {
       readyState: 1,
+      close: jest.fn().mockResolvedValue({}),
     },
+    models: {},
   },
   Schema: class MockSchema {
     constructor(definition, options) {
@@ -105,8 +135,128 @@ jest.mock('mongoose', () => ({
       this.options = options
     }
   },
-  model: jest.fn(),
+  model: jest.fn(() => ({
+    find: jest.fn(),
+    findOne: jest.fn(),
+    findById: jest.fn(),
+    create: jest.fn(),
+    save: jest.fn(),
+    updateOne: jest.fn(),
+    deleteOne: jest.fn(),
+  })),
   connect: jest.fn(),
+  models: {},
+}))
+
+// Mock Video model specifically
+jest.mock('@/models/Video', () => {
+  const mockVideo = jest.fn().mockImplementation((data) => {
+    // Validation logic for testing
+    const validTypes = ['normal', 'short', 'live'];
+    const validStatuses = ['visible', 'hidden', 'draft'];
+    
+    const instance = {
+      ...data,
+      _id: '507f1f77bcf86cd799439011',
+      type: data?.type || 'normal',
+      status: data?.status || 'visible',
+      save: jest.fn().mockImplementation(async () => {
+        // Simulate validation errors
+        if (!data?.videoId) {
+          const error = new Error('Video validation failed: videoId: Path `videoId` is required.');
+          error.name = 'ValidationError';
+          throw error;
+        }
+        
+        if (data?.type && !validTypes.includes(data.type)) {
+          const error = new Error(`Video validation failed: type: \`${data.type}\` is not a valid enum value for path \`type\`.`);
+          error.name = 'ValidationError';
+          throw error;
+        }
+        
+        if (data?.status && !validStatuses.includes(data.status)) {
+          const error = new Error(`Video validation failed: status: \`${data.status}\` is not a valid enum value for path \`status\`.`);
+          error.name = 'ValidationError';
+          throw error;
+        }
+        
+        return {
+          ...data,
+          _id: '507f1f77bcf86cd799439011',
+          type: data?.type || 'normal',
+          status: data?.status || 'visible',
+        };
+      }),
+    };
+    
+    return instance;
+  });
+  
+  mockVideo.find = jest.fn().mockResolvedValue([]);
+  mockVideo.findOne = jest.fn().mockResolvedValue(null);
+  mockVideo.findById = jest.fn().mockResolvedValue(null);
+  mockVideo.findByIdAndUpdate = jest.fn().mockResolvedValue({
+    _id: 'test123',
+    status: 'hidden',
+  });
+  mockVideo.create = jest.fn().mockResolvedValue({});
+  mockVideo.updateOne = jest.fn().mockResolvedValue({});
+  mockVideo.deleteOne = jest.fn().mockResolvedValue({});
+  mockVideo.deleteMany = jest.fn().mockResolvedValue({});
+  mockVideo.mockImplementation = jest.fn();
+  return {
+    __esModule: true,
+    default: mockVideo,
+  };
+})
+
+// Mock User model
+jest.mock('@/models/User', () => {
+  const mockUser = jest.fn().mockImplementation(() => ({
+    save: jest.fn().mockResolvedValue({}),
+  }));
+  mockUser.find = jest.fn();
+  mockUser.findOne = jest.fn();
+  mockUser.findById = jest.fn().mockResolvedValue({
+    _id: '507f1f77bcf86cd799439011',
+    email: 'test@example.com',
+    name: 'Test User',
+    isActive: true,
+  });
+  mockUser.create = jest.fn();
+  mockUser.updateOne = jest.fn();
+  mockUser.deleteOne = jest.fn();
+  return {
+    __esModule: true,
+    default: mockUser,
+  };
+})
+
+// Mock JWT utils
+jest.mock('@/lib/jwt-utils', () => ({
+  verifyRefreshToken: jest.fn().mockResolvedValue({
+    userId: '507f1f77bcf86cd799439011',
+    email: 'test@example.com',
+  }),
+  generateTokens: jest.fn().mockResolvedValue({
+    accessToken: 'mock-access-token',
+    refreshToken: 'mock-refresh-token',
+    expiresIn: 3600,
+  }),
+  generateTokenPair: jest.fn().mockResolvedValue({
+    accessToken: 'mock-access-token',
+    refreshToken: 'mock-refresh-token',
+    expiresIn: 3600,
+  }),
+  generateRefreshToken: jest.fn().mockReturnValue('mock-refresh-token'),
+  extractRefreshTokenFromCookies: jest.fn().mockReturnValue('mock-refresh-token'),
+  getRefreshTokenCookieOptions: jest.fn().mockReturnValue({
+    httpOnly: true,
+    secure: true,
+    sameSite: 'strict',
+    maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
+  }),
+  error: jest.fn(),
 }))
 
 // Mock NextResponse and NextRequest for API route tests
@@ -118,17 +268,36 @@ jest.mock('next/server', () => ({
       headers: new Map(),
     })),
   },
-  NextRequest: jest.fn().mockImplementation((url, init) => ({
-    url,
-    method: init?.method || 'GET',
-    headers: new Map(Object.entries(init?.headers || {})),
-    body: init?.body,
-    json: async () => JSON.parse(init?.body || '{}'),
-    cookies: {
-      get: jest.fn(),
-      set: jest.fn(),
-    },
-  })),
+  NextRequest: jest.fn().mockImplementation((url, init) => {
+    const cookies = new Map();
+    
+    // Parse cookies from Cookie header
+    if (init?.headers?.Cookie) {
+      const cookieString = init.headers.Cookie;
+      const cookiePairs = cookieString.split(';');
+      cookiePairs.forEach(pair => {
+        const [name, value] = pair.trim().split('=');
+        if (name && value) {
+          cookies.set(name, value);
+        }
+      });
+    }
+    
+    return {
+      url,
+      method: init?.method || 'GET',
+      headers: new Map(Object.entries(init?.headers || {})),
+      body: init?.body,
+      json: async () => JSON.parse(init?.body || '{}'),
+      cookies: {
+        get: jest.fn((name) => cookies.get(name) ? { value: cookies.get(name) } : undefined),
+        set: jest.fn((name, value) => cookies.set(name, value)),
+        has: jest.fn((name) => cookies.has(name)),
+        delete: jest.fn((name) => cookies.delete(name)),
+        getAll: jest.fn(() => Array.from(cookies.entries()).map(([name, value]) => ({ name, value }))),
+      },
+    };
+  }),
 }))
 
 // Add TextEncoder/TextDecoder polyfills
