@@ -2,11 +2,15 @@ import { GET } from './route';
 import { NextRequest } from 'next/server';
 
 // Mock the dependencies
-jest.mock('@/models/Video', () => ({
-  default: {
+jest.mock('@/models/Video', () => {
+  const mockVideo = {
     find: jest.fn(),
-  },
-}));
+  };
+  return {
+    __esModule: true,
+    default: mockVideo,
+  };
+});
 
 jest.mock('mongoose', () => ({
   connect: jest.fn(),
@@ -15,6 +19,9 @@ jest.mock('mongoose', () => ({
 describe('YouTube API Route', () => {
   beforeEach(() => {
     jest.clearAllMocks();
+    // Mock environment variables
+    process.env.YOUTUBE_API_KEY = 'test_api_key';
+    process.env.YOUTUBE_CHANNEL_ID = 'test_channel_id';
   });
 
   it('should return videos when YouTube API is accessible', async () => {

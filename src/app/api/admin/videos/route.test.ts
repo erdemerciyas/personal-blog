@@ -2,15 +2,17 @@ import { GET, POST } from './route';
 import { NextRequest } from 'next/server';
 
 // Mock the dependencies
-jest.mock('@/models/Video', () => ({
-  default: {
-    find: jest.fn(),
-    findOne: jest.fn(),
-    prototype: {
-      save: jest.fn(),
-    },
-  },
-}));
+jest.mock('@/models/Video', () => {
+  const mockVideo = jest.fn().mockImplementation(() => ({
+    save: jest.fn().mockResolvedValue({ _id: 'test123', videoId: 'test123' }),
+  }));
+  mockVideo.find = jest.fn();
+  mockVideo.findOne = jest.fn();
+  return {
+    __esModule: true,
+    default: mockVideo,
+  };
+});
 
 jest.mock('mongoose', () => ({
   connect: jest.fn(),
@@ -23,6 +25,9 @@ jest.mock('next-auth', () => ({
 describe('Admin Videos API Routes', () => {
   beforeEach(() => {
     jest.clearAllMocks();
+    // Mock environment variables
+    process.env.YOUTUBE_API_KEY = 'test_api_key';
+    process.env.YOUTUBE_CHANNEL_ID = 'test_channel_id';
   });
 
   describe('GET /api/admin/videos', () => {
@@ -148,7 +153,7 @@ describe('Admin Videos API Routes', () => {
       // Mock database responses
       const Video = require('@/models/Video').default;
       Video.findOne.mockResolvedValue(null); // No existing video
-      const mockSave = jest.fn();
+      const mockSave = jest.fn().mockResolvedValue({ _id: 'test123', videoId: 'test123' });
       Video.mockImplementation(() => ({
         save: mockSave,
       }));

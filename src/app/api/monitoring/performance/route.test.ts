@@ -24,6 +24,9 @@ jest.mock('@/lib/monitoring', () => {
       startTransaction: jest.fn(() => mockTransaction),
       measureDatabaseQuery: jest.fn((operation, queryFn) => queryFn()),
       measureFunction: jest.fn((name, fn) => fn()),
+      captureException: jest.fn(),
+      addBreadcrumb: jest.fn(),
+      setTags: jest.fn(),
     },
     ErrorTracker: {
       captureApiError: jest.fn(),

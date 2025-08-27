@@ -3,7 +3,6 @@
  */
 
 import { POST } from '@/app/api/auth/refresh/route';
-import { generateRefreshToken } from '@/lib/jwt-utils';
 import connectDB from '@/lib/mongoose';
 import User from '@/models/User';
 import { NextRequest } from 'next/server';
@@ -16,6 +15,31 @@ jest.mock('@/lib/mongoose', () => ({
 
 jest.mock('@/models/User', () => ({
   findById: jest.fn(),
+}));
+
+jest.mock('@/lib/jwt-utils', () => ({
+  generateTokenPair: jest.fn(),
+  verifyRefreshToken: jest.fn(),
+  extractRefreshTokenFromCookies: jest.fn(),
+  getRefreshTokenCookieOptions: jest.fn(),
+}));
+
+// Mock NextResponse
+const mockCookiesSet = jest.fn();
+jest.mock('next/server', () => ({
+  NextRequest: jest.fn(),
+  NextResponse: {
+    json: jest.fn((data, options) => {
+      const response = {
+        json: async () => data,
+        status: options?.status || 200,
+        cookies: {
+          set: mockCookiesSet,
+        },
+      };
+      return response;
+    }),
+  },
 }));
 
 const mockConnectDB = connectDB as jest.MockedFunction<typeof connectDB>;
@@ -36,11 +60,26 @@ describe('/api/auth/refresh', () => {
   });
 
   it('should refresh token successfully with valid refresh token in cookie', async () => {
-    // Generate a valid refresh token
-    const refreshToken = generateRefreshToken({
+    // Mock JWT utils
+    const jwtUtils = require('@/lib/jwt-utils');
+    const refreshToken = 'valid_refresh_token';
+    jwtUtils.extractRefreshTokenFromCookies.mockReturnValue(refreshToken);
+    jwtUtils.verifyRefreshToken.mockReturnValue({
       userId: mockUserData._id,
       email: mockUserData.email,
       role: mockUserData.role
+    });
+    jwtUtils.generateTokenPair.mockReturnValue({
+      accessToken: 'new_access_token',
+      refreshToken: 'new_refresh_token',
+      expiresIn: 900
+    });
+    jwtUtils.getRefreshTokenCookieOptions.mockReturnValue({
+      httpOnly: true,
+      secure: false,
+      sameSite: 'strict',
+      maxAge: 604800,
+      path: '/'
     });
 
     // Mock user lookup
@@ -71,10 +110,26 @@ describe('/api/auth/refresh', () => {
   });
 
   it('should refresh token successfully with valid refresh token in request body', async () => {
-    const refreshToken = generateRefreshToken({
+    // Mock JWT utils
+    const jwtUtils = require('@/lib/jwt-utils');
+    const refreshToken = 'valid_refresh_token';
+    jwtUtils.extractRefreshTokenFromCookies.mockReturnValue(null);
+    jwtUtils.verifyRefreshToken.mockReturnValue({
       userId: mockUserData._id,
       email: mockUserData.email,
       role: mockUserData.role
+    });
+    jwtUtils.generateTokenPair.mockReturnValue({
+      accessToken: 'new_access_token',
+      refreshToken: 'new_refresh_token',
+      expiresIn: 900
+    });
+    jwtUtils.getRefreshTokenCookieOptions.mockReturnValue({
+      httpOnly: true,
+      secure: false,
+      sameSite: 'strict',
+      maxAge: 604800,
+      path: '/'
     });
 
     (mockUser.findById as jest.Mock).mockReturnValue({
@@ -132,7 +187,11 @@ describe('/api/auth/refresh', () => {
   });
 
   it('should return 404 when user is not found', async () => {
-    const refreshToken = generateRefreshToken({
+    // Mock JWT utils
+    const jwtUtils = require('@/lib/jwt-utils');
+    const refreshToken = 'valid_refresh_token';
+    jwtUtils.extractRefreshTokenFromCookies.mockReturnValue(refreshToken);
+    jwtUtils.verifyRefreshToken.mockReturnValue({
       userId: 'nonexistent_user_id',
       email: 'nonexistent@example.com'
     });
@@ -163,7 +222,11 @@ describe('/api/auth/refresh', () => {
       isActive: false
     };
 
-    const refreshToken = generateRefreshToken({
+    // Mock JWT utils
+    const jwtUtils = require('@/lib/jwt-utils');
+    const refreshToken = 'valid_refresh_token';
+    jwtUtils.extractRefreshTokenFromCookies.mockReturnValue(refreshToken);
+    jwtUtils.verifyRefreshToken.mockReturnValue({
       userId: deactivatedUser._id,
       email: deactivatedUser.email,
       role: deactivatedUser.role

@@ -4,11 +4,15 @@ import mongoose from 'mongoose';
 import Video from '@/models/Video';
 
 // Mock the dependencies
-jest.mock('@/models/Video', () => ({
-  default: {
+jest.mock('@/models/Video', () => {
+  const mockVideo = {
     findByIdAndUpdate: jest.fn(),
-  },
-}));
+  };
+  return {
+    __esModule: true,
+    default: mockVideo,
+  };
+});
 
 jest.mock('mongoose', () => ({
   connect: jest.fn(),

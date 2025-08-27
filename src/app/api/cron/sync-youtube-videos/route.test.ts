@@ -1,14 +1,16 @@
 import { GET } from './route';
 
 // Mock the dependencies
-jest.mock('@/models/Video', () => ({
-  default: {
-    find: jest.fn(),
-    prototype: {
-      save: jest.fn(),
-    },
-  },
-}));
+jest.mock('@/models/Video', () => {
+  const mockVideo = jest.fn().mockImplementation(() => ({
+    save: jest.fn().mockResolvedValue({ _id: 'test123', videoId: 'new123' }),
+  }));
+  mockVideo.find = jest.fn();
+  return {
+    __esModule: true,
+    default: mockVideo,
+  };
+});
 
 jest.mock('mongoose', () => ({
   connect: jest.fn(),
@@ -17,6 +19,9 @@ jest.mock('mongoose', () => ({
 describe('Sync YouTube Videos Cron Job', () => {
   beforeEach(() => {
     jest.clearAllMocks();
+    // Mock environment variables
+    process.env.YOUTUBE_API_KEY = 'test_api_key';
+    process.env.YOUTUBE_CHANNEL_ID = 'test_channel_id';
   });
 
   it('should sync videos from YouTube and add new ones to database', async () => {
@@ -63,7 +68,7 @@ describe('Sync YouTube Videos Cron Job', () => {
     ]);
 
     // Mock save function
-    const mockSave = jest.fn();
+    const mockSave = jest.fn().mockResolvedValue({ _id: 'test123', videoId: 'new123' });
     Video.mockImplementation(() => ({
       save: mockSave,
     }));
