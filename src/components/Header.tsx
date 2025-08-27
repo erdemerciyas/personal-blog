@@ -16,7 +16,8 @@ import {
   UserIcon,
   SparklesIcon,
   PaperAirplaneIcon,
-  EnvelopeIcon
+  EnvelopeIcon,
+  FilmIcon
 } from '@heroicons/react/24/outline';
 import { useToast } from './ui/useToast';
 
@@ -50,6 +51,7 @@ const getIconForPage = (pageId: string) => {
     services: WrenchScrewdriverIcon,
     portfolio: FolderOpenIcon,
     contact: PhoneIcon,
+    videos: FilmIcon,
   };
   return iconMap[pageId as keyof typeof iconMap] || HomeIcon;
 };
@@ -63,6 +65,7 @@ const resolveIcon = (name?: string) => {
     FolderOpenIcon,
     PhoneIcon,
     SparklesIcon,
+    FilmIcon,
   };
   if (!name) return undefined;
   return map[name] || undefined;
@@ -194,6 +197,7 @@ const Header: React.FC = () => {
             { href: '/about', label: 'Hakkımda', icon: UserIcon },
             { href: '/services', label: 'Hizmetler', icon: WrenchScrewdriverIcon },
             { href: '/portfolio', label: 'Portfolyo', icon: FolderOpenIcon },
+            { href: '/videos', label: 'Videolar', icon: FilmIcon },
             { href: '/products', label: 'Ürünler', icon: FolderOpenIcon },
             { href: '/contact', label: 'İletişim', icon: PhoneIcon },
           ]);
@@ -207,6 +211,7 @@ const Header: React.FC = () => {
           { href: '/about', label: 'Hakkımda', icon: UserIcon },
           { href: '/services', label: 'Hizmetler', icon: WrenchScrewdriverIcon },
           { href: '/portfolio', label: 'Portfolyo', icon: FolderOpenIcon },
+          { href: '/videos', label: 'Videolar', icon: FilmIcon },
           { href: '/products', label: 'Ürünler', icon: FolderOpenIcon },
           { href: '/contact', label: 'İletişim', icon: PhoneIcon },
         ]);
@@ -334,11 +339,11 @@ E-posta: ${projectForm.email}
       console.error('Form submission error:', error);
       setSubmitStatus('error');
       show({
-        title: 'Bir hata oluştu',
-        description: 'Bağlantı sırasında bir sorun yaşandı.',
-        variant: 'danger',
-        duration: 4500,
-      });
+          title: 'Bir hata oluştu',
+          description: 'Bağlantı sırasında bir sorun yaşandı.',
+          variant: 'danger',
+          duration: 4500,
+        });
     } finally {
       setIsSubmitting(false);
     }

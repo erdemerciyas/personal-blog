@@ -120,6 +120,12 @@ export default function AdminLayout({ children, title, breadcrumbs }: AdminLayou
       ]
     },
     {
+      id: 'videos',
+      label: 'Video Yönetimi',
+      icon: PhotoIcon,
+      href: '/admin/videos'
+    },
+    {
       id: 'media',
       label: 'Medya Kütüphanesi',
       icon: PhotoIcon,

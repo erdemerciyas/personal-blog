@@ -18,8 +18,9 @@ export async function GET() {
       { pageId: 'about', title: 'Hakkımda', path: '/about', description: 'Deneyimim ve uzmanlık alanlarım hakkında bilgi alın', icon: 'UserIcon', isExternal: false, isActive: true, showInNavigation: true, order: 1 },
       { pageId: 'services', title: 'Hizmetler', path: '/services', description: 'Sunduğum profesyonel hizmetleri inceleyin', icon: 'WrenchScrewdriverIcon', isExternal: false, isActive: true, showInNavigation: true, order: 2 },
       { pageId: 'portfolio', title: 'Portfolio', path: '/portfolio', description: 'Tamamladığım projeleri ve çalışmalarımı görün', icon: 'FolderOpenIcon', isExternal: false, isActive: true, showInNavigation: true, order: 3 },
-      { pageId: 'contact', title: 'İletişim', path: '/contact', description: 'Benimle iletişime geçin ve projelerinizi konuşalım', icon: 'PhoneIcon', isExternal: false, isActive: true, showInNavigation: true, order: 4 },
-      { pageId: 'products', title: 'Ürünler', path: '/products', description: 'Sıfır ve ikinci el ürünlerimizi keşfedin', icon: 'FolderOpenIcon', isExternal: false, isActive: true, showInNavigation: true, order: 5 },
+      { pageId: 'videos', title: 'Videolar', path: '/videos', description: 'YouTube kanalımızdaki videoları izleyin', icon: 'FilmIcon', isExternal: false, isActive: true, showInNavigation: true, order: 4 },
+      { pageId: 'contact', title: 'İletişim', path: '/contact', description: 'Benimle iletişime geçin ve projelerinizi konuşalım', icon: 'PhoneIcon', isExternal: false, isActive: true, showInNavigation: true, order: 5 },
+      { pageId: 'products', title: 'Ürünler', path: '/products', description: 'Sıfır ve ikinci el ürünlerimizi keşfedin', icon: 'FolderOpenIcon', isExternal: false, isActive: true, showInNavigation: true, order: 6 },
     ];
 
     // Kayıt yoksa seed et; varsa eksikleri upsert et
@@ -53,9 +54,10 @@ export async function GET() {
       { pageId: 'about', title: 'Hakkımda', path: '/about', description: 'Deneyimim ve uzmanlık alanlarım hakkında bilgi alın', icon: 'UserIcon', isExternal: false, isActive: true, showInNavigation: true, order: 1 },
       { pageId: 'services', title: 'Hizmetler', path: '/services', description: 'Sunduğum profesyonel hizmetleri inceleyin', icon: 'WrenchScrewdriverIcon', isExternal: false, isActive: true, showInNavigation: true, order: 2 },
       { pageId: 'portfolio', title: 'Portfolio', path: '/portfolio', description: 'Tamamladığım projeleri ve çalışmalarımı görün', icon: 'FolderOpenIcon', isExternal: false, isActive: true, showInNavigation: true, order: 3 },
-      { pageId: 'contact', title: 'İletişim', path: '/contact', description: 'Benimle iletişime geçin ve projelerinizi konuşalım', icon: 'PhoneIcon', isExternal: false, isActive: true, showInNavigation: true, order: 4 },
-      { pageId: 'products', title: 'Ürünler', path: '/products', description: 'Sıfır ve ikinci el ürünlerimizi keşfedin', icon: 'FolderOpenIcon', isExternal: false, isActive: true, showInNavigation: true, order: 5 },
-      { pageId: 'product-detail', title: 'Ürün Detayı', path: '/products/[slug]', description: 'Ürün detay sayfası ayarları', icon: 'FolderOpenIcon', isExternal: false, isActive: true, showInNavigation: false, order: 6 },
+      { pageId: 'videos', title: 'Videolar', path: '/videos', description: 'YouTube kanalımızdaki videoları izleyin', icon: 'FilmIcon', isExternal: false, isActive: true, showInNavigation: true, order: 4 },
+      { pageId: 'contact', title: 'İletişim', path: '/contact', description: 'Benimle iletişime geçin ve projelerinizi konuşalım', icon: 'PhoneIcon', isExternal: false, isActive: true, showInNavigation: true, order: 5 },
+      { pageId: 'products', title: 'Ürünler', path: '/products', description: 'Sıfır ve ikinci el ürünlerimizi keşfedin', icon: 'FolderOpenIcon', isExternal: false, isActive: true, showInNavigation: true, order: 6 },
+      { pageId: 'product-detail', title: 'Ürün Detayı', path: '/products/[slug]', description: 'Ürün detay sayfası ayarları', icon: 'FolderOpenIcon', isExternal: false, isActive: true, showInNavigation: false, order: 7 },
     ];
     const resp = NextResponse.json(fallbackPages, { status: 200 });
     resp.headers.set('Cache-Control', 'no-store, no-cache, must-revalidate, proxy-revalidate');

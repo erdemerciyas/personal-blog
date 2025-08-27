@@ -13,8 +13,10 @@
     "format": "prettier --write .",
     "test:config": "node scripts/test-config.js",
     "security:check": "npm audit",
+    "security:test": "npm audit --audit-level=moderate",
     "perf:check": "next build --profile",
     "perf:analyze": "ANALYZE=true next build",
+    "build:analyze": "ANALYZE=true next build",
     "deploy": "vercel --prod",
     "deploy:preview": "vercel",
     "sync-videos": "node scripts/sync-youtube-videos.js"
@@ -46,6 +48,6 @@
     "prettier": "^3.0.3",
     "prettier-plugin-tailwindcss": "^0.5.4",
     "tailwindcss": "^3.4.0",
-    "typescript": "5.8.3"
+    "typescript": "5.6.3"
   }
 }
