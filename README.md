@@ -52,6 +52,16 @@ Modern, güvenli ve performanslı kişisel blog ve portfolyo platformu. Next.js 
 - **Error Boundaries**: Hata yakalama ve kurtarma
 - **Retry Logic**: Otomatik yeniden deneme mekanizması
 
+### Monitoring ve Performance Tracking
+- **Real-time Monitoring**: Sistem sağlığı ve performans izleme
+- **Error Tracking**: React Error Boundary ile hata yakalama
+- **Performance Metrics**: Client ve server-side performans metrikleri
+- **Database Monitoring**: Yavaş sorgu tespiti ve optimizasyon
+- **Health Check API**: `/api/health` endpoint ile sistem durumu
+- **Admin Dashboard**: `/admin/monitoring` ile detaylı monitoring paneli
+- **Web Vitals**: Core Web Vitals metrikleri (opsiyonel)
+- **Sentry Integration**: Gelişmiş hata raporlama (opsiyonel)
+
 ### Admin Panel
 - **Universal Editor**: Gelişmiş metin editörü sistemi
   - Markdown ve HTML desteği
@@ -66,6 +76,7 @@ Modern, güvenli ve performanslı kişisel blog ve portfolyo platformu. Next.js 
 - **Image Upload**: Drag & drop görsel yükleme
 - **Real-time Preview**: Canlı önizleme
 - **Video Management**: YouTube videolarını yönetme
+- **Monitoring Dashboard**: Sistem performansı ve sağlık durumu izleme
 
 ## Teknoloji Stack
 
@@ -194,6 +205,39 @@ Bu proje, YouTube kanalınızdan videoları otomatik olarak çekme ve yönetme �
    - Arama ve filtreleme özelliklerini kullanın
 
 ## Yeni Özellikler (v2.3.4)
+
+### Kapsamlı Monitoring ve Performance Tracking Sistemi (2025-08-27)
+- **Real-time Performance Monitoring**: Client ve server-side performans metrikleri
+  - Sayfa yükleme süreleri ve render performansı
+  - API endpoint response time tracking
+  - Database query performance monitoring (>1s uyarı, >5s kritik)
+  - Web Vitals metrikleri desteği (CLS, FID, FCP, LCP, TTFB)
+- **Gelişmiş Error Tracking**: Kapsamlı hata yakalama sistemi
+  - React Error Boundary ile component hata yakalama
+  - Unhandled promise rejections ve uncaught exceptions
+  - API error monitoring ve otomatik raporlama
+  - Custom error context ve breadcrumb sistemi
+- **Admin Monitoring Dashboard**: `/admin/monitoring` - Real-time sistem izleme
+  - Server metrics (uptime, memory, CPU usage, active connections)
+  - Database health monitoring (connection status, response time)
+  - Error metrics (total errors, error rate, critical errors)
+  - Client performance (average load/render times, slow pages)
+- **Health Check API**: `/api/health` - Sistem sağlık durumu endpoint'i
+- **Production Ready Features**:
+  - Environment-based logging (development/production)
+  - Optional Sentry integration (install @sentry/nextjs)
+  - Performance thresholds configuration
+  - Automatic error reporting ve alerting
+  - TypeScript support ile type-safe monitoring
+- **Comprehensive Testing**: 52 test (11 test suite) - monitoring sistemi tam test coverage
+- **Documentation**: Detaylı monitoring dokümantasyonu (`docs/MONITORING.md`)
+
+### Build Fixes ve Production Optimizations (2025-08-27)
+- **TypeScript Fixes**: usePerformanceMonitoring hook'unda null pathname handling
+- **Missing Dependencies**: useAuth hook eklendi (admin monitoring dashboard için)
+- **Web Vitals**: Optional web-vitals package desteği (install web-vitals to enable)
+- **Production Build**: ✅ Başarılı build (68 sayfa, warning'ler temizlendi)
+- **Sentry Integration**: Optional Sentry entegrasyonu (graceful fallback)
 
 ### Hero Badge Temizliği (2025-08-23)
 - **Hero Alanları Sadeleştirme**: Tüm sayfalardaki hero alanlarından badge elementleri kaldırıldı
@@ -483,7 +527,7 @@ Permissions-Policy: camera=(), microphone=(), geolocation=()
 ### Performance Metrics
 - **Build Time**: ~1 minute
 - **Static Pages**: 51 pages pre-rendered
-- **API Routes**: 45+ endpoints
+- **API Routes**: 47+ endpoints (monitoring endpoints dahil)
 - **First Load JS**: 87.3 kB shared
 - **Performance Score**: 92% (Excellent)
 - **Lighthouse Score**: 90+ (target)
@@ -552,11 +596,18 @@ CLOUDINARY_API_SECRET=your-api-secret
 GOOGLE_SITE_VERIFICATION=__OPTIONAL__
 NEXT_PUBLIC_GA_ID=__OPTIONAL__
 NEXT_PUBLIC_GTM_ID=__OPTIONAL__
+
+# Optional - Monitoring & Performance
+SENTRY_DSN=__OPTIONAL__
+SLOW_QUERY_THRESHOLD=1000
+CRITICAL_QUERY_THRESHOLD=5000
+SLOW_PAGE_THRESHOLD=3000
 ```
 
 ### Deployment Guides
 - 📚 [Quick Deploy Guide](QUICK_DEPLOY.md) - 5 dakikada deploy
 - 📋 [Deployment Checklist](DEPLOYMENT_CHECKLIST.md) - Kapsamlı kontrol listesi
+- 📊 [Monitoring Guide](docs/MONITORING.md) - Detaylı monitoring dokümantasyonu
 
 ## 🧪 Testing & Quality
 
@@ -632,6 +683,13 @@ npm run deploy:preview   # Preview deployment
 npm run deploy:production # Production deployment
 ```
 
+### Monitoring & Health
+```bash
+npm run health:check     # System health check
+npm run monitoring:test  # Monitoring API test
+npm run monitoring:dashboard # Open monitoring dashboard
+```
+
 ## 🔀 GitHub Push & CI Notları
 
 - **Push öncesi hızlı kontrol**:
@@ -703,6 +761,7 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 - **Last Updated**: 2025-08-27
 - **Security Level**: 🔒 HIGH
 - **Performance**: ⚡ OPTIMIZED
+- **Monitoring**: � COMPREPHENSIVE
 - **Documentation**: 📚 COMPLETE
 
 ### Recent Updates (v2.2.4)
