@@ -1,10 +1,22 @@
 const path = require('path');
-const { withSentryConfig } = require('@sentry/nextjs');
+// Sentry opsiyonel: Paket yoksa no-op ile devam et
+let withSentryConfig;
+try {
+  ({ withSentryConfig } = require('@sentry/nextjs'));
+} catch (e) {
+  withSentryConfig = (config) => config;
+}
 
-// Bundle analyzer için
-const withBundleAnalyzer = require('@next/bundle-analyzer')({
-  enabled: process.env.ANALYZE === 'true',
-});
+// Bundle analyzer opsiyonel: Paket yoksa no-op ile devam et
+let withBundleAnalyzer;
+try {
+  const bundleAnalyzerFactory = require('@next/bundle-analyzer');
+  withBundleAnalyzer = bundleAnalyzerFactory({
+    enabled: process.env.ANALYZE === 'true',
+  });
+} catch (e) {
+  withBundleAnalyzer = (config) => config;
+}
 
 /** @type {import('next').NextConfig} */
 const nextConfig = {
