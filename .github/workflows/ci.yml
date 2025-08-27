@@ -186,9 +186,68 @@ jobs:
         node-version: ${{ env.NODE_VERSION }}
         cache: 'npm'
         
-    - name: 📥 Install dependencies
+    - name: Install dependencies
       run: npm ci
       
-    - name: 📊 Performance test
+    - name: Performance test
       run: npm run perf:check
       continue-on-error: true
+
+  # Automatic Deploy to Vercel (optional, runs only if secrets are present)
+  deploy:
+    name: 🚀 Deploy to Vercel (Prod)
+    runs-on: ubuntu-latest
+    needs: build
+    if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+    env:
+      VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Setup Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: ${{ env.NODE_VERSION }}
+        cache: 'npm'
+
+    - name: Install dependencies
+      run: npm ci
+
+    - name: Prepare env
+      shell: bash
+      run: |
+        if [ -n "${{ secrets.NEXTAUTH_SECRET }}" ]; then
+          echo "NEXTAUTH_SECRET=${{ secrets.NEXTAUTH_SECRET }}" >> $GITHUB_ENV
+          echo "✅ NEXTAUTH_SECRET from secrets";
+        else
+          echo "NEXTAUTH_SECRET=${{ env.NEXTAUTH_SECRET }}" >> $GITHUB_ENV
+          echo "⚠️ NEXTAUTH_SECRET using fallback";
+        fi
+
+        if [ -n "${{ secrets.NEXTAUTH_URL }}" ]; then
+          echo "NEXTAUTH_URL=${{ secrets.NEXTAUTH_URL }}" >> $GITHUB_ENV
+          echo "✅ NEXTAUTH_URL from secrets";
+        else
+          echo "NEXTAUTH_URL=${{ env.NEXTAUTH_URL }}" >> $GITHUB_ENV
+          echo "⚠️ NEXTAUTH_URL using fallback";
+        fi
+
+        if [ -n "${{ secrets.MONGODB_URI }}" ]; then
+          echo "MONGODB_URI=${{ secrets.MONGODB_URI }}" >> $GITHUB_ENV
+          echo "✅ MONGODB_URI from secrets";
+        else
+          echo "MONGODB_URI=mongodb://localhost:27017/personal-blog-ci" >> $GITHUB_ENV
+          echo "⚠️ MONGODB_URI using CI fallback";
+        fi
+
+        echo "SKIP_ENV_VALIDATION=true" >> $GITHUB_ENV
+
+    - name: Vercel Build (prebuilt output)
+      if: env.VERCEL_TOKEN != ''
+      run: npx vercel build --prod --yes --token=${{ env.VERCEL_TOKEN }}
+
+    - name: Vercel Deploy (prod)
+      if: env.VERCEL_TOKEN != ''
+      run: npx vercel deploy --prebuilt --prod --yes --token=${{ env.VERCEL_TOKEN }}
