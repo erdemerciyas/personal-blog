@@ -1,8 +1,8 @@
 import { NextResponse } from 'next/server';
 import type { NextRequest } from 'next/server';
-import { rateLimit, getClientIP, RATE_LIMITS } from './src/lib/rate-limit';
-import { SecurityHeaders, getPageType } from './src/lib/security-headers';
-import { logger } from './src/lib/logger';
+import { rateLimit, getClientIP, RATE_LIMITS } from '@/lib/rate-limit';
+import { SecurityHeaders, getPageType } from '@/lib/security-headers';
+import { logger } from '@/lib/logger';
 
 // Cache for page settings (short TTL)
 let pageSettingsCache: { data: any[]; timestamp: number } | null = null;

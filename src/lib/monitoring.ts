@@ -1,311 +1,271 @@
-import * as Sentry from '@sentry/nextjs';
+// Sentry is optional - only import if available
+let Sentry: any = null;
+try {
+  Sentry = require('@sentry/nextjs');
+} catch (e) {
+  console.warn('Sentry not installed, monitoring features disabled');
+}
+
 import { NextRequest } from 'next/server';
 
 // Performance monitoring utilities
 export class PerformanceMonitor {
-  private static transactions: Map<string, unknown> = new Map();
+  private static transactions: Map<string, any> = new Map();
 
   /**
    * Start a performance transaction
    */
   static startTransaction(name: string, op: string = 'custom') {
-    // Using newer Sentry API
-    const transaction = Sentry.startSpan(
-      { name, op },
-      () => {
-        // Return a basic transaction-like object
-        return {
-          setTags: (tags: Record<string, string>) => {
-            Sentry.setTags(tags);
-          },
-          setTag: (key: string, value: string) => {
-            Sentry.setTag(key, value);
-          },
-          finish: () => {
-            // Span will finish automatically
-          },
-          startChild: (options: { op: string; description?: string }) => {
-            return Sentry.startSpan({
-              op: options.op,
-              name: options.description || options.op
-            }, () => ({}));
-          }
-        };
-      }
-    );
+    if (!Sentry) return null;
     
-    this.transactions.set(name, transaction);
-    return transaction;
+    try {
+      const transaction = Sentry.startTransaction({ name, op });
+      this.transactions.set(name, transaction);
+      return transaction;
+    } catch (error) {
+      console.warn('Failed to start transaction:', error);
+      return null;
+    }
   }
 
   /**
    * Finish a performance transaction
    */
   static finishTransaction(name: string) {
-    // In the new Sentry API, transactions are managed differently
-    // We just remove it from our map since spans auto-finish
-    this.transactions.delete(name);
-  }
-
-  /**
-   * Add span to current transaction
-   */
-  static addSpan(operation: string, description?: string) {
-    // Use the newer span API
-    return Sentry.startSpan({
-      op: operation,
-      name: description || operation
-    }, () => ({
-      setTag: (key: string, value: string) => Sentry.setTag(key, value),
-      setData: (key: string, value: unknown) => Sentry.setContext(key, { value }),
-      finish: () => {}
-    }));
-  }
-
-  /**
-   * Measure function execution time
-   */
-  static async measureFunction<T>(
-    name: string, 
-    fn: () => Promise<T> | T,
-    tags?: Record<string, string>
-  ): Promise<T> {
-    const transaction = this.startTransaction(name, 'function');
-    
-    if (tags) {
-      transaction.setTags(tags);
-    }
-
-    try {
-      const result = await fn();
-      transaction.setTag('status', 'success');
-      return result;
-    } catch (error) {
-      transaction.setTag('status', 'error');
-      ErrorTracker.captureError(error as Error, { 
-        function: name,
-        ...tags 
-      });
-      throw error;
-    } finally {
-      this.finishTransaction(name);
-    }
-  }
-
-  /**
-   * Measure API endpoint performance
-   */
-  static measureApiEndpoint(request: NextRequest, endpoint: string) {
-    const transaction = this.startTransaction(`API ${endpoint}`, 'http.server');
-    
-    transaction.setTags({
-      'http.method': request.method,
-      'http.url': request.url,
-      'http.route': endpoint
-    });
-
-    return {
-      finish: (statusCode?: number) => {
-        if (statusCode) {
-          transaction.setTag('http.status_code', statusCode.toString());
-        }
-        this.finishTransaction(`API ${endpoint}`);
-      }
-    };
-  }
-
-  /**
-   * Track database query performance
-   */
-  static async measureDatabaseQuery<T>(
-    operation: string,
-    query: () => Promise<T>,
-    metadata?: Record<string, unknown>
-  ): Promise<T> {
-    const span = this.addSpan('db.query', operation);
-    
-    if (span && metadata) {
-      span.setData('query.metadata', metadata);
-    }
-
-    try {
-      const result = await query();
-      if (span) {
-        span.setTag('status', 'success');
-      }
-      return result;
-    } catch (error) {
-      if (span) {
-        span.setTag('status', 'error');
-        span.setData('error', error);
-      }
-      throw error;
-    } finally {
-      if (span) {
-        span.finish();
+    const transaction = this.transactions.get(name);
+    if (transaction) {
+      try {
+        transaction.finish();
+        this.transactions.delete(name);
+      } catch (error) {
+        console.warn('Failed to finish transaction:', error);
       }
     }
   }
-}
 
-// Error tracking utilities
-export class ErrorTracker {
   /**
-   * Capture error with context
+   * Add breadcrumb for debugging
    */
-  static captureError(error: Error, context?: Record<string, string | number | boolean>) {
-    Sentry.withScope((scope) => {
-      if (context) {
-        scope.setTags(context);
-        scope.setContext('error_context', context);
+  static addBreadcrumb(message: string, category: string = 'custom', level: string = 'info') {
+    if (Sentry) {
+      try {
+        Sentry.addBreadcrumb({
+          message,
+          category,
+          level,
+          timestamp: Date.now() / 1000,
+        });
+      } catch (error) {
+        console.warn('Failed to add breadcrumb:', error);
       }
-      
-      scope.setLevel('error');
-      Sentry.captureException(error);
-    });
+    }
   }
 
-  /**
-   * Capture API error with request context
-   */
-  static captureApiError(
-    error: Error, 
-    request: NextRequest, 
-    endpoint: string,
-    userId?: string
-  ) {
-    Sentry.withScope((scope) => {
-      scope.setTags({
-        endpoint,
-        method: request.method,
-        user_id: userId || 'anonymous'
-      });
-      
-      scope.setContext('request', {
-        url: request.url,
-        method: request.method,
-        headers: Object.fromEntries(request.headers.entries()),
-        endpoint
-      });
-      
-      scope.setLevel('error');
-      Sentry.captureException(error);
-    });
-  }
-
-  /**
-   * Capture warning
-   */
-  static captureWarning(message: string, context?: Record<string, string | number | boolean>) {
-    Sentry.withScope((scope) => {
-      if (context) {
-        scope.setTags(context);
-        scope.setContext('warning_context', context);
-      }
-      
-      scope.setLevel('warning');
-      Sentry.captureMessage(message, 'warning');
-    });
-  }
-
-  /**
-   * Capture database error
-   */
-  static captureDatabaseError(
-    error: Error, 
-    operation: string, 
-    model?: string,
-    query?: unknown
-  ) {
-    Sentry.withScope((scope) => {
-      scope.setTags({
-        operation,
-        model: model || 'unknown',
-        error_type: 'database'
-      });
-      
-      scope.setContext('database', {
-        operation,
-        model,
-        query: query ? JSON.stringify(query) : undefined
-      });
-      
-      scope.setLevel('error');
-      Sentry.captureException(error);
-    });
-  }
-}
-
-// User tracking utilities
-export class UserTracker {
   /**
    * Set user context
    */
-  static setUser(user: {
-    id: string;
-    email?: string;
-    role?: string;
-    [key: string]: string | number | boolean | undefined;
-  }) {
-    Sentry.setUser({
-      email: user.email,
-      username: user.email,
-      ...user
-    });
+  static setUser(user: { id?: string; email?: string; username?: string }) {
+    if (Sentry) {
+      try {
+        Sentry.setUser(user);
+      } catch (error) {
+        console.warn('Failed to set user:', error);
+      }
+    }
   }
 
   /**
-   * Clear user context
+   * Set custom tags
    */
-  static clearUser() {
-    Sentry.setUser(null);
+  static setTags(tags: Record<string, string>) {
+    if (Sentry) {
+      try {
+        Sentry.setTags(tags);
+      } catch (error) {
+        console.warn('Failed to set tags:', error);
+      }
+    }
   }
 
   /**
-   * Add breadcrumb for user action
+   * Capture exception
    */
-  static addBreadcrumb(
-    message: string, 
-    category: string = 'user', 
-    level: 'info' | 'warning' | 'error' = 'info',
-    data?: Record<string, string | number | boolean>
-  ) {
-    Sentry.addBreadcrumb({
-      message,
-      category,
-      level,
-      data,
-      timestamp: Date.now()
-    });
+  static captureException(error: Error, context?: Record<string, any>) {
+    if (Sentry) {
+      try {
+        if (context) {
+          Sentry.withScope((scope: any) => {
+            Object.keys(context).forEach(key => {
+              scope.setContext(key, context[key]);
+            });
+            Sentry.captureException(error);
+          });
+        } else {
+          Sentry.captureException(error);
+        }
+      } catch (sentryError) {
+        console.warn('Failed to capture exception:', sentryError);
+      }
+    }
+    
+    // Always log to console as fallback
+    console.error('Exception captured:', error, context);
+  }
+
+  /**
+   * Capture message
+   */
+  static captureMessage(message: string, level: string = 'info', context?: Record<string, any>) {
+    if (Sentry) {
+      try {
+        if (context) {
+          Sentry.withScope((scope: any) => {
+            Object.keys(context).forEach(key => {
+              scope.setContext(key, context[key]);
+            });
+            Sentry.captureMessage(message, level as any);
+          });
+        } else {
+          Sentry.captureMessage(message, level as any);
+        }
+      } catch (error) {
+        console.warn('Failed to capture message:', error);
+      }
+    }
+    
+    // Always log to console as fallback
+    console.log(`[${level.toUpperCase()}] ${message}`, context);
   }
 }
 
-// Custom Sentry middleware for API routes
-export function withSentryApi(
-  handler: (req: NextRequest, context?: Record<string, unknown>) => Promise<Response>,
-  endpoint: string
-) {
-  return async (req: NextRequest, context?: Record<string, unknown>): Promise<Response> => {
-    const monitor = PerformanceMonitor.measureApiEndpoint(req, endpoint);
+// API monitoring utilities
+export class APIMonitor {
+  /**
+   * Monitor API endpoint performance
+   */
+  static async monitorEndpoint<T>(
+    name: string,
+    handler: () => Promise<T>,
+    request?: NextRequest
+  ): Promise<T> {
+    const transaction = PerformanceMonitor.startTransaction(`api.${name}`, 'http.server');
     
     try {
-      const response = await handler(req, context);
-      monitor.finish(response.status);
-      return response;
+      if (request && transaction) {
+        transaction.setTag('http.method', request.method);
+        transaction.setTag('http.url', request.url);
+      }
+      
+      const result = await handler();
+      
+      if (transaction) {
+        transaction.setTag('http.status_code', '200');
+      }
+      
+      return result;
     } catch (error) {
-      monitor.finish(500);
-      ErrorTracker.captureApiError(error as Error, req, endpoint);
+      if (transaction) {
+        transaction.setTag('http.status_code', '500');
+      }
+      
+      PerformanceMonitor.captureException(error as Error, {
+        endpoint: name,
+        method: request?.method,
+        url: request?.url,
+      });
+      
       throw error;
+    } finally {
+      PerformanceMonitor.finishTransaction(`api.${name}`);
     }
-  };
+  }
+
+  /**
+   * Monitor database operations
+   */
+  static async monitorDatabase<T>(
+    operation: string,
+    handler: () => Promise<T>
+  ): Promise<T> {
+    const transaction = PerformanceMonitor.startTransaction(`db.${operation}`, 'db');
+    
+    try {
+      const result = await handler();
+      return result;
+    } catch (error) {
+      PerformanceMonitor.captureException(error as Error, {
+        operation,
+        type: 'database',
+      });
+      throw error;
+    } finally {
+      PerformanceMonitor.finishTransaction(`db.${operation}`);
+    }
+  }
 }
 
-// Export main utilities
-export const Monitoring = {
-  performance: PerformanceMonitor,
-  errors: ErrorTracker,
-  users: UserTracker,
-  withSentryApi
-};
+// Error boundary utilities
+export class ErrorBoundary {
+  /**
+   * Handle React component errors
+   */
+  static handleComponentError(error: Error, errorInfo: { componentStack: string }) {
+    PerformanceMonitor.captureException(error, {
+      type: 'react_component',
+      componentStack: errorInfo.componentStack,
+    });
+  }
 
-export default Monitoring;
+  /**
+   * Handle unhandled promise rejections
+   */
+  static handleUnhandledRejection(reason: any, promise: Promise<any>) {
+    PerformanceMonitor.captureException(
+      new Error(`Unhandled Promise Rejection: ${reason}`),
+      {
+        type: 'unhandled_promise_rejection',
+        promise: promise.toString(),
+      }
+    );
+  }
+
+  /**
+   * Handle uncaught exceptions
+   */
+  static handleUncaughtException(error: Error) {
+    PerformanceMonitor.captureException(error, {
+      type: 'uncaught_exception',
+    });
+  }
+}
+
+// Initialize error handlers if in browser
+if (typeof window !== 'undefined') {
+  window.addEventListener('unhandledrejection', (event) => {
+    ErrorBoundary.handleUnhandledRejection(event.reason, event.promise);
+  });
+
+  window.addEventListener('error', (event) => {
+    ErrorBoundary.handleUncaughtException(event.error);
+  });
+}
+
+// Initialize error handlers if in Node.js
+if (typeof process !== 'undefined') {
+  process.on('unhandledRejection', (reason, promise) => {
+    ErrorBoundary.handleUnhandledRejection(reason, promise);
+  });
+
+  process.on('uncaughtException', (error) => {
+    ErrorBoundary.handleUncaughtException(error);
+    // Don't exit the process in production
+    if (process.env.NODE_ENV !== 'production') {
+      process.exit(1);
+    }
+  });
+}
+
+// Export alias for backward compatibility
+export const ErrorTracker = ErrorBoundary;
+
+export { PerformanceMonitor as default };

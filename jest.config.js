@@ -1,10 +1,10 @@
-const nextJest = require('next/jest')
+const nextJest = require('next/jest');
 
 /** @type {import('jest').Config} */
 const createJestConfig = nextJest({
   // Next.js app directory path
   dir: './',
-})
+});
 
 // Jest configuration
 const config = {
@@ -66,7 +66,7 @@ const config = {
   
   // Verbose output
   verbose: true,
-}
+};
 
 // Export Jest configuration
-module.exports = createJestConfig(config)
+module.exports = createJestConfig(config);

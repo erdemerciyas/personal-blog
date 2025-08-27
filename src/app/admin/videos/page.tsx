@@ -218,7 +218,8 @@ export default function AdminVideosPage() {
       loadVideos();
     } catch (error) {
       console.error('Toggle visibility error:', error);
-      setMessage({ type: 'error', text: error.message || 'Durum değiştirilirken hata oluştu.' });
+      const errorMessage = error instanceof Error ? error.message : 'Durum değiştirilirken hata oluştu.';
+      setMessage({ type: 'error', text: errorMessage });
     }
   };
 

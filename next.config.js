@@ -1,21 +1,27 @@
 const path = require('path');
+
 // Sentry opsiyonel: Paket yoksa no-op ile devam et
-let withSentryConfig;
+let withSentryConfig = (config) => config;
 try {
-  ({ withSentryConfig } = require('@sentry/nextjs'));
+  const sentry = require('@sentry/nextjs');
+  if (sentry && sentry.withSentryConfig) {
+    withSentryConfig = sentry.withSentryConfig;
+  }
 } catch (e) {
-  withSentryConfig = (config) => config;
+  console.warn('Sentry not installed, skipping Sentry configuration');
 }
 
 // Bundle analyzer opsiyonel: Paket yoksa no-op ile devam et
-let withBundleAnalyzer;
+let withBundleAnalyzer = (config) => config;
 try {
   const bundleAnalyzerFactory = require('@next/bundle-analyzer');
-  withBundleAnalyzer = bundleAnalyzerFactory({
-    enabled: process.env.ANALYZE === 'true',
-  });
+  if (bundleAnalyzerFactory && typeof bundleAnalyzerFactory === 'function') {
+    withBundleAnalyzer = bundleAnalyzerFactory({
+      enabled: process.env.ANALYZE === 'true',
+    });
+  }
 } catch (e) {
-  withBundleAnalyzer = (config) => config;
+  console.warn('Bundle analyzer not installed, skipping bundle analysis');
 }
 
 /** @type {import('next').NextConfig} */
@@ -97,7 +103,7 @@ const nextConfig = {
   trailingSlash: false,
 }
 
-// Sentry configuration
+// Sentry configuration (only if Sentry is available)
 const sentryWebpackPluginOptions = {
   // Additional config options for the Sentry Webpack plugin
   silent: process.env.NODE_ENV === 'production',
@@ -105,7 +111,13 @@ const sentryWebpackPluginOptions = {
   widenClientFileUpload: true,
 };
 
-module.exports = withSentryConfig(
-  withBundleAnalyzer(nextConfig),
-  sentryWebpackPluginOptions
-);
+// Apply configurations in order
+let finalConfig = nextConfig;
+finalConfig = withBundleAnalyzer(finalConfig);
+
+// Only apply Sentry if it's available
+if (withSentryConfig !== ((config) => config)) {
+  finalConfig = withSentryConfig(finalConfig, sentryWebpackPluginOptions);
+}
+
+module.exports = finalConfig;
