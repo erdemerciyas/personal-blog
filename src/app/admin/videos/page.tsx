@@ -8,9 +8,10 @@ import {
   PencilIcon,
   EyeIcon,
   EyeSlashIcon,
-  PlusIcon,
   MagnifyingGlassIcon,
-  XMarkIcon
+  XMarkIcon,
+  TrashIcon,
+  PlusIcon
 } from '@heroicons/react/24/outline';
 
 interface Video {
@@ -23,6 +24,9 @@ interface Video {
   type: 'short' | 'normal';
   status: 'visible' | 'hidden';
   tags: string[];
+  channelId?: string;
+  channelName?: string;
+  channelUrl?: string;
 }
 
 export default function AdminVideosPage() {
@@ -33,18 +37,12 @@ export default function AdminVideosPage() {
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState('');
   const [showEditModal, setShowEditModal] = useState(false);
-  const [showAddModal, setShowAddModal] = useState(false);
   const [selectedVideo, setSelectedVideo] = useState<Video | null>(null);
-  const [newVideo, setNewVideo] = useState({
-    videoId: '',
-    title: '',
-    description: '',
-    thumbnail: '',
-    type: 'normal' as 'short' | 'normal',
-    status: 'visible' as 'visible' | 'hidden',
-    tags: [] as string[]
-  });
   const [message, setMessage] = useState<{ type: 'success' | 'error'; text: string } | null>(null);
+  const [contentInput, setContentInput] = useState('');
+  const [isAddingContent, setIsAddingContent] = useState(false);
+  const [selectedVideos, setSelectedVideos] = useState<Set<string>>(new Set());
+  const [isDeleting, setIsDeleting] = useState(false);
 
   useEffect(() => {
     if (status === 'loading') return;
@@ -63,7 +61,6 @@ export default function AdminVideosPage() {
       const response = await fetch('/api/admin/videos');
       if (response.ok) {
         const data = await response.json();
-        console.log("Videos data:", data);
         setVideos(data);
       } else {
         const error = await response.json();
@@ -77,9 +74,129 @@ export default function AdminVideosPage() {
     }
   };
 
+  const addContent = async () => {
+    if (!contentInput.trim()) {
+      setMessage({ type: 'error', text: 'Video linki gereklidir.' });
+      return;
+    }
+
+    setIsAddingContent(true);
+    try {
+      const response = await fetch('/api/admin/content', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ 
+          content: contentInput.trim()
+        }),
+      });
+
+      if (response.ok) {
+        const result = await response.json();
+        let message = `${result.videosAdded} video eklendi`;
+        if (result.videosSkipped > 0) {
+          message += `, ${result.videosSkipped} video zaten mevcuttu`;
+        }
+        
+        setMessage({ type: 'success', text: message });
+        setContentInput('');
+        loadVideos();
+      } else {
+        const error = await response.json();
+        setMessage({ type: 'error', text: error.error || 'Video eklenirken hata oluştu.' });
+      }
+    } catch (error) {
+      console.error('Add content error:', error);
+      setMessage({ type: 'error', text: 'Video eklenirken hata oluştu.' });
+    } finally {
+      setIsAddingContent(false);
+    }
+  };
+
+  const deleteVideo = async (videoId: string) => {
+    if (!confirm('Bu videoyu silmek istediğinizden emin misiniz?')) {
+      return;
+    }
+
+    try {
+      const response = await fetch(`/api/admin/videos/${videoId}`, {
+        method: 'DELETE',
+      });
+
+      if (response.ok) {
+        const result = await response.json();
+        setMessage({ type: 'success', text: result.message });
+        loadVideos();
+      } else {
+        const error = await response.json();
+        setMessage({ type: 'error', text: error.error || 'Video silinirken hata oluştu.' });
+      }
+    } catch (error) {
+      console.error('Delete video error:', error);
+      setMessage({ type: 'error', text: 'Video silinirken hata oluştu.' });
+    }
+  };
+
+  const bulkDeleteVideos = async () => {
+    if (selectedVideos.size === 0) {
+      setMessage({ type: 'error', text: 'Silinecek video seçin.' });
+      return;
+    }
+
+    if (!confirm(`${selectedVideos.size} videoyu silmek istediğinizden emin misiniz?`)) {
+      return;
+    }
+
+    setIsDeleting(true);
+    try {
+      const response = await fetch('/api/admin/videos/bulk-delete', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ 
+          videoIds: Array.from(selectedVideos)
+        }),
+      });
+
+      if (response.ok) {
+        const result = await response.json();
+        setMessage({ type: 'success', text: result.message });
+        setSelectedVideos(new Set());
+        loadVideos();
+      } else {
+        const error = await response.json();
+        setMessage({ type: 'error', text: error.error || 'Videolar silinirken hata oluştu.' });
+      }
+    } catch (error) {
+      console.error('Bulk delete error:', error);
+      setMessage({ type: 'error', text: 'Videolar silinirken hata oluştu.' });
+    } finally {
+      setIsDeleting(false);
+    }
+  };
+
+  const toggleVideoSelection = (videoId: string) => {
+    const newSelected = new Set(selectedVideos);
+    if (newSelected.has(videoId)) {
+      newSelected.delete(videoId);
+    } else {
+      newSelected.add(videoId);
+    }
+    setSelectedVideos(newSelected);
+  };
+
+  const selectAllVideos = () => {
+    if (selectedVideos.size === filteredVideos.length) {
+      setSelectedVideos(new Set());
+    } else {
+      setSelectedVideos(new Set(filteredVideos.map(v => v._id)));
+    }
+  };
+
   const handleUpdateVideo = async (updatedVideo: Video) => {
     try {
-      // Validate required fields
       if (!updatedVideo.title) {
         setMessage({ type: 'error', text: 'Başlık zorunludur.' });
         return;
@@ -108,87 +225,17 @@ export default function AdminVideosPage() {
     }
   };
 
-  const handleAddVideo = async () => {
-    // Validate required fields
-    if (!newVideo.videoId || !newVideo.title) {
-      setMessage({ type: 'error', text: 'Video ID ve başlık zorunludur.' });
-      return;
-    }
-
-    try {
-      const response = await fetch('/api/admin/videos', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(newVideo),
-      });
-
-      if (response.ok) {
-        setMessage({ type: 'success', text: 'Video başarıyla eklendi!' });
-        setShowAddModal(false);
-        setNewVideo({
-          videoId: '',
-          title: '',
-          description: '',
-          thumbnail: '',
-          type: 'normal',
-          status: 'visible',
-          tags: []
-        });
-        loadVideos();
-      } else {
-        const error = await response.json();
-        setMessage({ type: 'error', text: error.message || 'Video eklenirken hata oluştu.' });
-      }
-    } catch (error) {
-      console.error('Add video error:', error);
-      setMessage({ type: 'error', text: 'Video eklenirken hata oluştu.' });
-    }
-  };
-
   const toggleVideoVisibility = async (videoId: string, currentStatus: 'visible' | 'hidden') => {
     try {
-      console.log("Toggling video visibility", { videoId, currentStatus });
       const newStatus = currentStatus === 'visible' ? 'hidden' : 'visible';
-      console.log("New status", { newStatus });
-      
-      // Find the video in our local state
       const video = videos.find(v => v.videoId === videoId);
+      
       if (!video) {
         setMessage({ type: 'error', text: 'Video bulunamadı.' });
         return;
       }
       
-      // If the video doesn't have an _id (not saved in database yet), save it first
-      if (!video._id) {
-        // Create the video in the database
-        const createResponse = await fetch('/api/admin/videos', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({
-            videoId: video.videoId,
-            title: video.title,
-            description: video.description,
-            thumbnail: video.thumbnail,
-            publishedAt: video.publishedAt,
-            type: video.type,
-            status: newStatus,
-            tags: video.tags
-          }),
-        });
-        
-        if (!createResponse.ok) {
-          const error = await createResponse.json();
-          throw new Error(error.message || 'Video oluşturulurken hata oluştu.');
-        }
-        
-        // Reload videos to get the new _id
-        await loadVideos();
-      } else {
-        // Video exists in database, update its status
+      if (video._id) {
         const response = await fetch(`/api/admin/videos/${video._id}/status`, {
           method: 'PUT',
           headers: {
@@ -197,11 +244,8 @@ export default function AdminVideosPage() {
           body: JSON.stringify({ status: newStatus }),
         });
         
-        console.log("API response", { status: response.status, ok: response.ok });
-
         if (!response.ok) {
           const errorText = await response.text();
-          console.log("API error response", { errorText });
           try {
             const error = JSON.parse(errorText);
             throw new Error(error.message || 'Durum değiştirilirken hata oluştu.');
@@ -226,7 +270,8 @@ export default function AdminVideosPage() {
   const filteredVideos = videos.filter(video =>
     video.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
     video.description.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    video.tags.some(tag => tag.toLowerCase().includes(searchTerm.toLowerCase()))
+    video.tags.some(tag => tag.toLowerCase().includes(searchTerm.toLowerCase())) ||
+    (video.channelName && video.channelName.toLowerCase().includes(searchTerm.toLowerCase()))
   );
 
   // Auto-hide messages after 5 seconds
@@ -278,43 +323,103 @@ export default function AdminVideosPage() {
             <h1 className="text-2xl font-bold text-slate-900">Video Yönetimi</h1>
             <p className="text-slate-600 mt-1">YouTube videolarını yönetin</p>
           </div>
-          <button
-            onClick={() => setShowAddModal(true)}
-            className="inline-flex items-center space-x-2 bg-brand-primary-700 hover:bg-brand-primary-800 text-white px-4 py-2 rounded-lg font-medium transition-colors"
-          >
-            <PlusIcon className="w-4 h-4" />
-            <span>Yeni Video</span>
-          </button>
         </div>
 
-        {/* Search */}
+        {/* Video Ekleme Alanı */}
         <div className="bg-white rounded-xl shadow-sm border border-slate-200 p-6">
-          <div className="relative">
-            <MagnifyingGlassIcon className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-slate-400" />
-            <input
-              type="text"
-              placeholder="Video ara..."
-              value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
-              className="w-full pl-10 pr-4 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-brand-primary-600"
+          <h3 className="text-lg font-semibold text-slate-900 mb-4">Video Ekle</h3>
+          <div className="space-y-4">
+            <textarea
+              value={contentInput}
+              onChange={(e) => setContentInput(e.target.value)}
+              placeholder="YouTube video linklerini girin:&#10;&#10;• Tek video: https://www.youtube.com/watch?v=VIDEO_ID&#10;• Çoklu video (her satıra bir tane):&#10;  https://www.youtube.com/watch?v=VIDEO_ID_1&#10;  https://www.youtube.com/watch?v=VIDEO_ID_2&#10;  https://www.youtube.com/watch?v=VIDEO_ID_3&#10;&#10;Video bilgileri otomatik olarak alınacak."
+              rows={4}
+              className="w-full border border-slate-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-brand-primary-600"
+              disabled={isAddingContent}
             />
+            <div className="flex justify-between items-center">
+              <div className="text-sm text-slate-600">
+                Desteklenen: YouTube video linkleri (tek veya çoklu)
+              </div>
+              <button
+                onClick={addContent}
+                disabled={isAddingContent || !contentInput.trim()}
+                className="inline-flex items-center space-x-2 px-4 py-2 bg-green-600 hover:bg-green-700 disabled:bg-gray-400 disabled:cursor-not-allowed text-white rounded-lg transition-colors"
+              >
+                <PlusIcon className="w-4 h-4" />
+                <span>{isAddingContent ? 'Ekleniyor...' : 'Video Ekle'}</span>
+              </button>
+            </div>
+          </div>
+        </div>
+
+        {/* Search and Bulk Actions */}
+        <div className="bg-white rounded-xl shadow-sm border border-slate-200 p-6">
+          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between space-y-4 sm:space-y-0">
+            <div className="relative flex-1 max-w-md">
+              <MagnifyingGlassIcon className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-slate-400" />
+              <input
+                type="text"
+                placeholder="Video ara..."
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+                className="w-full pl-10 pr-4 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-brand-primary-600"
+              />
+            </div>
+            
+            {selectedVideos.size > 0 && (
+              <div className="flex items-center space-x-3">
+                <span className="text-sm text-slate-600">
+                  {selectedVideos.size} video seçili
+                </span>
+                <button
+                  onClick={bulkDeleteVideos}
+                  disabled={isDeleting}
+                  className="inline-flex items-center space-x-2 px-4 py-2 bg-red-600 hover:bg-red-700 disabled:bg-gray-400 text-white rounded-lg transition-colors"
+                >
+                  <TrashIcon className="w-4 h-4" />
+                  <span>{isDeleting ? 'Siliniyor...' : 'Seçilenleri Sil'}</span>
+                </button>
+              </div>
+            )}
           </div>
         </div>
 
         {/* Videos List */}
         <div className="bg-white rounded-xl shadow-sm border border-slate-200">
           <div className="p-6 border-b border-slate-200">
-            <h2 className="text-lg font-semibold text-slate-900">
-              YouTube Videoları ({filteredVideos.length})
-            </h2>
+            <div className="flex items-center justify-between">
+              <h2 className="text-lg font-semibold text-slate-900">
+                Videolar ({filteredVideos.length})
+              </h2>
+              {filteredVideos.length > 0 && (
+                <button
+                  onClick={selectAllVideos}
+                  className="text-sm text-brand-primary-600 hover:text-brand-primary-700"
+                >
+                  {selectedVideos.size === filteredVideos.length ? 'Tümünü Kaldır' : 'Tümünü Seç'}
+                </button>
+              )}
+            </div>
           </div>
           
           <div className="overflow-x-auto">
             <table className="w-full">
               <thead className="bg-slate-50">
                 <tr>
+                  <th className="px-6 py-3 text-left">
+                    <input
+                      type="checkbox"
+                      checked={selectedVideos.size === filteredVideos.length && filteredVideos.length > 0}
+                      onChange={selectAllVideos}
+                      className="rounded border-slate-300 text-brand-primary-600 focus:ring-brand-primary-600"
+                    />
+                  </th>
                   <th className="px-6 py-3 text-left text-xs font-medium text-slate-500 uppercase tracking-wider">
                     Video
+                  </th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-slate-500 uppercase tracking-wider">
+                    Kanal
                   </th>
                   <th className="px-6 py-3 text-left text-xs font-medium text-slate-500 uppercase tracking-wider">
                     Tür
@@ -333,6 +438,14 @@ export default function AdminVideosPage() {
               <tbody className="bg-white divide-y divide-slate-200">
                 {filteredVideos.map((video) => (
                   <tr key={video._id || video.videoId} className="hover:bg-slate-50">
+                    <td className="px-6 py-4 whitespace-nowrap">
+                      <input
+                        type="checkbox"
+                        checked={selectedVideos.has(video._id)}
+                        onChange={() => toggleVideoSelection(video._id)}
+                        className="rounded border-slate-300 text-brand-primary-600 focus:ring-brand-primary-600"
+                      />
+                    </td>
                     <td className="px-6 py-4 whitespace-nowrap">
                       <div className="flex items-center">
                         <div className="flex-shrink-0 h-16 w-24">
@@ -368,6 +481,18 @@ export default function AdminVideosPage() {
                           )}
                         </div>
                       </div>
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap">
+                      {video.channelName ? (
+                        <div className="text-sm">
+                          <div className="font-medium text-slate-900">{video.channelName}</div>
+                          {video.channelId && (
+                            <div className="text-slate-500 text-xs">{video.channelId}</div>
+                          )}
+                        </div>
+                      ) : (
+                        <span className="text-slate-400 text-sm">-</span>
+                      )}
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap">
                       <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
@@ -413,6 +538,13 @@ export default function AdminVideosPage() {
                             <EyeIcon className="w-4 h-4" />
                           )}
                         </button>
+                        <button
+                          onClick={() => deleteVideo(video._id)}
+                          className="text-red-600 hover:text-red-900 p-1 rounded"
+                          title="Sil"
+                        >
+                          <TrashIcon className="w-4 h-4" />
+                        </button>
                         <a
                           href={`https://www.youtube.com/watch?v=${video.videoId}`}
                           target="_blank"
@@ -443,148 +575,13 @@ export default function AdminVideosPage() {
                 </svg>
                 <h3 className="mt-2 text-sm font-medium text-slate-900">Video bulunamadı</h3>
                 <p className="mt-1 text-sm text-slate-500">
-                  Aramanızla eşleşen bir video bulunamadı.
+                  Henüz video eklenmemiş veya arama kriterlerinize uygun video yok.
                 </p>
               </div>
             )}
           </div>
         </div>
       </div>
-
-      {/* Add Video Modal */}
-      {showAddModal && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
-          <div className="bg-white rounded-xl max-w-2xl w-full p-6 max-h-[90vh] overflow-y-auto">
-            <div className="flex justify-between items-center mb-4">
-              <h3 className="text-lg font-semibold text-slate-900">Yeni Video Ekle</h3>
-              <button 
-                onClick={() => {
-                  setShowAddModal(false);
-                  setNewVideo({
-                    videoId: '',
-                    title: '',
-                    description: '',
-                    thumbnail: '',
-                    type: 'normal',
-                    status: 'visible',
-                    tags: []
-                  });
-                }}
-                className="text-slate-500 hover:text-slate-700"
-              >
-                <XMarkIcon className="w-5 h-5" />
-              </button>
-            </div>
-            
-            <div className="space-y-4">
-              <div>
-                <label className="block text-sm font-medium text-slate-700 mb-1">YouTube Video ID *</label>
-                <input
-                  type="text"
-                  value={newVideo.videoId}
-                  onChange={(e) => setNewVideo(prev => ({ ...prev, videoId: e.target.value }))}
-                  placeholder="YouTube URL'sindeki video ID'si (örn: dQw4w9WgXcQ)"
-                  className="w-full border border-slate-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-brand-primary-600"
-                />
-              </div>
-              
-              <div>
-                <label className="block text-sm font-medium text-slate-700 mb-1">Başlık *</label>
-                <input
-                  type="text"
-                  value={newVideo.title}
-                  onChange={(e) => setNewVideo(prev => ({ ...prev, title: e.target.value }))}
-                  className="w-full border border-slate-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-brand-primary-600"
-                />
-              </div>
-              
-              <div>
-                <label className="block text-sm font-medium text-slate-700 mb-1">Açıklama</label>
-                <textarea
-                  value={newVideo.description}
-                  onChange={(e) => setNewVideo(prev => ({ ...prev, description: e.target.value }))}
-                  rows={3}
-                  className="w-full border border-slate-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-brand-primary-600"
-                />
-              </div>
-              
-              <div>
-                <label className="block text-sm font-medium text-slate-700 mb-1">Küçük Resim URL</label>
-                <input
-                  type="text"
-                  value={newVideo.thumbnail}
-                  onChange={(e) => setNewVideo(prev => ({ ...prev, thumbnail: e.target.value }))}
-                  placeholder="https://example.com/thumbnail.jpg"
-                  className="w-full border border-slate-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-brand-primary-600"
-                />
-              </div>
-              
-              <div className="grid grid-cols-2 gap-4">
-                <div>
-                  <label className="block text-sm font-medium text-slate-700 mb-1">Tür</label>
-                  <select
-                    value={newVideo.type}
-                    onChange={(e) => setNewVideo(prev => ({ ...prev, type: e.target.value as 'short' | 'normal' }))}
-                    className="w-full border border-slate-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-brand-primary-600"
-                  >
-                    <option value="normal">Normal</option>
-                    <option value="short">Short</option>
-                  </select>
-                </div>
-                
-                <div>
-                  <label className="block text-sm font-medium text-slate-700 mb-1">Durum</label>
-                  <select
-                    value={newVideo.status}
-                    onChange={(e) => setNewVideo(prev => ({ ...prev, status: e.target.value as 'visible' | 'hidden' }))}
-                    className="w-full border border-slate-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-brand-primary-600"
-                  >
-                    <option value="visible">Görünür</option>
-                    <option value="hidden">Gizli</option>
-                  </select>
-                </div>
-              </div>
-              
-              <div>
-                <label className="block text-sm font-medium text-slate-700 mb-1">Etiketler</label>
-                <input
-                  type="text"
-                  value={newVideo.tags.join(', ')}
-                  onChange={(e) => setNewVideo(prev => ({ ...prev, tags: e.target.value.split(',').map(tag => tag.trim()).filter(tag => tag) }))}
-                  placeholder="Etiketleri virgülle ayırın"
-                  className="w-full border border-slate-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-brand-primary-600"
-                />
-              </div>
-            </div>
-            
-            <div className="flex justify-end space-x-3 mt-6">
-              <button
-                onClick={() => {
-                  setShowAddModal(false);
-                  setNewVideo({
-                    videoId: '',
-                    title: '',
-                    description: '',
-                    thumbnail: '',
-                    type: 'normal',
-                    status: 'visible',
-                    tags: []
-                  });
-                }}
-                className="px-4 py-2 text-slate-600 hover:text-slate-800 transition-colors"
-              >
-                İptal
-              </button>
-              <button
-                onClick={handleAddVideo}
-                className="px-4 py-2 bg-brand-primary-700 hover:bg-brand-primary-800 text-white rounded-lg transition-colors"
-              >
-                Video Ekle
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
 
       {/* Edit Video Modal */}
       {showEditModal && selectedVideo && (
@@ -604,20 +601,12 @@ export default function AdminVideosPage() {
             </div>
             
             <div className="space-y-4">
-              <div className="flex justify-center">
-                <img 
-                  src={selectedVideo.thumbnail} 
-                  alt={selectedVideo.title} 
-                  className="h-48 object-cover rounded"
-                />
-              </div>
-              
               <div>
-                <label className="block text-sm font-medium text-slate-700 mb-1">Başlık *</label>
+                <label className="block text-sm font-medium text-slate-700 mb-1">Başlık</label>
                 <input
                   type="text"
-                  value={selectedVideo.title || ''}
-                  onChange={(e) => setSelectedVideo(prev => prev ? { ...prev, title: e.target.value } : null)}
+                  value={selectedVideo.title}
+                  onChange={(e) => setSelectedVideo({...selectedVideo, title: e.target.value})}
                   className="w-full border border-slate-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-brand-primary-600"
                 />
               </div>
@@ -625,67 +614,64 @@ export default function AdminVideosPage() {
               <div>
                 <label className="block text-sm font-medium text-slate-700 mb-1">Açıklama</label>
                 <textarea
-                  value={selectedVideo.description || ''}
-                  onChange={(e) => setSelectedVideo(prev => prev ? { ...prev, description: e.target.value } : null)}
+                  value={selectedVideo.description}
+                  onChange={(e) => setSelectedVideo({...selectedVideo, description: e.target.value})}
                   rows={3}
                   className="w-full border border-slate-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-brand-primary-600"
                 />
               </div>
               
-              <div className="grid grid-cols-2 gap-4">
-                <div>
-                  <label className="block text-sm font-medium text-slate-700 mb-1">Tür</label>
-                  <select
-                    value={selectedVideo.type}
-                    onChange={(e) => setSelectedVideo(prev => prev ? { ...prev, type: e.target.value as 'short' | 'normal' } : null)}
-                    className="w-full border border-slate-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-brand-primary-600"
-                  >
-                    <option value="normal">Normal</option>
-                    <option value="short">Short</option>
-                  </select>
-                </div>
-                
-                <div>
-                  <label className="block text-sm font-medium text-slate-700 mb-1">Durum</label>
-                  <select
-                    value={selectedVideo.status}
-                    onChange={(e) => setSelectedVideo(prev => prev ? { ...prev, status: e.target.value as 'visible' | 'hidden' } : null)}
-                    className="w-full border border-slate-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-brand-primary-600"
-                  >
-                    <option value="visible">Görünür</option>
-                    <option value="hidden">Gizli</option>
-                  </select>
-                </div>
+              <div>
+                <label className="block text-sm font-medium text-slate-700 mb-1">Tür</label>
+                <select
+                  value={selectedVideo.type}
+                  onChange={(e) => setSelectedVideo({...selectedVideo, type: e.target.value as 'short' | 'normal'})}
+                  className="w-full border border-slate-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-brand-primary-600"
+                >
+                  <option value="normal">Normal</option>
+                  <option value="short">Short</option>
+                </select>
               </div>
               
               <div>
-                <label className="block text-sm font-medium text-slate-700 mb-1">Etiketler</label>
+                <label className="block text-sm font-medium text-slate-700 mb-1">Durum</label>
+                <select
+                  value={selectedVideo.status}
+                  onChange={(e) => setSelectedVideo({...selectedVideo, status: e.target.value as 'visible' | 'hidden'})}
+                  className="w-full border border-slate-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-brand-primary-600"
+                >
+                  <option value="visible">Görünür</option>
+                  <option value="hidden">Gizli</option>
+                </select>
+              </div>
+              
+              <div>
+                <label className="block text-sm font-medium text-slate-700 mb-1">Etiketler (virgülle ayırın)</label>
                 <input
                   type="text"
-                  value={selectedVideo.tags.join(', ') || ''}
-                  onChange={(e) => setSelectedVideo(prev => prev ? { ...prev, tags: e.target.value.split(',').map(tag => tag.trim()).filter(tag => tag) } : null)}
-                  placeholder="Etiketleri virgülle ayırın"
+                  value={selectedVideo.tags.join(', ')}
+                  onChange={(e) => setSelectedVideo({...selectedVideo, tags: e.target.value.split(',').map(tag => tag.trim()).filter(Boolean)})}
                   className="w-full border border-slate-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-brand-primary-600"
                 />
               </div>
-            </div>
-            
-            <div className="flex justify-end space-x-3 mt-6">
-              <button
-                onClick={() => {
-                  setShowEditModal(false);
-                  setSelectedVideo(null);
-                }}
-                className="px-4 py-2 text-slate-600 hover:text-slate-800 transition-colors"
-              >
-                İptal
-              </button>
-              <button
-                onClick={() => selectedVideo && handleUpdateVideo(selectedVideo)}
-                className="px-4 py-2 bg-brand-primary-700 hover:bg-brand-primary-800 text-white rounded-lg transition-colors"
-              >
-                Güncelle
-              </button>
+              
+              <div className="flex justify-end space-x-3 pt-4">
+                <button
+                  onClick={() => {
+                    setShowEditModal(false);
+                    setSelectedVideo(null);
+                  }}
+                  className="px-4 py-2 text-slate-700 bg-slate-200 hover:bg-slate-300 rounded-lg transition-colors"
+                >
+                  İptal
+                </button>
+                <button
+                  onClick={() => handleUpdateVideo(selectedVideo)}
+                  className="px-4 py-2 bg-brand-primary-600 hover:bg-brand-primary-700 text-white rounded-lg transition-colors"
+                >
+                  Güncelle
+                </button>
+              </div>
             </div>
           </div>
         </div>

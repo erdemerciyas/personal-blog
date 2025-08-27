@@ -16,7 +16,7 @@ Modern, güvenli ve performanslı kişisel blog ve portfolyo platformu. Next.js 
 
 **[Live Site](https://www.fixral.com)** | **[Admin Panel](https://www.fixral.com/admin)** | **[API Health](https://www.fixral.com/api/health)**
 
-> **Status**: **LIVE** | **Last Deploy**: 2025-08-27 | **Version**: v2.3.4 | **CI/CD Pipeline**: **OPTIMIZED**
+> **Status**: **LIVE** | **Last Deploy**: 2025-01-27 | **Version**: v2.4.0 | **CI/CD Pipeline**: **OPTIMIZED**
 
 ## Özellikler
 
@@ -27,13 +27,13 @@ Modern, güvenli ve performanslı kişisel blog ve portfolyo platformu. Next.js 
 - **Responsive Tasarım**: Tüm cihazlarda mükemmel görünüm
 - **SEO Optimized**: Slug-based URL yapısı
 
-### YouTube Video Entegrasyonu
-- **Otomatik Senkronizasyon**: YouTube kanalınızdan videoları otomatik olarak çekme
-- **Manuel Video Ekleme**: Belirli videoları manuel olarak ekleme
-- **Video Yönetimi**: Başlık, açıklama, etiketler ve görünürlük ayarları
-- **Filtreleme**: Video türüne (normal/short) ve görünürlüğe göre filtreleme
-- **Arama**: Başlık, açıklama ve etiketlere göre arama
-- **Admin Paneli**: Tüm video işlemlerini yapabileceğiniz kullanıcı dostu arayüz
+### YouTube Video Yönetimi
+- **Basit Video Ekleme**: YouTube video linklerini yapıştırarak otomatik ekleme
+- **Otomatik Bilgi Alma**: Video başlığı, thumbnail ve kanal bilgilerini otomatik çekme
+- **Toplu İşlemler**: Çoklu video seçimi ve toplu silme özellikleri
+- **Video Düzenleme**: Başlık, açıklama, etiketler ve görünürlük ayarları
+- **Arama ve Filtreleme**: Başlık, açıklama ve etiketlere göre gelişmiş arama
+- **Modern Admin Paneli**: Kullanıcı dostu arayüz ile kolay video yönetimi
 
 ### Güvenlik Özellikleri
 - **Rate Limiting**: API endpoint koruması (akıllı bypass sistemi)
@@ -156,55 +156,87 @@ npm run dev
 
 Uygulama [http://localhost:3000](http://localhost:3000) adresinde çalışacaktır.
 
-## YouTube Video Entegrasyonu
+## YouTube Video Yönetimi
 
-Bu proje, YouTube kanalınızdan videoları otomatik olarak çekme ve yönetme özelliğine sahiptir.
+Bu proje, YouTube videolarını basit ve etkili bir şekilde yönetme özelliğine sahiptir.
 
 ### Özellikler
-- Otomatik YouTube video senkronizasyonu
-- Manuel video ekleme
-- Video düzenleme (başlık, açıklama, etiketler)
-- Video görünürlüğü ayarlama
-- Video türü belirleme (normal/short)
-- Arama ve filtreleme
-- Admin paneli üzerinden yönetim
+- **Basit Video Ekleme**: Sadece YouTube linklerini yapıştırın
+- **Otomatik Bilgi Alma**: Video başlığı, thumbnail ve kanal bilgilerini otomatik çeker
+- **Toplu İşlemler**: Çoklu video seçimi ve toplu silme
+- **Video Düzenleme**: Başlık, açıklama, etiketler ve görünürlük ayarları
+- **Arama ve Filtreleme**: Gelişmiş arama ve filtreleme sistemi
+- **Modern Admin Paneli**: Kullanıcı dostu arayüz
 
 ### Kurulum
 
-1. YouTube Data API v3 key'i alın:
-   - Google Cloud Console'a gidin
-   - Yeni bir proje oluşturun veya mevcut bir projeyi seçin
-   - YouTube Data API v3'ü etkinleştirin
-   - Kimlik bilgileri oluşturun ve API key'i alın
-
-2. YouTube kanal ID'nizi bulun:
-   - YouTube kanalınızın ana sayfasına gidin
-   - Sayfa kaynağını görüntüleyin (Ctrl+U)
-   - "channelId" ifadesini arayın
-   - Alternatif olarak, kullanıcı adınız varsa: `https://www.youtube.com/c/{kullaniciAdi}/about` adresine gidin ve sayfa kaynağında channelId'yi bulun
-
-3. `.env.local` dosyasına aşağıdaki değişkenleri ekleyin:
-   ```
-   YOUTUBE_API_KEY=your_youtube_api_key_here
-   YOUTUBE_CHANNEL_ID=your_youtube_channel_id_here
-   ```
+API key gerekmez! Sistem YouTube'un oEmbed API'sini kullanır.
 
 ### Kullanım
 
-1. Otomatik senkronizasyon:
-   - Videolar her gün otomatik olarak senkronize edilir
-   - Manuel olarak senkronize etmek için: `npm run sync-videos`
-
-2. Admin paneli:
+1. **Video Ekleme**:
    - Admin paneline giriş yapın
-   - "Video Yönetimi" sekmesine gidin
-   - Videoları görüntüleyin, düzenleyin veya yeni video ekleyin
+   - "Video Yönetimi" sayfasına gidin
+   - Üstteki alana YouTube video linklerini yapıştırın
+   - "Video Ekle" butonuna tıklayın
 
-3. Public sayfa:
+2. **Toplu İşlemler**:
+   - Videoları seçmek için checkbox'ları kullanın
+   - "Seçilenleri Sil" ile toplu silme yapın
+   - "Tümünü Seç/Kaldır" ile hızlı seçim
+
+3. **Video Düzenleme**:
+   - "Düzenle" butonuna tıklayın
+   - Modal'da video bilgilerini güncelleyin
+   - Görünürlük durumunu değiştirin
+
+4. **Public Sayfa**:
    - `/videos` adresinden tüm videoları görüntüleyin
    - Arama ve filtreleme özelliklerini kullanın
 
-## Yeni Özellikler (v2.3.4)
+### Desteklenen Formatlar
+```
+# Tek video
+https://www.youtube.com/watch?v=VIDEO_ID
+
+# Çoklu video (her satıra bir tane)
+https://www.youtube.com/watch?v=VIDEO_ID_1
+https://www.youtube.com/watch?v=VIDEO_ID_2
+https://www.youtube.com/watch?v=VIDEO_ID_3
+```
+
+## Yeni Özellikler (v2.4.0)
+
+### Gelişmiş Video Yönetim Sistemi (2025-01-27)
+- **Basitleştirilmiş Video Ekleme**: Sadece YouTube video linkleri kabul eden temiz arayüz
+  - Tek video veya çoklu video ekleme (her satıra bir link)
+  - Otomatik video bilgisi alma (oEmbed API ile başlık, thumbnail, kanal)
+  - API key gerektirmeyen sistem
+- **Toplu Video İşlemleri**: Modern seçim ve silme sistemi
+  - Checkbox ile çoklu video seçimi
+  - "Tümünü seç/kaldır" toplu seçim özelliği
+  - Toplu silme ile seçili videoları tek seferde silme
+  - Güvenli silme onay sistemi
+- **Gelişmiş Video Yönetimi**: Kapsamlı CRUD işlemleri
+  - Tek video silme butonu (işlemler alanında)
+  - Video düzenleme modalı (başlık, açıklama, etiketler, durum)
+  - Görünürlük toggle (göster/gizle)
+  - YouTube'da izle direkt linki
+- **Temizlenmiş Admin Arayüzü**: Kanal yönetimi modalı kaldırıldı
+  - Üst kısımda video ekleme alanı
+  - Temiz ve odaklanmış kullanıcı deneyimi
+  - Gerçek zamanlı arama ve filtreleme
+- **API Optimizasyonları**: Yeni endpoint'ler ve performans iyileştirmeleri
+  - `POST /api/admin/content` - Video ekleme
+  - `DELETE /api/admin/videos/[id]` - Tek video silme
+  - `POST /api/admin/videos/bulk-delete` - Toplu silme
+  - `PUT /api/admin/videos/[id]/status` - Durum değiştirme
+- **Kod Temizliği**: Gereksiz kanal yönetimi kodları kaldırıldı
+  - Kullanılmayan API route'ları silindi
+  - Test script'leri temizlendi
+  - Daha temiz proje yapısı
+
+## Önceki Özellikler (v2.3.4)
 
 ### Kapsamlı Monitoring ve Performance Tracking Sistemi (2025-08-27)
 - **Real-time Performance Monitoring**: Client ve server-side performans metrikleri

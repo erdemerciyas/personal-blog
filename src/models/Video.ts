@@ -10,6 +10,10 @@ const VideoSchema = new Schema({
   type: { type: String, enum: ["short", "normal"], default: "normal" },
   status: { type: String, enum: ["visible", "hidden"], default: "visible" },
   tags: [String],
+  // Kanal bilgileri
+  channelId: String,
+  channelName: String,
+  channelUrl: String,
 });
 
 export default models.Video || mongoose.model("Video", VideoSchema);

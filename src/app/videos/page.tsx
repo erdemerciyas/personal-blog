@@ -29,6 +29,7 @@ export default function VideosPage() {
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedTags, setSelectedTags] = useState<string[]>([]);
   const [availableTags, setAvailableTags] = useState<string[]>([]);
+  const [availableChannels, setAvailableChannels] = useState<any[]>([]);
   const [isSearchOpen, setIsSearchOpen] = useState(false);
   const [hero, setHero] = useState<{ 
     title: string; 
@@ -48,14 +49,16 @@ export default function VideosPage() {
   const searchParams = useSearchParams();
   const router = useRouter();
   const typeFilter = searchParams?.get('type') || '';
+  const channelFilter = searchParams?.get('channel') || '';
 
   // Load videos callback
   const loadVideos = useCallback(async () => {
     try {
       const params = new URLSearchParams();
       if (typeFilter) params.append('type', typeFilter);
+      if (channelFilter) params.append('channelId', channelFilter);
       params.append('status', 'visible'); // Only show visible videos
-      params.append('limit', '12'); // Load 12 videos initially
+      params.append('limit', '50'); // Load more videos initially
       
       const response = await fetch(`/api/youtube?${params.toString()}`);
       if (response.ok) {
@@ -66,6 +69,13 @@ export default function VideosPage() {
         // Extract unique tags from videos
         const uniqueTags = [...new Set(data.videos.flatMap((video: any) => video.tags || []))];
         setAvailableTags(uniqueTags as string[]);
+        
+        // Load available channels
+        const channelsRes = await fetch('/api/channels');
+        if (channelsRes.ok) {
+          const channelsData = await channelsRes.json();
+          setAvailableChannels(channelsData);
+        }
       } else {
         console.error('Failed to fetch videos');
       }
@@ -111,7 +121,7 @@ export default function VideosPage() {
     };
 
     fetchInitialData();
-  }, [typeFilter, loadVideos]);
+  }, [typeFilter, channelFilter, loadVideos]);
 
   // Filter videos based on search term and selected tags
   useEffect(() => {
@@ -143,6 +153,7 @@ export default function VideosPage() {
     try {
       const params = new URLSearchParams();
       if (typeFilter) params.append('type', typeFilter);
+      if (channelFilter) params.append('channelId', channelFilter);
       params.append('status', 'visible');
       params.append('limit', '12');
       params.append('pageToken', nextPageToken);
@@ -159,7 +170,7 @@ export default function VideosPage() {
     } finally {
       setLoadingMore(false);
     }
-  }, [typeFilter, hasMore, nextPageToken]);
+  }, [typeFilter, channelFilter, hasMore, nextPageToken]);
 
   // Infinite scroll implementation
   useEffect(() => {
@@ -273,49 +284,76 @@ export default function VideosPage() {
               </div>
             </div>
             
-            <div className="inline-flex rounded-lg border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-800 p-1">
-              <button
-                onClick={() => {
-                  const url = new URL(window.location.href);
-                  url.searchParams.delete('type');
-                  router.push(url.pathname + url.search);
-                }}
-                className={`px-4 py-2 text-sm font-medium rounded-md ${
-                  !typeFilter
-                    ? 'bg-brand-primary-600 text-white'
-                    : 'text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700'
-                }`}
-              >
-                Tümü
-              </button>
-              <button
-                onClick={() => {
-                  const url = new URL(window.location.href);
-                  url.searchParams.set('type', 'normal');
-                  router.push(url.pathname + url.search);
-                }}
-                className={`px-4 py-2 text-sm font-medium rounded-md ${
-                  typeFilter === 'normal'
-                    ? 'bg-brand-primary-600 text-white'
-                    : 'text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700'
-                }`}
-              >
-                Normal
-              </button>
-              <button
-                onClick={() => {
-                  const url = new URL(window.location.href);
-                  url.searchParams.set('type', 'short');
-                  router.push(url.pathname + url.search);
-                }}
-                className={`px-4 py-2 text-sm font-medium rounded-md ${
-                  typeFilter === 'short'
-                    ? 'bg-brand-primary-600 text-white'
-                    : 'text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700'
-                }`}
-              >
-                Kısa
-              </button>
+            <div className="flex flex-col sm:flex-row gap-2">
+              {/* Type Filter */}
+              <div className="inline-flex rounded-lg border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-800 p-1">
+                <button
+                  onClick={() => {
+                    const url = new URL(window.location.href);
+                    url.searchParams.delete('type');
+                    router.push(url.pathname + url.search);
+                  }}
+                  className={`px-4 py-2 text-sm font-medium rounded-md ${
+                    !typeFilter
+                      ? 'bg-brand-primary-600 text-white'
+                      : 'text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700'
+                  }`}
+                >
+                  Tümü
+                </button>
+                <button
+                  onClick={() => {
+                    const url = new URL(window.location.href);
+                    url.searchParams.set('type', 'normal');
+                    router.push(url.pathname + url.search);
+                  }}
+                  className={`px-4 py-2 text-sm font-medium rounded-md ${
+                    typeFilter === 'normal'
+                      ? 'bg-brand-primary-600 text-white'
+                      : 'text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700'
+                  }`}
+                >
+                  Normal
+                </button>
+                <button
+                  onClick={() => {
+                    const url = new URL(window.location.href);
+                    url.searchParams.set('type', 'short');
+                    router.push(url.pathname + url.search);
+                  }}
+                  className={`px-4 py-2 text-sm font-medium rounded-md ${
+                    typeFilter === 'short'
+                      ? 'bg-brand-primary-600 text-white'
+                      : 'text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700'
+                  }`}
+                >
+                  Kısa
+                </button>
+              </div>
+
+              {/* Channel Filter */}
+              {availableChannels.length > 0 && (
+                <select
+                  value={channelFilter}
+                  onChange={(e) => {
+                    const url = new URL(window.location.href);
+                    if (e.target.value) {
+                      url.searchParams.set('channel', e.target.value);
+                    } else {
+                      url.searchParams.delete('channel');
+                    }
+                    router.push(url.pathname + url.search);
+                  }}
+                  className="px-4 py-2 text-sm font-medium rounded-lg border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-300 focus:outline-none focus:ring-2 focus:ring-brand-primary-600"
+                >
+                  <option value="">Tüm Kanallar</option>
+                  {availableChannels.map((channel) => (
+                    <option key={channel.channelId} value={channel.channelId}>
+                      {channel.channelName} ({channel.videoCount} video)
+                    </option>
+                  ))}
+                </select>
+              )}
             </div>
           </div>
           
