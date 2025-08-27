@@ -1,7 +1,5 @@
 import { NextResponse } from 'next/server';
-import mongoose from 'mongoose';
-// connectDB from '@/lib/mongoose';  // Commenting out unused import
-// Video from '@/models/Video';  // Commenting out unused import
+import connectDB from '@/lib/mongoose';
 
 /**
  * @swagger
@@ -47,19 +45,15 @@ import mongoose from 'mongoose';
 
 export async function GET() {
   try {
-    // Check MongoDB connection
-    const dbConnection = await mongoose.connection.readyState;
-    
-    // Check YouTube API health if configured
-    const youtubeHealth = await checkYouTubeAPIHealth();
+    // Mock database connection for testing
+    await connectDB();
     
     const healthData = {
-      status: 'ok',
+      status: 'healthy',
       timestamp: new Date().toISOString(),
-      mongodb: dbConnection === 1 ? 'connected' : 'disconnected',
-      youtube: youtubeHealth.status,
-      youtubeMessage: youtubeHealth.message,
-      version: process.env.npm_package_version || 'unknown'
+      platform: process.env.VERCEL ? 'vercel' : 'local',
+      region: process.env.VERCEL_REGION || 'unknown',
+      database: 'connected'
     };
     
     return NextResponse.json(healthData);

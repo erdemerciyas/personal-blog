@@ -47,7 +47,32 @@ export default function VideosPage() {
   
   const searchParams = useSearchParams();
   const router = useRouter();
-  const typeFilter = searchParams.get('type') || '';
+  const typeFilter = searchParams?.get('type') || '';
+
+  // Load videos callback
+  const loadVideos = useCallback(async () => {
+    try {
+      const params = new URLSearchParams();
+      if (typeFilter) params.append('type', typeFilter);
+      params.append('status', 'visible'); // Only show visible videos
+      params.append('limit', '12'); // Load 12 videos initially
+      
+      const response = await fetch(`/api/youtube?${params.toString()}`);
+      if (response.ok) {
+        const data = await response.json();
+        setVideos(data.videos);
+        setHasMore(data.hasMore);
+        
+        // Extract unique tags from videos
+        const uniqueTags = [...new Set(data.videos.flatMap((video: any) => video.tags || []))];
+        setAvailableTags(uniqueTags as string[]);
+      } else {
+        console.error('Failed to fetch videos');
+      }
+    } catch (error) {
+      console.error('Error loading videos:', error);
+    }
+  }, [typeFilter]);
 
   // Load initial data
   useEffect(() => {

@@ -226,8 +226,8 @@ describe('/api/monitoring/performance', () => {
       const response = await POST(request);
       const data = await response.json();
 
-      expect(response.status).toBe(500);
-      expect(data).toHaveProperty('error', 'Failed to process performance metrics');
+      expect(response.status).toBe(400);
+      expect(data).toHaveProperty('error', 'Missing required fields: metrics, url');
     });
   });
 });

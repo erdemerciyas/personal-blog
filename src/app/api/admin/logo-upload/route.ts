@@ -45,7 +45,7 @@ export const POST = withSecurity(SecurityConfigs.admin)(async (request: NextRequ
 
     // Güvenli dosya adı + hash
     const sanitized = sanitizeFileName(file.name || 'site-logo');
-    const fileHash = crypto.createHash('md5').update(buffer).digest('hex').substring(0, 8);
+    const fileHash = crypto.createHash('md5').update(Buffer.from(buffer)).digest('hex').substring(0, 8);
     const publicId = `logo-${Date.now()}_${fileHash}_${sanitized}`;
 
     // Cloudinary'e yükle

@@ -1,4 +1,5 @@
 import '@testing-library/jest-dom'
+import React from 'react'
 
 // Extend Jest with Testing Library matchers
 expect.extend(require('@testing-library/jest-dom/matchers'))
@@ -34,16 +35,17 @@ jest.mock('next/navigation', () => ({
 // Mock Next.js image component
 jest.mock('next/image', () => ({
   __esModule: true,
-  default: ({ src, alt, ...props }) => {
+  default: function MockImage(props) {
+    const { src, alt, ...rest } = props;
     // eslint-disable-next-line @next/next/no-img-element
-    return <img src={src} alt={alt} {...props} />
+    return React.createElement('img', { src, alt, ...rest });
   },
 }))
 
 // Mock Next.js link component
 jest.mock('next/link', () => {
-  return ({ children, href, ...props }) => {
-    return <a href={href} {...props}>{children}</a>
+  return function MockLink({ children, href, ...props }) {
+    return React.createElement('a', { href, ...props }, children);
   }
 })
 
@@ -54,6 +56,87 @@ process.env.MONGODB_URI = 'mongodb://localhost:27017/test'
 
 // Mock fetch globally
 global.fetch = jest.fn()
+
+// Add Node.js polyfills for Next.js API routes
+if (typeof global.Request === 'undefined') {
+  try {
+    const fetch = require('node-fetch')
+    global.Request = fetch.Request
+    global.Response = fetch.Response  
+    global.Headers = fetch.Headers
+  } catch (e) {
+    // Fallback if node-fetch is not available
+    global.Request = class Request {}
+    global.Response = class Response {}
+    global.Headers = class Headers {}
+  }
+}
+
+// Mock NextResponse for API route tests
+jest.mock('next/server', () => ({
+  NextResponse: {
+    json: jest.fn((data, init) => ({
+      json: async () => data,
+      status: init?.status || 200,
+      headers: new Headers(),
+    })),
+  },
+}))
+
+// Mock mongoose for API route tests
+jest.mock('mongoose', () => ({
+  __esModule: true,
+  default: {
+    Schema: class MockSchema {
+      constructor(definition, options) {
+        this.definition = definition
+        this.options = options
+      }
+    },
+    model: jest.fn(),
+    connect: jest.fn(),
+    connection: {
+      readyState: 1,
+    },
+  },
+  Schema: class MockSchema {
+    constructor(definition, options) {
+      this.definition = definition
+      this.options = options
+    }
+  },
+  model: jest.fn(),
+  connect: jest.fn(),
+}))
+
+// Mock NextResponse and NextRequest for API route tests
+jest.mock('next/server', () => ({
+  NextResponse: {
+    json: jest.fn((data, init) => ({
+      json: async () => data,
+      status: init?.status || 200,
+      headers: new Map(),
+    })),
+  },
+  NextRequest: jest.fn().mockImplementation((url, init) => ({
+    url,
+    method: init?.method || 'GET',
+    headers: new Map(Object.entries(init?.headers || {})),
+    body: init?.body,
+    json: async () => JSON.parse(init?.body || '{}'),
+    cookies: {
+      get: jest.fn(),
+      set: jest.fn(),
+    },
+  })),
+}))
+
+// Add TextEncoder/TextDecoder polyfills
+if (typeof global.TextEncoder === 'undefined') {
+  const { TextEncoder, TextDecoder } = require('util')
+  global.TextEncoder = TextEncoder
+  global.TextDecoder = TextDecoder
+}
 
 // Mock IntersectionObserver
 global.IntersectionObserver = jest.fn().mockImplementation(() => ({

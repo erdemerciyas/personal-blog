@@ -52,7 +52,7 @@ const config = {
   
   // Transform ignore patterns for ES modules
   transformIgnorePatterns: [
-    'node_modules/(?!(.*\\.mjs$|@heroicons))',
+    'node_modules/(?!(.*\\.mjs$|@heroicons|bson|mongodb))',
   ],
   
   // Module file extensions
