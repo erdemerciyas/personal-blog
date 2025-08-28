@@ -1,7 +1,6 @@
 import { NextResponse } from "next/server";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
-import Channel from "@/models/Channel";
 import Video from "@/models/Video";
 import mongoose from "mongoose";
 
@@ -110,21 +109,12 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: analysis.error }, { status: 400 });
     }
 
-    // Find or create "Genel Videolar" channel
-    let generalChannel = await Channel.findOne({ channelName: "Genel Videolar" });
-    if (!generalChannel) {
-      generalChannel = new Channel({
-        channelId: "GENERAL_VIDEOS",
-        channelName: "Genel Videolar",
-        channelUrl: "#GENERAL_VIDEOS",
-        description: "YouTube videoları",
-        isActive: true,
-        videoCount: 0,
-        createdAt: new Date(),
-        updatedAt: new Date()
-      });
-      await generalChannel.save();
-    }
+    // Use default channel info for videos
+    const generalChannel = {
+      channelId: "GENERAL_VIDEOS",
+      channelName: "Genel Videolar",
+      channelUrl: "#GENERAL_VIDEOS"
+    };
 
     let addedCount = 0;
     let skippedCount = 0;
@@ -167,11 +157,7 @@ export async function POST(req: Request) {
       addedVideos.push(videoInfo?.title || `Video ${videoData.videoId}`);
     }
 
-    // Update channel video count
-    await Channel.findByIdAndUpdate(generalChannel._id, {
-      videoCount: await Video.countDocuments({ channelId: generalChannel.channelId }),
-      updatedAt: new Date()
-    });
+    // No need to update channel count since we don't have Channel model anymore
 
     return NextResponse.json({
       type: 'videos',

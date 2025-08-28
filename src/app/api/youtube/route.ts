@@ -1,21 +1,15 @@
 import { NextResponse } from "next/server";
 import Video from "@/models/Video";
-import Channel from "@/models/Channel";
 import mongoose from "mongoose";
 
 // Function to get videos from database only (no YouTube API)
 async function getVideosFromDatabase(queryParams: { limit?: number; type?: string; status?: string; channelId?: string } = {}) {
-  // Get all registered channel IDs
-  const channels = await Channel.find({ isActive: true }, { channelId: 1 });
-  const registeredChannelIds = channels.map(c => c.channelId);
-
-  // Build query for registered channels only
+  // Build query for videos
   const query: any = {
     $and: [
-      { channelId: { $exists: true } },
-      { channelId: { $ne: null } },
-      { channelId: { $ne: "" } },
-      { channelId: { $in: registeredChannelIds } }
+      { videoId: { $exists: true } },
+      { videoId: { $ne: null } },
+      { videoId: { $ne: "" } }
     ]
   };
   

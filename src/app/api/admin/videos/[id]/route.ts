@@ -2,7 +2,6 @@ import { NextResponse } from "next/server";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
 import Video from "@/models/Video";
-import Channel from "@/models/Channel";
 import mongoose from "mongoose";
 
 export async function DELETE(req: Request, { params }: { params: { id: string } }) {
@@ -22,17 +21,7 @@ export async function DELETE(req: Request, { params }: { params: { id: string } 
     // Delete the video
     await Video.findByIdAndDelete(params.id);
 
-    // Update channel video count
-    if (video.channelId) {
-      const videoCount = await Video.countDocuments({ channelId: video.channelId });
-      await Channel.updateOne(
-        { channelId: video.channelId },
-        { 
-          videoCount,
-          updatedAt: new Date()
-        }
-      );
-    }
+    // No need to update channel count since we don't have Channel model anymore
 
     return NextResponse.json({
       message: "Video başarıyla silindi",

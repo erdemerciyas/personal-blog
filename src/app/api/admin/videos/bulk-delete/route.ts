@@ -2,7 +2,6 @@ import { NextResponse } from "next/server";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
 import Video from "@/models/Video";
-import Channel from "@/models/Channel";
 import mongoose from "mongoose";
 
 export async function POST(req: Request) {
@@ -27,17 +26,7 @@ export async function POST(req: Request) {
     // Delete videos
     const result = await Video.deleteMany({ _id: { $in: videoIds } });
 
-    // Update channel video counts
-    for (const channelId of channelIds) {
-      const videoCount = await Video.countDocuments({ channelId });
-      await Channel.updateOne(
-        { channelId },
-        { 
-          videoCount,
-          updatedAt: new Date()
-        }
-      );
-    }
+    // No need to update channel counts since we don't have Channel model anymore
 
     return NextResponse.json({
       message: `${result.deletedCount} video başarıyla silindi`,
