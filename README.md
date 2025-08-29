@@ -16,7 +16,7 @@ Modern, güvenli ve performanslı kişisel blog ve portfolyo platformu. Next.js 
 
 **[Live Site](https://www.fixral.com)** | **[Admin Panel](https://www.fixral.com/admin)** | **[API Health](https://www.fixral.com/api/health)**
 
-> **Status**: **LIVE** | **Last Deploy**: 2025-01-27 | **Version**: v2.4.0 | **CI/CD Pipeline**: **OPTIMIZED**
+> **Status**: **LIVE** | **Last Deploy**: 2025-01-27 | **Version**: v2.4.2 | **CI/CD Pipeline**: **OPTIMIZED**
 
 ## Özellikler
 
@@ -205,7 +205,29 @@ https://www.youtube.com/watch?v=VIDEO_ID_2
 https://www.youtube.com/watch?v=VIDEO_ID_3
 ```
 
-## Yeni Özellikler (v2.4.0)
+## Yeni Özellikler (v2.4.2)
+
+### ESLint ve CI/CD Stabilite İyileştirmeleri (2025-01-27)
+- **ESLint Hata Düzeltmeleri**: Tüm kritik ESLint hataları çözüldü
+  - `react/no-unescaped-entities` hataları düzeltildi
+  - `@typescript-eslint/no-unused-vars` uyarıları temizlendi
+  - React Hook dependency uyarıları çözüldü
+- **CI/CD Pipeline İyileştirmeleri**: GitHub Actions stabilite artırıldı
+  - ESLint hataları artık build'i durdurur
+  - TypeScript kontrolleri esnek tutuldu
+  - Better error reporting eklendi
+- **Code Quality**: ESLint konfigürasyonu optimize edildi
+  - Ignore patterns iyileştirildi
+  - API routes için özel kurallar
+  - Test files için ayrı konfigürasyon
+
+### Mail Sistemi Tamamlandı (2025-01-27)
+- **Gmail SMTP Integration**: Tam entegrasyon tamamlandı
+- **Test Araçları**: `npm run test:mail` ve debug scriptleri
+- **Admin Panel Integration**: Real-time mail status monitoring
+- **Kapsamlı Dokümantasyon**: `docs/MAIL_SETUP.md` rehberi
+
+## Önceki Özellikler (v2.4.0)
 
 ### Gelişmiş Video Yönetim Sistemi (2025-01-27)
 - **Basitleştirilmiş Video Ekleme**: Sadece YouTube video linkleri kabul eden temiz arayüz
