@@ -615,6 +615,10 @@ ADMIN_EMAIL=your-email@example.com
 ADMIN_NAME=Your Name
 ADMIN_DEFAULT_PASSWORD=SecurePassword123!
 
+# Mail Configuration (Required for Contact Forms)
+GMAIL_USER=your-gmail@gmail.com
+GMAIL_APP_PASSWORD=your-gmail-app-password
+
 # Optional - Media Defaults
 DEFAULT_LOGO_URL=__OPTIONAL__
 NEXT_PUBLIC_DEFAULT_PROJECT_IMAGE_URL=__OPTIONAL__

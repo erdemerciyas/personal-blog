@@ -32,6 +32,10 @@ interface EnvironmentConfig {
   // Security
   RATE_LIMIT_MAX?: string;
   RATE_LIMIT_WINDOW?: string;
+
+  // Mail Configuration
+  GMAIL_USER?: string;
+  GMAIL_APP_PASSWORD?: string;
 }
 
 class ConfigManager {
@@ -65,6 +69,8 @@ class ConfigManager {
       FREE_SHIPPING_THRESHOLD: process.env.FREE_SHIPPING_THRESHOLD,
       RATE_LIMIT_MAX: process.env.RATE_LIMIT_MAX,
       RATE_LIMIT_WINDOW: process.env.RATE_LIMIT_WINDOW,
+      GMAIL_USER: process.env.GMAIL_USER,
+      GMAIL_APP_PASSWORD: process.env.GMAIL_APP_PASSWORD,
     };
   }
 
@@ -115,7 +121,9 @@ class ConfigManager {
     const recommended = [
       'CLOUDINARY_CLOUD_NAME',
       'CLOUDINARY_API_KEY', 
-      'CLOUDINARY_API_SECRET'
+      'CLOUDINARY_API_SECRET',
+      'GMAIL_USER',
+      'GMAIL_APP_PASSWORD'
     ];
 
     const missingRecommended = recommended.filter(key => !this.config[key as keyof EnvironmentConfig]);
@@ -231,6 +239,14 @@ class ConfigManager {
     };
   }
 
+  get mail() {
+    return {
+      gmailUser: this.config.GMAIL_USER,
+      gmailAppPassword: this.config.GMAIL_APP_PASSWORD,
+      isConfigured: !!(this.config.GMAIL_USER && this.config.GMAIL_APP_PASSWORD),
+    };
+  }
+
   // Get all configuration (for debugging) - ONLY in development
   getAll(): EnvironmentConfig | null {
     if (this.config.NODE_ENV !== 'development') {
@@ -249,6 +265,7 @@ class ConfigManager {
       NEXTAUTH_URL: this.config.NEXTAUTH_URL,
       cloudinaryConfigured: this.cloudinary.isConfigured,
       openaiConfigured: this.openai.isConfigured,
+      mailConfigured: this.mail.isConfigured,
       isValidated: this.isValidated,
       timestamp: Date.now()
     };
@@ -266,6 +283,8 @@ class ConfigManager {
       CLOUDINARY_API_KEY: this.config.CLOUDINARY_API_KEY ? '***MASKED***' : 'NOT_SET',
       CLOUDINARY_API_SECRET: this.config.CLOUDINARY_API_SECRET ? '***MASKED***' : 'NOT_SET',
       OPENAI_API_KEY: this.config.OPENAI_API_KEY ? '***MASKED***' : 'NOT_SET',
+      GMAIL_USER: this.config.GMAIL_USER || 'NOT_SET',
+      GMAIL_APP_PASSWORD: this.config.GMAIL_APP_PASSWORD ? '***MASKED***' : 'NOT_SET',
     };
   }
 }
@@ -291,6 +310,7 @@ export const appConfig = {
 export const features = {
   cloudinaryUpload: config.cloudinary.isConfigured,
   aiImageGeneration: config.openai.isConfigured,
+  mailSending: config.mail.isConfigured,
   rateLimiting: config.isProduction,
   detailedLogging: config.isDevelopment,
 }; 
