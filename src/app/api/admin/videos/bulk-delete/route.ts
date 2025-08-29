@@ -20,8 +20,8 @@ export async function POST(req: Request) {
     }
 
     // Get videos before deletion to update channel counts
-    const videosToDelete = await Video.find({ _id: { $in: videoIds } });
-    const channelIds = [...new Set(videosToDelete.map(v => v.channelId).filter(Boolean))];
+    // const videosToDelete = await Video.find({ _id: { $in: videoIds } });
+    // const channelIds = [...new Set(videosToDelete.map(v => v.channelId).filter(Boolean))];
 
     // Delete videos
     const result = await Video.deleteMany({ _id: { $in: videoIds } });

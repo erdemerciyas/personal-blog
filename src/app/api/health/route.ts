@@ -73,6 +73,7 @@ export async function GET() {
 export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';
 
+/*
 async function checkYouTubeAPIHealth() {
   const apiKey = process.env.YOUTUBE_API_KEY;
   const channelId = process.env.YOUTUBE_CHANNEL_ID;
@@ -98,3 +99,4 @@ async function checkYouTubeAPIHealth() {
     return { status: 'error', message: 'YouTube health check failed' };
   }
 }
+*/

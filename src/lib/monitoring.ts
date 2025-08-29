@@ -2,7 +2,7 @@
 let Sentry: any = null;
 try {
   Sentry = require('@sentry/nextjs');
-} catch (_e) {
+} catch {
   // Only warn in development
   if (process.env.NODE_ENV === 'development') {
     console.warn('Sentry not installed, monitoring features disabled');
@@ -246,7 +246,7 @@ export class APIMonitor {
     operation: string,
     handler: () => Promise<T>
   ): Promise<T> {
-    const transaction = PerformanceMonitor.startTransaction(`db.${operation}`, 'db');
+    // const transaction = PerformanceMonitor.startTransaction(`db.${operation}`, 'db');
     
     try {
       const result = await handler();

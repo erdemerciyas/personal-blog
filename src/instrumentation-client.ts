@@ -2,7 +2,7 @@
 let Sentry: any = null;
 try {
   Sentry = require('@sentry/nextjs');
-} catch (_e) {
+} catch {
   console.warn('Sentry not installed, skipping client instrumentation');
 }
 

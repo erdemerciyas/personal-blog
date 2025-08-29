@@ -158,9 +158,9 @@ export default function MailSystemStatus() {
                 Mail Sistemini Aktif Etmek İçin:
               </h4>
               <ol className="text-sm text-blue-800 space-y-1 list-decimal list-inside">
-                <li>Gmail hesabınızda 2-Factor Authentication'ı aktif edin</li>
+                <li>Gmail hesabınızda 2-Factor Authentication&apos;ı aktif edin</li>
                 <li>Gmail App Password oluşturun</li>
-                <li>Environment variables'lara GMAIL_USER ve GMAIL_APP_PASSWORD ekleyin</li>
+                <li>Environment variables&apos;lara GMAIL_USER ve GMAIL_APP_PASSWORD ekleyin</li>
                 <li>Uygulamayı yeniden başlatın</li>
               </ol>
               <div className="mt-3">

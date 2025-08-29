@@ -18,7 +18,7 @@ async function getVideosFromDatabase() {
   return dbVideos;
 }
 
-export async function GET(req: Request) {
+export async function GET(_req: Request) {
   try {
     // Authenticate user
     const session = await getServerSession(authOptions);

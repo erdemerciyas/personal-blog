@@ -82,7 +82,7 @@ export default function VideosPage() {
     } catch (error) {
       console.error('Error loading videos:', error);
     }
-  }, [typeFilter]);
+  }, [typeFilter, channelFilter]);
 
   // Load initial data
   useEffect(() => {

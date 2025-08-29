@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { PerformanceMonitor, ErrorBoundary } from '@/lib/monitoring';
+import { PerformanceMonitor } from '@/lib/monitoring';
+// import { ErrorBoundary } from '@/lib/monitoring';
 import connectDB, { hasValidMongoUri } from '@/lib/mongoose';
 
 /**
@@ -107,7 +108,7 @@ import connectDB, { hasValidMongoUri } from '@/lib/mongoose';
  *               $ref: '#/components/schemas/Error'
  */
 
-export async function GET(request: NextRequest) {
+export async function GET(_request: NextRequest) {
   const transaction = PerformanceMonitor.startTransaction('GET /api/monitoring/performance', 'http.server');
   
   try {
