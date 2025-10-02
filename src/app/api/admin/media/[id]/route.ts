@@ -13,8 +13,9 @@ cloudinary.config({
 // DELETE - Delete a single media file
 export const DELETE = withSecurity(SecurityConfigs.admin)(async (
   request: NextRequest,
-  { params }: { params: { id: string } }
+  context: { params: { id: string } }
 ) => {
+  const { params } = context;
   try {
     // Decode the ID in case it's URL encoded
     const id = decodeURIComponent(params.id);

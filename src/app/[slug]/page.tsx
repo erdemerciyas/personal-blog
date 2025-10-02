@@ -9,11 +9,22 @@ interface PageProps {
   };
 }
 
-async function getPage(slug: string) {
+interface PageData {
+  _id: string;
+  title: string;
+  slug: string;
+  content: string;
+  excerpt?: string;
+  metaTitle?: string;
+  metaDescription?: string;
+  isPublished: boolean;
+}
+
+async function getPage(slug: string): Promise<PageData | null> {
   try {
     await connectDB();
     const page = await Page.findOne({ slug, isPublished: true }).lean();
-    return page;
+    return page as PageData | null;
   } catch (error) {
     console.error('Error fetching page:', error);
     return null;

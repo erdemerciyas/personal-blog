@@ -295,16 +295,7 @@ export default function PagesManagement() {
       )}
       
       <AdminCard 
-        title={
-          <div className="flex items-center justify-between">
-            <span>Tüm Sayfalar ({pages.length})</span>
-            {reordering && (
-              <span className="text-sm text-blue-600 dark:text-blue-400 font-normal">
-                Sıralama kaydediliyor...
-              </span>
-            )}
-          </div>
-        } 
+        title={`Tüm Sayfalar (${pages.length})${reordering ? ' - Sıralama kaydediliyor...' : ''}`}
         padding="none"
       >
         {pages.length === 0 ? (
