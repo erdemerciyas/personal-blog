@@ -17,7 +17,7 @@ Modern, güvenli ve performanslı kişisel blog ve portfolyo platformu. Next.js 
 
 **[Live Site](https://www.fixral.com)** | **[Admin Panel](https://www.fixral.com/admin)** | **[API Health](https://www.fixral.com/api/health)**
 
-> **Status**: **LIVE** | **Last Deploy**: 2025-09-25 | **Version**: v2.5.0 | **CI/CD Pipeline**: **OPTIMIZED**
+> **Status**: **LIVE** | **Last Deploy**: 2025-10-02 | **Version**: v2.6.0 | **CI/CD Pipeline**: **OPTIMIZED**
 
 ## Özellikler
 - **Responsive Tasarım**: Tüm cihazlarda mükemmel görünüm
@@ -201,7 +201,27 @@ https://www.youtube.com/watch?v=VIDEO_ID_2
 https://www.youtube.com/watch?v=VIDEO_ID_3
 ```
 
-## Yeni Özellikler (v2.4.2)
+## Yeni Özellikler (v2.6.0)
+
+### Kod Kalitesi ve Performans İyileştirmeleri (2025-10-02)
+- **ESLint Tam Temizlik**: Tüm ESLint hataları ve uyarıları çözüldü
+  - 142 hata → 0 hata (%100 iyileştirme)
+  - Tüm uyarılar temizlendi
+  - `<img>` → Next.js `<Image>` dönüşümü tamamlandı
+  - Production-ready kod kalitesi
+- **Web Vitals Tracking**: Modern performans izleme sistemi eklendi
+  - Core Web Vitals metrikleri (CLS, INP, FCP, LCP, TTFB)
+  - Google Analytics entegrasyonu
+  - Development modunda console logging
+  - Opsiyonel API endpoint desteği
+- **TypeScript Type Safety**: Tüm tip kontrolleri başarılı
+  - Sıfır TypeScript hatası
+  - Type-safe kod tabanı
+- **Build Optimizasyonu**: Production build hatasız
+  - 68 sayfa başarıyla derlendi
+  - Bundle boyutu optimize edildi (87.6 kB shared JS)
+
+## Önceki Özellikler (v2.4.2)
 
 ### ESLint ve CI/CD Stabilite İyileştirmeleri (2025-01-27)
 - **ESLint Hata Düzeltmeleri**: Tüm kritik ESLint hataları çözüldü

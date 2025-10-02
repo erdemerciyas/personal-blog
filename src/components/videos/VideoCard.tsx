@@ -1,4 +1,5 @@
 import { PlayIcon } from '@heroicons/react/24/solid';
+import Image from 'next/image';
 
 interface VideoCardProps {
   video: {
@@ -15,12 +16,14 @@ interface VideoCardProps {
 export default function VideoCard({ video }: VideoCardProps) {
   return (
     <div className="bg-white dark:bg-slate-800 rounded-xl overflow-hidden shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1 group">
-      <div className="relative">
+      <div className="relative h-48">
         {/* Thumbnail */}
-        <img 
+        <Image 
           src={video.thumbnail} 
           alt={video.title} 
-          className="w-full h-48 object-cover group-hover:scale-105 transition-transform duration-300"
+          fill
+          className="object-cover group-hover:scale-105 transition-transform duration-300"
+          sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
         />
         
         {/* Play Button Overlay */}

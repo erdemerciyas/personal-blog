@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react';
 import { useSession } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
+import Image from 'next/image';
 import AdminLayout from '@/components/admin/AdminLayout';
 import {
   PencilIcon,
@@ -448,11 +449,13 @@ export default function AdminVideosPage() {
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap">
                       <div className="flex items-center">
-                        <div className="flex-shrink-0 h-16 w-24">
-                          <img 
+                        <div className="flex-shrink-0 h-16 w-24 relative">
+                          <Image 
                             src={video.thumbnail} 
                             alt={video.title} 
-                            className="h-16 w-24 object-cover rounded"
+                            fill
+                            className="object-cover rounded"
+                            sizes="96px"
                           />
                         </div>
                         <div className="ml-4">
