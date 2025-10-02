@@ -13,12 +13,15 @@ cloudinary.config({
 // DELETE - Delete a single media file
 export const DELETE = withSecurity(SecurityConfigs.admin)(async (
   request: NextRequest,
-  context: { params: { id: string } }
+  ...args: unknown[]
 ) => {
-  const { params } = context;
+  // Extract params from args (Next.js 14 route handler pattern)
+  const context = args[0] as { params: { id: string } };
+  const params = context?.params;
+  
   try {
     // Decode the ID in case it's URL encoded
-    const id = decodeURIComponent(params.id);
+    const id = params?.id ? decodeURIComponent(params.id) : '';
 
     if (!id) {
       return NextResponse.json({ error: 'Media ID is required' }, { status: 400 });
