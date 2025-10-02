@@ -5,10 +5,16 @@ import { useSession } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
 import Image from 'next/image';
 import Link from 'next/link';
-import { PageLoader } from '../../../components/AdminLoader';
-import AdminLayout from '../../../components/admin/AdminLayout';
+import { AdminLayoutNew } from '@/components/admin/layout';
+import {
+  AdminButton,
+  AdminCard,
+  AdminSpinner,
+  AdminAlert,
+  AdminEmptyState
+} from '@/components/admin/ui';
 import HTMLContent from '../../../components/HTMLContent';
-import { 
+import {
   PlusIcon,
   PencilIcon,
   TrashIcon,
@@ -81,9 +87,17 @@ export default function ServicesPage() {
 
   if (status === 'loading' || loading) {
     return (
-      <AdminLayout>
-        <PageLoader text="Hizmetler yükleniyor..." />
-      </AdminLayout>
+      <AdminLayoutNew
+        title="Servis Yönetimi"
+        breadcrumbs={[
+          { label: 'Dashboard', href: '/admin/dashboard' },
+          { label: 'Servisler' }
+        ]}
+      >
+        <div className="flex items-center justify-center py-12">
+          <AdminSpinner size="lg" />
+        </div>
+      </AdminLayoutNew>
     );
   }
 
@@ -92,92 +106,83 @@ export default function ServicesPage() {
   }
 
   return (
-    <AdminLayout 
+    <AdminLayoutNew
       title="Servis Yönetimi"
       breadcrumbs={[
         { label: 'Dashboard', href: '/admin/dashboard' },
-        { label: 'Servis Yönetimi' }
+        { label: 'Servisler' }
       ]}
+      actions={
+        <Link href="/admin/services/new">
+          <AdminButton variant="primary" icon={PlusIcon}>
+            Yeni Servis
+          </AdminButton>
+        </Link>
+      }
     >
-      <div className="p-4 sm:p-6 lg:p-8">
-        <div className="w-full space-y-6">
-        
-        {/* Header Actions */}
-        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between space-y-4 sm:space-y-0">
-          <div>
-            <p className="text-slate-600">Sunduğunuz hizmetleri yönetin</p>
-            <div className="flex items-center space-x-4 text-sm text-slate-500 mt-2">
-              <span>Toplam: {services.length} servis</span>
-              <span className="hidden sm:inline">•</span>
-              <span className="hidden sm:inline">Aktif servisler</span>
-            </div>
+      <div className="space-y-6">
+
+        {/* Header Info */}
+        <div>
+          <p className="text-slate-600 dark:text-slate-400">Sunduğunuz hizmetleri yönetin</p>
+          <div className="flex items-center space-x-4 text-sm text-slate-500 dark:text-slate-400 mt-2">
+            <span>Toplam: {services.length} servis</span>
+            <span>•</span>
+            <span>Aktif servisler</span>
           </div>
-          <Link
-            href="/admin/services/new"
-            className="bg-brand-primary-700 hover:bg-brand-primary-800 text-white px-6 py-3 rounded-xl font-semibold transition-all duration-200 flex items-center justify-center space-x-2 shadow-sm w-full sm:w-auto"
-          >
-            <PlusIcon className="w-5 h-5" />
-            <span>Yeni Servis</span>
-          </Link>
         </div>
 
         {/* Error Message */}
         {error && (
-          <div className="bg-red-50 border border-red-200 text-red-800 p-4 rounded-xl">
+          <AdminAlert variant="error" onClose={() => setError(null)}>
             {error}
-          </div>
+          </AdminAlert>
         )}
 
         {/* Quick Actions */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-          <Link
-            href="/admin/services/new"
-            className="bg-gradient-to-r from-brand-primary-700 to-blue-600 text-white p-4 sm:p-6 rounded-xl hover:shadow-lg transition-all duration-200 group"
-          >
-            <div className="flex items-center justify-center sm:justify-start space-x-3">
-              <PlusIcon className="w-6 h-6 group-hover:scale-110 transition-transform" />
-              <span className="font-semibold">Yeni Servis Ekle</span>
-            </div>
+          <Link href="/admin/services/new">
+            <AdminCard padding="md" hover className="h-full cursor-pointer bg-gradient-to-r from-brand-primary-700 to-blue-600 text-white border-0">
+              <div className="flex items-center space-x-3">
+                <PlusIcon className="w-6 h-6" />
+                <span className="font-semibold">Yeni Servis Ekle</span>
+              </div>
+            </AdminCard>
           </Link>
-          
-          <Link
-            href="/admin/portfolio"
-            className="bg-gradient-to-r from-blue-600 to-blue-700 text-white p-4 sm:p-6 rounded-xl hover:shadow-lg transition-all duration-200 group"
-          >
-            <div className="flex items-center justify-center sm:justify-start space-x-3">
-              <FolderOpenIcon className="w-6 h-6 group-hover:scale-110 transition-transform" />
-              <span className="font-semibold">Portfolio Yönetimi</span>
-            </div>
+
+          <Link href="/admin/portfolio">
+            <AdminCard padding="md" hover className="h-full cursor-pointer bg-gradient-to-r from-blue-600 to-blue-700 text-white border-0">
+              <div className="flex items-center space-x-3">
+                <FolderOpenIcon className="w-6 h-6" />
+                <span className="font-semibold">Portfolio Yönetimi</span>
+              </div>
+            </AdminCard>
           </Link>
-          
-          <div className="bg-slate-100 p-4 sm:p-6 rounded-xl sm:col-span-2 lg:col-span-1">
-            <div className="flex items-center justify-center sm:justify-start space-x-3">
-              <WrenchScrewdriverIcon className="w-6 h-6 text-slate-600" />
-              <span className="font-semibold text-slate-900">Servis İstatistikleri</span>
+
+          <AdminCard padding="md" className="sm:col-span-2 lg:col-span-1">
+            <div className="flex items-center space-x-3">
+              <WrenchScrewdriverIcon className="w-6 h-6 text-slate-600 dark:text-slate-400" />
+              <span className="font-semibold text-slate-900 dark:text-white">Servis İstatistikleri</span>
             </div>
-          </div>
+          </AdminCard>
         </div>
 
         {/* Services List */}
-        <div className="bg-white rounded-xl shadow-sm border border-slate-200">
-          <div className="p-6 border-b border-slate-200">
-            <h3 className="text-lg font-semibold text-slate-900">Servisler</h3>
-          </div>
-          
-          <div className="divide-y divide-slate-200">
+        <AdminCard title="Servisler" padding="none">
+          <div className="divide-y divide-slate-200 dark:divide-slate-700">
             {services.length === 0 ? (
-              <div className="p-12 text-center">
-                <WrenchScrewdriverIcon className="w-12 h-12 text-slate-400 mx-auto mb-4" />
-                <p className="text-slate-600 text-lg">Henüz servis eklenmemiş</p>
-                <p className="text-slate-500 mt-2">İlk servisinizi eklemek için &quot;Yeni Servis&quot; butonuna tıklayın</p>
-              </div>
+              <AdminEmptyState
+                icon={<WrenchScrewdriverIcon className="w-12 h-12" />}
+                title="Henüz servis eklenmemiş"
+                description="İlk servisinizi eklemek için 'Yeni Servis' butonuna tıklayın"
+              />
             ) : (
               services.map((service) => (
-                <div key={service._id} className="p-4 sm:p-6 hover:bg-slate-50 transition-colors">
+                <div key={service._id} className="p-6 hover:bg-slate-50 dark:hover:bg-slate-700/50 transition-colors">
                   <div className="flex flex-col sm:flex-row items-start space-y-4 sm:space-y-0 sm:space-x-4">
                     {/* Image */}
                     <div className="flex-shrink-0 w-full sm:w-auto">
-                      <div className="w-full h-48 sm:w-20 sm:h-20 relative overflow-hidden rounded-xl bg-slate-200">
+                      <div className="w-full h-48 sm:w-20 sm:h-20 relative overflow-hidden rounded-xl bg-slate-200 dark:bg-slate-700">
                         {service.image ? (
                           <Image
                             src={service.image}
@@ -188,53 +193,53 @@ export default function ServicesPage() {
                           />
                         ) : (
                           <div className="w-full h-full flex items-center justify-center">
-                            <span className="text-slate-400 text-xs">Görsel Yok</span>
+                            <span className="text-slate-400 dark:text-slate-500 text-xs">Görsel Yok</span>
                           </div>
                         )}
                       </div>
                     </div>
-                    
+
                     {/* Content */}
                     <div className="flex-1 min-w-0 w-full">
                       <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between space-y-4 sm:space-y-0">
                         <div className="flex-1">
-                          <h4 className="text-lg font-semibold text-slate-900 mb-2">
+                          <h4 className="text-lg font-semibold text-slate-900 dark:text-white mb-2">
                             {service.title}
                           </h4>
-                          <div className="text-slate-600 mb-3">
-                            <HTMLContent 
+                          <div className="text-slate-600 dark:text-slate-300 mb-3">
+                            <HTMLContent
                               content={service.description}
                               truncate={150}
                               className="line-clamp-3"
                             />
                           </div>
-                          <div className="flex items-center space-x-4 text-sm text-slate-500">
+                          <div className="flex items-center space-x-4 text-sm text-slate-500 dark:text-slate-400">
                             <div className="flex items-center space-x-1">
                               <ClockIcon className="w-4 h-4" />
                               <span>Aktif servis</span>
                             </div>
                           </div>
                         </div>
-                        
+
                         {/* Actions */}
-                        <div className="flex items-center justify-center sm:justify-start space-x-2 sm:ml-4">
+                        <div className="flex items-center space-x-2">
                           <Link
                             href="/services"
-                            className="p-2 text-slate-600 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-colors"
+                            className="p-2 text-slate-600 dark:text-slate-400 hover:text-blue-600 dark:hover:text-blue-400 hover:bg-blue-50 dark:hover:bg-blue-900/20 rounded-lg transition-colors"
                             title="Görüntüle"
                           >
                             <EyeIcon className="w-5 h-5" />
                           </Link>
                           <Link
                             href={`/admin/services/edit/${service._id}`}
-                            className="p-2 text-slate-600 hover:text-brand-primary-700 hover:bg-brand-primary-50 rounded-lg transition-colors"
+                            className="p-2 text-slate-600 dark:text-slate-400 hover:text-brand-primary-700 dark:hover:text-brand-primary-400 hover:bg-brand-primary-50 dark:hover:bg-brand-primary-900/20 rounded-lg transition-colors"
                             title="Düzenle"
                           >
                             <PencilIcon className="w-5 h-5" />
                           </Link>
                           <button
                             onClick={() => handleDelete(service._id)}
-                            className="p-2 text-slate-600 hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors"
+                            className="p-2 text-slate-600 dark:text-slate-400 hover:text-red-600 dark:hover:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-lg transition-colors"
                             title="Sil"
                           >
                             <TrashIcon className="w-5 h-5" />
@@ -247,9 +252,8 @@ export default function ServicesPage() {
               ))
             )}
           </div>
-        </div>
-        </div>
+        </AdminCard>
       </div>
-    </AdminLayout>
+    </AdminLayoutNew>
   );
 }

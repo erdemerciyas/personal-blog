@@ -1,24 +1,28 @@
 'use client';
+
 import { useState, useEffect } from 'react';
 import { useSession } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
-import AdminLayout from '../../../components/admin/AdminLayout';
-import Toast from '../../../components/admin/Toast';
-import { useToast } from '../../../hooks/useToast';
+import { AdminLayoutNew } from '@/components/admin/layout';
+import {
+  AdminButton,
+  AdminCard,
+  AdminInput,
+  AdminTextarea,
+  AdminSpinner,
+  AdminAlert
+} from '@/components/admin/ui';
 import { 
   EnvelopeIcon, 
   PhoneIcon, 
   MapPinIcon, 
   ClockIcon,
-  CheckIcon,
-  DocumentTextIcon,
-  GlobeAltIcon
+  CheckIcon
 } from '@heroicons/react/24/outline';
 
 export default function AdminContactPage() {
   const { data: session, status } = useSession();
   const router = useRouter();
-  const { toasts, removeToast, success, error } = useToast();
   const [contactData, setContactData] = useState({
     email: '',
     phone: '',
@@ -33,8 +37,9 @@ export default function AdminContactPage() {
   });
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
+  const [successMsg, setSuccessMsg] = useState('');
+  const [errorMsg, setErrorMsg] = useState('');
 
-  // Auth check
   useEffect(() => {
     if (status === 'loading') return;
     
@@ -45,7 +50,6 @@ export default function AdminContactPage() {
     }
   }, [status, session, router]);
 
-  // Fetch contact data
   useEffect(() => {
     const fetchContactData = async () => {
       try {
@@ -58,7 +62,7 @@ export default function AdminContactPage() {
         }
       } catch (fetchError) {
         console.error('Contact data fetch error:', fetchError);
-        error('Yükleme Hatası', 'İletişim bilgileri yüklenirken hata oluştu');
+        setErrorMsg('İletişim bilgileri yüklenirken hata oluştu');
       } finally {
         setLoading(false);
       }
@@ -67,13 +71,11 @@ export default function AdminContactPage() {
     if (status === 'authenticated') {
       fetchContactData();
     }
-  }, [status, error]);
+  }, [status]);
 
-  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
-    const { name, value } = e.target;
-    
-    if (name.startsWith('socialLinks.')) {
-      const socialKey = name.split('.')[1];
+  const handleInputChange = (field: string, value: string) => {
+    if (field.startsWith('socialLinks.')) {
+      const socialKey = field.split('.')[1];
       setContactData(prev => ({
         ...prev,
         socialLinks: {
@@ -84,7 +86,7 @@ export default function AdminContactPage() {
     } else {
       setContactData(prev => ({
         ...prev,
-        [name]: value
+        [field]: value
       }));
     }
   };
@@ -92,32 +94,29 @@ export default function AdminContactPage() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setSaving(true);
+    setErrorMsg('');
+    setSuccessMsg('');
 
-    // Client-side validation
     if (!contactData.email || !contactData.phone || !contactData.address) {
-      error('Doğrulama Hatası', 'E-posta, telefon ve adres alanları zorunludur');
+      setErrorMsg('E-posta, telefon ve adres alanları zorunludur');
       setSaving(false);
       return;
     }
 
-    // Email validation
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     if (!emailRegex.test(contactData.email)) {
-      error('Doğrulama Hatası', 'Geçerli bir e-posta adresi giriniz');
+      setErrorMsg('Geçerli bir e-posta adresi giriniz');
       setSaving(false);
       return;
     }
 
     try {
-      // Add timeout to fetch request
       const controller = new AbortController();
-      const timeoutId = setTimeout(() => controller.abort(), 15000); // 15 second timeout
+      const timeoutId = setTimeout(() => controller.abort(), 15000);
 
       const response = await fetch('/api/contact-info', {
         method: 'PUT',
-        headers: {
-          'Content-Type': 'application/json',
-        },
+        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(contactData),
         signal: controller.signal,
       });
@@ -129,22 +128,20 @@ export default function AdminContactPage() {
         throw new Error(errorData.error || `HTTP ${response.status}: İletişim bilgileri güncellenirken hata oluştu`);
       }
 
-      const result = await response.json();
-      console.log('Update successful:', result);
-
-      success('Başarılı!', 'İletişim bilgileri başarıyla güncellendi');
+      setSuccessMsg('İletişim bilgileri başarıyla güncellendi');
+      setTimeout(() => setSuccessMsg(''), 3000);
 
     } catch (updateError) {
       console.error('Update error:', updateError);
       
       if (updateError instanceof Error) {
         if (updateError.name === 'AbortError') {
-          error('Zaman Aşımı', 'İstek zaman aşımına uğradı. Lütfen tekrar deneyin.');
+          setErrorMsg('İstek zaman aşımına uğradı. Lütfen tekrar deneyin.');
         } else {
-          error('Güncelleme Hatası', updateError.message || 'İletişim bilgileri güncellenirken hata oluştu');
+          setErrorMsg(updateError.message || 'İletişim bilgileri güncellenirken hata oluştu');
         }
       } else {
-        error('Güncelleme Hatası', 'İletişim bilgileri güncellenirken hata oluştu');
+        setErrorMsg('İletişim bilgileri güncellenirken hata oluştu');
       }
     } finally {
       setSaving(false);
@@ -153,15 +150,17 @@ export default function AdminContactPage() {
 
   if (status === 'loading' || loading) {
     return (
-      <AdminLayout>
-        <div className="flex items-center justify-center min-h-[400px]">
-          <div className="flex flex-col items-center space-y-4">
-            <div className="flex items-center space-x-2">
-              <span>İletişim bilgileri yükleniyor...</span>
-            </div>
-          </div>
+      <AdminLayoutNew
+        title="İletişim Bilgileri"
+        breadcrumbs={[
+          { label: 'Dashboard', href: '/admin/dashboard' },
+          { label: 'İletişim' }
+        ]}
+      >
+        <div className="flex items-center justify-center py-12">
+          <AdminSpinner size="lg" />
         </div>
-      </AdminLayout>
+      </AdminLayoutNew>
     );
   }
 
@@ -170,222 +169,154 @@ export default function AdminContactPage() {
   }
 
   return (
-    <AdminLayout 
+    <AdminLayoutNew 
       title="İletişim Bilgileri"
       breadcrumbs={[
         { label: 'Dashboard', href: '/admin/dashboard' },
-        { label: 'İletişim Bilgileri' }
+        { label: 'İletişim' }
       ]}
+      actions={
+        <AdminButton
+          onClick={handleSubmit}
+          disabled={saving}
+          variant="primary"
+          icon={CheckIcon}
+          loading={saving}
+        >
+          Kaydet
+        </AdminButton>
+      }
     >
       <div className="space-y-6">
         
-        {/* Header Actions */}
-        <div className="flex items-center justify-between">
-          <div>
-            <p className="text-slate-600">İletişim sayfası bilgilerini düzenleyin</p>
-          </div>
-          <button
-            onClick={handleSubmit}
-            disabled={saving}
-            className={`flex items-center space-x-2 px-6 py-3 rounded-xl font-semibold transition-all duration-200 ${
-              saving
-                ? 'bg-slate-400 cursor-not-allowed text-white'
-                : 'bg-brand-primary-700 hover:bg-brand-primary-800 text-white shadow-sm'
-            }`}
-          >
-            {saving ? (
-              <>
-                <div className="flex items-center space-x-2">
-                  <span>Kaydediliyor...</span>
-                </div>
-              </>
-            ) : (
-              <>
-                <CheckIcon className="w-4 h-4" />
-                <span>Kaydet</span>
-              </>
-            )}
-          </button>
-        </div>
+        {/* Header Info */}
+        <p className="text-slate-600 dark:text-slate-400">İletişim sayfası bilgilerini düzenleyin</p>
 
-        {/* Toast Notifications */}
-        {toasts.map((toast) => (
-          <Toast
-            key={toast.id}
-            {...toast}
-            onClose={removeToast}
-          />
-        ))}
+        {/* Success/Error Messages */}
+        {successMsg && (
+          <AdminAlert variant="success" onClose={() => setSuccessMsg('')}>
+            {successMsg}
+          </AdminAlert>
+        )}
+
+        {errorMsg && (
+          <AdminAlert variant="error" onClose={() => setErrorMsg('')}>
+            {errorMsg}
+          </AdminAlert>
+        )}
 
         {/* Form */}
         <form onSubmit={handleSubmit} className="space-y-6">
           
           {/* Basic Contact Info */}
-          <div className="bg-white rounded-xl p-6 shadow-sm border border-slate-200">
-            <h3 className="text-lg font-semibold text-slate-900 mb-4 flex items-center space-x-2">
-              <EnvelopeIcon className="w-5 h-5 text-brand-primary-700" />
-              <span>Temel İletişim Bilgileri</span>
-            </h3>
-            
+          <AdminCard title="Temel İletişim Bilgileri" padding="md">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              <div>
-                <label className="block text-sm font-medium text-slate-700 mb-2">
-                  E-posta Adresi
-                </label>
-                <input
-                  type="email"
-                  name="email"
-                  value={contactData.email}
-                  onChange={handleInputChange}
-                  className="w-full border border-slate-300 rounded-xl px-4 py-3 text-slate-900 focus:outline-none focus:ring-2 focus:ring-brand-primary-600 focus:border-transparent"
-                  placeholder="info@example.com"
-                />
-              </div>
+              <AdminInput
+                label="E-posta Adresi"
+                type="email"
+                value={contactData.email}
+                onChange={(e) => handleInputChange('email', e.target.value)}
+                placeholder="info@example.com"
+                required
+              />
               
-              <div>
-                <label className="block text-sm font-medium text-slate-700 mb-2">
-                  Telefon Numarası
-                </label>
-                <input
-                  type="tel"
-                  name="phone"
-                  value={contactData.phone}
-                  onChange={handleInputChange}
-                  className="w-full border border-slate-300 rounded-xl px-4 py-3 text-slate-900 focus:outline-none focus:ring-2 focus:ring-brand-primary-600 focus:border-transparent"
-                  placeholder="+90 555 000 00 00"
-                />
-              </div>
+              <AdminInput
+                label="Telefon Numarası"
+                type="tel"
+                value={contactData.phone}
+                onChange={(e) => handleInputChange('phone', e.target.value)}
+                placeholder="+90 555 000 00 00"
+                required
+              />
               
               <div className="md:col-span-2">
-                <label className="block text-sm font-medium text-slate-700 mb-2">
-                  Adres
-                </label>
-                <textarea
-                  name="address"
+                <AdminTextarea
+                  label="Adres"
                   value={contactData.address}
-                  onChange={handleInputChange}
+                  onChange={(e) => handleInputChange('address', e.target.value)}
                   rows={3}
-                  className="w-full border border-slate-300 rounded-xl px-4 py-3 text-slate-900 focus:outline-none focus:ring-2 focus:ring-brand-primary-600 focus:border-transparent"
                   placeholder="Tam adres bilgisi..."
+                  required
                 />
               </div>
               
               <div className="md:col-span-2">
-                <label className="block text-sm font-medium text-slate-700 mb-2">
-                  Çalışma Saatleri
-                </label>
-                <input
-                  type="text"
-                  name="workingHours"
+                <AdminInput
+                  label="Çalışma Saatleri"
                   value={contactData.workingHours}
-                  onChange={handleInputChange}
-                  className="w-full border border-slate-300 rounded-xl px-4 py-3 text-slate-900 focus:outline-none focus:ring-2 focus:ring-brand-primary-600 focus:border-transparent"
+                  onChange={(e) => handleInputChange('workingHours', e.target.value)}
                   placeholder="Pazartesi - Cuma: 09:00 - 18:00"
                 />
               </div>
             </div>
-          </div>
+          </AdminCard>
 
           {/* Social Media Links */}
-          <div className="bg-white rounded-xl p-6 shadow-sm border border-slate-200">
-            <h3 className="text-lg font-semibold text-slate-900 mb-4 flex items-center space-x-2">
-              <GlobeAltIcon className="w-5 h-5 text-brand-primary-700" />
-              <span>Sosyal Medya Hesapları</span>
-            </h3>
-            
+          <AdminCard title="Sosyal Medya Hesapları" padding="md">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              <div>
-                <label className="block text-sm font-medium text-slate-700 mb-2">
-                  LinkedIn
-                </label>
-                <input
-                  type="url"
-                  name="socialLinks.linkedin"
-                  value={contactData.socialLinks.linkedin}
-                  onChange={handleInputChange}
-                  className="w-full border border-slate-300 rounded-xl px-4 py-3 text-slate-900 focus:outline-none focus:ring-2 focus:ring-brand-primary-600 focus:border-transparent"
-                  placeholder="https://linkedin.com/in/..."
-                />
-              </div>
+              <AdminInput
+                label="LinkedIn"
+                type="url"
+                value={contactData.socialLinks.linkedin}
+                onChange={(e) => handleInputChange('socialLinks.linkedin', e.target.value)}
+                placeholder="https://linkedin.com/in/..."
+              />
               
-              <div>
-                <label className="block text-sm font-medium text-slate-700 mb-2">
-                  Twitter
-                </label>
-                <input
-                  type="url"
-                  name="socialLinks.twitter"
-                  value={contactData.socialLinks.twitter}
-                  onChange={handleInputChange}
-                  className="w-full border border-slate-300 rounded-xl px-4 py-3 text-slate-900 focus:outline-none focus:ring-2 focus:ring-brand-primary-600 focus:border-transparent"
-                  placeholder="https://twitter.com/..."
-                />
-              </div>
+              <AdminInput
+                label="Twitter"
+                type="url"
+                value={contactData.socialLinks.twitter}
+                onChange={(e) => handleInputChange('socialLinks.twitter', e.target.value)}
+                placeholder="https://twitter.com/..."
+              />
               
-              <div>
-                <label className="block text-sm font-medium text-slate-700 mb-2">
-                  Instagram
-                </label>
-                <input
-                  type="url"
-                  name="socialLinks.instagram"
-                  value={contactData.socialLinks.instagram}
-                  onChange={handleInputChange}
-                  className="w-full border border-slate-300 rounded-xl px-4 py-3 text-slate-900 focus:outline-none focus:ring-2 focus:ring-brand-primary-600 focus:border-transparent"
-                  placeholder="https://instagram.com/..."
-                />
-              </div>
+              <AdminInput
+                label="Instagram"
+                type="url"
+                value={contactData.socialLinks.instagram}
+                onChange={(e) => handleInputChange('socialLinks.instagram', e.target.value)}
+                placeholder="https://instagram.com/..."
+              />
               
-              <div>
-                <label className="block text-sm font-medium text-slate-700 mb-2">
-                  Facebook
-                </label>
-                <input
-                  type="url"
-                  name="socialLinks.facebook"
-                  value={contactData.socialLinks.facebook}
-                  onChange={handleInputChange}
-                  className="w-full border border-slate-300 rounded-xl px-4 py-3 text-slate-900 focus:outline-none focus:ring-2 focus:ring-brand-primary-600 focus:border-transparent"
-                  placeholder="https://facebook.com/..."
-                />
-              </div>
+              <AdminInput
+                label="Facebook"
+                type="url"
+                value={contactData.socialLinks.facebook}
+                onChange={(e) => handleInputChange('socialLinks.facebook', e.target.value)}
+                placeholder="https://facebook.com/..."
+              />
             </div>
-          </div>
+          </AdminCard>
 
           {/* Preview Section */}
-          <div className="bg-white rounded-xl p-6 shadow-sm border border-slate-200">
-            <h3 className="text-lg font-semibold text-slate-900 mb-4 flex items-center space-x-2">
-              <DocumentTextIcon className="w-5 h-5 text-brand-primary-700" />
-              <span>Önizleme</span>
-            </h3>
-            
-            <div className="bg-slate-50 rounded-xl p-6">
+          <AdminCard title="Önizleme" padding="md">
+            <div className="bg-slate-50 dark:bg-slate-700 rounded-xl p-6">
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div className="space-y-4">
                   <div className="flex items-center space-x-3">
-                    <EnvelopeIcon className="w-5 h-5 text-brand-primary-700" />
-                    <span className="text-slate-700">{contactData.email || 'E-posta girilmedi'}</span>
+                    <EnvelopeIcon className="w-5 h-5 text-brand-primary-700 dark:text-brand-primary-400" />
+                    <span className="text-slate-700 dark:text-slate-300">{contactData.email || 'E-posta girilmedi'}</span>
                   </div>
                   <div className="flex items-center space-x-3">
-                    <PhoneIcon className="w-5 h-5 text-brand-primary-700" />
-                    <span className="text-slate-700">{contactData.phone || 'Telefon girilmedi'}</span>
+                    <PhoneIcon className="w-5 h-5 text-brand-primary-700 dark:text-brand-primary-400" />
+                    <span className="text-slate-700 dark:text-slate-300">{contactData.phone || 'Telefon girilmedi'}</span>
                   </div>
                   <div className="flex items-start space-x-3">
-                    <MapPinIcon className="w-5 h-5 text-brand-primary-700 mt-0.5" />
-                    <span className="text-slate-700">{contactData.address || 'Adres girilmedi'}</span>
+                    <MapPinIcon className="w-5 h-5 text-brand-primary-700 dark:text-brand-primary-400 mt-0.5" />
+                    <span className="text-slate-700 dark:text-slate-300">{contactData.address || 'Adres girilmedi'}</span>
                   </div>
                   <div className="flex items-center space-x-3">
-                    <ClockIcon className="w-5 h-5 text-brand-primary-700" />
-                    <span className="text-slate-700">{contactData.workingHours || 'Çalışma saatleri girilmedi'}</span>
+                    <ClockIcon className="w-5 h-5 text-brand-primary-700 dark:text-brand-primary-400" />
+                    <span className="text-slate-700 dark:text-slate-300">{contactData.workingHours || 'Çalışma saatleri girilmedi'}</span>
                   </div>
                 </div>
                 
                 <div className="space-y-3">
-                  <h4 className="font-semibold text-slate-900">Sosyal Medya:</h4>
+                  <h4 className="font-semibold text-slate-900 dark:text-white">Sosyal Medya:</h4>
                   {Object.entries(contactData.socialLinks).map(([platform, url]) => (
                     <div key={platform} className="flex items-center space-x-3">
-                      <div className="w-3 h-3 bg-brand-primary-700 rounded-full"></div>
-                      <span className="text-slate-700 capitalize">
+                      <div className="w-3 h-3 bg-brand-primary-700 dark:bg-brand-primary-400 rounded-full"></div>
+                      <span className="text-slate-700 dark:text-slate-300 capitalize">
                         {platform}: {url || 'Girilmedi'}
                       </span>
                     </div>
@@ -393,9 +324,9 @@ export default function AdminContactPage() {
                 </div>
               </div>
             </div>
-          </div>
+          </AdminCard>
         </form>
       </div>
-    </AdminLayout>
+    </AdminLayoutNew>
   );
-} 
+}

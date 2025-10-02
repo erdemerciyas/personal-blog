@@ -2,7 +2,8 @@
 
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
-import AdminLayout from '../../../components/admin/AdminLayout';
+import { AdminLayoutNew } from '@/components/admin/layout';
+import { AdminCard, AdminSpinner, AdminButton } from '@/components/admin/ui';
 import { 
   DocumentTextIcon, 
   UserIcon, 
@@ -116,133 +117,127 @@ export default function ContentManagement() {
     }
   ];
 
-  const breadcrumbs = [
-    { label: 'Dashboard', href: '/admin/dashboard' },
-    { label: 'İçerik Yönetimi' }
-  ];
-
   if (loading) {
     return (
-      <AdminLayout title="İçerik Yönetimi" breadcrumbs={breadcrumbs}>
-        <div className="flex items-center justify-center min-h-[400px]">
-          <div className="flex flex-col items-center space-y-4">
-            <div className="animate-spin rounded-full h-12 w-12 border-4 border-slate-200 dark:border-slate-700 border-t-brand-primary-600"></div>
-            <p className="text-slate-600 dark:text-slate-300 font-medium text-lg">
-              İçerik yükleniyor...
-            </p>
-          </div>
+      <AdminLayoutNew
+        title="İçerik Yönetimi"
+        breadcrumbs={[
+          { label: 'Dashboard', href: '/admin/dashboard' },
+          { label: 'İçerik Yönetimi' }
+        ]}
+      >
+        <div className="flex items-center justify-center py-12">
+          <AdminSpinner size="lg" />
         </div>
-      </AdminLayout>
+      </AdminLayoutNew>
     );
   }
 
   return (
-    <AdminLayout title="İçerik Yönetimi" breadcrumbs={breadcrumbs}>
+    <AdminLayoutNew
+      title="İçerik Yönetimi"
+      breadcrumbs={[
+        { label: 'Dashboard', href: '/admin/dashboard' },
+        { label: 'İçerik Yönetimi' }
+      ]}
+    >
       <div className="space-y-6">
-        {/* Header */}
-        <div className="bg-white rounded-lg shadow p-6">
+        {/* Header Info */}
+        <AdminCard padding="md">
           <div className="flex items-center justify-between">
             <div>
-              <h1 className="text-2xl font-bold text-gray-900">İçerik Yönetimi</h1>
-              <p className="text-gray-600 mt-1">
+              <h1 className="text-2xl font-bold text-slate-900 dark:text-white">İçerik Yönetimi</h1>
+              <p className="text-slate-600 dark:text-slate-400 mt-1">
                 Site içeriklerini yönetin ve düzenleyin
               </p>
             </div>
-            <div className="flex items-center space-x-4">
-              <div className="text-sm text-gray-500">
-                Son güncelleme: {new Date().toLocaleDateString('tr-TR')}
-              </div>
+            <div className="text-sm text-slate-500 dark:text-slate-400">
+              Son güncelleme: {new Date().toLocaleDateString('tr-TR')}
             </div>
           </div>
-        </div>
+        </AdminCard>
 
         {/* Content Sections Grid */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           {contentSections.map((section) => {
             const Icon = section.icon;
             return (
-              <div key={section.id} className="bg-white rounded-lg shadow hover:shadow-md transition-shadow">
-                <div className="p-6">
-                  <div className="flex items-center justify-between mb-4">
-                    <div className="flex items-center space-x-3">
-                      <div className={`p-2 rounded-lg ${section.color}`}>
-                        <Icon className="h-6 w-6 text-white" />
-                      </div>
-                      <div>
-                        <h3 className="text-lg font-semibold text-gray-900">
-                          {section.title}
-                        </h3>
-                        <p className="text-sm text-gray-600">
-                          {section.description}
-                        </p>
-                      </div>
+              <AdminCard key={section.id} padding="md" hover>
+                <div className="flex items-center justify-between mb-4">
+                  <div className="flex items-center space-x-3">
+                    <div className={`p-2 rounded-lg ${section.color}`}>
+                      <Icon className="h-6 w-6 text-white" />
                     </div>
-                    <ChevronRightIcon className="h-5 w-5 text-gray-400" />
-                  </div>
-
-                  <div className="mb-4">
-                    <div className="text-sm font-medium text-gray-500">Durum</div>
-                    <div className="text-lg font-semibold text-gray-900">
-                      {section.stat}
+                    <div>
+                      <h3 className="text-lg font-semibold text-slate-900 dark:text-white">
+                        {section.title}
+                      </h3>
+                      <p className="text-sm text-slate-600 dark:text-slate-400">
+                        {section.description}
+                      </p>
                     </div>
                   </div>
+                  <ChevronRightIcon className="h-5 w-5 text-slate-400 dark:text-slate-500" />
+                </div>
 
-                  <div className="flex space-x-2">
-                    {section.actions.map((action, index) => {
-                      const ActionIcon = action.icon;
-                      return (
-                        <Link
-                          key={index}
-                          href={action.href}
-                          className="flex items-center space-x-2 px-3 py-2 text-sm font-medium text-gray-700 bg-gray-100 rounded-md hover:bg-gray-200 transition-colors"
-                        >
-                          <ActionIcon className="h-4 w-4" />
-                          <span>{action.label}</span>
-                        </Link>
-                      );
-                    })}
+                <div className="mb-4">
+                  <div className="text-sm font-medium text-slate-500 dark:text-slate-400">Durum</div>
+                  <div className="text-lg font-semibold text-slate-900 dark:text-white">
+                    {section.stat}
                   </div>
                 </div>
-              </div>
+
+                <div className="flex space-x-2">
+                  {section.actions.map((action, index) => {
+                    const ActionIcon = action.icon;
+                    return (
+                      <Link key={index} href={action.href}>
+                        <AdminButton variant="secondary" size="sm" icon={ActionIcon}>
+                          {action.label}
+                        </AdminButton>
+                      </Link>
+                    );
+                  })}
+                </div>
+              </AdminCard>
             );
           })}
         </div>
 
         {/* Quick Actions */}
-        <div className="bg-white rounded-lg shadow p-6">
-          <h2 className="text-lg font-semibold text-gray-900 mb-4">Hızlı İşlemler</h2>
+        <AdminCard title="Hızlı İşlemler" padding="md">
           <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
             <Link
               href="/admin/about"
-              className="flex items-center space-x-2 p-3 bg-blue-50 rounded-lg hover:bg-blue-100 transition-colors"
+              className="flex items-center space-x-2 p-3 bg-blue-50 dark:bg-blue-900/20 rounded-lg hover:bg-blue-100 dark:hover:bg-blue-900/30 transition-colors"
             >
-              <UserIcon className="h-5 w-5 text-blue-500" />
-              <span className="text-sm font-medium text-blue-700">Hakkımda Düzenle</span>
+              <UserIcon className="h-5 w-5 text-blue-500 dark:text-blue-400" />
+              <span className="text-sm font-medium text-blue-700 dark:text-blue-300">Hakkımda Düzenle</span>
             </Link>
             <Link
               href="/admin/services/new"
-              className="flex items-center space-x-2 p-3 bg-brand-primary-50 rounded-lg hover:bg-brand-primary-100 transition-colors"
+              className="flex items-center space-x-2 p-3 bg-brand-primary-50 dark:bg-brand-primary-900/20 rounded-lg hover:bg-brand-primary-100 dark:hover:bg-brand-primary-900/30 transition-colors"
             >
-              <PlusIcon className="h-5 w-5 text-brand-primary-600" />
-              <span className="text-sm font-medium text-brand-primary-800">Yeni Hizmet Ekle</span>
+              <PlusIcon className="h-5 w-5 text-brand-primary-600 dark:text-brand-primary-400" />
+              <span className="text-sm font-medium text-brand-primary-800 dark:text-brand-primary-300">Yeni Hizmet Ekle</span>
             </Link>
             <Link
               href="/admin/pages/new"
-              className="flex items-center space-x-2 p-3 bg-purple-50 rounded-lg hover:bg-purple-100 transition-colors"
+              className="flex items-center space-x-2 p-3 bg-purple-50 dark:bg-purple-900/20 rounded-lg hover:bg-purple-100 dark:hover:bg-purple-900/30 transition-colors"
             >
-              <DocumentTextIcon className="h-5 w-5 text-purple-500" />
-              <span className="text-sm font-medium text-purple-700">Yeni Sayfa Ekle</span>
+              <DocumentTextIcon className="h-5 w-5 text-purple-500 dark:text-purple-400" />
+              <span className="text-sm font-medium text-purple-700 dark:text-purple-300">Yeni Sayfa Ekle</span>
             </Link>
             <Link
               href="/admin/slider"
-              className="flex items-center space-x-2 p-3 bg-orange-50 rounded-lg hover:bg-orange-100 transition-colors"
+              className="flex items-center space-x-2 p-3 bg-orange-50 dark:bg-orange-900/20 rounded-lg hover:bg-orange-100 dark:hover:bg-orange-900/30 transition-colors"
             >
-              <RectangleStackIcon className="h-5 w-5 text-orange-500" />
-              <span className="text-sm font-medium text-orange-700">Slider Düzenle</span>
+              <RectangleStackIcon className="h-5 w-5 text-orange-500 dark:text-orange-400" />
+              <span className="text-sm font-medium text-orange-700 dark:text-orange-300">Slider Düzenle</span>
             </Link>
           </div>
-        </div>
+        </AdminCard>
       </div>
-    </AdminLayout>
+    </AdminLayoutNew>
   );
-} 
+}

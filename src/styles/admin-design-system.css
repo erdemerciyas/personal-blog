@@ -1,0 +1,305 @@
+/**
+ * Admin Panel Design System
+ * CSS Variables for consistent theming across light and dark modes
+ */
+
+:root {
+  /* ===== Brand Colors ===== */
+  --admin-brand-50: #f0f9ff;
+  --admin-brand-100: #e0f2fe;
+  --admin-brand-200: #bae6fd;
+  --admin-brand-300: #7dd3fc;
+  --admin-brand-400: #38bdf8;
+  --admin-brand-500: #0ea5e9;
+  --admin-brand-600: #0284c7;
+  --admin-brand-700: #0369a1;
+  --admin-brand-800: #075985;
+  --admin-brand-900: #003450;
+  --admin-brand-950: #002235;
+
+  /* ===== Semantic Colors - Success ===== */
+  --admin-success-50: #f0fdf4;
+  --admin-success-100: #dcfce7;
+  --admin-success-200: #bbf7d0;
+  --admin-success-300: #86efac;
+  --admin-success-400: #4ade80;
+  --admin-success-500: #22c55e;
+  --admin-success-600: #16a34a;
+  --admin-success-700: #15803d;
+  --admin-success-800: #166534;
+  --admin-success-900: #14532d;
+
+  /* ===== Semantic Colors - Error ===== */
+  --admin-error-50: #fef2f2;
+  --admin-error-100: #fee2e2;
+  --admin-error-200: #fecaca;
+  --admin-error-300: #fca5a5;
+  --admin-error-400: #f87171;
+  --admin-error-500: #ef4444;
+  --admin-error-600: #dc2626;
+  --admin-error-700: #b91c1c;
+  --admin-error-800: #991b1b;
+  --admin-error-900: #7f1d1d;
+
+  /* ===== Semantic Colors - Warning ===== */
+  --admin-warning-50: #fffbeb;
+  --admin-warning-100: #fef3c7;
+
+  --admin-warning-200: #fde68a;
+  --admin-warning-300: #fcd34d;
+  --admin-warning-400: #fbbf24;
+  --admin-warning-500: #f59e0b;
+  --admin-warning-600: #d97706;
+  --admin-warning-700: #b45309;
+  --admin-warning-800: #92400e;
+  --admin-warning-900: #78350f;
+
+  /* ===== Semantic Colors - Info ===== */
+  --admin-info-50: #eff6ff;
+  --admin-info-100: #dbeafe;
+  --admin-info-200: #bfdbfe;
+  --admin-info-300: #93c5fd;
+  --admin-info-400: #60a5fa;
+  --admin-info-500: #3b82f6;
+  --admin-info-600: #2563eb;
+  --admin-info-700: #1d4ed8;
+  --admin-info-800: #1e40af;
+  --admin-info-900: #1e3a8a;
+
+  /* ===== Neutral Colors (Slate) ===== */
+  --admin-slate-50: #f8fafc;
+  --admin-slate-100: #f1f5f9;
+  --admin-slate-200: #e2e8f0;
+  --admin-slate-300: #cbd5e1;
+  --admin-slate-400: #94a3b8;
+  --admin-slate-500: #64748b;
+  --admin-slate-600: #475569;
+  --admin-slate-700: #334155;
+  --admin-slate-800: #1e293b;
+  --admin-slate-900: #0f172a;
+  --admin-slate-950: #020617;
+
+  /* ===== Light Mode Theme Colors ===== */
+  --admin-bg-primary: #f8fafc;
+  --admin-bg-secondary: #ffffff;
+  --admin-bg-tertiary: #f1f5f9;
+  --admin-text-primary: #0f172a;
+  --admin-text-secondary: #64748b;
+  --admin-text-tertiary: #94a3b8;
+  --admin-border: #e2e8f0;
+  --admin-border-hover: #cbd5e1;
+  --admin-brand: #003450;
+  --admin-brand-hover: #0369a1;
+
+  /* ===== Typography ===== */
+  --admin-text-xs: 0.75rem;      /* 12px */
+  --admin-text-sm: 0.875rem;     /* 14px */
+  --admin-text-base: 1rem;       /* 16px */
+  --admin-text-lg: 1.125rem;     /* 18px */
+  --admin-text-xl: 1.25rem;      /* 20px */
+  --admin-text-2xl: 1.5rem;      /* 24px */
+  --admin-text-3xl: 1.875rem;    /* 30px */
+  --admin-text-4xl: 2.25rem;     /* 36px */
+
+  --admin-font-normal: 400;
+  --admin-font-medium: 500;
+  --admin-font-semibold: 600;
+  --admin-font-bold: 700;
+
+  --admin-leading-tight: 1.25;
+  --admin-leading-normal: 1.5;
+  --admin-leading-relaxed: 1.75;
+
+  /* ===== Spacing (4px grid) ===== */
+  --admin-space-0: 0;
+  --admin-space-1: 0.25rem;   /* 4px */
+  --admin-space-2: 0.5rem;    /* 8px */
+  --admin-space-3: 0.75rem;   /* 12px */
+  --admin-space-4: 1rem;      /* 16px */
+  --admin-space-5: 1.25rem;   /* 20px */
+  --admin-space-6: 1.5rem;    /* 24px */
+  --admin-space-8: 2rem;      /* 32px */
+  --admin-space-10: 2.5rem;   /* 40px */
+  --admin-space-12: 3rem;     /* 48px */
+  --admin-space-16: 4rem;     /* 64px */
+
+  /* ===== Border Radius ===== */
+  --admin-radius-sm: 0.375rem;   /* 6px */
+  --admin-radius-md: 0.5rem;     /* 8px */
+  --admin-radius-lg: 0.75rem;    /* 12px */
+  --admin-radius-xl: 1rem;       /* 16px */
+  --admin-radius-2xl: 1.25rem;   /* 20px */
+  --admin-radius-full: 9999px;
+
+  /* ===== Shadows (Light Mode) ===== */
+  --admin-shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+  --admin-shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+  --admin-shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
+  --admin-shadow-xl: 0 20px 25px -5px rgb(0 0 0 / 0.1), 0 8px 10px -6px rgb(0 0 0 / 0.1);
+  --admin-shadow-2xl: 0 25px 50px -12px rgb(0 0 0 / 0.25);
+
+  /* ===== Transitions ===== */
+  --admin-transition-fast: 150ms cubic-bezier(0.4, 0, 0.2, 1);
+  --admin-transition-base: 200ms cubic-bezier(0.4, 0, 0.2, 1);
+  --admin-transition-slow: 300ms cubic-bezier(0.4, 0, 0.2, 1);
+
+  /* ===== Z-Index Scale ===== */
+  --admin-z-dropdown: 1000;
+  --admin-z-sticky: 1020;
+  --admin-z-fixed: 1030;
+  --admin-z-modal-backdrop: 1040;
+  --admin-z-modal: 1050;
+  --admin-z-popover: 1060;
+  --admin-z-tooltip: 1070;
+}
+
+/* ===== Dark Mode Theme ===== */
+.dark {
+  /* Dark Mode Theme Colors */
+  --admin-bg-primary: #0f172a;
+  --admin-bg-secondary: #1e293b;
+  --admin-bg-tertiary: #334155;
+  --admin-text-primary: #f1f5f9;
+  --admin-text-secondary: #94a3b8;
+  --admin-text-tertiary: #64748b;
+  --admin-border: #334155;
+  --admin-border-hover: #475569;
+  --admin-brand: #38bdf8;
+  --admin-brand-hover: #7dd3fc;
+
+  /* Dark Mode Shadows */
+  --admin-shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.3);
+  --admin-shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.4), 0 2px 4px -2px rgb(0 0 0 / 0.4);
+  --admin-shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.5), 0 4px 6px -4px rgb(0 0 0 / 0.5);
+  --admin-shadow-xl: 0 20px 25px -5px rgb(0 0 0 / 0.6), 0 8px 10px -6px rgb(0 0 0 / 0.6);
+  --admin-shadow-2xl: 0 25px 50px -12px rgb(0 0 0 / 0.5);
+}
+
+/* ===== Smooth Theme Transition ===== */
+* {
+  transition: background-color var(--admin-transition-base),
+              border-color var(--admin-transition-base),
+              color var(--admin-transition-base);
+}
+
+/* Disable transitions for elements that shouldn't animate */
+*:focus,
+*:active,
+input,
+textarea,
+select {
+  transition: none;
+}
+
+/* ===== Reduced Motion Support ===== */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+/* ===== Focus Visible Styles ===== */
+.admin-focus-ring:focus-visible {
+  outline: 2px solid var(--admin-brand-600);
+  outline-offset: 2px;
+}
+
+.dark .admin-focus-ring:focus-visible {
+  outline-color: var(--admin-brand-400);
+}
+
+/* ===== Utility Classes ===== */
+.admin-bg-primary {
+  background-color: var(--admin-bg-primary);
+}
+
+.admin-bg-secondary {
+  background-color: var(--admin-bg-secondary);
+}
+
+.admin-text-primary {
+  color: var(--admin-text-primary);
+}
+
+.admin-text-secondary {
+  color: var(--admin-text-secondary);
+}
+
+.admin-border {
+  border-color: var(--admin-border);
+}
+
+.admin-shadow-sm {
+  box-shadow: var(--admin-shadow-sm);
+}
+
+.admin-shadow-md {
+  box-shadow: var(--admin-shadow-md);
+}
+
+.admin-shadow-lg {
+  box-shadow: var(--admin-shadow-lg);
+}
+
+/* ===== Animations ===== */
+@keyframes slide-down {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes slide-in {
+  from {
+    opacity: 0;
+    transform: translateX(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@keyframes fade-in {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes scale {
+  from {
+    opacity: 0;
+    transform: scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+.animate-slide-down {
+  animation: slide-down 200ms ease-out;
+}
+
+.animate-slide-in {
+  animation: slide-in 300ms ease-out;
+}
+
+.animate-fade-in {
+  animation: fade-in 200ms ease-out;
+}
+
+.animate-scale {
+  animation: scale 200ms ease-out;
+}

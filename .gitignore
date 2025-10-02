@@ -78,3 +78,15 @@ jspm_packages/
 
 # Temporary commit message file
 temp_commit_message.txt
+
+# Kiro IDE
+.kiro/
+
+# Backup files
+*.backup
+*.bak
+
+# Report files (keep in docs/reports)
+*_REPORT.md
+*_SUMMARY.md
+PROJECT_COMPLETE_FINAL.md

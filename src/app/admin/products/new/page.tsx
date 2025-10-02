@@ -3,7 +3,7 @@ import { useEffect, useState, useRef } from 'react';
 import FixralInput from '@/components/ui/FixralInput';
 import FixralSelect from '@/components/ui/FixralSelect';
 import FixralTextarea from '@/components/ui/FixralTextarea';
-import AdminLayout from '@/components/admin/AdminLayout';
+import { AdminLayoutNew } from '@/components/admin/layout';
 import { FixralButton, TagInput, FixralCard } from '@/components/ui';
 import { PhotoIcon, CloudArrowUpIcon, StarIcon as StarOutline, TrashIcon, PaperClipIcon, TagIcon } from '@heroicons/react/24/outline';
 
@@ -73,7 +73,7 @@ export default function AdminProductNewPage() {
   }
 
   return (
-    <AdminLayout
+    <AdminLayoutNew
       title="Yeni Ürün"
       breadcrumbs={[
         { label: 'Dashboard', href: '/admin/dashboard' },
@@ -294,7 +294,7 @@ export default function AdminProductNewPage() {
         <FixralButton onClick={save} disabled={saving} loading={saving}>{saving ? 'Kaydediliyor...' : 'Kaydet'}</FixralButton>
       </div>
     </div>
-    </AdminLayout>
+    </AdminLayoutNew>
   );
 }
 

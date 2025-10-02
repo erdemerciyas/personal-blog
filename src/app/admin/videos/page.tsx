@@ -4,7 +4,20 @@ import { useState, useEffect } from 'react';
 import { useSession } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
 import Image from 'next/image';
-import AdminLayout from '@/components/admin/AdminLayout';
+import { AdminLayoutNew } from '@/components/admin/layout';
+import {
+  AdminCard,
+  AdminButton,
+  AdminInput,
+  AdminTextarea,
+  AdminSelect,
+  AdminModal,
+  AdminTable,
+  AdminBadge,
+  AdminAlert,
+  AdminEmptyState,
+  AdminSpinner,
+} from '@/components/admin/ui';
 import {
   PencilIcon,
   EyeIcon,
@@ -287,19 +300,22 @@ export default function AdminVideosPage() {
 
   if (status === 'loading' || loading) {
     return (
-      <AdminLayout>
+      <AdminLayoutNew
+        title="Video Yönetimi"
+        breadcrumbs={[
+          { label: 'Dashboard', href: '/admin/dashboard' },
+          { label: 'Video Yönetimi' }
+        ]}
+      >
         <div className="flex items-center justify-center min-h-[400px]">
-          <div className="flex flex-col items-center space-y-4">
-            <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-brand-primary-600"></div>
-            <p className="text-lg text-slate-700">Videolar yükleniyor...</p>
-          </div>
+          <AdminSpinner size="lg" />
         </div>
-      </AdminLayout>
+      </AdminLayoutNew>
     );
   }
 
   return (
-    <AdminLayout 
+    <AdminLayoutNew 
       title="Video Yönetimi"
       breadcrumbs={[
         { label: 'Dashboard', href: '/admin/dashboard' },
@@ -309,13 +325,12 @@ export default function AdminVideosPage() {
       <div className="space-y-6">
         {/* Success/Error Message */}
         {message && (
-          <div className={`p-4 rounded-xl border ${
-            message.type === 'success' 
-              ? 'bg-brand-primary-50 border-brand-primary-200 text-brand-primary-900' 
-              : 'bg-red-50 border-red-200 text-red-800'
-          }`}>
+          <AdminAlert
+            variant={message.type === 'success' ? 'success' : 'error'}
+            onClose={() => setMessage(null)}
+          >
             {message.text}
-          </div>
+          </AdminAlert>
         )}
 
         {/* Header */}
@@ -679,6 +694,6 @@ export default function AdminVideosPage() {
           </div>
         </div>
       )}
-    </AdminLayout>
+    </AdminLayoutNew>
   );
 }

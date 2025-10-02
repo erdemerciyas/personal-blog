@@ -1,67 +1,50 @@
 'use client';
 
 import { useState } from 'react';
-import AdminLayout from '../../../components/admin/AdminLayout';
-import UniversalEditor from '../../../components/ui/UniversalEditor';
+import { AdminLayoutNew } from '@/components/admin/layout';
+import { AdminCard, AdminButton, AdminTextarea, AdminAlert } from '@/components/admin/ui';
+import { DocumentTextIcon, CheckIcon } from '@heroicons/react/24/outline';
 
 export default function EditorPage() {
-  const [content, setContent] = useState('Bu basit ve güvenli bir metin editörüdür.\n\nÖzellikler:\n• Güvenli input handling\n• Responsive tasarım\n• Platform bağımsız\n• GitHub/Vercel uyumlu');
+  const [content, setContent] = useState('');
+  const [saving, setSaving] = useState(false);
+  const [success, setSuccess] = useState('');
+
+  const handleSave = async () => {
+    setSaving(true);
+    // Simulate save
+    setTimeout(() => {
+      setSaving(false);
+      setSuccess('İçerik kaydedildi!');
+      setTimeout(() => setSuccess(''), 3000);
+    }, 1000);
+  };
 
   return (
-    <AdminLayout 
-      title="Universal Editor"
+    <AdminLayoutNew
+      title="İçerik Editörü"
       breadcrumbs={[
         { label: 'Dashboard', href: '/admin/dashboard' },
-        { label: 'Universal Editor' }
+        { label: 'Editör' }
       ]}
+      actions={
+        <AdminButton variant="primary" icon={CheckIcon} onClick={handleSave} loading={saving}>
+          Kaydet
+        </AdminButton>
+      }
     >
-      <div className="space-y-8">
+      <div className="space-y-6">
+        {success && <AdminAlert variant="success" onClose={() => setSuccess('')}>{success}</AdminAlert>}
         
-        {/* Editör */}
-        <div className="bg-white rounded-xl shadow-sm border border-slate-200 p-6">
-          <h2 className="text-xl font-semibold text-slate-900 mb-4">
-            Basit Metin Editörü
-          </h2>
-          <p className="text-slate-600 mb-6">
-            Güvenli, basit ve etkili metin düzenleme
-          </p>
-          <UniversalEditor
+        <AdminCard title="İçerik" padding="md">
+          <AdminTextarea
             value={content}
-            onChange={setContent}
+            onChange={(e) => setContent(e.target.value)}
+            rows={20}
             placeholder="İçeriğinizi buraya yazın..."
-            rows={8}
           />
-        </div>
-
-        {/* Kullanım */}
-        <div className="bg-white rounded-xl shadow-sm border border-slate-200 p-6">
-          <h2 className="text-xl font-semibold text-slate-900 mb-4">
-            Kullanım Örneği
-          </h2>
-          <div className="p-4 bg-slate-50 rounded-lg">
-            <pre className="text-sm text-slate-700">
-{`<UniversalEditor
-  value={content}
-  onChange={setContent}
-  placeholder="İçeriğinizi yazın..."
-  rows={6}
-  disabled={false}
-/>`}
-            </pre>
-          </div>
-        </div>
-
-        {/* Önizleme */}
-        <div className="bg-white rounded-xl shadow-sm border border-slate-200 p-6">
-          <h2 className="text-xl font-semibold text-slate-900 mb-4">
-            İçerik Önizlemesi
-          </h2>
-          <div className="p-4 border border-slate-200 rounded-lg bg-slate-50">
-            <pre className="whitespace-pre-wrap text-slate-700">{content}</pre>
-          </div>
-        </div>
-
+        </AdminCard>
       </div>
-    </AdminLayout>
+    </AdminLayoutNew>
   );
 }

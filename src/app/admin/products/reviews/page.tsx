@@ -1,6 +1,6 @@
 'use client';
 import { useEffect, useState } from 'react';
-import AdminLayout from '@/components/admin/AdminLayout';
+import { AdminLayoutNew } from '@/components/admin/layout';
 
 type AdminReview = { _id: string; rating: number; comment?: string; createdAt: string; product?: { title: string } };
 
@@ -25,7 +25,7 @@ export default function AdminProductReviewsPage() {
   }
 
   return (
-    <AdminLayout
+    <AdminLayoutNew
       title="Ürün Yorumları"
       breadcrumbs={[
         { label: 'Dashboard', href: '/admin/dashboard' },
@@ -65,7 +65,7 @@ export default function AdminProductReviewsPage() {
         </div>
       )}
     </div>
-    </AdminLayout>
+    </AdminLayoutNew>
   );
 }
 

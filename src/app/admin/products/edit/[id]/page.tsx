@@ -4,7 +4,7 @@ import { useParams } from 'next/navigation';
 import FixralInput from '@/components/ui/FixralInput';
 import FixralTextarea from '@/components/ui/FixralTextarea';
 import FixralSelect from '@/components/ui/FixralSelect';
-import AdminLayout from '@/components/admin/AdminLayout';
+import { AdminLayoutNew } from '@/components/admin/layout';
 import { FixralButton, TagInput, FixralCard } from '@/components/ui';
 import { PhotoIcon, CloudArrowUpIcon, StarIcon as StarOutline, TrashIcon, PaperClipIcon, TagIcon } from '@heroicons/react/24/outline';
 
@@ -68,7 +68,7 @@ export default function AdminProductEditPage() {
 
   if (!form) return null;
   return (
-    <AdminLayout
+    <AdminLayoutNew
       title="Ürün Düzenle"
       breadcrumbs={[
         { label: 'Dashboard', href: '/admin/dashboard' },
@@ -289,7 +289,7 @@ export default function AdminProductEditPage() {
         <FixralButton onClick={save} disabled={saving} loading={saving}>{saving ? 'Kaydediliyor...' : 'Kaydet'}</FixralButton>
       </div>
     </div>
-    </AdminLayout>
+    </AdminLayoutNew>
   );
 }
 

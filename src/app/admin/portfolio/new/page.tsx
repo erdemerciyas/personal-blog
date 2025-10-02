@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react';
 import { useSession } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
-import AdminLayout from '../../../../components/admin/AdminLayout';
+import { AdminLayoutNew } from '@/components/admin/layout';
 import UniversalEditor from '../../../../components/ui/UniversalEditor';
 import PortfolioImageGallery from '../../../../components/PortfolioImageGallery';
 import {
@@ -191,7 +191,7 @@ export default function NewPortfolioItem() {
 
   if (status === 'loading' || loading) {
     return (
-      <AdminLayout>
+      <AdminLayoutNew>
         <div className="flex items-center justify-center min-h-[400px]">
           <div className="flex flex-col items-center space-y-4">
             <div className="flex flex-col items-center space-y-4">
@@ -200,7 +200,7 @@ export default function NewPortfolioItem() {
             </div>
           </div>
         </div>
-      </AdminLayout>
+      </AdminLayoutNew>
     );
   }
 
@@ -209,7 +209,7 @@ export default function NewPortfolioItem() {
   }
 
   return (
-    <AdminLayout 
+    <AdminLayoutNew 
       title="Yeni Portfolio Öğesi"
       breadcrumbs={[
         { label: 'Dashboard', href: '/admin/dashboard' },
@@ -612,6 +612,6 @@ export default function NewPortfolioItem() {
           </div>
         </form>
       </div>
-    </AdminLayout>
+    </AdminLayoutNew>
   );
 }

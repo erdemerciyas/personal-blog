@@ -2,6 +2,9 @@
 @tailwind components;
 @tailwind utilities;
 
+/* Admin Design System */
+@import '../styles/admin-design-system.css';
+
 /* Add Inter font from Google Fonts */
 
 

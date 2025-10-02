@@ -23,7 +23,7 @@ export { default as HomePortfolioSection } from './portfolio/HomePortfolioSectio
 export { default as PageHero } from './common/PageHero';
 export { default as Version } from './Version';
 export { default as Providers } from './Providers';
-export { default as AdminLayout } from './admin/AdminLayout';
+export { default as AdminLayout } from './admin/layout/AdminLayoutNew';
 export { default as UniversalEditor } from './ui/UniversalEditor';
 export { default as HTMLContent } from './HTMLContent';
 export { default as Breadcrumbs } from './Breadcrumbs';

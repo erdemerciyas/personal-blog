@@ -5,8 +5,15 @@ import { useSession } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
 import Image from 'next/image';
 import Link from 'next/link';
-import { PageLoader, InlineLoader } from '../../../components/AdminLoader';
-import AdminLayout from '../../../components/admin/AdminLayout';
+import { AdminLayoutNew } from '@/components/admin/layout';
+import { 
+  AdminButton,
+  AdminInput,
+  AdminTabs,
+  AdminSpinner,
+  AdminAlert,
+  AdminEmptyState
+} from '@/components/admin/ui';
 import HTMLContent from '../../../components/HTMLContent';
 import { 
   PlusIcon,
@@ -201,9 +208,17 @@ export default function PortfolioManagement() {
 
   if (status === 'loading' || loading) {
     return (
-      <AdminLayout>
-        <PageLoader text="Portfolio yükleniyor..." />
-      </AdminLayout>
+      <AdminLayoutNew
+        title="Portfolyo Yönetimi"
+        breadcrumbs={[
+          { label: 'Dashboard', href: '/admin/dashboard' },
+          { label: 'Portfolyo' }
+        ]}
+      >
+        <div className="flex items-center justify-center py-12">
+          <AdminSpinner size="lg" />
+        </div>
+      </AdminLayoutNew>
     );
   }
 
@@ -211,131 +226,119 @@ export default function PortfolioManagement() {
     return null;
   }
 
+  const tabs = [
+    {
+      id: 'projects',
+      label: 'Projeler',
+      icon: FolderOpenIcon,
+      content: null
+    },
+    {
+      id: 'categories',
+      label: 'Kategoriler',
+      icon: TagIcon,
+      content: null
+    }
+  ];
+
   return (
-    <AdminLayout 
+    <AdminLayoutNew 
       title="Portfolyo Yönetimi"
       breadcrumbs={[
         { label: 'Dashboard', href: '/admin/dashboard' },
-        { label: 'Portfolyo Yönetimi' }
+        { label: 'Portfolyo' }
       ]}
     >
       <div className="space-y-6">
         
         {/* Tab Navigation */}
-        <div className="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden">
-          <div className="flex border-b border-slate-200">
-            <button
-              onClick={() => handleTabChange('projects')}
-              className={`flex-1 px-6 py-4 text-sm font-semibold transition-all duration-200 ${
-                activeTab === 'projects'
-                  ? 'bg-brand-primary-50 text-brand-primary-800 border-b-2 border-brand-primary-700'
-                  : 'text-slate-600 hover:text-slate-900 hover:bg-slate-50'
-              }`}
-            >
-              <div className="flex items-center justify-center space-x-2">
-                <FolderOpenIcon className="w-5 h-5" />
-                <span>Projeler ({portfolioItems.length})</span>
-              </div>
-            </button>
-            <button
-              onClick={() => handleTabChange('categories')}
-              className={`flex-1 px-6 py-4 text-sm font-semibold transition-all duration-200 ${
-                activeTab === 'categories'
-                  ? 'bg-purple-50 text-purple-700 border-b-2 border-purple-600'
-                  : 'text-slate-600 hover:text-slate-900 hover:bg-slate-50'
-              }`}
-            >
-              <div className="flex items-center justify-center space-x-2">
-                <TagIcon className="w-5 h-5" />
-                <span>Kategoriler ({categories.length})</span>
-              </div>
-            </button>
-          </div>
-        </div>
+        <AdminTabs
+          tabs={tabs}
+          defaultTab={activeTab}
+          onChange={(tabId: string) => handleTabChange(tabId as 'projects' | 'categories')}
+        />
 
         {/* Error Message */}
         {error && (
-          <div className="bg-red-50 border border-red-200 text-red-800 p-4 rounded-xl">
+          <AdminAlert variant="error" onClose={() => setError('')}>
             {error}
-          </div>
+          </AdminAlert>
         )}
 
         {/* Tab Content */}
         {activeTab === 'projects' && (
           <div className="space-y-6">
             {/* Header Actions */}
-            <div className="flex items-center justify-between">
+            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
               <div>
-                <p className="text-slate-600">Projelerinizi düzenleyin ve yönetin</p>
-                <div className="flex items-center space-x-4 text-sm text-slate-500 mt-2">
+                <p className="text-slate-600 dark:text-slate-400">Projelerinizi düzenleyin ve yönetin</p>
+                <div className="flex items-center space-x-4 text-sm text-slate-500 dark:text-slate-400 mt-2">
                   <span>Toplam: {portfolioItems.length} proje</span>
                   <span>•</span>
                   <span>Öne çıkan: {portfolioItems.filter(item => item.featured).length}</span>
                 </div>
               </div>
-              <Link
-                href="/admin/portfolio/new"
-                className="bg-brand-primary-700 hover:bg-brand-primary-800 text-white px-6 py-3 rounded-xl font-semibold transition-all duration-200 flex items-center space-x-2 shadow-sm"
-              >
-                <PlusIcon className="w-5 h-5" />
-                <span>Yeni Proje</span>
+              <Link href="/admin/portfolio/new">
+                <AdminButton variant="primary" icon={PlusIcon}>
+                  Yeni Proje
+                </AdminButton>
               </Link>
             </div>
 
         {/* Portfolio Items */}
-        <div className="bg-white rounded-xl shadow-sm border border-slate-200">
-          <div className="p-6 border-b border-slate-200">
-            <h3 className="text-lg font-semibold text-slate-900">Projeler</h3>
+        <div className="bg-white dark:bg-slate-800 rounded-xl shadow-sm border border-slate-200 dark:border-slate-700">
+          <div className="p-6 border-b border-slate-200 dark:border-slate-700">
+            <h3 className="text-lg font-semibold text-slate-900 dark:text-white">Projeler</h3>
           </div>
           
-          <div className="divide-y divide-slate-200">
+          <div className="divide-y divide-slate-200 dark:divide-slate-700">
             {portfolioItems.length === 0 ? (
-              <div className="p-12 text-center">
-                <FolderOpenIcon className="w-12 h-12 text-slate-400 mx-auto mb-4" />
-                <p className="text-slate-600 text-lg">Henüz proje eklenmemiş</p>
-                <p className="text-slate-500 mt-2">İlk projenizi eklemek için &quot;Yeni Proje&quot; butonuna tıklayın</p>
-              </div>
+              <AdminEmptyState
+                icon={<FolderOpenIcon className="w-12 h-12" />}
+                title="Henüz proje eklenmemiş"
+                description="İlk projenizi eklemek için 'Yeni Proje' butonuna tıklayın"
+              />
             ) : (
               portfolioItems.map((item) => (
-                <div key={item._id} className="p-6 hover:bg-slate-50 transition-colors">
-                  <div className="flex items-start space-x-4">
+                <div key={item._id} className="p-6 hover:bg-slate-50 dark:hover:bg-slate-700/50 transition-colors">
+                  <div className="flex flex-col sm:flex-row items-start space-y-4 sm:space-y-0 sm:space-x-4">
                     {/* Image */}
-                    <div className="flex-shrink-0">
-                      <div className="w-20 h-20 relative overflow-hidden rounded-xl bg-slate-200">
+                    <div className="flex-shrink-0 w-full sm:w-20">
+                      <div className="w-full sm:w-20 h-20 relative overflow-hidden rounded-xl bg-slate-200 dark:bg-slate-700">
                         {item.coverImage ? (
                           <Image
                             src={item.coverImage}
                             alt={item.title}
                             fill
-                            sizes="80px"
+                            sizes="(max-width: 640px) 100vw, 80px"
                             className="object-cover"
                           />
                         ) : (
                           <div className="w-full h-full flex items-center justify-center">
-                            <span className="text-slate-400 text-xs">Görsel Yok</span>
+                            <span className="text-slate-400 dark:text-slate-500 text-xs">Görsel Yok</span>
                           </div>
                         )}
                       </div>
                     </div>
                     
                     {/* Content */}
-                    <div className="flex-1 min-w-0">
-                      <div className="flex items-start justify-between">
-                        <div className="flex-1">
-                          <h4 className="text-lg font-semibold text-slate-900 mb-2 flex items-center space-x-2">
+                    <div className="flex-1 min-w-0 w-full">
+                      <div className="flex flex-col sm:flex-row items-start justify-between gap-4">
+                        <div className="flex-1 w-full">
+                          <h4 className="text-lg font-semibold text-slate-900 dark:text-white mb-2 flex items-center space-x-2">
                             <span>{item.title}</span>
                             {item.featured && (
                               <StarIcon className="w-5 h-5 text-yellow-500" />
                             )}
                           </h4>
-                          <div className="text-slate-600 mb-3">
+                          <div className="text-slate-600 dark:text-slate-300 mb-3">
                             <HTMLContent 
                               content={item.description}
                               truncate={150}
                               className="line-clamp-2"
                             />
                           </div>
-                          <div className="flex items-center space-x-4 text-sm text-slate-500">
+                          <div className="flex flex-wrap items-center gap-x-4 gap-y-2 text-sm text-slate-500 dark:text-slate-400">
                             <div className="flex items-center space-x-1">
                               <ClockIcon className="w-4 h-4" />
                               <span>{new Date(item.completionDate).toLocaleDateString('tr-TR')}</span>
@@ -351,24 +354,24 @@ export default function PortfolioManagement() {
                         </div>
                         
                         {/* Actions */}
-                        <div className="flex items-center space-x-2 ml-4">
+                        <div className="flex items-center space-x-2">
                           <Link
                             href={`/portfolio/${item._id}`}
-                            className="p-2 text-slate-600 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-colors"
+                            className="p-2 text-slate-600 dark:text-slate-400 hover:text-blue-600 dark:hover:text-blue-400 hover:bg-blue-50 dark:hover:bg-blue-900/20 rounded-lg transition-colors"
                             title="Görüntüle"
                           >
                             <EyeIcon className="w-5 h-5" />
                           </Link>
                           <Link
                             href={`/admin/portfolio/edit/${item._id}`}
-                            className="p-2 text-slate-600 hover:text-brand-primary-700 hover:bg-brand-primary-50 rounded-lg transition-colors"
+                            className="p-2 text-slate-600 dark:text-slate-400 hover:text-brand-primary-700 dark:hover:text-brand-primary-400 hover:bg-brand-primary-50 dark:hover:bg-brand-primary-900/20 rounded-lg transition-colors"
                             title="Düzenle"
                           >
                             <PencilIcon className="w-5 h-5" />
                           </Link>
                           <button
                             onClick={() => handleDelete(item._id)}
-                            className="p-2 text-slate-600 hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors"
+                            className="p-2 text-slate-600 dark:text-slate-400 hover:text-red-600 dark:hover:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-lg transition-colors"
                             title="Sil"
                           >
                             <TrashIcon className="w-5 h-5" />
@@ -389,131 +392,119 @@ export default function PortfolioManagement() {
         {activeTab === 'categories' && (
           <div className="space-y-6">
             {/* Add New Category */}
-            <div className="bg-white rounded-xl shadow-sm border border-slate-200 p-6">
-              <h3 className="text-lg font-semibold text-slate-900 mb-4">Yeni Kategori Ekle</h3>
+            <div className="bg-white dark:bg-slate-800 rounded-xl shadow-sm border border-slate-200 dark:border-slate-700 p-6">
+              <h3 className="text-lg font-semibold text-slate-900 dark:text-white mb-4">Yeni Kategori Ekle</h3>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div>
-                  <label className="block text-sm font-medium text-slate-700 mb-2">
-                    Kategori Adı
-                  </label>
-                  <input
-                    type="text"
-                    value={newCategoryName}
-                    onChange={(e) => setNewCategoryName(e.target.value)}
-                    className="w-full px-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
-                    placeholder="Kategori adını girin"
-                  />
-                </div>
-                <div>
-                  <label className="block text-sm font-medium text-slate-700 mb-2">
-                    Açıklama (İsteğe bağlı)
-                  </label>
-                  <input
-                    type="text"
-                    value={newCategoryDescription}
-                    onChange={(e) => setNewCategoryDescription(e.target.value)}
-                    className="w-full px-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
-                    placeholder="Kategori açıklaması"
-                  />
-                </div>
+                <AdminInput
+                  label="Kategori Adı"
+                  value={newCategoryName}
+                  onChange={(e) => setNewCategoryName(e.target.value)}
+                  placeholder="Kategori adını girin"
+                  required
+                />
+                <AdminInput
+                  label="Açıklama (İsteğe bağlı)"
+                  value={newCategoryDescription}
+                  onChange={(e) => setNewCategoryDescription(e.target.value)}
+                  placeholder="Kategori açıklaması"
+                />
               </div>
               <div className="mt-4">
-                <button
+                <AdminButton
+                  variant="primary"
                   onClick={handleCreateCategory}
                   disabled={!newCategoryName.trim()}
-                  className="bg-purple-600 hover:bg-purple-700 disabled:bg-slate-300 text-white px-6 py-2 rounded-lg font-semibold transition-all duration-200 flex items-center space-x-2"
+                  icon={PlusIcon}
                 >
-                  <PlusIcon className="w-5 h-5" />
-                  <span>Kategori Ekle</span>
-                </button>
+                  Kategori Ekle
+                </AdminButton>
               </div>
             </div>
 
             {/* Categories List */}
-            <div className="bg-white rounded-xl shadow-sm border border-slate-200">
-              <div className="p-6 border-b border-slate-200">
-                <h3 className="text-lg font-semibold text-slate-900">Kategoriler</h3>
+            <div className="bg-white dark:bg-slate-800 rounded-xl shadow-sm border border-slate-200 dark:border-slate-700">
+              <div className="p-6 border-b border-slate-200 dark:border-slate-700">
+                <h3 className="text-lg font-semibold text-slate-900 dark:text-white">Kategoriler</h3>
               </div>
               
               {categoriesLoading ? (
-                <div className="p-6">
-                  <InlineLoader text="Kategoriler yükleniyor..." />
+                <div className="flex items-center justify-center py-12">
+                  <AdminSpinner size="md" />
                 </div>
               ) : categories.length === 0 ? (
-                <div className="p-12 text-center">
-                  <TagIcon className="w-12 h-12 text-slate-400 mx-auto mb-4" />
-                  <p className="text-slate-600 text-lg">Henüz kategori eklenmemiş</p>
-                  <p className="text-slate-500 mt-2">İlk kategorinizi yukarıdaki formdan ekleyebilirsiniz</p>
-                </div>
+                <AdminEmptyState
+                  icon={<TagIcon className="w-12 h-12" />}
+                  title="Henüz kategori eklenmemiş"
+                  description="İlk kategorinizi yukarıdaki formdan ekleyebilirsiniz"
+                />
               ) : (
-                <div className="divide-y divide-slate-200">
+                <div className="divide-y divide-slate-200 dark:divide-slate-700">
                   {categories.map((category) => (
-                    <div key={category._id} className="p-6 hover:bg-slate-50 transition-colors">
+                    <div key={category._id} className="p-6 hover:bg-slate-50 dark:hover:bg-slate-700/50 transition-colors">
                       {editingCategory?._id === category._id ? (
                         <div className="space-y-4">
                           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                            <input
-                              type="text"
+                            <AdminInput
                               value={editingCategory.name}
                               onChange={(e) => setEditingCategory({
                                 ...editingCategory,
                                 name: e.target.value
                               })}
-                              className="px-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+                              placeholder="Kategori adı"
                             />
-                            <input
-                              type="text"
+                            <AdminInput
                               value={editingCategory.description || ''}
                               onChange={(e) => setEditingCategory({
                                 ...editingCategory,
                                 description: e.target.value
                               })}
-                              className="px-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
                               placeholder="Açıklama"
                             />
                           </div>
                           <div className="flex space-x-2">
-                            <button
+                            <AdminButton
+                              variant="primary"
                               onClick={handleUpdateCategory}
-                              className="bg-brand-primary-700 hover:bg-brand-primary-800 text-white px-4 py-2 rounded-lg font-medium transition-colors flex items-center space-x-1"
+                              icon={CheckIcon}
+                              size="sm"
                             >
-                              <CheckIcon className="w-4 h-4" />
-                              <span>Kaydet</span>
-                            </button>
-                            <button
+                              Kaydet
+                            </AdminButton>
+                            <AdminButton
+                              variant="secondary"
                               onClick={() => setEditingCategory(null)}
-                              className="bg-slate-600 hover:bg-slate-700 text-white px-4 py-2 rounded-lg font-medium transition-colors flex items-center space-x-1"
+                              icon={XMarkIcon}
+                              size="sm"
                             >
-                              <XMarkIcon className="w-4 h-4" />
-                              <span>İptal</span>
-                            </button>
+                              İptal
+                            </AdminButton>
                           </div>
                         </div>
                       ) : (
-                        <div className="flex items-center justify-between">
-                          <div>
-                            <h4 className="text-lg font-semibold text-slate-900">{category.name}</h4>
+                        <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+                          <div className="flex-1">
+                            <h4 className="text-lg font-semibold text-slate-900 dark:text-white">{category.name}</h4>
                             {category.description && (
-                              <p className="text-slate-600 mt-1">{category.description}</p>
+                              <p className="text-slate-600 dark:text-slate-300 mt-1">{category.description}</p>
                             )}
-                            <p className="text-sm text-slate-500 mt-2">
+                            <p className="text-sm text-slate-500 dark:text-slate-400 mt-2">
                               Slug: {category.slug}
                             </p>
                           </div>
                           <div className="flex space-x-2">
                             <button
                               onClick={() => setEditingCategory(category)}
-                              className="p-2 text-slate-600 hover:text-brand-primary-700 hover:bg-brand-primary-50 rounded-lg transition-colors"
+                              className="p-2 text-slate-600 dark:text-slate-400 hover:text-brand-primary-700 dark:hover:text-brand-primary-400 hover:bg-brand-primary-50 dark:hover:bg-brand-primary-900/20 rounded-lg transition-colors"
                               title="Düzenle"
                             >
-                              <PencilIcon className="w-4 h-4" />
+                              <PencilIcon className="w-5 h-5" />
                             </button>
                             <button
                               onClick={() => handleDeleteCategory(category._id)}
-                              className="p-2 text-slate-600 hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors"
+                              className="p-2 text-slate-600 dark:text-slate-400 hover:text-red-600 dark:hover:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-lg transition-colors"
                               title="Sil"
                             >
-                              <TrashIcon className="w-4 h-4" />
+                              <TrashIcon className="w-5 h-5" />
                             </button>
                           </div>
                         </div>
@@ -526,6 +517,6 @@ export default function PortfolioManagement() {
           </div>
         )}
       </div>
-    </AdminLayout>
+    </AdminLayoutNew>
   );
 }

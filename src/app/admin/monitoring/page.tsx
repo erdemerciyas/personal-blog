@@ -1,8 +1,10 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { useAuth } from '@/hooks/useAuth';
-import { redirect } from 'next/navigation';
+import { useSession } from 'next-auth/react';
+import { useRouter } from 'next/navigation';
+import { AdminLayoutNew } from '@/components/admin/layout';
+import { AdminCard, AdminBadge, AdminSpinner } from '@/components/admin/ui';
 
 interface PerformanceMetrics {
   serverMetrics: {
@@ -37,25 +39,26 @@ interface PerformanceMetrics {
 }
 
 export default function MonitoringDashboard() {
-  const { user, loading } = useAuth();
+  const { status } = useSession();
+  const router = useRouter();
   const [metrics, setMetrics] = useState<PerformanceMetrics | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    if (!loading && !user) {
-      redirect('/admin/login');
+    if (status === 'unauthenticated') {
+      router.push('/admin/login');
     }
-  }, [user, loading]);
+  }, [status, router]);
 
   useEffect(() => {
-    if (user) {
+    if (status === 'authenticated') {
       fetchMetrics();
       // Refresh metrics every 30 seconds
       const interval = setInterval(fetchMetrics, 30000);
       return () => clearInterval(interval);
     }
-  }, [user]);
+  }, [status]);
 
   const fetchMetrics = async () => {
     try {
@@ -73,11 +76,13 @@ export default function MonitoringDashboard() {
     }
   };
 
-  if (loading || isLoading) {
+  if (status === 'loading' || isLoading) {
     return (
-      <div className="min-h-screen flex items-center justify-center">
-        <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-blue-600"></div>
-      </div>
+      <AdminLayoutNew title="Monitoring" breadcrumbs={[{ label: 'Monitoring' }]}>
+        <div className="flex items-center justify-center min-h-[400px]">
+          <AdminSpinner size="lg" />
+        </div>
+      </AdminLayoutNew>
     );
   }
 
@@ -127,52 +132,53 @@ export default function MonitoringDashboard() {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50 py-8">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="mb-8">
-          <h1 className="text-3xl font-bold text-gray-900">Monitoring Dashboard</h1>
-          <p className="mt-2 text-gray-600">Sistem performansı ve sağlık durumu</p>
-        </div>
+    <AdminLayoutNew
+      title="Monitoring Dashboard"
+      breadcrumbs={[
+        { label: 'Dashboard', href: '/admin/dashboard' },
+        { label: 'Monitoring' }
+      ]}
+    >
+      <div className="space-y-6">
 
         {/* Server Metrics */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-          <div className="bg-white rounded-lg shadow p-6">
-            <h3 className="text-lg font-medium text-gray-900 mb-2">Uptime</h3>
-            <p className="text-2xl font-bold text-green-600">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+          <AdminCard padding="md" hover>
+            <h3 className="text-lg font-medium text-slate-900 dark:text-slate-100 mb-2">Uptime</h3>
+            <p className="text-2xl font-bold text-admin-success-600 dark:text-admin-success-400">
               {formatUptime(metrics.serverMetrics.uptime)}
             </p>
-          </div>
+          </AdminCard>
 
-          <div className="bg-white rounded-lg shadow p-6">
-            <h3 className="text-lg font-medium text-gray-900 mb-2">Memory Usage</h3>
-            <p className="text-2xl font-bold text-blue-600">
+          <AdminCard padding="md" hover>
+            <h3 className="text-lg font-medium text-slate-900 dark:text-slate-100 mb-2">Memory Usage</h3>
+            <p className="text-2xl font-bold text-blue-600 dark:text-blue-400">
               {metrics.serverMetrics.memoryUsage.percentage.toFixed(1)}%
             </p>
-            <p className="text-sm text-gray-500">
+            <p className="text-sm text-slate-500 dark:text-slate-400">
               {(metrics.serverMetrics.memoryUsage.used / 1024 / 1024).toFixed(0)}MB / 
               {(metrics.serverMetrics.memoryUsage.total / 1024 / 1024).toFixed(0)}MB
             </p>
-          </div>
+          </AdminCard>
 
-          <div className="bg-white rounded-lg shadow p-6">
-            <h3 className="text-lg font-medium text-gray-900 mb-2">CPU Usage</h3>
-            <p className="text-2xl font-bold text-orange-600">
+          <AdminCard padding="md" hover>
+            <h3 className="text-lg font-medium text-slate-900 dark:text-slate-100 mb-2">CPU Usage</h3>
+            <p className="text-2xl font-bold text-orange-600 dark:text-orange-400">
               {metrics.serverMetrics.cpuUsage.toFixed(1)}%
             </p>
-          </div>
+          </AdminCard>
 
-          <div className="bg-white rounded-lg shadow p-6">
-            <h3 className="text-lg font-medium text-gray-900 mb-2">Active Connections</h3>
-            <p className="text-2xl font-bold text-purple-600">
+          <AdminCard padding="md" hover>
+            <h3 className="text-lg font-medium text-slate-900 dark:text-slate-100 mb-2">Active Connections</h3>
+            <p className="text-2xl font-bold text-purple-600 dark:text-purple-400">
               {metrics.serverMetrics.activeConnections}
             </p>
-          </div>
+          </AdminCard>
         </div>
 
         {/* Database & Error Metrics */}
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
-          <div className="bg-white rounded-lg shadow p-6">
-            <h3 className="text-lg font-medium text-gray-900 mb-4">Database Status</h3>
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+          <AdminCard title="Database Status" padding="md">
             <div className="space-y-3">
               <div className="flex justify-between items-center">
                 <span className="text-gray-600">Status:</span>
@@ -189,10 +195,9 @@ export default function MonitoringDashboard() {
                 <span className="font-medium">{metrics.databaseMetrics.activeQueries}</span>
               </div>
             </div>
-          </div>
+          </AdminCard>
 
-          <div className="bg-white rounded-lg shadow p-6">
-            <h3 className="text-lg font-medium text-gray-900 mb-4">Error Metrics</h3>
+          <AdminCard title="Error Metrics" padding="md">
             <div className="space-y-3">
               <div className="flex justify-between items-center">
                 <span className="text-gray-600">Total Errors:</span>
@@ -207,12 +212,11 @@ export default function MonitoringDashboard() {
                 <span className="font-medium text-red-600">{metrics.errorMetrics.criticalErrors}</span>
               </div>
             </div>
-          </div>
+          </AdminCard>
         </div>
 
         {/* Client Performance */}
-        <div className="bg-white rounded-lg shadow p-6">
-          <h3 className="text-lg font-medium text-gray-900 mb-4">Client Performance</h3>
+        <AdminCard title="Client Performance" padding="md">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
             <div>
               <p className="text-sm text-gray-600">Average Load Time</p>
@@ -265,8 +269,8 @@ export default function MonitoringDashboard() {
               </div>
             </div>
           )}
-        </div>
+        </AdminCard>
       </div>
-    </div>
+    </AdminLayoutNew>
   );
 }

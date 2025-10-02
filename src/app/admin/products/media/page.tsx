@@ -4,7 +4,7 @@ import { useEffect, useState } from 'react';
 import { useSession } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
 import Image from 'next/image';
-import AdminLayout from '@/components/admin/AdminLayout';
+import { AdminLayoutNew } from '@/components/admin/layout';
 import { PlusIcon, MagnifyingGlassIcon, TrashIcon, LinkIcon } from '@heroicons/react/24/outline';
 
 type MediaItem = {
@@ -79,7 +79,7 @@ export default function AdminProductMediaPage() {
   if (status === 'unauthenticated') return null;
 
   return (
-    <AdminLayout
+    <AdminLayoutNew
       title="Ürün Medya Kütüphanesi"
       breadcrumbs={[
         { label: 'Dashboard', href: '/admin/dashboard' },
@@ -180,7 +180,7 @@ export default function AdminProductMediaPage() {
           </div>
         )}
       </div>
-    </AdminLayout>
+    </AdminLayoutNew>
   );
 }
 

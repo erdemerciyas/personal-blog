@@ -4,7 +4,7 @@ import { useState, useEffect } from 'react';
 import { useSession } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
 import Image from 'next/image';
-import AdminLayout from '../../../../../components/admin/AdminLayout';
+import { AdminLayoutNew } from '@/components/admin/layout';
 import ImageUpload from '../../../../../components/ImageUpload';
 import UniversalEditor from '../../../../../components/ui/UniversalEditor';
 import HTMLContent from '../../../../../components/HTMLContent';
@@ -138,7 +138,7 @@ export default function EditServicePage({ params }: { params: { id: string } }) 
 
   if (status === 'loading' || loading) {
     return (
-      <AdminLayout>
+      <AdminLayoutNew>
         <div className="flex items-center justify-center min-h-[400px]">
           <div className="flex flex-col items-center space-y-4">
             <div className="flex flex-col items-center space-y-4">
@@ -148,7 +148,7 @@ export default function EditServicePage({ params }: { params: { id: string } }) 
             </div>
           </div>
         </div>
-      </AdminLayout>
+      </AdminLayoutNew>
     );
   }
 
@@ -157,7 +157,7 @@ export default function EditServicePage({ params }: { params: { id: string } }) 
   }
 
   return (
-    <AdminLayout 
+    <AdminLayoutNew 
       title="Servis Düzenle"
       breadcrumbs={[
         { label: 'Dashboard', href: '/admin/dashboard' },
@@ -387,6 +387,6 @@ export default function EditServicePage({ params }: { params: { id: string } }) 
         </form>
         </div>
       </div>
-    </AdminLayout>
+    </AdminLayoutNew>
   );
 }

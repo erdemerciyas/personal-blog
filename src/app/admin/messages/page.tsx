@@ -1,8 +1,21 @@
 'use client';
+
 import { useState, useEffect, Suspense } from 'react';
 import { useSession } from 'next-auth/react';
 import { useRouter, useSearchParams } from 'next/navigation';
-import AdminLayout from '../../../components/admin/AdminLayout';
+import { AdminLayoutNew } from '@/components/admin/layout';
+import {
+  AdminButton,
+  AdminCard,
+  AdminSpinner,
+  AdminAlert,
+  AdminEmptyState,
+  AdminModal,
+  AdminSearchInput,
+  AdminSelect,
+  AdminBadge,
+  type SelectOption
+} from '@/components/admin/ui';
 import {
   PhoneIcon,
   BuildingOfficeIcon,
@@ -11,12 +24,8 @@ import {
   TrashIcon,
   CheckIcon,
   ExclamationTriangleIcon,
-  MagnifyingGlassIcon,
-  FunnelIcon,
-
   InboxIcon,
-  EnvelopeIcon,
-  XMarkIcon
+  EnvelopeIcon
 } from '@heroicons/react/24/outline';
 
 interface Message {
@@ -55,7 +64,6 @@ function AdminMessagesContent() {
   const [searchTerm, setSearchTerm] = useState('');
   const [statusFilter, setStatusFilter] = useState('all');
   const [urgencyFilter, setUrgencyFilter] = useState('all');
-  const [, ] = useState(false);
 
   // Auth check
   useEffect(() => {
@@ -100,7 +108,6 @@ function AdminMessagesContent() {
       const message = messages.find(m => m._id === messageId);
       if (message) {
         handleViewMessage(message);
-        // URL'den parametreyi temizle
         router.replace('/admin/messages', { scroll: false });
       }
     }
@@ -110,7 +117,6 @@ function AdminMessagesContent() {
   useEffect(() => {
     let filtered = messages;
 
-    // Search filter
     if (searchTerm) {
       filtered = filtered.filter(message =>
         message.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -120,12 +126,10 @@ function AdminMessagesContent() {
       );
     }
 
-    // Status filter
     if (statusFilter !== 'all') {
       filtered = filtered.filter(message => message.status === statusFilter);
     }
 
-    // Urgency filter
     if (urgencyFilter !== 'all') {
       filtered = filtered.filter(message => message.urgency === urgencyFilter);
     }
@@ -137,14 +141,11 @@ function AdminMessagesContent() {
     setSelectedMessage(message);
     setShowMessageModal(true);
 
-    // Mark as read if not already
     if (!message.isRead) {
       try {
         const response = await fetch(`/api/messages/${message._id}`, {
           method: 'PUT',
-          headers: {
-            'Content-Type': 'application/json',
-          },
+          headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({
             isRead: true,
             status: message.status === 'new' ? 'read' : message.status,
@@ -153,7 +154,6 @@ function AdminMessagesContent() {
         });
 
         if (response.ok) {
-          // Update local state
           setMessages(prev => prev.map(m => 
             m._id === message._id 
               ? { ...m, isRead: true, status: m.status === 'new' ? 'read' : m.status }
@@ -170,9 +170,7 @@ function AdminMessagesContent() {
     try {
       const response = await fetch(`/api/messages/${messageId}`, {
         method: 'PATCH',
-        headers: {
-          'Content-Type': 'application/json',
-        },
+        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ status: newStatus }),
       });
 
@@ -183,8 +181,6 @@ function AdminMessagesContent() {
         ));
         setSuccess('Mesaj durumu güncellendi');
         setTimeout(() => setSuccess(''), 3000);
-        
-        // Modal'ı kapat
         setShowMessageModal(false);
       } else {
         const errorData = await response.json();
@@ -217,22 +213,22 @@ function AdminMessagesContent() {
     }
   };
 
-  const getStatusColor = (status: string) => {
+  const getStatusBadgeVariant = (status: string) => {
     switch (status) {
-      case 'new': return 'bg-blue-100 text-blue-800';
-      case 'read': return 'bg-yellow-100 text-yellow-800';
-      case 'replied': return 'bg-brand-primary-100 text-brand-primary-900';
-      case 'closed': return 'bg-gray-100 text-gray-800';
-      default: return 'bg-gray-100 text-gray-800';
+      case 'new': return 'info';
+      case 'read': return 'warning';
+      case 'replied': return 'success';
+      case 'closed': return 'neutral';
+      default: return 'neutral';
     }
   };
 
-  const getUrgencyColor = (urgency: string) => {
+  const getUrgencyBadgeVariant = (urgency: string) => {
     switch (urgency) {
-      case 'low': return 'bg-brand-primary-100 text-brand-primary-900';
-      case 'medium': return 'bg-yellow-100 text-yellow-800';
-      case 'high': return 'bg-red-100 text-red-800';
-      default: return 'bg-gray-100 text-gray-800';
+      case 'low': return 'success';
+      case 'medium': return 'warning';
+      case 'high': return 'error';
+      default: return 'neutral';
     }
   };
 
@@ -246,18 +242,34 @@ function AdminMessagesContent() {
     });
   };
 
+  const statusOptions: SelectOption[] = [
+    { value: 'all', label: 'Tüm Durumlar' },
+    { value: 'new', label: 'Yeni' },
+    { value: 'read', label: 'Okunmuş' },
+    { value: 'replied', label: 'Yanıtlanmış' },
+    { value: 'closed', label: 'Kapalı' }
+  ];
+
+  const urgencyOptions: SelectOption[] = [
+    { value: 'all', label: 'Tüm Aciliyetler' },
+    { value: 'low', label: 'Düşük' },
+    { value: 'medium', label: 'Orta' },
+    { value: 'high', label: 'Yüksek' }
+  ];
+
   if (status === 'loading' || loading) {
     return (
-      <AdminLayout>
-        <div className="flex items-center justify-center min-h-[400px]">
-          <div className="flex flex-col items-center space-y-4">
-            <div className="flex flex-col items-center space-y-4">
-              <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-brand-primary-600"></div>
-              <p className="text-slate-600 dark:text-slate-400">Mesajlar yükleniyor...</p>
-            </div>
-          </div>
+      <AdminLayoutNew
+        title="Mesajlar"
+        breadcrumbs={[
+          { label: 'Dashboard', href: '/admin/dashboard' },
+          { label: 'Mesajlar' }
+        ]}
+      >
+        <div className="flex items-center justify-center py-12">
+          <AdminSpinner size="lg" />
         </div>
-      </AdminLayout>
+      </AdminLayoutNew>
     );
   }
 
@@ -266,7 +278,7 @@ function AdminMessagesContent() {
   }
 
   return (
-    <AdminLayout 
+    <AdminLayoutNew 
       title="Mesajlar"
       breadcrumbs={[
         { label: 'Dashboard', href: '/admin/dashboard' },
@@ -275,36 +287,34 @@ function AdminMessagesContent() {
     >
       <div className="space-y-6">
         
-        {/* Header Actions */}
-        <div className="flex items-center justify-between">
-          <div>
-            <p className="text-slate-600 dark:text-slate-400">Gelen mesajları görüntüleyin ve yönetin</p>
-            <div className="flex items-center space-x-4 text-sm text-slate-500 dark:text-slate-400 mt-2">
-              <span>Toplam: {messages.length} mesaj</span>
-              <span>•</span>
-              <span>Okunmamış: {messages.filter(m => !m.isRead).length}</span>
-              <span>•</span>
-              <span>Filtrelenen: {filteredMessages.length}</span>
-            </div>
+        {/* Header Info */}
+        <div>
+          <p className="text-slate-600 dark:text-slate-400">Gelen mesajları görüntüleyin ve yönetin</p>
+          <div className="flex items-center space-x-4 text-sm text-slate-500 dark:text-slate-400 mt-2">
+            <span>Toplam: {messages.length} mesaj</span>
+            <span>•</span>
+            <span>Okunmamış: {messages.filter(m => !m.isRead).length}</span>
+            <span>•</span>
+            <span>Filtrelenen: {filteredMessages.length}</span>
           </div>
         </div>
 
         {/* Success/Error Messages */}
         {success && (
-          <div className="bg-brand-primary-50 dark:bg-brand-primary-900/20 border border-brand-primary-200/60 dark:border-brand-primary-900/60 text-brand-primary-900 dark:text-brand-primary-400 p-4 rounded-xl shadow-sm">
+          <AdminAlert variant="success" onClose={() => setSuccess('')}>
             {success}
-          </div>
+          </AdminAlert>
         )}
 
         {error && (
-          <div className="bg-red-50 dark:bg-red-900/20 border border-red-200/60 dark:border-red-800/60 text-red-800 dark:text-red-400 p-4 rounded-xl shadow-sm">
+          <AdminAlert variant="error" onClose={() => setError('')}>
             {error}
-          </div>
+          </AdminAlert>
         )}
 
         {/* Quick Stats */}
         <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
-          <div className="bg-white dark:bg-slate-800 p-6 rounded-xl shadow-sm border border-slate-200/60 dark:border-slate-700/60">
+          <AdminCard padding="md">
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-sm font-medium text-slate-600 dark:text-slate-400">Toplam Mesaj</p>
@@ -312,9 +322,9 @@ function AdminMessagesContent() {
               </div>
               <InboxIcon className="w-8 h-8 text-slate-400 dark:text-slate-500" />
             </div>
-          </div>
+          </AdminCard>
           
-          <div className="bg-white dark:bg-slate-800 p-6 rounded-xl shadow-sm border border-slate-200/60 dark:border-slate-700/60">
+          <AdminCard padding="md">
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-sm font-medium text-slate-600 dark:text-slate-400">Okunmamış</p>
@@ -322,9 +332,9 @@ function AdminMessagesContent() {
               </div>
               <EnvelopeIcon className="w-8 h-8 text-blue-400 dark:text-blue-500" />
             </div>
-          </div>
+          </AdminCard>
           
-          <div className="bg-white dark:bg-slate-800 p-6 rounded-xl shadow-sm border border-slate-200/60 dark:border-slate-700/60">
+          <AdminCard padding="md">
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-sm font-medium text-slate-600 dark:text-slate-400">Yanıtlanan</p>
@@ -332,9 +342,9 @@ function AdminMessagesContent() {
               </div>
               <CheckIcon className="w-8 h-8 text-brand-primary-400 dark:text-brand-primary-600" />
             </div>
-          </div>
+          </AdminCard>
           
-          <div className="bg-white dark:bg-slate-800 p-6 rounded-xl shadow-sm border border-slate-200/60 dark:border-slate-700/60">
+          <AdminCard padding="md">
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-sm font-medium text-slate-600 dark:text-slate-400">Acil</p>
@@ -342,91 +352,62 @@ function AdminMessagesContent() {
               </div>
               <ExclamationTriangleIcon className="w-8 h-8 text-red-400 dark:text-red-500" />
             </div>
-          </div>
+          </AdminCard>
         </div>
 
         {/* Filters */}
-        <div className="bg-white dark:bg-slate-800 rounded-xl p-6 shadow-sm border border-slate-200/60 dark:border-slate-700/60">
-          <div className="flex flex-col lg:flex-row gap-4">
-            
-            {/* Search */}
-            <div className="flex-1">
-              <div className="relative">
-                <MagnifyingGlassIcon className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-slate-400 dark:text-slate-500" />
-                <input
-                  type="text"
-                  placeholder="Mesaj ara..."
-                  value={searchTerm}
-                  onChange={(e) => setSearchTerm(e.target.value)}
-                  className="w-full bg-slate-50/80 dark:bg-slate-700/80 border border-slate-200/60 dark:border-slate-600/60 rounded-xl pl-10 pr-4 py-3 text-slate-900 dark:text-slate-100 placeholder-slate-500 dark:placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-brand-primary-600 focus:border-transparent transition-all duration-200"
-                />
-              </div>
+        <AdminCard padding="md">
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
+            <div className="lg:col-span-1">
+              <AdminSearchInput
+                placeholder="Mesaj ara..."
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+                loading={false}
+              />
             </div>
-
-            {/* Filters */}
-            <div className="flex items-center space-x-4">
-              <div className="flex items-center space-x-2">
-                <FunnelIcon className="w-5 h-5 text-slate-500 dark:text-slate-400" />
-                <select
-                  value={statusFilter}
-                  onChange={(e) => setStatusFilter(e.target.value)}
-                  className="bg-slate-50/80 dark:bg-slate-700/80 border border-slate-200/60 dark:border-slate-600/60 rounded-xl px-4 py-3 text-slate-900 dark:text-slate-100 focus:outline-none focus:ring-2 focus:ring-brand-primary-600 focus:border-transparent transition-all duration-200"
-                >
-                  <option value="all">Tüm Durumlar</option>
-                  <option value="new">Yeni</option>
-                  <option value="read">Okunmuş</option>
-                  <option value="replied">Yanıtlanmış</option>
-                  <option value="closed">Kapalı</option>
-                </select>
-              </div>
-
-              <select
-                value={urgencyFilter}
-                onChange={(e) => setUrgencyFilter(e.target.value)}
-                className="bg-slate-50/80 dark:bg-slate-700/80 border border-slate-200/60 dark:border-slate-600/60 rounded-xl px-4 py-3 text-slate-900 dark:text-slate-100 focus:outline-none focus:ring-2 focus:ring-brand-primary-600 focus:border-transparent transition-all duration-200"
-              >
-                <option value="all">Tüm Aciliyetler</option>
-                <option value="low">Düşük</option>
-                <option value="medium">Orta</option>
-                <option value="high">Yüksek</option>
-              </select>
-            </div>
+            <AdminSelect
+              value={statusFilter}
+              onChange={(e) => setStatusFilter(e.target.value)}
+              options={statusOptions}
+            />
+            <AdminSelect
+              value={urgencyFilter}
+              onChange={(e) => setUrgencyFilter(e.target.value)}
+              options={urgencyOptions}
+            />
           </div>
-        </div>
+        </AdminCard>
 
         {/* Messages List */}
-        <div className="bg-white dark:bg-slate-800 rounded-xl shadow-sm border border-slate-200/60 dark:border-slate-700/60">
-          <div className="p-6 border-b border-slate-200/60 dark:border-slate-700/60">
-            <h3 className="text-lg font-semibold text-slate-900 dark:text-slate-100">Mesajlar</h3>
-          </div>
-          
-          <div className="divide-y divide-slate-200/60 dark:divide-slate-700/60">
+        <AdminCard title="Mesajlar" padding="none">
+          <div className="divide-y divide-slate-200 dark:divide-slate-700">
             {filteredMessages.length === 0 ? (
-              <div className="p-12 text-center">
-                <InboxIcon className="w-12 h-12 text-slate-400 dark:text-slate-500 mx-auto mb-4" />
-                <p className="text-slate-600 dark:text-slate-400 text-lg">Mesaj bulunamadı</p>
-                <p className="text-slate-500 dark:text-slate-500 mt-2">Farklı filtreler deneyebilirsiniz</p>
-              </div>
+              <AdminEmptyState
+                icon={<InboxIcon className="w-12 h-12" />}
+                title="Mesaj bulunamadı"
+                description="Farklı filtreler deneyebilirsiniz"
+              />
             ) : (
               filteredMessages.map((message) => (
-                <div key={message._id} className="p-6 hover:bg-slate-50/80 dark:hover:bg-slate-700/50 transition-all duration-200 group">
-                  <div className="flex items-start justify-between">
-                    <div className="flex-1 min-w-0">
-                      <div className="flex items-center space-x-3 mb-2">
+                <div key={message._id} className="p-6 hover:bg-slate-50 dark:hover:bg-slate-700/50 transition-colors">
+                  <div className="flex flex-col sm:flex-row items-start justify-between gap-4">
+                    <div className="flex-1 min-w-0 w-full">
+                      <div className="flex flex-wrap items-center gap-2 mb-2">
                         <h4 className={`text-lg font-semibold ${!message.isRead ? 'text-slate-900 dark:text-slate-100' : 'text-slate-700 dark:text-slate-300'}`}>
                           {message.name}
                         </h4>
-                        <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${getStatusColor(message.status)}`}>
+                        <AdminBadge variant={getStatusBadgeVariant(message.status)} size="sm">
                           {message.status === 'new' && 'Yeni'}
                           {message.status === 'read' && 'Okunmuş'}
                           {message.status === 'replied' && 'Yanıtlanmış'}
                           {message.status === 'closed' && 'Kapalı'}
-                        </span>
-                        <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${getUrgencyColor(message.urgency)}`}>
+                        </AdminBadge>
+                        <AdminBadge variant={getUrgencyBadgeVariant(message.urgency)} size="sm">
                           {message.urgency === 'low' && 'Düşük'}
                           {message.urgency === 'medium' && 'Orta'}
                           {message.urgency === 'high' && 'Yüksek'}
-                        </span>
+                        </AdminBadge>
                         {!message.isRead && (
                           <span className="w-2 h-2 bg-blue-500 rounded-full"></span>
                         )}
@@ -435,7 +416,7 @@ function AdminMessagesContent() {
                       <p className="text-slate-600 dark:text-slate-400 mb-2 font-medium">{message.subject}</p>
                       <p className="text-slate-600 dark:text-slate-400 mb-3 line-clamp-2">{message.message}</p>
                       
-                      <div className="flex items-center space-x-4 text-sm text-slate-500 dark:text-slate-500">
+                      <div className="flex flex-wrap items-center gap-x-4 gap-y-2 text-sm text-slate-500 dark:text-slate-500">
                         <span className="flex items-center space-x-1">
                           <EnvelopeIcon className="w-4 h-4" />
                           <span>{message.email}</span>
@@ -460,137 +441,127 @@ function AdminMessagesContent() {
                     </div>
                     
                     {/* Actions */}
-                    <div className="flex items-center space-x-2 ml-4">
-                      <button
+                    <div className="flex items-center space-x-2">
+                      <AdminButton
+                        variant="secondary"
+                        size="sm"
+                        icon={EyeIcon}
                         onClick={() => handleViewMessage(message)}
-                        className="p-2 text-slate-600 dark:text-slate-400 hover:text-blue-600 dark:hover:text-blue-400 hover:bg-blue-50 dark:hover:bg-blue-900/20 rounded-lg transition-colors"
-                        title="Görüntüle"
                       >
-                        <EyeIcon className="w-5 h-5" />
-                      </button>
-                      <button
+                        Görüntüle
+                      </AdminButton>
+                      <AdminButton
+                        variant="danger"
+                        size="sm"
+                        icon={TrashIcon}
                         onClick={() => handleDeleteMessage(message._id)}
-                        className="p-2 text-slate-600 dark:text-slate-400 hover:text-red-600 dark:hover:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-lg transition-colors"
-                        title="Sil"
                       >
-                        <TrashIcon className="w-5 h-5" />
-                      </button>
+                        Sil
+                      </AdminButton>
                     </div>
                   </div>
                 </div>
               ))
             )}
           </div>
-        </div>
+        </AdminCard>
       </div>
 
       {/* Message Detail Modal */}
-      {showMessageModal && selectedMessage && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
-                      <div className="bg-white dark:bg-slate-800 rounded-xl max-w-2xl w-full max-h-[90vh] overflow-hidden shadow-2xl border border-slate-200/60 dark:border-slate-700/60">
-            <div className="p-6 border-b border-slate-200/60 dark:border-slate-700/60">
-              <div className="flex items-center justify-between">
-                <h3 className="text-lg font-semibold text-slate-900 dark:text-slate-100">Mesaj Detayı</h3>
-                <button
-                  onClick={() => setShowMessageModal(false)}
-                  className="p-2 hover:bg-slate-100 dark:hover:bg-slate-700 rounded-lg transition-colors"
-                >
-                  <XMarkIcon className="w-5 h-5 text-slate-900 dark:text-slate-100" />
-                </button>
+      <AdminModal
+        isOpen={showMessageModal}
+        onClose={() => setShowMessageModal(false)}
+        title="Mesaj Detayı"
+        size="lg"
+        footer={
+          <div className="flex justify-between w-full">
+            <div className="flex space-x-2">
+              <AdminButton
+                variant="primary"
+                onClick={() => selectedMessage && handleUpdateStatus(selectedMessage._id, 'replied')}
+              >
+                Yanıtlandı Olarak İşaretle
+              </AdminButton>
+              <AdminButton
+                variant="secondary"
+                onClick={() => selectedMessage && handleUpdateStatus(selectedMessage._id, 'closed')}
+              >
+                Kapat
+              </AdminButton>
+            </div>
+            <AdminButton
+              variant="secondary"
+              onClick={() => setShowMessageModal(false)}
+            >
+              Kapat
+            </AdminButton>
+          </div>
+        }
+      >
+        {selectedMessage && (
+          <div className="space-y-4">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div>
+                <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">İsim</label>
+                <p className="text-slate-900 dark:text-slate-100">{selectedMessage.name}</p>
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">E-posta</label>
+                <p className="text-slate-900 dark:text-slate-100">{selectedMessage.email}</p>
+              </div>
+              {selectedMessage.phone && (
+                <div>
+                  <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">Telefon</label>
+                  <p className="text-slate-900 dark:text-slate-100">{selectedMessage.phone}</p>
+                </div>
+              )}
+              {selectedMessage.company && (
+                <div>
+                  <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">Şirket</label>
+                  <p className="text-slate-900 dark:text-slate-100">{selectedMessage.company}</p>
+                </div>
+              )}
+            </div>
+            
+            <div>
+              <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">Konu</label>
+              <p className="text-slate-900 dark:text-slate-100">{selectedMessage.subject}</p>
+            </div>
+            
+            <div>
+              <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">Mesaj</label>
+              <div className="bg-slate-50 dark:bg-slate-700 p-4 rounded-lg">
+                <p className="text-slate-900 dark:text-slate-100 whitespace-pre-wrap">{selectedMessage.message}</p>
               </div>
             </div>
             
-            <div className="p-6 overflow-y-auto">
-              <div className="space-y-4">
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  <div>
-                    <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">İsim</label>
-                    <p className="text-slate-900 dark:text-slate-100">{selectedMessage.name}</p>
-                  </div>
-                  <div>
-                    <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">E-posta</label>
-                    <p className="text-slate-900 dark:text-slate-100">{selectedMessage.email}</p>
-                  </div>
-                  {selectedMessage.phone && (
-                    <div>
-                      <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">Telefon</label>
-                      <p className="text-slate-900 dark:text-slate-100">{selectedMessage.phone}</p>
-                    </div>
-                  )}
-                  {selectedMessage.company && (
-                    <div>
-                      <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">Şirket</label>
-                      <p className="text-slate-900 dark:text-slate-100">{selectedMessage.company}</p>
-                    </div>
-                  )}
-                </div>
-                
-                <div>
-                  <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">Konu</label>
-                  <p className="text-slate-900 dark:text-slate-100">{selectedMessage.subject}</p>
-                </div>
-                
-                <div>
-                  <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">Mesaj</label>
-                  <div className="bg-slate-50 dark:bg-slate-700 p-4 rounded-lg">
-                    <p className="text-slate-900 dark:text-slate-100 whitespace-pre-wrap">{selectedMessage.message}</p>
-                  </div>
-                </div>
-                
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                  <div>
-                    <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">Proje Türü</label>
-                    <p className="text-slate-900 dark:text-slate-100">{selectedMessage.projectType}</p>
-                  </div>
-                  <div>
-                    <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">Bütçe</label>
-                    <p className="text-slate-900 dark:text-slate-100">{selectedMessage.budget}</p>
-                  </div>
-                  <div>
-                    <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">Aciliyet</label>
-                    <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${getUrgencyColor(selectedMessage.urgency)}`}>
-                      {selectedMessage.urgency === 'low' && 'Düşük'}
-                      {selectedMessage.urgency === 'medium' && 'Orta'}
-                      {selectedMessage.urgency === 'high' && 'Yüksek'}
-                    </span>
-                  </div>
-                </div>
-                
-                <div>
-                  <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">Tarih</label>
-                  <p className="text-slate-900 dark:text-slate-100">{formatDate(selectedMessage.createdAt)}</p>
-                </div>
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+              <div>
+                <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">Proje Türü</label>
+                <p className="text-slate-900 dark:text-slate-100">{selectedMessage.projectType}</p>
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">Bütçe</label>
+                <p className="text-slate-900 dark:text-slate-100">{selectedMessage.budget}</p>
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">Aciliyet</label>
+                <AdminBadge variant={getUrgencyBadgeVariant(selectedMessage.urgency)} size="sm">
+                  {selectedMessage.urgency === 'low' && 'Düşük'}
+                  {selectedMessage.urgency === 'medium' && 'Orta'}
+                  {selectedMessage.urgency === 'high' && 'Yüksek'}
+                </AdminBadge>
               </div>
             </div>
             
-            <div className="p-6 border-t border-slate-200/60 dark:border-slate-700/60">
-              <div className="flex justify-between">
-                <div className="flex space-x-2">
-                  <button
-                    onClick={() => handleUpdateStatus(selectedMessage._id, 'replied')}
-                    className="bg-brand-primary-700 hover:bg-brand-primary-800 text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors"
-                  >
-                    Yanıtlandı Olarak İşaretle
-                  </button>
-                  <button
-                    onClick={() => handleUpdateStatus(selectedMessage._id, 'closed')}
-                    className="bg-gray-600 hover:bg-gray-700 text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors"
-                  >
-                    Kapat
-                  </button>
-                </div>
-                <button
-                  onClick={() => setShowMessageModal(false)}
-                  className="bg-slate-600 hover:bg-slate-700 text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors"
-                >
-                  Kapat
-                </button>
-              </div>
+            <div>
+              <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">Tarih</label>
+              <p className="text-slate-900 dark:text-slate-100">{formatDate(selectedMessage.createdAt)}</p>
             </div>
           </div>
-        </div>
-      )}
-    </AdminLayout>
+        )}
+      </AdminModal>
+    </AdminLayoutNew>
   );
 }
 
@@ -598,13 +569,10 @@ export default function AdminMessagesPage() {
   return (
     <Suspense fallback={
       <div className="min-h-screen bg-slate-50 dark:bg-slate-900 flex items-center justify-center">
-        <div className="text-center">
-          <div className="w-16 h-16 border-4 border-brand-primary-600/30 border-t-brand-primary-600 rounded-full animate-spin mx-auto mb-4"></div>
-          <p className="text-slate-600 dark:text-slate-400 text-lg">Mesajlar yükleniyor...</p>
-        </div>
+        <AdminSpinner size="lg" />
       </div>
     }>
       <AdminMessagesContent />
     </Suspense>
   );
-} 
+}
