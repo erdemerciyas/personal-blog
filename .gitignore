@@ -86,7 +86,32 @@ temp_commit_message.txt
 *.backup
 *.bak
 
-# Report files (keep in docs/reports)
-*_REPORT.md
-*_SUMMARY.md
-PROJECT_COMPLETE_FINAL.md
+# Temporary documentation files (debug/development)
+*_DEBUG.md
+*_FIX.md
+*_GUIDE.md
+*_TEST.md
+*_STATUS.md
+*_CHECKLIST.md
+*_NOTES.md
+*_COMPLETE.md
+DEPLOYMENT_*.md
+CI_CD_*.md
+GITHUB_*.md
+PAGE_*.md
+NAV_*.md
+BADGE_*.md
+CHECKBOX_*.md
+DRAG_*.md
+UNIFIED_*.md
+SAYFA_*.md
+QUICK_*.md
+FINAL_*.md
+
+# Keep important docs
+!README.md
+!CHANGELOG.md
+!CONTRIBUTING.md
+!CODE_OF_CONDUCT.md
+!SECURITY.md
+!LICENSE.md
