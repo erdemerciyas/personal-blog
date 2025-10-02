@@ -112,14 +112,17 @@ export async function PUT(request: NextRequest) {
     const updatePromises = pages.map((page: { pageId: string; order: number }) =>
       PageSetting.findOneAndUpdate(
         { pageId: page.pageId },
-        { order: page.order },
+        { order: page.order, updatedAt: new Date() },
         { new: true }
       )
     );
 
     await Promise.all(updatePromises);
 
-    return NextResponse.json({ message: 'Sayfa sıralaması güncellendi' });
+    // Trigger navigation refresh
+    const response = NextResponse.json({ message: 'Sayfa sıralaması güncellendi' });
+    response.headers.set('Cache-Control', 'no-store, no-cache, must-revalidate');
+    return response;
   } catch (error) {
     console.error('Page order update error:', error);
     return NextResponse.json(

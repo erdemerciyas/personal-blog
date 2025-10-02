@@ -1,0 +1,8 @@
+blank_issues_enabled: false
+contact_links:
+  - name: 💬 GitHub Discussions
+    url: https://github.com/erdemerciyas/personal-blog/discussions
+    about: Sorularınız için GitHub Discussions kullanın
+  - name: 🔒 Security Issue
+    url: mailto:erdem.erciyas@gmail.com
+    about: Güvenlik açıkları için lütfen email gönderin

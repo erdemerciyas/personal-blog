@@ -156,6 +156,82 @@ export const GET = withSecurity(SecurityConfigs.admin)(async (request: NextReque
   }
 });
 
+// POST - Upload media files to Cloudinary
+export const POST = withSecurity(SecurityConfigs.admin)(async (request: NextRequest) => {
+  try {
+    const formData = await request.formData();
+    const files = formData.getAll('files') as File[];
+    const context = formData.get('context') as string || 'slider';
+    
+    if (!files || files.length === 0) {
+      return NextResponse.json({ error: 'No files provided' }, { status: 400 });
+    }
+
+    // Determine folder based on context
+    const folderMap: Record<string, string> = {
+      'slider': 'personal-blog/slider',
+      'portfolio': 'personal-blog/portfolio',
+      'products': 'personal-blog/products',
+      'services': 'personal-blog/services',
+      'all': 'personal-blog/general'
+    };
+    
+    const folder = folderMap[context] || 'personal-blog/slider';
+
+    const uploadedFiles: MediaItem[] = [];
+    const errors: string[] = [];
+
+    for (const file of files) {
+      try {
+        // Convert file to buffer
+        const bytes = await file.arrayBuffer();
+        const buffer = Buffer.from(bytes);
+
+        // Upload to Cloudinary
+        const result = await new Promise<any>((resolve, reject) => {
+          cloudinary.uploader.upload_stream(
+            {
+              folder: folder,
+              resource_type: 'image',
+            },
+            (error, result) => {
+              if (error) reject(error);
+              else resolve(result);
+            }
+          ).end(buffer);
+        });
+
+        uploadedFiles.push({
+          _id: result.public_id,
+          filename: file.name,
+          originalName: file.name,
+          url: result.secure_url,
+          size: result.bytes,
+          mimeType: file.type,
+          uploadedAt: new Date(),
+          uploader: 'cloudinary',
+          source: 'cloudinary',
+          publicId: result.public_id
+        });
+      } catch (error) {
+        console.error(`Error uploading file ${file.name}:`, error);
+        errors.push(`Failed to upload: ${file.name}`);
+      }
+    }
+
+    return NextResponse.json({
+      success: true,
+      uploadedFiles,
+      errors,
+      message: `${uploadedFiles.length} file(s) uploaded successfully`
+    });
+
+  } catch (error) {
+    console.error('Media upload error:', error);
+    return NextResponse.json({ error: 'Failed to upload media files' }, { status: 500 });
+  }
+});
+
 // DELETE - Delete selected media files
 export const DELETE = withSecurity(SecurityConfigs.admin)(async (request: NextRequest) => {
   try {

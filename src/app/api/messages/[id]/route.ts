@@ -48,8 +48,7 @@ export async function GET(
     }
     
     return NextResponse.json(message);
-  } catch (error) {
-    console.error('Mesaj getirilirken hata:', error);
+  } catch {
     return NextResponse.json(
       { error: 'Mesaj getirilirken bir hata oluştu' },
       { status: 500 }
@@ -90,8 +89,7 @@ export async function PUT(
     
     return NextResponse.json(message);
     
-  } catch (error) {
-    console.error('Message update error:', error);
+  } catch {
     return NextResponse.json({ 
       error: 'Failed to update message' 
     }, { status: 500 });
@@ -147,8 +145,7 @@ export async function PATCH(
     }
     
     return NextResponse.json(message);
-  } catch (error) {
-    console.error('Mesaj durumu güncellenirken hata:', error);
+  } catch {
     return NextResponse.json(
       { error: 'Mesaj durumu güncellenirken bir hata oluştu' },
       { status: 500 }
@@ -192,8 +189,7 @@ export async function DELETE(
     return NextResponse.json({
       message: 'Mesaj başarıyla silindi'
     });
-  } catch (error) {
-    console.error('Mesaj silinirken hata:', error);
+  } catch {
     return NextResponse.json(
       { error: 'Mesaj silinirken bir hata oluştu' },
       { status: 500 }

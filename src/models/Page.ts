@@ -8,6 +8,8 @@ export interface IPage extends Document {
   metaTitle?: string;
   metaDescription?: string;
   isPublished: boolean;
+  showInNavigation: boolean;
+  order: number;
   publishedAt?: Date;
   author: mongoose.Types.ObjectId;
   createdAt: Date;
@@ -49,6 +51,14 @@ const PageSchema = new Schema<IPage>(
     isPublished: {
       type: Boolean,
       default: false
+    },
+    showInNavigation: {
+      type: Boolean,
+      default: false
+    },
+    order: {
+      type: Number,
+      default: 999
     },
     publishedAt: {
       type: Date

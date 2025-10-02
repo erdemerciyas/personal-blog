@@ -165,17 +165,27 @@ const Header: React.FC = () => {
       try {
         // Add cache busting parameter to force fresh data
         const timestamp = Date.now();
-        const response = await fetch(`/api/admin/page-settings?t=${timestamp}&r=${Math.random()}`, {
-          cache: 'no-store', // Prevent caching
-          headers: {
-            'Cache-Control': 'no-cache, no-store, must-revalidate',
-            'Pragma': 'no-cache',
-            'Expires': '0'
-          }
-        });
+        const [pageSettingsRes, dynamicPagesRes] = await Promise.all([
+          fetch(`/api/admin/page-settings?t=${timestamp}&r=${Math.random()}`, {
+            cache: 'no-store',
+            headers: {
+              'Cache-Control': 'no-cache, no-store, must-revalidate',
+              'Pragma': 'no-cache',
+              'Expires': '0'
+            }
+          }),
+          fetch(`/api/pages/navigation?t=${timestamp}`, {
+            cache: 'no-store',
+            headers: {
+              'Cache-Control': 'no-cache, no-store, must-revalidate',
+              'Pragma': 'no-cache',
+              'Expires': '0'
+            }
+          })
+        ]);
         
-        if (response.ok) {
-          const pages = await response.json();
+        if (pageSettingsRes.ok) {
+          const pages = await pageSettingsRes.json();
 
           // Only show pages that are explicitly active AND marked to be shown in navigation
           const navPages = pages
@@ -188,7 +198,40 @@ const Header: React.FC = () => {
               isExternal: page.isExternal
             }));
 
-          setNavLinks(navPages);
+          // Add dynamic pages if available
+          if (dynamicPagesRes.ok) {
+            const dynamicPages = await dynamicPagesRes.json();
+            
+            // Create a combined array with order information
+            const staticPagesWithOrder = navPages.map((page: any) => {
+              const originalPage = pages.find((p: PageSetting) => p.path === page.href);
+              return {
+                ...page,
+                order: originalPage?.order ?? 999,
+                type: 'static'
+              };
+            });
+
+            const dynamicPagesWithOrder = dynamicPages.map((page: any) => ({
+              href: `/${page.slug}`,
+              label: page.title,
+              icon: HomeIcon,
+              isExternal: false,
+              order: page.order ?? 999,
+              type: 'dynamic'
+            }));
+            
+            // Combine and sort by order (ascending: 0, 1, 2, 3...)
+            const allPages = [...staticPagesWithOrder, ...dynamicPagesWithOrder]
+              .sort((a, b) => a.order - b.order);
+            
+            const finalPages = allPages.map(({ type, order, ...page }) => page); // Remove type and order from final result
+            
+            setNavLinks(finalPages);
+          } else {
+            setNavLinks(navPages);
+          }
+          
           setNavLoaded(true);
         } else {
           // Fallback to default navigation if API fails

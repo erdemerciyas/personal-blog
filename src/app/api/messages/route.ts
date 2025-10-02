@@ -27,8 +27,7 @@ export async function GET() {
       .lean();
     
     return NextResponse.json(messages);
-  } catch (error) {
-    console.error('Mesajlar getirilirken hata:', error);
+  } catch {
     return NextResponse.json(
       { error: 'Mesajlar getirilirken bir hata oluştu' },
       { status: 500 }
@@ -288,9 +287,8 @@ export async function POST(request: Request) {
         transporter.sendMail(autoReplyMailOptions)
       ]);
 
-      console.log('Proje talebi email bildirimleri başarıyla gönderildi');
-    } catch (emailError) {
-      console.error('Email gönderimi sırasında hata:', emailError);
+      // Email sent successfully
+    } catch {
       // Email hatası olsa bile database kaydı başarılı olduğu için devam et
     }
 
@@ -298,8 +296,7 @@ export async function POST(request: Request) {
       message: 'Proje talebiniz başarıyla gönderildi! 24 saat içinde geri dönüş yapacağız. Ayrıca size bir onay emaili gönderdik.',
       data: newMessage
     }, { status: 201 });
-  } catch (error) {
-    console.error('Mesaj gönderilirken hata:', error);
+  } catch {
     return NextResponse.json(
       { error: 'Mesaj gönderilirken bir hata oluştu' },
       { status: 500 }

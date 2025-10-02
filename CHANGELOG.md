@@ -4,6 +4,42 @@ Tüm önemli değişiklikler bu dosyada belgelenecektir.
 
 Format [Keep a Changelog](https://keepachangelog.com/en/1.0.0/) standardına dayanmaktadır.
 
+## [2.7.0] - 2025-10-03
+
+### Added
+- **MediaPicker Enhancements**
+  - Context-based media upload (slider, portfolio, products, services)
+  - Auto-detect media category from URL
+  - Delete media functionality with confirmation
+  - Smart category filtering
+  - Hover-based delete buttons in grid and list views
+- **GitHub Best Practices**
+  - Issue templates (bug report, feature request)
+  - Code of Conduct (Contributor Covenant v2.0)
+  - Dependabot configuration for automated dependency updates
+  - GitHub Community Standards 100% compliance
+- **Media Management API**
+  - POST endpoint for media upload with context
+  - Enhanced DELETE endpoint
+  - Folder-based organization (personal-blog/slider, /portfolio, etc.)
+
+### Changed
+- MediaPicker now passes context to upload API
+- Media files organized by category in Cloudinary
+- Improved media selection UX with auto-category detection
+- Enhanced error handling in media operations
+
+### Fixed
+- Media upload functionality restored
+- Category filtering now works correctly
+- Selected media properly highlighted in picker
+- Media deletion with proper state management
+
+### Security
+- Input validation for media uploads
+- File type verification
+- Secure media deletion with authentication
+
 ## [2.6.0] - 2025-10-02
 
 ### Added

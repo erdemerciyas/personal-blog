@@ -30,7 +30,7 @@ interface MenuItem {
   icon: React.ComponentType<{ className?: string }>;
   href: string;
   badge?: string | number;
-  subItems?: Array<{ label: string; href: string }>;
+  subItems?: Array<{ label: string; href: string; badge?: string | number }>;
 }
 
 interface AdminSidebarProps {
@@ -48,6 +48,84 @@ export default function AdminSidebar({
 }: AdminSidebarProps) {
   const pathname = usePathname();
   const { data: session } = useSession();
+  const [counts, setCounts] = React.useState({
+    media: 0,
+    videos: 0,
+    portfolio: 0,
+    services: 0,
+    messages: 0,
+    slider: 0,
+    users: 0,
+  });
+
+  // Fetch all counts
+  React.useEffect(() => {
+    const fetchCounts = async () => {
+      try {
+        const [mediaRes, videosRes, portfolioRes, servicesRes, messagesRes, sliderRes, usersRes] = await Promise.all([
+          fetch('/api/admin/media'),
+          fetch('/api/admin/videos'),
+          fetch('/api/portfolio'),
+          fetch('/api/services'),
+          fetch('/api/messages'),
+          fetch('/api/slider'),
+          fetch('/api/admin/users'),
+        ]);
+
+        const newCounts = {
+          media: 0,
+          videos: 0,
+          portfolio: 0,
+          services: 0,
+          messages: 0,
+          slider: 0,
+          users: 0,
+        };
+
+        if (mediaRes.ok) {
+          const data = await mediaRes.json();
+          newCounts.media = data.length;
+        }
+
+        if (videosRes.ok) {
+          const data = await videosRes.json();
+          newCounts.videos = data.length;
+        }
+
+        if (portfolioRes.ok) {
+          const data = await portfolioRes.json();
+          newCounts.portfolio = data.length;
+        }
+
+        if (servicesRes.ok) {
+          const data = await servicesRes.json();
+          newCounts.services = data.length;
+        }
+
+        if (messagesRes.ok) {
+          const data = await messagesRes.json();
+          // Only count unread messages
+          newCounts.messages = data.filter((m: any) => !m.isRead).length;
+        }
+
+        if (sliderRes.ok) {
+          const data = await sliderRes.json();
+          newCounts.slider = data.length;
+        }
+
+        if (usersRes.ok) {
+          const data = await usersRes.json();
+          newCounts.users = data.length;
+        }
+
+        setCounts(newCounts);
+      } catch {
+        // Silently fail
+      }
+    };
+
+    fetchCounts();
+  }, []);
 
   const menuItems: MenuItem[] = [
     {
@@ -63,9 +141,9 @@ export default function AdminSidebar({
       href: '/admin/content',
       subItems: [
         { label: 'Hakkımda', href: '/admin/about' },
-        { label: 'Hizmetler', href: '/admin/services' },
+        { label: 'Hizmetler', href: '/admin/services', badge: counts.services > 0 ? counts.services : undefined },
         { label: 'Sayfa Yönetimi', href: '/admin/pages' },
-        { label: 'Slider', href: '/admin/slider' },
+        { label: 'Slider', href: '/admin/slider', badge: counts.slider > 0 ? counts.slider : undefined },
       ],
     },
     {
@@ -84,30 +162,35 @@ export default function AdminSidebar({
       label: 'Portfolio',
       icon: FolderOpenIcon,
       href: '/admin/portfolio',
+      badge: counts.portfolio > 0 ? counts.portfolio : undefined,
     },
     {
       id: 'videos',
       label: 'Video Yönetimi',
       icon: PhotoIcon,
       href: '/admin/videos',
+      badge: counts.videos > 0 ? counts.videos : undefined,
     },
     {
       id: 'media',
       label: 'Medya Kütüphanesi',
       icon: PhotoIcon,
       href: '/admin/media',
+      badge: counts.media > 0 ? counts.media : undefined,
     },
     {
       id: 'messages',
       label: 'Mesajlar',
       icon: ChatBubbleLeftRightIcon,
       href: '/admin/messages',
+      badge: counts.messages > 0 ? counts.messages : undefined,
     },
     {
       id: 'users',
       label: 'Kullanıcı Yönetimi',
       icon: UsersIcon,
       href: '/admin/users',
+      badge: counts.users > 0 ? counts.users : undefined,
     },
     {
       id: 'contact',
@@ -229,13 +312,18 @@ export default function AdminSidebar({
                       <Link
                         key={subItem.href}
                         href={subItem.href}
-                        className={`block px-3 py-2 text-sm rounded-lg transition-colors ${
+                        className={`flex items-center justify-between px-3 py-2 text-sm rounded-lg transition-colors ${
                           isActiveRoute(subItem.href)
                             ? 'bg-brand-primary-50 text-brand-primary-800 dark:bg-brand-primary-900/50 dark:text-brand-primary-300'
                             : 'text-slate-600 hover:bg-slate-50 hover:text-slate-900 dark:text-slate-400 dark:hover:bg-slate-700 dark:hover:text-slate-100'
                         }`}
                       >
-                        {subItem.label}
+                        <span>{subItem.label}</span>
+                        {subItem.badge && (
+                          <AdminBadge variant="info" size="sm">
+                            {subItem.badge}
+                          </AdminBadge>
+                        )}
                       </Link>
                     ))}
                   </div>

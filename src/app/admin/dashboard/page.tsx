@@ -6,7 +6,6 @@ import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import AdminLayoutNew from '@/components/admin/layout/AdminLayoutNew';
 import AdminCard from '@/components/admin/ui/AdminCard';
-import AdminButton from '@/components/admin/ui/AdminButton';
 import AdminBadge from '@/components/admin/ui/AdminBadge';
 import {
   FolderOpenIcon,
@@ -19,10 +18,8 @@ import {
   PlusIcon,
   CloudArrowUpIcon,
   AdjustmentsHorizontalIcon,
-  DocumentTextIcon,
   CheckCircleIcon,
   ServerIcon,
-  ClockIcon,
 } from '@heroicons/react/24/outline';
 
 export default function DashboardNewPage() {
@@ -56,8 +53,8 @@ export default function DashboardNewPage() {
         const data = await response.json();
         setStats(data);
       }
-    } catch (error) {
-      console.error('Stats fetch error:', error);
+    } catch {
+      // Silently fail - stats are not critical
     } finally {
       setLoading(false);
     }

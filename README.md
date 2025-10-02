@@ -11,7 +11,7 @@
 
 Modern, güvenli ve performanslı kişisel blog ve portfolyo platformu. Next.js 14, TypeScript, MongoDB ve Tailwind CSS ile geliştirilmiştir.
 
-**Version:** 2.6.0 | **Last Updated:** 2 Ekim 2025 | **Status:** Production Ready 🚀
+**Version:** 2.7.0 | **Last Updated:** 3 Ekim 2025 | **Status:** Production Ready 🚀
 
 ## 🌟 Öne Çıkan Özellikler
 
@@ -56,8 +56,9 @@ Modern, güvenli ve performanslı kişisel blog ve portfolyo platformu. Next.js 
 - **Service Management**: Hizmet yönetimi
 - **Product Management**: E-ticaret desteği
 - **Video Management**: YouTube video entegrasyonu
-- **Media Management**: Cloudinary entegrasyonu
+- **Media Management**: Cloudinary entegrasyonu (upload, delete, category filtering)
 - **Universal Editor**: Markdown ve HTML desteği
+- **Smart Media Picker**: Context-aware media selection with auto-categorization
 
 ## 🚀 Hızlı Başlangıç
 
@@ -263,6 +264,16 @@ npm run start
 ```
 
 ## 🔄 Güncellemeler
+
+### v2.7.0 (3 Ekim 2025) - GitHub Best Practices
+- ✅ MediaPicker improvements (upload, delete, category filtering)
+- ✅ Context-based media upload (slider, portfolio, products, services)
+- ✅ Auto-detect media category from URL
+- ✅ GitHub Issue Templates (bug report, feature request)
+- ✅ Code of Conduct (Contributor Covenant v2.0)
+- ✅ Dependabot configuration (automated dependency updates)
+- ✅ 100% GitHub Community Standards compliance
+- ✅ Enhanced media management API
 
 ### v2.6.0 (2 Ekim 2025)
 - ✅ Complete admin UI/UX redesign

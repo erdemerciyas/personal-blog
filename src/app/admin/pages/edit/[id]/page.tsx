@@ -15,7 +15,9 @@ export default function EditPage({ params }: { params: { id: string } }) {
     excerpt: '',
     metaTitle: '',
     metaDescription: '',
-    isPublished: false
+    isPublished: false,
+    showInNavigation: false,
+    order: 999
   });
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
@@ -34,7 +36,9 @@ export default function EditPage({ params }: { params: { id: string } }) {
           excerpt: data.excerpt || '',
           metaTitle: data.metaTitle || '',
           metaDescription: data.metaDescription || '',
-          isPublished: data.isPublished || false
+          isPublished: data.isPublished || false,
+          showInNavigation: data.showInNavigation || false,
+          order: data.order || 999
         });
       })
       .catch(err => setError(err))
@@ -47,6 +51,8 @@ export default function EditPage({ params }: { params: { id: string } }) {
     setError('');
     setSuccess('');
 
+    console.log('Saving page with data:', formData);
+
     try {
       const response = await fetch(`/api/admin/pages/${params.id}`, {
         method: 'PUT',
@@ -56,12 +62,21 @@ export default function EditPage({ params }: { params: { id: string } }) {
 
       if (!response.ok) {
         const data = await response.json();
+        console.error('Save failed:', data);
         throw new Error(data.error || 'Sayfa güncellenemedi');
       }
 
+      const savedData = await response.json();
+      console.log('Page saved successfully:', savedData);
+
       setSuccess('Sayfa başarıyla güncellendi!');
+      
+      // Trigger navigation refresh
+      window.dispatchEvent(new Event('pageSettingsChanged'));
+      
       setTimeout(() => setSuccess(''), 3000);
     } catch (err) {
+      console.error('Save error:', err);
       setError(err instanceof Error ? err.message : 'Bir hata oluştu');
     } finally {
       setSaving(false);
@@ -166,8 +181,8 @@ export default function EditPage({ params }: { params: { id: string } }) {
               onChange={(e) => setFormData({ ...formData, slug: e.target.value })}
               required
               placeholder="hakkimizda"
-              helpText="URL'de görünecek kısım"
             />
+            <p className="text-sm text-slate-500 dark:text-slate-400 -mt-2">URL'de görünecek kısım</p>
 
             <AdminTextarea
               label="Özet"
@@ -175,8 +190,8 @@ export default function EditPage({ params }: { params: { id: string } }) {
               onChange={(e) => setFormData({ ...formData, excerpt: e.target.value })}
               rows={3}
               placeholder="Sayfa hakkında kısa bir açıklama..."
-              helpText="Maksimum 500 karakter"
             />
+            <p className="text-sm text-slate-500 dark:text-slate-400 -mt-2">Maksimum 500 karakter</p>
 
             <AdminTextarea
               label="İçerik"
@@ -185,8 +200,8 @@ export default function EditPage({ params }: { params: { id: string } }) {
               rows={12}
               required
               placeholder="Sayfa içeriğini buraya yazın..."
-              helpText="HTML ve Markdown desteklenir"
             />
+            <p className="text-sm text-slate-500 dark:text-slate-400 -mt-2">HTML ve Markdown desteklenir</p>
           </div>
         </AdminCard>
 
@@ -197,8 +212,8 @@ export default function EditPage({ params }: { params: { id: string } }) {
               value={formData.metaTitle}
               onChange={(e) => setFormData({ ...formData, metaTitle: e.target.value })}
               placeholder="SEO için özel başlık (opsiyonel)"
-              helpText="Maksimum 60 karakter"
             />
+            <p className="text-sm text-slate-500 dark:text-slate-400 -mt-2">Maksimum 60 karakter</p>
 
             <AdminTextarea
               label="Meta Açıklama"
@@ -206,18 +221,75 @@ export default function EditPage({ params }: { params: { id: string } }) {
               onChange={(e) => setFormData({ ...formData, metaDescription: e.target.value })}
               rows={3}
               placeholder="Arama motorları için açıklama (opsiyonel)"
-              helpText="Maksimum 160 karakter"
             />
+            <p className="text-sm text-slate-500 dark:text-slate-400 -mt-2">Maksimum 160 karakter</p>
           </div>
         </AdminCard>
 
         <AdminCard title="Yayın Ayarları" padding="md">
-          <AdminCheckbox
-            label="Sayfayı yayınla"
-            checked={formData.isPublished}
-            onChange={(e) => setFormData({ ...formData, isPublished: e.target.checked })}
-            helpText="Yayınlanan sayfalar sitede görünür olacaktır"
-          />
+          <div className="space-y-6">
+            {/* Publish Toggle */}
+            <div className="flex items-start gap-4 p-4 bg-slate-50 dark:bg-slate-800 rounded-lg">
+              <input
+                type="checkbox"
+                id="isPublished"
+                checked={formData.isPublished}
+                onChange={(e) => {
+                  console.log('Publish checkbox changed:', e.target.checked);
+                  setFormData({ ...formData, isPublished: e.target.checked });
+                }}
+                className="w-5 h-5 mt-1 text-blue-600 bg-white border-gray-300 rounded focus:ring-blue-500 cursor-pointer"
+              />
+              <div className="flex-1">
+                <label htmlFor="isPublished" className="font-medium text-slate-900 dark:text-white cursor-pointer">
+                  Sayfayı yayınla (Canlıya al)
+                </label>
+                <p className="text-sm text-slate-600 dark:text-slate-400 mt-1">
+                  {formData.isPublished 
+                    ? '✓ Sayfa sitede görünür olacak' 
+                    : '✗ Sayfa taslak olarak kalacak (sadece admin görebilir)'}
+                </p>
+              </div>
+            </div>
+            
+            {/* Navigation Toggle */}
+            <div className="flex items-start gap-4 p-4 bg-slate-50 dark:bg-slate-800 rounded-lg">
+              <input
+                type="checkbox"
+                id="showInNavigation"
+                checked={formData.showInNavigation}
+                onChange={(e) => {
+                  console.log('Navigation checkbox changed:', e.target.checked);
+                  setFormData({ ...formData, showInNavigation: e.target.checked });
+                }}
+                className="w-5 h-5 mt-1 text-blue-600 bg-white border-gray-300 rounded focus:ring-blue-500 cursor-pointer"
+              />
+              <div className="flex-1">
+                <label htmlFor="showInNavigation" className="font-medium text-slate-900 dark:text-white cursor-pointer">
+                  Navigasyon menüsünde göster
+                </label>
+                <p className="text-sm text-slate-600 dark:text-slate-400 mt-1">
+                  {formData.showInNavigation 
+                    ? '✓ Sayfa nav menüde görünecek' 
+                    : '✗ Sayfa sadece direkt link ile erişilebilir'}
+                </p>
+              </div>
+            </div>
+
+            {/* Menu Order */}
+            <div>
+              <AdminInput
+                label="Menü Sırası"
+                type="number"
+                value={formData.order.toString()}
+                onChange={(e) => setFormData({ ...formData, order: parseInt(e.target.value) || 999 })}
+                placeholder="999"
+              />
+              <p className="text-sm text-slate-500 dark:text-slate-400 mt-1">
+                Küçük sayı = Önce görünür (0, 1, 2, 3...). Varsayılan: 999 (en sonda)
+              </p>
+            </div>
+          </div>
         </AdminCard>
       </form>
     </AdminLayoutNew>

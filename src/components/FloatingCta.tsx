@@ -2,10 +2,13 @@
 
 import { PaperAirplaneIcon } from '@heroicons/react/24/outline';
 import { useEffect, useState } from 'react';
+import { usePathname } from 'next/navigation';
 
 export default function FloatingCta() {
+  const pathname = usePathname();
   const [isMounted, setIsMounted] = useState(false);
   const [isOpen, setIsOpen] = useState(false);
+  
   useEffect(() => setIsMounted(true), []);
 
   // İlk yüklemede kulakçığı otomatik aç-kapa (reduced motion değilse)
@@ -20,6 +23,11 @@ export default function FloatingCta() {
       clearTimeout(closeTimer);
     };
   }, [isMounted]);
+
+  // Admin sayfalarında gösterme
+  if (pathname?.startsWith('/admin')) {
+    return null;
+  }
 
   // GA4 güvenli çağrı yardımcıları (tipli)
   type GtagFn = (command: 'event', eventName: string, params?: Record<string, unknown>) => void;

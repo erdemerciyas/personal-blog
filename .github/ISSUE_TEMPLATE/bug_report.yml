@@ -1,0 +1,86 @@
+name: 🐛 Bug Report
+description: Bir hata bildirin
+title: "[Bug]: "
+labels: ["bug", "triage"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Hata raporunuz için teşekkürler! Lütfen aşağıdaki bilgileri eksiksiz doldurun.
+
+  - type: textarea
+    id: description
+    attributes:
+      label: Hata Açıklaması
+      description: Hatayı net bir şekilde açıklayın
+      placeholder: Ne oldu?
+    validations:
+      required: true
+
+  - type: textarea
+    id: steps
+    attributes:
+      label: Tekrar Etme Adımları
+      description: Hatayı nasıl tekrar edebiliriz?
+      placeholder: |
+        1. '...' sayfasına git
+        2. '...' butonuna tıkla
+        3. Aşağı kaydır
+        4. Hatayı gör
+    validations:
+      required: true
+
+  - type: textarea
+    id: expected
+    attributes:
+      label: Beklenen Davranış
+      description: Ne olmasını bekliyordunuz?
+    validations:
+      required: true
+
+  - type: textarea
+    id: actual
+    attributes:
+      label: Gerçek Davranış
+      description: Gerçekte ne oldu?
+    validations:
+      required: true
+
+  - type: textarea
+    id: screenshots
+    attributes:
+      label: Ekran Görüntüleri
+      description: Varsa ekran görüntüleri ekleyin
+
+  - type: dropdown
+    id: browser
+    attributes:
+      label: Tarayıcı
+      options:
+        - Chrome
+        - Firefox
+        - Safari
+        - Edge
+        - Diğer
+    validations:
+      required: true
+
+  - type: input
+    id: os
+    attributes:
+      label: İşletim Sistemi
+      placeholder: "örn: Windows 11, macOS 14, Ubuntu 22.04"
+    validations:
+      required: true
+
+  - type: input
+    id: version
+    attributes:
+      label: Proje Versiyonu
+      placeholder: "örn: 2.6.0"
+
+  - type: textarea
+    id: additional
+    attributes:
+      label: Ek Bilgiler
+      description: Başka eklemek istediğiniz bir şey var mı?

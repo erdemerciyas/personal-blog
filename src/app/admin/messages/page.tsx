@@ -88,8 +88,7 @@ function AdminMessagesContent() {
         } else {
           throw new Error('Mesajlar yüklenirken hata oluştu');
         }
-      } catch (error) {
-        console.error('Messages fetch error:', error);
+      } catch {
         setError('Mesajlar yüklenirken hata oluştu');
       } finally {
         setLoading(false);
@@ -160,8 +159,8 @@ function AdminMessagesContent() {
               : m
           ));
         }
-      } catch (error) {
-        console.error('Error marking message as read:', error);
+      } catch {
+        // Silently fail - marking as read is not critical
       }
     }
   };
@@ -187,7 +186,6 @@ function AdminMessagesContent() {
         throw new Error(errorData.error || 'Durum güncellenemedi');
       }
     } catch (error) {
-      console.error('Status update error:', error);
       setError(error instanceof Error ? error.message : 'Durum güncellenirken hata oluştu');
       setTimeout(() => setError(''), 3000);
     }
