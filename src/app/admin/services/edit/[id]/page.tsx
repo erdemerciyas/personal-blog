@@ -222,7 +222,6 @@ export default function EditServicePage({ params }: { params: { id: string } }) 
                   value={serviceDescription}
                   onChange={setServiceDescription}
                   placeholder="Servis hakkında detaylı açıklama yazınız"
-                  mode="text"
                   minHeight="200px"
                 />
               </div>
@@ -237,22 +236,15 @@ export default function EditServicePage({ params }: { params: { id: string } }) 
             </h3>
             
             <ImageUpload
+              label="Hizmet Görseli"
               value={serviceImage}
               onChange={(url) => {
                 const imageUrl = Array.isArray(url) ? url[0] : url;
-                console.log('Image changed:', imageUrl);
                 setServiceImage(imageUrl);
               }}
-              onImageUpload={(url) => {
-                const imageUrl = Array.isArray(url) ? url[0] : url;
-                console.log('Image uploaded:', imageUrl);
-                setServiceImage(imageUrl);
-              }}
-              onImageRemove={() => {
-                console.log('Image removed');
-                setServiceImage('');
-              }}
-              currentImage={serviceImage}
+              pageContext="services"
+              showUrlInput={true}
+              disabled={saving}
             />
           </div>
 

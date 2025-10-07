@@ -134,12 +134,20 @@ export async function GET(request: Request) {
   try {
     await connectDB();
     
-    // URL'den category query parameter'larını al
+    // URL'den query parameter'larını al
     const { searchParams } = new URL(request.url);
     const categorySlug = searchParams.get('category');
     const categorySlugs = searchParams.get('categories'); // Çoklu kategori desteği
+    const featured = searchParams.get('featured'); // Featured projeler
+    const random = searchParams.get('random'); // Random sıralama
+    const limit = searchParams.get('limit'); // Limit
     
-    let query = {};
+    let query: Record<string, any> = {};
+    
+    // Featured projeler filtresi
+    if (featured === 'true') {
+      query.featured = true;
+    }
     
     // Çoklu kategori filtreleme
     if (categorySlugs) {
@@ -147,33 +155,105 @@ export async function GET(request: Request) {
       const categories = await Category.find({ slug: { $in: slugArray } });
       if (categories.length > 0) {
         const categoryIds = categories.map(cat => cat._id);
-        query = {
-          $or: [
-            { categoryId: { $in: categoryIds } },
-            { categoryIds: { $in: categoryIds } }
-          ]
-        };
+        query.$or = [
+          { categoryId: { $in: categoryIds } },
+          { categoryIds: { $in: categoryIds } }
+        ];
       } 
     }
     // Tekli kategori filtreleme (geriye uyumluluk)
     else if (categorySlug) {
       const category = await Category.findOne({ slug: categorySlug });
       if (category) {
-        query = {
-          $or: [
-            { categoryId: category._id },
-            { categoryIds: category._id }
-          ]
-        };
+        query.$or = [
+          { categoryId: category._id },
+          { categoryIds: category._id }
+        ];
       }
     }
     
-    const portfolios = await Portfolio.find({ ...query })
+    let portfolioQuery = Portfolio.find(query)
       .populate('categoryId', 'name slug') // Eski tekli kategori alanı
-      .populate('categoryIds', 'name slug') // Yeni çoklu kategori alanı
-      .sort({ order: 1 });
-
-    return NextResponse.json(portfolios);
+      .populate('categoryIds', 'name slug'); // Yeni çoklu kategori alanı
+    
+    // Sıralama: Random ise rastgele, değilse tarih ve order'a göre
+    if (random === 'true') {
+      // MongoDB'de rastgele sıralama için $sample kullan
+      const portfolios = await Portfolio.aggregate([
+        { $match: query },
+        { $sample: { size: limit ? parseInt(limit) : 1000 } }, // Limit varsa o kadar, yoksa 1000
+        {
+          $lookup: {
+            from: 'categories',
+            localField: 'categoryId',
+            foreignField: '_id',
+            as: 'categoryId'
+          }
+        },
+        {
+          $lookup: {
+            from: 'categories',
+            localField: 'categoryIds',
+            foreignField: '_id',
+            as: 'categoryIds'
+          }
+        },
+        {
+          $addFields: {
+            categoryId: { $arrayElemAt: ['$categoryId', 0] },
+          }
+        }
+      ]);
+      
+      const response = NextResponse.json(portfolios);
+      
+      // Random projeler için cache'i tamamen devre dışı bırak
+      response.headers.set('Cache-Control', 'no-cache, no-store, must-revalidate');
+      response.headers.set('Pragma', 'no-cache');
+      response.headers.set('Expires', '0');
+      
+      return response;
+    } else {
+      // Normal sıralama - MongoDB aggregate ile kesin sıralama
+      const portfolios = await Portfolio.aggregate([
+        { $match: query },
+        {
+          $lookup: {
+            from: 'categories',
+            localField: 'categoryId',
+            foreignField: '_id',
+            as: 'categoryId'
+          }
+        },
+        {
+          $lookup: {
+            from: 'categories',
+            localField: 'categoryIds',
+            foreignField: '_id',
+            as: 'categoryIds'
+          }
+        },
+        {
+          $addFields: {
+            categoryId: { $arrayElemAt: ['$categoryId', 0] },
+          }
+        },
+        // Kesin sıralama: önce createdAt'e göre azalan, sonra _id'ye göre azalan
+        { $sort: { createdAt: -1, _id: -1 } },
+        ...(limit ? [{ $limit: parseInt(limit) }] : [])
+      ]);
+      
+      const response = NextResponse.json(portfolios);
+      
+      // Cache kontrolü - development'da cache'i devre dışı bırak
+      if (process.env.NODE_ENV === 'development') {
+        response.headers.set('Cache-Control', 'no-cache, no-store, must-revalidate');
+        response.headers.set('Pragma', 'no-cache');
+        response.headers.set('Expires', '0');
+      }
+      
+      return response;
+    }
   } catch (error) {
     console.error('Portfolio fetch error:', error);
     return NextResponse.json({ 
@@ -218,7 +298,14 @@ export async function POST(request: Request) {
       }, { status: 400 });
     }
     
-    const portfolio = new Portfolio(data);
+    // createdAt ve updatedAt'i açıkça ayarla
+    const portfolioData = {
+      ...data,
+      createdAt: new Date(),
+      updatedAt: new Date()
+    };
+    
+    const portfolio = new Portfolio(portfolioData);
     await portfolio.save();
     
     return NextResponse.json(portfolio, { status: 201 });

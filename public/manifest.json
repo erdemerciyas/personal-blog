@@ -40,9 +40,9 @@
       "purpose": "maskable any"
     },
     {
-      "src": "/icons/icon-144x144.png",
+      "src": "/favicon.svg",
       "sizes": "144x144",
-      "type": "image/png",
+      "type": "image/svg+xml",
       "purpose": "maskable any"
     },
     {

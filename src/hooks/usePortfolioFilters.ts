@@ -234,15 +234,26 @@ export function usePortfolioFilters(
           comparison = aCategoryName.localeCompare(bCategoryName, 'tr');
           break;
         case 'oldest':
-          comparison = new Date(a.completionDate).getTime() - new Date(b.completionDate).getTime();
+          // Önce createdAt'e göre sırala, yoksa completionDate'e göre
+          const aDateOld = a.createdAt ? new Date(a.createdAt) : new Date(a.completionDate);
+          const bDateOld = b.createdAt ? new Date(b.createdAt) : new Date(b.completionDate);
+          comparison = aDateOld.getTime() - bDateOld.getTime();
           break;
         case 'newest':
         default:
-          comparison = new Date(b.completionDate).getTime() - new Date(a.completionDate).getTime();
+          // Önce createdAt'e göre sırala, yoksa completionDate'e göre
+          const aDate = a.createdAt ? new Date(a.createdAt) : new Date(a.completionDate);
+          const bDate = b.createdAt ? new Date(b.createdAt) : new Date(b.completionDate);
+          comparison = bDate.getTime() - aDate.getTime();
+          
+          // Eğer tarihler aynıysa, _id'ye göre sırala (MongoDB ObjectId doğal olarak zaman içerir)
+          if (comparison === 0) {
+            comparison = b._id.localeCompare(a._id);
+          }
           break;
       }
 
-      return filters.sortOrder === 'desc' ? -comparison : comparison;
+      return filters.sortOrder === 'desc' ? comparison : -comparison;
     });
 
     return filtered;

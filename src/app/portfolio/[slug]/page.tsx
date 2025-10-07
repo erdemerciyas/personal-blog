@@ -232,14 +232,14 @@ function PortfolioDetailPageContent({ params }: { params: { slug: string } }) {
           <div className="bg-white/80 backdrop-blur-xl rounded-3xl shadow-2xl border border-white/20 p-8 md:p-12 lg:p-16">
             <div className="max-w-6xl mx-auto">
 
-              {/* Main Content Grid */}
-              <div className="grid grid-cols-1 xl:grid-cols-3 gap-8 lg:gap-12 mb-16">
-                {/* Image Gallery - Takes up 2/3 on large screens */}
+              {/* Main Content Grid - 70/30 Layout */}
+              <div className="grid grid-cols-1 lg:grid-cols-10 gap-8 lg:gap-12 mb-16">
+                {/* Image Gallery - Takes up 70% on large screens */}
                 <motion.div 
                   initial={{ opacity: 0, x: -20 }}
                   animate={{ opacity: 1, x: 0 }}
                   transition={{ duration: 0.8 }}
-                  className="xl:col-span-2"
+                  className="lg:col-span-7"
                 >
                   <PortfolioImageGallery
                     images={portfolioItem.images || []}
@@ -248,23 +248,78 @@ function PortfolioDetailPageContent({ params }: { params: { slug: string } }) {
                   />
                 </motion.div>
 
-                {/* Project Details Sidebar - Takes up 1/3 on large screens */}
+                {/* Project Details Sidebar - Takes up 30% on large screens */}
                 <motion.div 
                   initial={{ opacity: 0, x: 20 }}
                   animate={{ opacity: 1, x: 0 }}
                   transition={{ duration: 0.8, delay: 0.2 }}
-                  className="xl:col-span-1 space-y-6"
+                  className="lg:col-span-3 space-y-6"
                 >
                   {/* Additional project info can go here */}
-                  <div className="bg-white/80 backdrop-blur-xl rounded-3xl shadow-xl border border-white/20 p-6 md:p-8 sticky top-24">
-                    <h2 className="text-2xl font-bold text-slate-800 mb-6 border-b border-slate-200 pb-4">
-                      Proje Özellikleri
+                  <div className="bg-white/80 backdrop-blur-xl rounded-3xl shadow-xl border border-white/20 p-6 md:p-8 lg:sticky lg:top-24">
+                    <h2 className="text-xl font-bold text-slate-800 mb-6 border-b border-slate-200 pb-4">
+                      Proje Bilgileri
                     </h2>
                     
+                    {/* Client */}
+                    {portfolioItem.client && (
+                      <div className="mb-6">
+                        <div className="flex items-center mb-2">
+                          <svg className="w-5 h-5 text-brand-primary-600 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+                          </svg>
+                          <h3 className="text-sm font-semibold text-slate-700 uppercase tracking-wide">Müşteri</h3>
+                        </div>
+                        <p className="text-slate-900 font-medium">{portfolioItem.client}</p>
+                      </div>
+                    )}
+
+                    {/* Completion Date */}
+                    {portfolioItem.completionDate && (
+                      <div className="mb-6">
+                        <div className="flex items-center mb-2">
+                          <svg className="w-5 h-5 text-brand-primary-600 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                          </svg>
+                          <h3 className="text-sm font-semibold text-slate-700 uppercase tracking-wide">Tamamlanma Tarihi</h3>
+                        </div>
+                        <p className="text-slate-900 font-medium">
+                          {new Date(portfolioItem.completionDate).toLocaleDateString('tr-TR', {
+                            year: 'numeric',
+                            month: 'long',
+                            day: 'numeric'
+                          })}
+                        </p>
+                      </div>
+                    )}
+
+                    {/* Category */}
+                    {(portfolioItem.category || (portfolioItem.categories && portfolioItem.categories.length > 0)) && (
+                      <div className="mb-6">
+                        <div className="flex items-center mb-2">
+                          <svg className="w-5 h-5 text-brand-primary-600 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z" />
+                          </svg>
+                          <h3 className="text-sm font-semibold text-slate-700 uppercase tracking-wide">Kategori</h3>
+                        </div>
+                        <p className="text-slate-900 font-medium">
+                          {portfolioItem.categories && portfolioItem.categories.length > 0 
+                            ? portfolioItem.categories.map(cat => cat.name).join(', ')
+                            : portfolioItem.category?.name || 'Genel'
+                          }
+                        </p>
+                      </div>
+                    )}
+
                     {/* Technologies */}
                     {portfolioItem.technologies && portfolioItem.technologies.length > 0 && (
                       <div className="mb-6">
-                        <h3 className="text-lg font-semibold text-slate-700 mb-3">Teknolojiler</h3>
+                        <div className="flex items-center mb-3">
+                          <svg className="w-5 h-5 text-brand-primary-600 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4" />
+                          </svg>
+                          <h3 className="text-sm font-semibold text-slate-700 uppercase tracking-wide">Kullanılan Teknolojiler</h3>
+                        </div>
                         <div className="flex flex-wrap gap-2">
                           {portfolioItem.technologies.map((tech, index) => (
                             <span
@@ -278,16 +333,16 @@ function PortfolioDetailPageContent({ params }: { params: { slug: string } }) {
                       </div>
                     )}
 
-                    {/* Project Stats */}
-                    <div className="space-y-4">
-                      <div className="flex justify-between items-center py-2 border-b border-slate-100">
-                        <span className="text-slate-600">Durum</span>
-                        <span className="text-brand-primary-700 font-semibold">✓ Tamamlandı</span>
-                      </div>
-                      
-                      <div className="flex justify-between items-center py-2 border-b border-slate-100">
-                        <span className="text-slate-600">Görsel Sayısı</span>
-                        <span className="font-semibold">{allImages.length}</span>
+                    {/* Project Status */}
+                    <div className="pt-4 border-t border-slate-200">
+                      <div className="flex items-center justify-between py-2">
+                        <span className="text-slate-600 text-sm">Proje Durumu</span>
+                        <span className="text-green-600 font-semibold text-sm flex items-center">
+                          <svg className="w-4 h-4 mr-1" fill="currentColor" viewBox="0 0 20 20">
+                            <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
+                          </svg>
+                          Tamamlandı
+                        </span>
                       </div>
                     </div>
                   </div>

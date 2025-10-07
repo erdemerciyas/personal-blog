@@ -219,16 +219,36 @@ const MediaBrowser: React.FC<MediaBrowserProps> = ({
   // Resim silme
   const handleDelete = async (itemId: string) => {
     if (!confirm('Bu görseli silmek istediğinize emin misiniz?')) return;
+    
     try {
       setLoading(true);
-      const response = await fetch(`/api/admin/media/${itemId}`, { method: 'DELETE' });
-      if (response.ok) {
+      
+      // URL encode the media ID for safe transmission
+      const encodedId = encodeURIComponent(itemId);
+      const response = await fetch(`/api/admin/media/${encodedId}`, { 
+        method: 'DELETE',
+        headers: {
+          'Content-Type': 'application/json',
+        }
+      });
+      
+      const data = await response.json();
+      
+      if (response.ok && data.success) {
+        // Remove from local state
         setMediaItems(items => items.filter(item => item._id !== itemId));
-        setSelectedItem(null);
+        setSelectedItem(prev => prev === itemId ? null : prev);
         setSelectedItems(items => items.filter(id => id !== itemId));
+        
+        // Show success message
+        console.log('Media deleted successfully:', data.message);
       } else {
-        alert('Silme işlemi başarısız oldu.');
+        console.error('Delete failed:', data.error || 'Unknown error');
+        alert(data.error || 'Silme işlemi başarısız oldu.');
       }
+    } catch (error) {
+      console.error('Delete error:', error);
+      alert('Silme işlemi sırasında hata oluştu.');
     } finally {
       setLoading(false);
     }

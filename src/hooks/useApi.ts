@@ -108,11 +108,23 @@ export function useSliderItems() {
   });
 }
 
-export function usePortfolioItems(limit?: number) {
-  const url = limit ? `/api/portfolio?limit=${limit}` : '/api/portfolio';
+export function usePortfolioItems(options?: { 
+  limit?: number; 
+  featured?: boolean; 
+  random?: boolean; 
+}) {
+  const params = new URLSearchParams();
+  
+  if (options?.limit) params.append('limit', options.limit.toString());
+  if (options?.featured) params.append('featured', 'true');
+  if (options?.random) params.append('random', 'true');
+  
+  const url = `/api/portfolio${params.toString() ? `?${params.toString()}` : ''}`;
+  const cacheKey = `${CACHE_KEYS.PORTFOLIO_ITEMS}_${params.toString()}`;
+  
   return useApi(url, {
-    cacheKey: limit ? `${CACHE_KEYS.PORTFOLIO_ITEMS}_${limit}` : CACHE_KEYS.PORTFOLIO_ITEMS,
-    cacheTTL: 5 * 60 * 1000 // 5 minutes
+    cacheKey,
+    cacheTTL: options?.random ? 0 : 5 * 60 * 1000 // Random için cache yok, normal için 5 dakika
   });
 }
 

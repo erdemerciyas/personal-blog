@@ -176,7 +176,6 @@ export default function NewServicePage() {
                   value={serviceDescription}
                   onChange={setServiceDescription}
                   placeholder="Servis hakkında detaylı açıklama yazınız"
-                  mode="text"
                   minHeight="200px"
                 />
               </div>
@@ -191,22 +190,15 @@ export default function NewServicePage() {
             </h3>
             
             <ImageUpload
+              label="Hizmet Görseli"
               value={serviceImage}
               onChange={(url) => {
                 const imageUrl = Array.isArray(url) ? url[0] : url;
-                console.log('Image changed:', imageUrl); // Debug log
                 setServiceImage(imageUrl);
               }}
-              onImageUpload={(url) => {
-                const imageUrl = Array.isArray(url) ? url[0] : url;
-                console.log('Image uploaded:', imageUrl); // Debug log
-                setServiceImage(imageUrl);
-              }}
-              onImageRemove={() => {
-                console.log('Image removed'); // Debug log
-                setServiceImage('');
-              }}
-              currentImage={serviceImage}
+              pageContext="services"
+              showUrlInput={true}
+              disabled={loading}
             />
           </div>
 

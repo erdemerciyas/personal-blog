@@ -387,7 +387,7 @@ export default function AdminPages() {
                       </div>
                       <div>
                         <label className="block text-sm font-medium text-slate-700 mb-1">Hero Açıklaması</label>
-                        <UniversalEditor value={editForm.description} onChange={(value) => setEditForm(prev => ({ ...prev, description: value }))} placeholder="Sayfa hero açıklaması..." mode="text" minHeight="150px" />
+                        <UniversalEditor value={editForm.description} onChange={(value) => setEditForm(prev => ({ ...prev, description: value }))} placeholder="Sayfa hero açıklaması..." minHeight="150px" />
                       </div>
                       <div>
                         <label className="block text-sm font-medium text-slate-700 mb-1">Buton Metni</label>

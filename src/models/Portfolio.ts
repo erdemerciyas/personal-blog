@@ -67,6 +67,10 @@ portfolioSchema.pre('save', function(next) {
   if (this.isModified('title')) {
     this.slug = slugify(this.title, { lower: true, strict: true });
   }
+  
+  // updatedAt'i her kaydetmede güncelle
+  this.updatedAt = new Date();
+  
   next();
 });
 

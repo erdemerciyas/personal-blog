@@ -3,6 +3,7 @@
 import { useState, useRef } from 'react';
 import Image from 'next/image';
 import MediaBrowser from './MediaBrowser';
+import { useToast } from './ui/useToast';
 import {
   ArrowUpTrayIcon,
   ExclamationTriangleIcon,
@@ -14,12 +15,11 @@ import {
 } from '@heroicons/react/24/outline';
 
 interface ImageUploadProps {
+  // Standardized props - use only these
   value?: string | string[];
-  onChange?: (url: string | string[]) => void;
-  onRemove?: () => void;
-  onImageUpload?: (url: string | string[]) => void;
-  onImageRemove?: () => void;
-  currentImage?: string;
+  onChange: (url: string | string[]) => void;
+  
+  // Optional props
   disabled?: boolean;
   className?: string;
   label?: string;
@@ -28,6 +28,12 @@ interface ImageUploadProps {
   showUrlInput?: boolean;
   pageContext?: string;
   allowMultipleSelect?: boolean;
+  
+  // Deprecated props - kept for backward compatibility
+  onRemove?: () => void;
+  onImageUpload?: (url: string | string[]) => void;
+  onImageRemove?: () => void;
+  currentImage?: string;
 }
 
 const ImageUpload: React.FC<ImageUploadProps> = ({
@@ -48,56 +54,92 @@ const ImageUpload: React.FC<ImageUploadProps> = ({
 }) => {
   const [uploading, setUploading] = useState(false);
   const [uploadProgress, setUploadProgress] = useState(0);
-  // reserved state placeholder removed
-  const [error, setError] = useState('');
-  const [success, setSuccess] = useState('');
   const [showMediaBrowser, setShowMediaBrowser] = useState(false);
   const [showUrlModal, setShowUrlModal] = useState(false);
   const [urlInput, setUrlInput] = useState('');
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const { show: showToast } = useToast();
 
-  // onChange function güvenlik kontrolü
+  // Standardized onChange handler
   const handleOnChange = (url: string | string[]) => {
-    const changeHandler = onChange || onImageUpload;
-    if (typeof changeHandler === 'function') {
+    try {
+      // Use primary onChange prop, fallback to deprecated props for backward compatibility
+      const changeHandler = onChange || onImageUpload;
+      
+      if (!changeHandler) {
+        showToast({
+          title: "Hata",
+          description: "onChange handler tanımlanmamış",
+          variant: "danger"
+        });
+        return;
+      }
+
       if (Array.isArray(url)) {
         const validUrls = url.filter(u => u && (u.startsWith('/') || u.startsWith('http://') || u.startsWith('https://')));
         if (validUrls.length > 0) {
           changeHandler(validUrls);
+          showToast({
+            title: "Başarılı",
+            description: `${validUrls.length} görsel seçildi`,
+            variant: "success"
+          });
         } else {
-          setError('Geçersiz görsel URL\'leri');
+          showToast({
+            title: "Hata",
+            description: "Geçersiz görsel URL'leri",
+            variant: "danger"
+          });
         }
       } else if (url && (url.startsWith('/') || url.startsWith('http://') || url.startsWith('https://'))) {
         changeHandler(url);
+        showToast({
+          title: "Başarılı",
+          description: "Görsel başarıyla yüklendi",
+          variant: "success"
+        });
       } else {
-        setError('Geçersiz görsel URL\'i');
+        showToast({
+          title: "Hata",
+          description: "Geçersiz görsel URL'i",
+          variant: "danger"
+        });
       }
+    } catch (error) {
+      console.error('ImageUpload onChange error:', error);
+      showToast({
+        title: "Hata",
+        description: "Görsel işlenirken hata oluştu",
+        variant: "danger"
+      });
     }
   };
 
-  // File selection handler
+  // File selection handler with improved error handling
   const handleFileSelect = async (files: FileList | null) => {
     if (!files || files.length === 0) return;
     
-    setError('');
     setUploading(true);
     setUploadProgress(0);
 
     try {
       const file = files[0];
       
+      // Validate file size
       if (file.size > maxSize * 1024 * 1024) {
-        throw new Error(`Dosya boyutu ${maxSize}MB&apos;dan büyük olamaz`);
+        throw new Error(`Dosya boyutu ${maxSize}MB'dan büyük olamaz`);
       }
 
+      // Validate file type
       if (!file.type.startsWith('image/')) {
         throw new Error('Sadece resim dosyaları yüklenebilir');
       }
 
       const formData = new FormData();
       formData.append('file', file);
-      formData.append('context', pageContext);
+      formData.append('pageContext', pageContext);
 
+      // Progress simulation
       const progressInterval = setInterval(() => {
         setUploadProgress(prev => {
           if (prev >= 90) {
@@ -108,7 +150,8 @@ const ImageUpload: React.FC<ImageUploadProps> = ({
         });
       }, 200);
 
-      const response = await fetch('/api/upload', {
+      // Upload to server
+      const response = await fetch('/api/admin/upload', {
         method: 'POST',
         body: formData,
       });
@@ -122,15 +165,25 @@ const ImageUpload: React.FC<ImageUploadProps> = ({
       }
 
       const data = await response.json();
-      handleOnChange(data.url);
-      setSuccess('Resim başarıyla yüklendi!');
       
+      if (data.success && data.url) {
+        handleOnChange(data.url);
+      } else {
+        throw new Error('Upload response geçersiz');
+      }
+      
+      // Reset progress after success
       setTimeout(() => {
-        setSuccess('');
         setUploadProgress(0);
-      }, 2000);
-    } catch (e) {
-      setError(e instanceof Error ? e.message : 'Upload sırasında hata oluştu');
+      }, 1000);
+      
+    } catch (error) {
+      console.error('File upload error:', error);
+      showToast({
+        title: "Upload Hatası",
+        description: error instanceof Error ? error.message : 'Upload sırasında hata oluştu',
+        variant: "danger"
+      });
       setUploadProgress(0);
     } finally {
       setUploading(false);
@@ -140,6 +193,7 @@ const ImageUpload: React.FC<ImageUploadProps> = ({
   // Remove image handler
   const removeImage = async () => {
     try {
+      // Use primary onChange prop, fallback to deprecated props
       if (typeof onRemove === 'function') {
         onRemove();
       } else if (typeof onImageRemove === 'function') {
@@ -147,10 +201,19 @@ const ImageUpload: React.FC<ImageUploadProps> = ({
       } else if (typeof onChange === 'function') {
         onChange('');
       }
-      setSuccess('Resim başarıyla silindi!');
-      setTimeout(() => setSuccess(''), 2000);
-    } catch {
-      setError('Resim silinirken hata oluştu');
+      
+      showToast({
+        title: "Başarılı",
+        description: "Görsel başarıyla kaldırıldı",
+        variant: "success"
+      });
+    } catch (error) {
+      console.error('Image remove error:', error);
+      showToast({
+        title: "Hata",
+        description: "Görsel kaldırılırken hata oluştu",
+        variant: "danger"
+      });
     }
   };
 
@@ -164,14 +227,8 @@ const ImageUpload: React.FC<ImageUploadProps> = ({
   };
 
   const handleMediaSelect = (url: string | string[]) => {
-    if (typeof onChange === 'function') {
-      onChange(url);
-    } else if (typeof onImageUpload === 'function') {
-      onImageUpload(url);
-    }
-    const count = Array.isArray(url) ? url.length : 1;
-    setSuccess(`${count} görsel başarıyla seçildi!`);
-    setTimeout(() => setSuccess(''), 2000);
+    handleOnChange(url);
+    setShowMediaBrowser(false);
   };
 
   const handleCloseBrowser = () => {
@@ -181,20 +238,26 @@ const ImageUpload: React.FC<ImageUploadProps> = ({
   // URL Input handlers
   const handleUrlSubmit = () => {
     if (!urlInput.trim()) {
-      setError('Geçerli bir URL girin');
+      showToast({
+        title: "Hata",
+        description: "Geçerli bir URL girin",
+        variant: "danger"
+      });
       return;
     }
 
     if (!urlInput.startsWith('http://') && !urlInput.startsWith('https://')) {
-      setError('URL http:// veya https:// ile başlamalıdır');
+      showToast({
+        title: "Hata",
+        description: "URL http:// veya https:// ile başlamalıdır",
+        variant: "danger"
+      });
       return;
     }
 
     handleOnChange(urlInput.trim());
-    setSuccess('URL ile görsel başarıyla eklendi!');
     setShowUrlModal(false);
     setUrlInput('');
-    setTimeout(() => setSuccess(''), 2000);
   };
 
   // Check if image exists
@@ -213,24 +276,7 @@ const ImageUpload: React.FC<ImageUploadProps> = ({
         </label>
       )}
 
-      {/* Messages */}
-      {error && (
-        <div className="p-3 bg-red-50 border border-red-200 rounded-lg">
-          <div className="flex items-center space-x-2">
-            <ExclamationTriangleIcon className="w-4 h-4 text-red-500 flex-shrink-0" />
-            <span className="text-sm text-red-700">{error}</span>
-          </div>
-        </div>
-      )}
-
-      {success && (
-        <div className="p-3 bg-brand-primary-50 border border-brand-primary-200 rounded-lg">
-          <div className="flex items-center space-x-2">
-            <CheckIcon className="w-4 h-4 text-brand-primary-600 flex-shrink-0" />
-            <span className="text-sm text-brand-primary-800">{success}</span>
-          </div>
-        </div>
-      )}
+      {/* Toast notifications are handled by useToast hook */}
 
       {/* Main Upload Area */}
       <div className="border border-gray-200 rounded-lg overflow-hidden bg-white">
@@ -245,7 +291,7 @@ const ImageUpload: React.FC<ImageUploadProps> = ({
                   alt="Uploaded image"
                   fill
                   className="object-cover"
-                  onError={() => setError('Görsel yüklenirken hata oluştu')}
+                  onError={() => console.error('Görsel yüklenirken hata oluştu')}
                 />
               </div>
               <div className="flex-1 min-w-0">

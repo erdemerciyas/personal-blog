@@ -365,7 +365,7 @@ export default function FooterSettingsPage() {
                     value={settings.mainDescription}
                     onChange={(value) => updateSettings('mainDescription', value)}
                     placeholder="Sitenizin ana açıklaması..."
-                    rows={4}
+                    minHeight="120px"
                   />
                 </div>
 

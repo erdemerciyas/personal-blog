@@ -2,17 +2,25 @@
 @tailwind components;
 @tailwind utilities;
 
+/* TipTap Editor Styles */
+@import '../styles/editor.css';
+
 /* Add Inter font from Google Fonts */
 
 
 :root {
   /* Fixral Design System Variables - Updated to Brand Primary */
-  --fixral-night-blue: 0, 52, 80; /* #003450 */
-  --fixral-primary: 0, 52, 80; /* #003450 */
-  --fixral-light-gray: 248, 249, 250; /* #F8F9FA */
-  --fixral-charcoal: 61, 61, 61; /* #3D3D3D */
-  --fixral-gray-blue: 58, 80, 107; /* #3A506B */
-  
+  --fixral-night-blue: 0, 52, 80;
+  /* #003450 */
+  --fixral-primary: 0, 52, 80;
+  /* #003450 */
+  --fixral-light-gray: 248, 249, 250;
+  /* #F8F9FA */
+  --fixral-charcoal: 61, 61, 61;
+  /* #3D3D3D */
+  --fixral-gray-blue: 58, 80, 107;
+  /* #3A506B */
+
   /* Brand Color System - CSS Custom Properties */
   --brand-primary-50: #f0f9ff;
   --brand-primary-100: #e0f2fe;
@@ -25,7 +33,7 @@
   --brand-primary-800: #075985;
   --brand-primary-900: #003450;
   --brand-primary: var(--brand-primary-900);
-  
+
   /* Semantic color mappings */
   --foreground-rgb: var(--fixral-charcoal);
   --background-start-rgb: var(--fixral-light-gray);
@@ -37,13 +45,13 @@
   --text-primary: var(--fixral-night-blue);
   --text-secondary: var(--fixral-charcoal);
   --text-muted: var(--fixral-gray-blue);
-  
+
   /* Semantic colors */
   --color-success: #10b981;
   --color-warning: #f59e0b;
   --color-error: #ef4444;
   --color-info: var(--brand-primary-600);
-  
+
   /* Font variables */
   --font-inter: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
 }
@@ -51,12 +59,17 @@
 /* Dark theme variables (media-based) */
 @media (prefers-color-scheme: dark) {
   :root {
-    --foreground-rgb: 226, 232, 240; /* slate-200 */
-    --background-start-rgb: 15, 23, 42; /* slate-900-ish */
+    --foreground-rgb: 226, 232, 240;
+    /* slate-200 */
+    --background-start-rgb: 15, 23, 42;
+    /* slate-900-ish */
     --background-end-rgb: 15, 23, 42;
-    --text-primary: 226, 232, 240; /* slate-200 */
-    --text-secondary: 203, 213, 225; /* slate-300 */
-    --text-muted: 148, 163, 184; /* slate-400 */
+    --text-primary: 226, 232, 240;
+    /* slate-200 */
+    --text-secondary: 203, 213, 225;
+    /* slate-300 */
+    --text-muted: 148, 163, 184;
+    /* slate-400 */
   }
 }
 
@@ -66,7 +79,8 @@
 
 html {
   scroll-behavior: smooth;
-  scroll-padding-top: 80px; /* Header yüksekliği için */
+  scroll-padding-top: 80px;
+  /* Header yüksekliği için */
 }
 
 /* Smooth scrolling for anchor links */
@@ -92,7 +106,12 @@ body {
 }
 
 /* Fixral Typography Classes */
-h1, h2, h3, h4, h5, h6 {
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
   font-family: var(--font-inter);
   color: rgb(var(--fixral-night-blue));
   font-weight: 600;
@@ -105,18 +124,22 @@ h1, h2, h3, h4, h5, h6 {
 
 /* Hide scrollbar but keep functionality */
 .hide-scrollbar {
-  -ms-overflow-style: none;  /* IE and Edge */
-  scrollbar-width: none;  /* Firefox */
+  -ms-overflow-style: none;
+  /* IE and Edge */
+  scrollbar-width: none;
+  /* Firefox */
 }
 
 .hide-scrollbar::-webkit-scrollbar {
-  display: none; /* Chrome, Safari and Opera */
+  display: none;
+  /* Chrome, Safari and Opera */
 }
 
 
 
 /* Design System Components */
 @layer components {
+
   /* Fixral Buttons */
   .btn {
     @apply inline-flex items-center justify-center px-6 py-3 rounded-fixral text-base font-medium cursor-pointer transition-all duration-300 focus:outline-none transform-gpu;
@@ -125,7 +148,7 @@ h1, h2, h3, h4, h5, h6 {
   .btn-primary {
     @apply btn bg-brand-primary-900 text-white border-none hover:bg-brand-primary-800 focus:ring-2 focus:ring-brand-primary-600/25 active:scale-95 w-auto;
   }
-  
+
   .btn-secondary {
     @apply btn bg-slate-700 text-white border-none hover:bg-slate-800 hover:scale-105 focus:ring-2 focus:ring-slate-500/25 active:scale-95 w-auto;
   }
@@ -137,7 +160,7 @@ h1, h2, h3, h4, h5, h6 {
   .btn-ghost {
     @apply inline-flex items-center justify-center px-6 py-3 bg-transparent text-slate-600 hover:text-brand-primary-700 hover:bg-slate-100 hover:scale-105 font-medium rounded-xl transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-slate-400/50 active:scale-95 transform-gpu;
   }
-  
+
   /* Cards */
   .card {
     @apply bg-white border border-gray-200 rounded-lg shadow-md p-6 transition-shadow duration-300 hover:shadow-lg dark:bg-slate-900 dark:border-slate-700 dark:text-slate-100;
@@ -258,7 +281,7 @@ h1, h2, h3, h4, h5, h6 {
   }
 
   .container-content {
-    @apply max-w-5xl mx-auto px-6 sm:px-8 lg:px-12;
+    @apply max-w-6xl mx-auto px-6 sm:px-8 lg:px-12;
   }
 
   .container-narrow {
@@ -282,9 +305,11 @@ h1, h2, h3, h4, h5, h6 {
   .section-header {
     @apply text-center mb-12 md:mb-16;
   }
+
   .section-header h2 {
     @apply section-title;
   }
+
   .section-header p {
     @apply section-subtitle max-w-3xl mx-auto;
   }
@@ -327,16 +352,16 @@ h1, h2, h3, h4, h5, h6 {
     will-change: transform;
     backface-visibility: hidden;
   }
-  
+
   /* Additional transform utilities */
   .transform-3d {
     transform-style: preserve-3d;
   }
-  
+
   .transform-smooth {
     transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   }
-  
+
   .transform-hardware {
     transform: translate3d(0, 0, 0);
     will-change: transform, opacity;
@@ -396,8 +421,10 @@ select {
 }
 
 select option {
-  color: #1e293b !important; /* slate-800 for light theme readability */
-  background-color: #ffffff !important; /* white background for options */
+  color: #1e293b !important;
+  /* slate-800 for light theme readability */
+  background-color: #ffffff !important;
+  /* white background for options */
   font-weight: 500 !important;
   padding: 8px 12px !important;
 }
@@ -408,8 +435,10 @@ select option {
 [class*="slate-800"] select option,
 [class*="bg-white/5"] select option,
 [class*="bg-slate"] select option {
-  color: #1e293b !important; /* Keep dark text for readability */
-  background-color: #ffffff !important; /* White background for contrast */
+  color: #1e293b !important;
+  /* Keep dark text for readability */
+  background-color: #ffffff !important;
+  /* White background for contrast */
 }
 
 /* Ensure select dropdown has proper styling */
@@ -494,6 +523,7 @@ select::-webkit-scrollbar-thumb:hover {
     opacity: 0;
     transform: translate3d(0, 20px, 0);
   }
+
   to {
     opacity: 1;
     transform: translate3d(0, 0, 0);
@@ -511,6 +541,7 @@ select::-webkit-scrollbar-thumb:hover {
     opacity: 0;
     transform: translate3d(-30px, 0, 0);
   }
+
   to {
     opacity: 1;
     transform: translate3d(0, 0, 0);
@@ -528,6 +559,7 @@ select::-webkit-scrollbar-thumb:hover {
     opacity: 0;
     transform: translate3d(30px, 0, 0);
   }
+
   to {
     opacity: 1;
     transform: translate3d(0, 0, 0);
@@ -601,6 +633,7 @@ select::-webkit-scrollbar-thumb:hover {
   0% {
     background-position: -200% 0;
   }
+
   100% {
     background-position: 200% 0;
   }
@@ -611,7 +644,7 @@ select::-webkit-scrollbar-thumb:hover {
   .no-print {
     display: none !important;
   }
-  
+
   .print-only {
     display: block !important;
   }
@@ -619,6 +652,7 @@ select::-webkit-scrollbar-thumb:hover {
 
 /* Fixral Mobile Responsiveness */
 @media (max-width: 640px) {
+
   /* Mobile hero spacing and safe areas */
   .section-hero {
     padding-top: calc(env(safe-area-inset-top) + 5rem);
@@ -633,8 +667,8 @@ select::-webkit-scrollbar-thumb:hover {
   .mobile-scroll-snap {
     scroll-snap-type: x mandatory;
   }
-  
-  .mobile-scroll-snap > * {
+
+  .mobile-scroll-snap>* {
     scroll-snap-align: start;
   }
 
@@ -667,7 +701,12 @@ select::-webkit-scrollbar-thumb:hover {
     line-height: 1.5;
   }
 
-  h1, h2, h3, h4, h5, h6 {
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6 {
     font-family: var(--font-inter);
     line-height: 1.2;
     padding: 0.1em 0;
@@ -767,6 +806,7 @@ select::-webkit-scrollbar-thumb:hover {
 
 /* Reduce motion for users who prefer it */
 @media (prefers-reduced-motion: reduce) {
+
   *,
   *::before,
   *::after {
@@ -775,7 +815,7 @@ select::-webkit-scrollbar-thumb:hover {
     transition-duration: 0.01ms !important;
     scroll-behavior: auto !important;
   }
-  
+
   .animate-fade-in,
   .animate-slide-in-left,
   .animate-slide-in-right {
@@ -832,25 +872,26 @@ footer .text-slate-400 {
 
 /* High contrast mode support */
 @media (prefers-contrast: high) {
+
   .text-brand-primary-800,
   .text-brand-primary-900 {
     color: #000000 !important;
   }
-  
+
   .text-slate-300 {
     color: #ffffff !important;
   }
-  
+
   .bg-brand-primary-900,
   .bg-brand-primary-800 {
     background-color: #000000 !important;
   }
-  
+
   .border-brand-primary-600,
   .border-brand-primary-500 {
     border-color: #000000 !important;
   }
-  
+
   footer h3 {
     color: #ffffff !important;
     text-shadow: none;
@@ -859,8 +900,14 @@ footer .text-slate-400 {
 
 /* Fix for WebKit font clipping */
 @supports (-webkit-appearance: none) {
-  h1, h2, h3, h4, h5, h6 {
+
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6 {
     -webkit-transform: translateZ(0);
     transform: translateZ(0);
   }
-} 
+}

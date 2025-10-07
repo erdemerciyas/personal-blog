@@ -1,9 +1,8 @@
 'use client';
 
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { usePathname } from 'next/navigation';
 import BreadcrumbsJsonLd from './BreadcrumbsJsonLd';
-import { config } from '../../lib/config';
 
 function prettify(segment: string) {
   let label = segment.replace(/-/g, ' ');
@@ -21,16 +20,25 @@ function prettify(segment: string) {
 
 export default function GlobalBreadcrumbsJsonLd() {
   const pathname = usePathname() ?? '';
-  if (pathname === '/' || pathname.startsWith('/admin')) return null;
+  const [baseUrl, setBaseUrl] = useState('');
+
+  useEffect(() => {
+    // Client-side'da window.location.origin kullan
+    if (typeof window !== 'undefined') {
+      setBaseUrl(window.location.origin);
+    }
+  }, []);
+
+  // Hydration tamamlanana kadar render etme
+  if (!baseUrl || pathname === '/' || pathname.startsWith('/admin')) return null;
 
   const segments = pathname.split('/').filter(Boolean);
-  const base = (config.app.url || '').replace(/\/$/, '');
-  const items = [{ name: 'Anasayfa', item: `${base}/` }];
+  const items = [{ name: 'Anasayfa', item: `${baseUrl}/` }];
   let current = '';
 
   for (const s of segments) {
     current += `/${s}`;
-    items.push({ name: prettify(s), item: `${base}${current}` });
+    items.push({ name: prettify(s), item: `${baseUrl}${current}` });
   }
 
   return <BreadcrumbsJsonLd items={items} />;

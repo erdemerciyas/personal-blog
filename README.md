@@ -13,68 +13,53 @@
 
 Modern, güvenli ve performanslı kişisel blog ve portfolyo platformu. Next.js 14, TypeScript, MongoDB ve Tailwind CSS ile geliştirilmiştir.
 
-## Live Demo
+## 🚀 Live Demo
 
 **[Live Site](https://www.fixral.com)** | **[Admin Panel](https://www.fixral.com/admin)** | **[API Health](https://www.fixral.com/api/health)**
 
-> **Status**: **LIVE** | **Last Deploy**: 2025-09-25 | **Version**: v2.5.0 | **CI/CD Pipeline**: **OPTIMIZED**
+> **Status**: **LIVE** | **Last Deploy**: 2025-01-27 | **Version**: v2.5.1 | **CI/CD Pipeline**: **OPTIMIZED**
 
-## Özellikler
+## ✨ Özellikler
+
+### 🎨 Modern UI/UX
 - **Responsive Tasarım**: Tüm cihazlarda mükemmel görünüm
+- **Dark/Light Mode**: Otomatik tema desteği
+- **Smooth Animations**: Framer Motion ile akıcı animasyonlar
+- **Accessibility Ready**: WCAG 2.1 AA uyumlu
+
+### 📊 Portfolio Yönetimi
+- **Dynamic Portfolio**: Rastgele proje gösterimi
+- **Advanced Filtering**: Kategori, teknoloji ve tarih filtreleri
+- **Lightbox Gallery**: Tam ekran görsel galeri
 - **SEO Optimized**: Slug-based URL yapısı
 
-### YouTube Video Yönetimi
-- **Basit Video Ekleme**: YouTube video linklerini yapıştırarak otomatik ekleme
-- **Otomatik Bilgi Alma**: Video başlığı, thumbnail ve kanal bilgilerini otomatik çekme
-- **Toplu İşlemler**: Çoklu video seçimi ve toplu silme özellikleri
-- **Video Düzenleme**: Başlık, açıklama, etiketler ve görünürlük ayarları
-- **Arama ve Filtreleme**: Başlık, açıklama ve etiketlere göre gelişmiş arama
-- **Modern Admin Paneli**: Kullanıcı dostu arayüz ile kolay video yönetimi
-
-### Güvenlik Özellikleri
-- **Rate Limiting**: API endpoint koruması (akıllı bypass sistemi)
+### 🛡️ Güvenlik Özellikleri
+- **Rate Limiting**: API endpoint koruması
 - **CSRF Protection**: Cross-site request forgery koruması
 - **XSS Prevention**: HTML sanitization
 - **Security Headers**: Kapsamlı güvenlik başlıkları
 - **Input Validation**: Tüm girişlerde doğrulama
-- **Database Security**: MongoDB injection koruması
 
-### Performans Optimizasyonları
+### ⚡ Performans Optimizasyonları
 - **Server-Side Rendering**: Hızlı sayfa yükleme
 - **Image Optimization**: Next.js Image component
 - **Bundle Optimization**: Code splitting ve tree shaking
 - **Client-Side Caching**: Akıllı API önbellekleme sistemi
 - **Lazy Loading**: İhtiyaç anında yükleme
-- **Error Boundaries**: Hata yakalama ve kurtarma
-- **Retry Logic**: Otomatik yeniden deneme mekanizması
 
-### Monitoring ve Performance Tracking
-- **Real-time Monitoring**: Sistem sağlığı ve performans izleme
-- **Error Tracking**: React Error Boundary ile hata yakalama
-- **Performance Metrics**: Client ve server-side performans metrikleri
-- **Database Monitoring**: Yavaş sorgu tespiti ve optimizasyon
-- **Health Check API**: `/api/health` endpoint ile sistem durumu
-- **Admin Dashboard**: `/admin/monitoring` ile detaylı monitoring paneli
-- **Web Vitals**: Core Web Vitals metrikleri (opsiyonel)
-- **Sentry Integration**: Gelişmiş hata raporlama (opsiyonel)
+### 📹 Video Yönetimi
+- **YouTube Integration**: Basit video ekleme
+- **Otomatik Bilgi Alma**: Video metadata çekme
+- **Toplu İşlemler**: Çoklu video yönetimi
+- **Modern Admin Panel**: Kullanıcı dostu arayüz
 
-### Admin Panel
-- **Universal Editor**: Gelişmiş metin editörü sistemi
-  - Markdown ve HTML desteği
-  - Canlı önizleme özelliği
-  - Syntax highlighting
-  - Auto-save functionality
-- **Full-Width Layout**: Tam genişlik admin arayüzü
-- **Responsive Design**: Mobil uyumlu admin paneli
-- **Accessibility Ready**: WCAG 2.1 AA uyumlu renk kontrastı
-- **Service Management**: Gelişmiş servis yönetimi
-- **Footer Settings**: Dinamik footer ayarları
-- **Image Upload**: Drag & drop görsel yükleme
-- **Real-time Preview**: Canlı önizleme
-- **Video Management**: YouTube videolarını yönetme
-- **Monitoring Dashboard**: Sistem performansı ve sağlık durumu izleme
+### 📈 Monitoring & Analytics
+- **Real-time Monitoring**: Sistem sağlığı izleme
+- **Performance Metrics**: Detaylı performans metrikleri
+- **Error Tracking**: Kapsamlı hata yakalama
+- **Health Check API**: Sistem durumu endpoint'i
 
-## Teknoloji Stack
+## 🛠️ Teknoloji Stack
 
 ### Frontend
 - **Next.js 14**: React framework
@@ -92,11 +77,11 @@ Modern, güvenli ve performanslı kişisel blog ve portfolyo platformu. Next.js 
 
 ### DevOps & Deployment
 - **Vercel**: Hosting platform
-- **GitHub Actions**: CI/CD (opsiyonel)
+- **GitHub Actions**: CI/CD
 - **ESLint & Prettier**: Code quality
 - **Husky**: Git hooks
 
-## Kurulum
+## 🚀 Kurulum
 
 ### Gereksinimler
 - Node.js 18+
@@ -115,7 +100,7 @@ npm install
 ```
 
 ### 3. Environment Variables
-`.env.example` dosyasını `.env.local` olarak kopyalayın ve gerekli değerleri doldurun:
+`.env.example` dosyasını `.env.local` olarak kopyalayın:
 
 ```env
 # Database
@@ -130,20 +115,15 @@ ADMIN_EMAIL=your-email@example.com
 ADMIN_NAME=Your Name
 ADMIN_DEFAULT_PASSWORD=SecurePassword123!
 
-# YouTube API (Opsiyonel - Video entegrasyonu için)
-YOUTUBE_API_KEY=your_youtube_api_key_here
-YOUTUBE_CHANNEL_ID=your_youtube_channel_id_here
+# Mail Configuration
+GMAIL_USER=your-gmail@gmail.com
+GMAIL_APP_PASSWORD=your-gmail-app-password
 
 # Cloudinary (Optional)
 CLOUDINARY_CLOUD_NAME=your-cloud-name
 CLOUDINARY_API_KEY=your-api-key
 CLOUDINARY_API_SECRET=your-api-secret
 ```
-
-Notlar:
-- MongoDB kurulu değilse uygulama public sayfalar ve varsayılan metadata ile açılır; admin ve veri yazma işlemleri çalışmaz.
-- YouTube entegrasyonu için YouTube Data API v3 key'i ve kanal ID'si gereklidir.
-- Production build artık ESLint/TS hatalarında durur. Geliştirme için `npm run dev` yeterlidir; build için önce `npm run lint:fix && npm run type-check` çalıştırın.
 
 ### 4. Geliştirme Sunucusunu Başlatın
 ```bash
@@ -152,347 +132,7 @@ npm run dev
 
 Uygulama [http://localhost:3000](http://localhost:3000) adresinde çalışacaktır.
 
-## YouTube Video Yönetimi
-
-Bu proje, YouTube videolarını basit ve etkili bir şekilde yönetme özelliğine sahiptir.
-
-### Özellikler
-- **Basit Video Ekleme**: Sadece YouTube linklerini yapıştırın
-- **Otomatik Bilgi Alma**: Video başlığı, thumbnail ve kanal bilgilerini otomatik çeker
-- **Toplu İşlemler**: Çoklu video seçimi ve toplu silme
-- **Video Düzenleme**: Başlık, açıklama, etiketler ve görünürlük ayarları
-- **Arama ve Filtreleme**: Gelişmiş arama ve filtreleme sistemi
-- **Modern Admin Paneli**: Kullanıcı dostu arayüz
-
-### Kurulum
-
-API key gerekmez! Sistem YouTube'un oEmbed API'sini kullanır.
-
-### Kullanım
-
-1. **Video Ekleme**:
-   - Admin paneline giriş yapın
-   - "Video Yönetimi" sayfasına gidin
-   - Üstteki alana YouTube video linklerini yapıştırın
-   - "Video Ekle" butonuna tıklayın
-
-2. **Toplu İşlemler**:
-   - Videoları seçmek için checkbox'ları kullanın
-   - "Seçilenleri Sil" ile toplu silme yapın
-   - "Tümünü Seç/Kaldır" ile hızlı seçim
-
-3. **Video Düzenleme**:
-   - "Düzenle" butonuna tıklayın
-   - Modal'da video bilgilerini güncelleyin
-   - Görünürlük durumunu değiştirin
-
-4. **Public Sayfa**:
-   - `/videos` adresinden tüm videoları görüntüleyin
-   - Arama ve filtreleme özelliklerini kullanın
-
-### Desteklenen Formatlar
-```
-# Tek video
-https://www.youtube.com/watch?v=VIDEO_ID
-
-# Çoklu video (her satıra bir tane)
-https://www.youtube.com/watch?v=VIDEO_ID_1
-https://www.youtube.com/watch?v=VIDEO_ID_2
-https://www.youtube.com/watch?v=VIDEO_ID_3
-```
-
-## Yeni Özellikler (v2.4.2)
-
-### ESLint ve CI/CD Stabilite İyileştirmeleri (2025-01-27)
-- **ESLint Hata Düzeltmeleri**: Tüm kritik ESLint hataları çözüldü
-  - `react/no-unescaped-entities` hataları düzeltildi
-  - `@typescript-eslint/no-unused-vars` uyarıları temizlendi
-  - React Hook dependency uyarıları çözüldü
-- **CI/CD Pipeline İyileştirmeleri**: GitHub Actions stabilite artırıldı
-  - ESLint hataları artık build'i durdurur
-  - TypeScript kontrolleri esnek tutuldu
-  - Better error reporting eklendi
-- **Code Quality**: ESLint konfigürasyonu optimize edildi
-  - Ignore patterns iyileştirildi
-  - API routes için özel kurallar
-  - Test files için ayrı konfigürasyon
-
-### Mail Sistemi Tamamlandı (2025-01-27)
-- **Gmail SMTP Integration**: Tam entegrasyon tamamlandı
-- **Test Araçları**: `npm run test:mail` ve debug scriptleri
-- **Admin Panel Integration**: Real-time mail status monitoring
-- **Kapsamlı Dokümantasyon**: `docs/MAIL_SETUP.md` rehberi
-
-## Önceki Özellikler (v2.4.0)
-
-### Gelişmiş Video Yönetim Sistemi (2025-01-27)
-- **Basitleştirilmiş Video Ekleme**: Sadece YouTube video linkleri kabul eden temiz arayüz
-  - Tek video veya çoklu video ekleme (her satıra bir link)
-  - Otomatik video bilgisi alma (oEmbed API ile başlık, thumbnail, kanal)
-  - API key gerektirmeyen sistem
-- **Toplu Video İşlemleri**: Modern seçim ve silme sistemi
-  - Checkbox ile çoklu video seçimi
-  - "Tümünü seç/kaldır" toplu seçim özelliği
-  - Toplu silme ile seçili videoları tek seferde silme
-  - Güvenli silme onay sistemi
-- **Gelişmiş Video Yönetimi**: Kapsamlı CRUD işlemleri
-  - Tek video silme butonu (işlemler alanında)
-  - Video düzenleme modalı (başlık, açıklama, etiketler, durum)
-  - Görünürlük toggle (göster/gizle)
-  - YouTube'da izle direkt linki
-- **Temizlenmiş Admin Arayüzü**: Kanal yönetimi modalı kaldırıldı
-  - Üst kısımda video ekleme alanı
-  - Temiz ve odaklanmış kullanıcı deneyimi
-  - Gerçek zamanlı arama ve filtreleme
-- **API Optimizasyonları**: Yeni endpoint'ler ve performans iyileştirmeleri
-  - `POST /api/admin/content` - Video ekleme
-  - `DELETE /api/admin/videos/[id]` - Tek video silme
-  - `POST /api/admin/videos/bulk-delete` - Toplu silme
-  - `PUT /api/admin/videos/[id]/status` - Durum değiştirme
-- **Kod Temizliği**: Gereksiz kanal yönetimi kodları kaldırıldı
-  - Kullanılmayan API route'ları silindi
-  - Test script'leri temizlendi
-  - Daha temiz proje yapısı
-
-## Önceki Özellikler (v2.3.4)
-
-### Kapsamlı Monitoring ve Performance Tracking Sistemi (2025-08-27)
-- **Real-time Performance Monitoring**: Client ve server-side performans metrikleri
-  - Sayfa yükleme süreleri ve render performansı
-  - API endpoint response time tracking
-  - Database query performance monitoring (>1s uyarı, >5s kritik)
-  - Web Vitals metrikleri desteği (CLS, FID, FCP, LCP, TTFB)
-- **Gelişmiş Error Tracking**: Kapsamlı hata yakalama sistemi
-  - React Error Boundary ile component hata yakalama
-  - Unhandled promise rejections ve uncaught exceptions
-  - API error monitoring ve otomatik raporlama
-  - Custom error context ve breadcrumb sistemi
-- **Admin Monitoring Dashboard**: `/admin/monitoring` - Real-time sistem izleme
-  - Server metrics (uptime, memory, CPU usage, active connections)
-  - Database health monitoring (connection status, response time)
-  - Error metrics (total errors, error rate, critical errors)
-  - Client performance (average load/render times, slow pages)
-- **Health Check API**: `/api/health` - Sistem sağlık durumu endpoint'i
-- **Production Ready Features**:
-  - Environment-based logging (development/production)
-  - Optional Sentry integration (install @sentry/nextjs)
-  - Performance thresholds configuration
-  - Automatic error reporting ve alerting
-  - TypeScript support ile type-safe monitoring
-- **Comprehensive Testing**: 52 test (11 test suite) - monitoring sistemi tam test coverage
-- **Documentation**: Detaylı monitoring dokümantasyonu (`docs/MONITORING.md`)
-
-### Build Fixes ve Production Optimizations (2025-08-27)
-- **TypeScript Fixes**: usePerformanceMonitoring hook'unda null pathname handling
-- **Missing Dependencies**: useAuth hook eklendi (admin monitoring dashboard için)
-- **Web Vitals**: Optional web-vitals package desteği (install web-vitals to enable)
-- **Production Build**: ✅ Başarılı build (68 sayfa, warning'ler temizlendi)
-- **Sentry Integration**: Optional Sentry entegrasyonu (graceful fallback)
-
-### Hero Badge Temizliği (2025-08-23)
-- **Hero Alanları Sadeleştirme**: Tüm sayfalardaki hero alanlarından badge elementleri kaldırıldı
-  - Ana sayfa slider badge'i temizlendi ("Yenilikçi" etiketi)
-  - Services sayfası "Profesyonel Hizmetler" badge'i kaldırıldı
-  - Contact sayfası "İletişim" badge'i kaldırıldı
-  - Portfolio sayfası "Yaratıcı Çözümler" badge'i kaldırıldı
-  - About sayfası hero subtitle badge'i (yeşil nokta + metin) temizlendi
-- **Component Optimizasyonu**: PageHero component'inden badge prop'u ve gösterimi tamamen çıkarıldı
-- **Code Cleanup**: Kullanılmayan SparklesIcon import'ları temizlendi
-- **UI Basitleştirme**: Hero alanları artık sadece başlık, açıklama ve CTA butonları içeriyor
-- **Performans**: Gereksiz elementlerin kaldırılmasıyla daha temiz ve hızlı hero alanları
-
----
-
-## Yeni Özellikler (v2.3.3)
-
-### Sentry Konfigürasyonu ve Build Hataları Düzeltmesi (2025-08-23)
-- Deprecated Sentry API'lerinden yeni SDK yapısına geçiş tamamlandı:
-  - `Sentry.Integrations.Http()` → `Sentry.httpIntegration()` güncellemesi
-  - `Sentry.startTransaction()` → `Sentry.startSpan()` API değişikliği
-  - Instrumentation dosyaları Next.js 14.2.30 standartlarına uygun hale getirildi
-- TypeScript ve ESLint uyumluluk sorunları giderildi:
-  - JWT library type overload sorunları `@ts-expect-error` ile çözüldü
-  - Circular dependency hatası useJWTAuth hook'unda düzeltildi
-  - React JSX parsing hatası usePerformanceMonitoring'de giderildi
-- Build başarılı: ✅ 93 sayfa derlendi, tüm lint ve type kontrolleri geçti
-- Sentry yapılandırması güncel API'ler ile optimize edildi
-
-### Breadcrumbs Yerleşimi ve Hydration Fix (2025-08-20)
-- Görsel Breadcrumbs, tüm alt sayfalarda hero bölümünün hemen altında, içerik konteyneri içinde tutarlı şekilde gösteriliyor:
-  - `products/page.tsx`, `products/[slug]/order/page.tsx`, `portfolio/page.tsx`, `services/page.tsx`, `contact/page.tsx`, `products/[slug]/page.tsx`
-- JSON-LD hydration uyarısı düzeltildi:
-  - `GlobalBreadcrumbsJsonLd.tsx` mutlak URL üretimini `config.app.url` üzerinden yapıyor.
-  - `BreadcrumbsJsonLd.tsx` istemci taraflı `window` tabanlı normalizasyon kaldırıldı.
-- Breadcrumbs görsel tasarımı güçlendirildi: kart stili, ikonlu ayıraçlar, artırılmış kontrast ve erişilebilirlik (`aria-label`).
-- Hero alanına taşma kaldırıldı; Breadcrumbs içerik alanında kalacak şekilde konumlandırıldı.
-
----
-
-## Yeni Özellikler (v2.3.2)
-
-### Pattern Sistemi Temizliği (2025-08-19)
-- Arka plan pattern tasarımı tamamen kaldırıldı: `data-pattern`, `PatternToggle` bileşeni ve `.bg-pattern*` CSS sınıfları temizlendi.
-- `layout.tsx` dekoratif radial blob katmanı da kaldırılarak düz arka plan tercih edildi.
-- Kullanılmayan CSS ve bileşen izleri temizlendi; dokümantasyon güncellendi.
-- Breaking change yok; UI arkaplanı sadeleştirildi.
-
----
-
-## Yeni Özellikler (v2.3.1)
-
-### Admin Google Entegrasyonları (2025-08-17)
-- Admin > Ayarlar > Genel altında Google Site Verification alanı eklendi.
-- Google Analytics (GA4) ve Google Tag Manager (GTM) kimlik alanları eklendi; ID girildiğinde scriptler otomatik yüklenir.
-- Global `layout` içinde doğrulama meta ve GA/GTM scriptleri dinamik hale getirildi.
-- Sitemap `baseUrl` artık `Settings.siteUrl` değerinden okunuyor; DB yoksa mevcut fallback kullanılır.
-
----
-
-## Yeni Özellikler (v2.3.0)
-
-### Medya Yönetimi: Cloudinary Geçişi (2025-08-17)
-- Tüm local logo yüklemeleri Cloudinary'e taşındı: `src/app/api/admin/logo-upload/route.ts` artık Cloudinary upload kullanıyor.
-- Varsayılan görsel yolları cloud'a alındı: `src/models/Settings.ts` ve `src/app/api/settings/route.ts` güncellendi.
-- Bileşen fallback görselleri uzak URL'lere taşındı: `ProjectCard.tsx` ve `ModernProjectCard.tsx` Cloudinary placeholder kullanıyor.
-- Yerel logoları otomatik taşımak için script eklendi: `scripts/migrate-local-media-to-cloudinary.js` (opsiyonel `--delete`).
-- Next Image için Cloudinary remote domain kullanımı doğrulandı.
-
-Not: Placeholder olarak `res.cloudinary.com/demo/...` kullanıldı. Kendi hesabınızda kalıcı bir default görsel oluşturup URL'leri güncellemeniz önerilir.
-
----
-
-## Yeni Özellikler (v2.2.9)
-
-### TypeScript ve Lint Temizliği (2025-08-12)
-- Proje genelinde TypeScript tip hataları giderildi, `npm run type-check` hatasız
-- `no-explicit-any` ve ilgili ESLint uyarıları temizlendi
-- Mongoose pre hook'larında `this` tipleri tanımlanarak güvenli hale getirildi
-- `appConfig.freeShippingThreshold` erişimleri dar tiplerle güvence altına alındı
-- Portfolio slug API için lean sonuç arayüzleri eklendi, güvenli erişim sağlandı
-- `npm run build` başarıyla doğrulandı
-
----
-
-## Önceki Güncellemeler (v2.2.7)
-
-### Ürün Medyası Ayrıştırma ve Yönetim (2025-08-11)
-- Ürün görselleri/dosyaları Cloudinary'de `personal-blog/products/images|docs` klasörlerine alındı
-- Site geneli medya ile ürün medyası ayrıştırıldı; admin medya sayfasına kapsam filtresi eklendi (Site/Ürün/Hepsi)
-- `Ürün Medyası` admin sayfası: sadece ürün medyasını listeler; URL kopyalama ve silme aksiyonları
-- Ürün oluştur/düzenle’de tıklanarak görsel/dosya seçici açma düzeltildi
-- Dashboard ve üst barda ürün sayısı gösterimi eklendi
-
-### Güvenlik ve Performans
-- `Product` ve `ProductCategory` için sorgu indeksleri eklendi
-- `GET /api/products` `lean()` + projection ile hızlandırıldı
-- `GET /api/product-categories` için `s-maxage` ve `stale-while-revalidate` cache header’ları eklendi
-
----
-
-## Önceki Güncellemeler (v2.2.5)
-
-### Mobil UI Yenilemesi (2025-08-10)
-- **Hero/Slider (Mobil)**: Navigasyon okları ve play/pause mobilde gizlendi; dot göstergesi ve CTA alanı güvenli boşluklarla hizalandı
-- **CTA Butonları**: Mobilde tam genişlikte ve dikey stack; erişilebilir aralıklar
-- **Tipografi**: Başlık/alt başlık/açıklama için `leading-tight`, `break-words`, ek `px` padding ve safe-area uyumu
-- **Header**: Mobil yükseklik optimize edildi; menü açıkken içeriğe taşma yok, odak halkaları eklendi
-- **Gridler**: Portfolyo ve footer grid yapısı mobilde 1, sm’de 2, md’de 3 kolon olacak şekilde güncellendi
-- **Dev Rozeti**: Mobilde gizlendi; masaüstünde debug için görünür
-
----
-
-## Önceki Güncellemeler (v2.2.4)
-
-### Code Organization & Production Readiness (2025-01-27)
-- **Project Cleanup**: Debug ve test dosyaları kaldırıldı (debug page, test-login, rate-limit endpoints)
-- **Middleware Consolidation**: Tüm güvenlik, rate limit ve erişim kontrolleri kök `middleware.ts` altında birleştirildi; `src/middleware.ts` kaldırıldı
-- **CSP & Headers Single-Source**: Güvenlik başlıkları ve CSP artık sadece middleware üzerinden yönetiliyor; `next.config.js` header tanımları kaldırıldı
-- **Hardened CSP (Prod)**: Production ortamında `unsafe-eval`/gereksiz script izinleri kaldırıldı; admin/public için dev/prod ayrımı netleştirildi
-- **Build Quality**: `ignoreBuildErrors` ve `ignoreDuringBuilds` devre dışı bırakıldı; derleme kalite kontrolleri aktif
-- **Server Cleanup**: Özel `server.js` kaldırıldı, Next.js varsayılan sunucu kullanımı
-- **Security Hardening**: Test authentication endpoints güvenlik riski nedeniyle kaldırıldı
-- **Next.js Configuration**: Güvenlik ve performans optimizasyonları
-- **API Route Optimization**: Contact info ve services endpoints iyileştirildi
-- **Admin Panel Enhancements**: Portfolio ve services yönetimi geliştirildi
-- **Media Management**: MediaBrowser ve Toast notification sistemi iyileştirildi
-- **Authentication Updates**: Güvenlik odaklı auth sistem güncellemeleri
-- **GitHub Deployment**: Final organization ve production-ready commit
-
-### Previous Updates (v2.2.3)
-- **Proje Organizasyonu**: Tüm değişiklikler organize edildi ve commit'e hazırlandı
-- **MediaBrowser Enhancements**: Gelişmiş medya tarayıcı özellikleri
-- **Portfolio Image Gallery**: Modern görsel galeri sistemi
-- **Next.js Config Optimization**: Performans ve güvenlik yapılandırmaları
-- **Admin Media Management**: Gelişmiş admin medya yönetimi
-- **Modern Project Cards**: Yeni proje kartı tasarımları
-- **GitHub Deployment**: Production-ready kod tabanı
-- **Vercel Integration**: Otomatik deployment sistemi
-
-### Footer UI/UX İyileştirmeleri (v2.2.2)
-- **Footer Başlık Renkleri**: Başlıklar artık net beyaz renkte görünüyor
-- **FIXRAL Logo Entegrasyonu**: Footer'a profesyonel logo eklendi
-- **İletişim Bilgileri Tasarımı**: Icon background'ları ve hover efektleri
-- **Quick Links Bullet Points**: Görsel hiyerarşi iyileştirmeleri
-- **Typography Enhancement**: Daha iyi okunabilirlik ve spacing
-- **Responsive Design**: Tüm cihazlarda tutarlı görünüm
-
-### GitHub Hazırlığı ve Deployment (2025-01-27)
-- **GitHub Repository Hazırlığı**: Proje GitHub'a yayın için hazırlandı
-- **README Güncellemesi**: En güncel bilgiler ve deployment durumu
-- **Branch Temizliği**: Açık branch'ler kapatıldı ve merge edildi
-- **Vercel Deployment**: Otomatik production deployment
-- **Security Hardening**: Son güvenlik iyileştirmeleri
-- **Performance Optimization**: Bundle size ve performance optimizasyonları
-
-### Kod Kalitesi ve Optimizasyon (2025-01-27)
-- **ESLint Hata Düzeltmeleri**: 200+ → 142 hata (58+ düzeltme)
-- **TypeScript Tip Güvenliği**: Any tiplerini 100+ → 74'e düşürdük
-- **React Hook Optimizasyonları**: useEffect bağımlılıkları düzeltildi
-- **Performance İyileştirmeleri**: useMemo ve useCallback optimizasyonları
-- **Component Display Names**: React DevTools uyumluluğu
-- **Kullanılmayan Kod Temizliği**: Import'lar ve değişkenler temizlendi
-- **Build Optimizasyonu**: Hatasız production build
-
-### Güvenlik ve Performans Temizliği
-- **Kritik Güvenlik İyileştirmeleri**: Hardcoded şifreler ve debug logları temizlendi
-- **Dosya Temizliği**: 12 gereksiz dosya kaldırıldı (test, backup, migration dosyaları)
-- **Environment Optimizasyonu**: 200+ gereksiz environment variable kaldırıldı
-- **TypeScript Strict Mode**: Tip güvenliği artırıldı
-- **Production Security**: Debug mode kapatıldı, bilgi sızıntısı riskleri giderildi
-- **Performance**: %95 dosya boyutu azaltması (.env.production.example)
-
-### Proje Temizliği ve Optimizasyon
-- **Dokümantasyon Düzenleme**: Gereksiz rehber dosyaları temizlendi
-- **Proje Yapısı**: Daha temiz ve düzenli dosya organizasyonu
-- **Build Optimizasyonu**: Azaltılmış dosya sayısı ile daha hızlı build
-
-### Universal Editor
-- **Markdown Desteği**: Tam markdown syntax desteği
-- **HTML Mode**: Raw HTML düzenleme imkanı
-- **Live Preview**: Gerçek zamanlı önizleme
-- **Auto-save**: Otomatik kaydetme özelliği
-- **Syntax Highlighting**: Kod vurgulama
-
-### Admin Panel İyileştirmeleri
-- **Full-Width Layout**: Tam genişlik çalışma alanı
-- **Responsive Design**: Mobil uyumlu tasarım
-- **Enhanced Forms**: Gelişmiş form validasyonu
-- **Toast Notifications**: Kullanıcı dostu bildirim sistemi
-- **Better UX**: İyileştirilmiş kullanıcı deneyimi
-
-### Service Management
-- **CRUD Operations**: Tam servis yönetimi
-- **Image Upload**: Drag & drop görsel yükleme
-- **Feature Management**: Servis özelliklerini yönetme
-- **Live Preview**: Canlı önizleme sistemi
-
-### Contact Management
-- **Dynamic Contact Info**: Gerçek zamanlı iletişim bilgisi güncelleme
-- **Form Validation**: Kapsamlı form doğrulama
-- **Social Media Links**: Sosyal medya hesap yönetimi
-- **Error Handling**: Gelişmiş hata yönetimi
-
-## Proje Yapısı
+## 📁 Proje Yapısı
 
 ```
 src/
@@ -511,97 +151,32 @@ src/
 └── hooks/                # Custom React hooks
 ```
 
-## Portfolyo Sistemi
-
-### Modern Proje Kartları
-- Hover animasyonları
-- Teknoloji etiketleri
-- Öne çıkan proje rozetleri
-- Client ve tarih bilgileri
-
-### Gelişmiş Filtreleme
-- Çoklu kategori seçimi
-- Teknoloji bazlı filtreleme
-- Tarih aralığı filtresi
-- Gerçek zamanlı arama
-- URL-based state management
-
-### Lightbox Galeri
-- Tam ekran görüntüleme
-- Keyboard navigation
-- Touch-friendly
-- Thumbnail strip
-
-## Güvenlik
+## 🔒 Güvenlik
 
 ### Security Level: **HIGH**
 
-### Implemented Security Measures
-- **Rate Limiting**: API endpoint koruması (5 farklı seviye)
+- **Rate Limiting**: API endpoint koruması
 - **CSRF Protection**: Cross-site request forgery koruması
-- **XSS Prevention**: HTML sanitization ile
+- **XSS Prevention**: HTML sanitization
 - **Security Headers**: CSP, HSTS, X-Frame-Options
 - **Input Validation**: Tüm girişlerde doğrulama
 - **Authentication**: NextAuth.js ile güvenli kimlik doğrulama
-- **Environment Protection**: Hassas bilgi koruması
-- **Injection Prevention**: MongoDB injection koruması
-- **File Upload Security**: Magic number validation
-- **Suspicious Activity Monitoring**: Otomatik tehdit tespiti
 
-### Security Headers (Production)
-```http
-X-Frame-Options: DENY
-X-Content-Type-Options: nosniff
-Referrer-Policy: strict-origin-when-cross-origin
-Content-Security-Policy: [Comprehensive CSP]
-Strict-Transport-Security: max-age=31536000
-Permissions-Policy: camera=(), microphone=(), geolocation=()
-```
-
-### Security Compliance
-- **OWASP Top 10 2021** compliance
-- **Security audit** passed
-- **Vulnerability scanning** active
-- **Dependency monitoring** enabled
-
-## Performans
+## ⚡ Performans
 
 ### Bundle Sizes (Production)
 - **Homepage**: 9.18 kB (159 kB First Load)
 - **Portfolio**: 7.42 kB (164 kB First Load)
-- **Contact**: 6.17 kB (154 kB First Load)
-- **Services**: 3.6 kB (157 kB First Load)
 - **Shared JS**: 87.3 kB (optimized)
-- **Middleware**: 29.1 kB
-
-### Performance Metrics
-- **Build Time**: ~1 minute
-- **Static Pages**: 51 pages pre-rendered
-- **API Routes**: 47+ endpoints (monitoring endpoints dahil)
-- **First Load JS**: 87.3 kB shared
 - **Performance Score**: 92% (Excellent)
-- **Lighthouse Score**: 90+ (target)
 
-### Optimizations
-- **Server-side rendering**
-- **Image optimization** (WebP format)
-- **Code splitting & tree shaking**
-- **Bundle optimization**
-- **Compression enabled** (Gzip/Brotli)
-- **Edge caching**
-- **Lazy loading**
-- **Client-side caching**
-- **GPU-accelerated animations**
-- **Skeleton loading states**
-- **Performance monitoring**
-
-## Deployment
+## 🚀 Deployment
 
 ### Production Deployment (Vercel)
 
-**Current Status**: **LIVE** on Vercel 
+**Current Status**: **LIVE** on Vercel  
 **Deployment URL**: https://www.fixral.com  
-**Last Deploy**: 2025-08-23  
+**Last Deploy**: 2025-01-27  
 **Build Time**: ~57 seconds  
 
 #### Quick Deploy
@@ -613,103 +188,11 @@ npm run deploy
 vercel --prod
 ```
 
-#### Deployment Features
-- ✅ **CI/CD Pipeline** with GitHub Actions (build & test)
-- ✅ **Manual Deployment** for better control
-- ✅ **Security Headers** configured
-- ✅ **Performance Optimized** (87.3 kB shared JS)
-- ✅ **SEO Ready** (sitemap.xml, robots.txt)
-- ✅ **SSL Certificate** auto-configured
-- ✅ **Edge Functions** for optimal performance
-- ✅ **Cron Jobs** for automated cleanup
-
-### Environment Variables (Production)
-```env
-# Required
-NEXTAUTH_URL=https://your-domain.vercel.app
-NEXTAUTH_SECRET=your-super-secret-key
-MONGODB_URI=mongodb+srv://user:pass@cluster.mongodb.net/db
-ADMIN_EMAIL=your-email@example.com
-ADMIN_NAME=Your Name
-ADMIN_DEFAULT_PASSWORD=SecurePassword123!
-
-# Mail Configuration (Required for Contact Forms)
-GMAIL_USER=your-gmail@gmail.com
-GMAIL_APP_PASSWORD=your-gmail-app-password
-
-# Optional - Media Defaults
-DEFAULT_LOGO_URL=__OPTIONAL__
-NEXT_PUBLIC_DEFAULT_PROJECT_IMAGE_URL=__OPTIONAL__
-
-# Optional - Cloudinary
-CLOUDINARY_CLOUD_NAME=your-cloud-name
-CLOUDINARY_API_KEY=your-api-key
-CLOUDINARY_API_SECRET=your-api-secret
-
-# Optional - Google (DB erişilemediğinde fallback olarak kullanılır)
-GOOGLE_SITE_VERIFICATION=__OPTIONAL__
-NEXT_PUBLIC_GA_ID=__OPTIONAL__
-NEXT_PUBLIC_GTM_ID=__OPTIONAL__
-
-# Optional - Monitoring & Performance
-SENTRY_DSN=__OPTIONAL__
-SLOW_QUERY_THRESHOLD=1000
-CRITICAL_QUERY_THRESHOLD=5000
-SLOW_PAGE_THRESHOLD=3000
-```
-
-### Deployment Guides
-- 📚 [Quick Deploy Guide](QUICK_DEPLOY.md) - 5 dakikada deploy
-- 📋 [Deployment Checklist](DEPLOYMENT_CHECKLIST.md) - Kapsamlı kontrol listesi
-- 📊 [Monitoring Guide](docs/MONITORING.md) - Detaylı monitoring dokümantasyonu
-
-## 🧪 Testing & Quality
-
-### Automated Testing
-- ✅ **GitHub Actions CI/CD** pipeline
-- ✅ **Security scanning** (81% score)
-- ✅ **Dependency vulnerability** checks
-- ✅ **Code quality** validation
-- ✅ **Build verification** on every commit
-- ✅ **Manual deployment** notification system
-
-### Manual Testing Commands
-```bash
-# Build test
-npm run build
-
-# Type check
-npm run type-check
-
-# Lint check
-npm run lint
-
-# Security audit
-npm run security:check
-
-# Performance test
-npm run perf:check
-
-# Configuration test
-npm run test:config
-```
-
-### Quality Metrics
-- **Build Success Rate**: 100%
-- **ESLint Errors**: 142 (58+ düzeltme yapıldı)
-- **TypeScript Safety**: %26 any tip azaltması
-- **React Hooks**: 6 → 2 uyarı (4 düzeltme)
-- **Security Score**: HIGH
-- **Performance Score**: Optimized
-- **Code Coverage**: Comprehensive
-- **Documentation**: Complete
-
 ## 📝 Scripts
 
 ### Development
 ```bash
 npm run dev              # Development server
-npm run dev:turbo        # Development with Turbo mode
 npm run build            # Production build
 npm run start            # Production server
 ```
@@ -717,157 +200,69 @@ npm run start            # Production server
 ### Quality & Testing
 ```bash
 npm run lint             # ESLint check
-npm run lint:fix         # Fix ESLint issues
-npm run type-check       # TypeScript validation
+npm run lint:fix         # ESLint fix
+npm run type-check       # TypeScript check
 npm run test:config      # Configuration test
-```
-
-### Security & Performance
-```bash
-npm run security:check   # Security audit
-npm run security:test    # Security testing
-npm run perf:check       # Performance testing
-npm run perf:analyze     # Bundle analysis
 ```
 
 ### Deployment
 ```bash
-npm run deploy           # Automated deployment to Vercel
-npm run deploy:preview   # Preview deployment
-npm run deploy:production # Production deployment
+npm run deploy           # Deploy to production
+npm run security:check   # Security audit
+npm run perf:check       # Performance test
 ```
 
-### Monitoring & Health
-```bash
-npm run health:check     # System health check
-npm run monitoring:test  # Monitoring API test
-npm run monitoring:dashboard # Open monitoring dashboard
-```
+## 🆕 Son Güncellemeler (v2.5.1)
 
-## 🔀 GitHub Push & CI Notları
+### Portfolio Sıralama Düzeltmeleri (2025-01-27)
+- **Portfolio Sıralama**: En yeni projeler artık doğru şekilde en üstte görünüyor
+- **API Optimizasyonu**: MongoDB aggregate ile güvenilir sıralama
+- **Frontend Sıralama**: Sıralama mantığı düzeltildi
+- **Cache Optimizasyonu**: Random projeler için cache devre dışı
+- **Container Genişliği**: 64rem'den 74rem'e artırıldı
 
-- **Push öncesi hızlı kontrol**:
-  - `npm run type-check` (TS hatası olmamalı)
-  - `npm run lint:fix` (ESLint otomatik düzeltme)
-  - `npm run build` (lokalde hatasız build)
-- **GitHub Actions**: Repo'daki `./.github/workflows/ci.yml` Next.js build ve kalite kontrollerini çalıştırır. Hata alırsanız lokaldeki üç komuta tekrar bakın.
-- **Vercel CLI**: `npm run deploy` komutu Vercel CLI kullanır. İlk kez kullanıyorsanız `vercel login` yapın. Kurumsal token gerekiyorsa `VERCEL_TOKEN` tanımlayın.
-- **Env değişkenleri**: Production build için `.env` değerlerinin Vercel Dashboard veya GitHub Secrets üzerinden tanımlı olduğundan emin olun (bkz. README > Environment Variables (Production)).
-- **Node sürümü**: CI runner Node 18+ kullanır. Lokalde farklı sürüm kullanıyorsanız `nvm use 18` ile eşitleyin.
+### Anasayfa Portfolio Dinamikleştirme
+- **Random Portfolio**: Her sayfa yenilemesinde farklı projeler
+- **Cache Temizliği**: Random projeler için cache kaldırıldı
+- **Featured Filter**: Tüm projeler arasından rastgele seçim
 
-### Maintenance
-```bash
-npm run clean            # Clean build files
-npm run format           # Code formatting
-npm audit                # Dependency audit
-```
+### Hata Düzeltmeleri
+- **Hydration Hatası**: Breadcrumb hydration sorunu çözüldü
+- **Image Positioning**: Next.js Image fill prop hataları düzeltildi
+- **Manifest Icon**: Bozuk icon dosyası SVG ile değiştirildi
+- **Console Temizliği**: Debug logları kaldırıldı
 
-## 🤝 Contributing
+### Kod Temizliği
+- **Gereksiz Dosyalar**: Build artifacts ve geçici dosyalar temizlendi
+- **TypeScript**: Tip güvenliği artırıldı
+- **ESLint**: Kod kalitesi iyileştirildi
 
-Katkılarınızı memnuniyetle karşılıyoruz! Lütfen katkıda bulunmadan önce [Contributing Guidelines](CONTRIBUTING.md) dosyasını okuyun.
+## 📚 Dokümantasyon
 
-### Quick Start
-1. **Fork** the project
-2. **Clone** your fork: `git clone https://github.com/YOUR_USERNAME/personal-blog.git`
-3. **Create** feature branch: `git checkout -b feature/amazing-feature`
-4. **Make** your changes
-5. **Test** your changes: `npm run build && npm run lint`
-6. **Commit** your changes: `git commit -m 'feat: add amazing feature'`
-7. **Push** to branch: `git push origin feature/amazing-feature`
-8. **Open** a Pull Request
+- [CHANGELOG.md](CHANGELOG.md) - Detaylı değişiklik geçmişi
+- [CONTRIBUTING.md](CONTRIBUTING.md) - Katkıda bulunma rehberi
+- [SECURITY.md](SECURITY.md) - Güvenlik politikaları
+- [LICENSE](LICENSE) - MIT lisansı
 
-### Development Guidelines
-- ✅ Follow TypeScript best practices
-- ✅ Write meaningful commit messages
-- ✅ Add tests for new features
-- ✅ Update documentation
-- ✅ Ensure security compliance
+## 🤝 Katkıda Bulunma
 
-### Issue Templates
-- 🐛 [Bug Report](.github/ISSUE_TEMPLATE/bug_report.md)
-- ✨ [Feature Request](.github/ISSUE_TEMPLATE/feature_request.md)
+1. Fork edin
+2. Feature branch oluşturun (`git checkout -b feature/amazing-feature`)
+3. Commit edin (`git commit -m 'Add some amazing feature'`)
+4. Push edin (`git push origin feature/amazing-feature`)
+5. Pull Request açın
 
-📚 [Detaylı Contributing Guide](CONTRIBUTING.md)
+## 📄 Lisans
 
-## 📄 License
+Bu proje MIT lisansı altında lisanslanmıştır. Detaylar için [LICENSE](LICENSE) dosyasına bakın.
 
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
-
-## 👨‍💻 Author
+## 👨‍💻 Geliştirici
 
 **Erdem Erciyas**
 - Website: [fixral.com](https://www.fixral.com)
-- Email: erdem.erciyas@gmail.com
-- Twitter: [@erdemerciyas](https://twitter.com/erdemerciyas)
-
-## 🙏 Acknowledgments
-
-- [Next.js](https://nextjs.org/) - React framework
-- [Tailwind CSS](https://tailwindcss.com/) - CSS framework
-- [Framer Motion](https://www.framer.com/motion/) - Animation library
-- [Heroicons](https://heroicons.com/) - Icon library
-- [Vercel](https://vercel.com/) - Deployment platform
-
-## 📈 Project Status
-
-- **Status**: ✅ **PRODUCTION READY**
-- **Version**: v2.3.4
-- **Last Updated**: 2025-08-27
-- **Security Level**: 🔒 HIGH
-- **Performance**: ⚡ OPTIMIZED
-- **Monitoring**: � COMPREPHENSIVE
-- **Documentation**: 📚 COMPLETE
-
-### Recent Updates (v2.2.4)
-
-- ✅ **Security Hardening**: Test authentication endpoints ve debug pages temizlendi
-- ✅ **API Optimization**: Contact info ve services endpoints iyileştirildi
-- ✅ **Admin Panel Enhancement**: Portfolio ve services yönetimi geliştirildi
-- ✅ **Media System Upgrade**: MediaBrowser ve Toast notification sistemi iyileştirildi
-- ✅ **Production Deployment**: Final organization ve GitHub deployment hazırlığı
-
-### Previous Updates (v2.2.1)
-- ✅ **GitHub Preparation**: Proje GitHub'a yayın için hazırlandı
-- ✅ **README Update**: En güncel bilgiler ve deployment durumu
-- ✅ **Branch Cleanup**: Açık branch'ler kapatıldı ve merge edildi
-- ✅ **Vercel Deployment**: Otomatik production deployment
-- ✅ **Security Hardening**: Son güvenlik iyileştirmeleri
-- ✅ **Performance Optimization**: Bundle size ve performance optimizasyonları
-- ✅ **CI/CD Pipeline Enhancement**: GitHub Actions workflow optimizasyonu
-- ✅ **Bundle Analyzer Integration**: Next.js bundle analysis entegrasyonu
-- ✅ **Environment Validation**: Gelişmiş environment variable kontrolü
-- ✅ **Error Handling**: Robust error handling ve continue-on-error
-- ✅ **Automated Deployment**: Vercel otomatik deployment
-- ✅ **Security Testing**: Automated security pipeline
-- ✅ **Performance Monitoring**: Bundle size ve performance testing
-- ✅ **Code Quality Optimization**: ESLint hatalarını 200+ → 142'ye düşürdük
-- ✅ **TypeScript Enhancement**: Any tiplerini %26 azalttık (100+ → 74)
-- ✅ **React Performance**: Hook bağımlılıkları ve useMemo optimizasyonları
-- ✅ **Component Optimization**: Display names ve unused imports temizlendi
-- ✅ **Build Success**: Hatasız production build (51 sayfa)
-- ✅ **Edge Runtime Compatibility**: Middleware Edge Runtime uyumluluğu sağlandı
-- ✅ **Database Integration**: MongoDB bağlantı optimizasyonu
-- ✅ **API Endpoints**: Page settings API endpoint eklendi
-- ✅ **Security Hardening**: Kritik güvenlik riskleri giderildi
-- ✅ **Production Ready**: Güvenli production deployment
-
-## 🔗 Useful Links
-
-- 🌐 **Live Demo**: [fixral-ao7clr42w-erdem-erciyas-projects.vercel.app](https://fixral-ao7clr42w-erdem-erciyas-projects.vercel.app)
-- 🔧 **Admin Panel**: [/admin](https://fixral-ao7clr42w-erdem-erciyas-projects.vercel.app/admin)
-- 📊 **API Health**: [/api/health](https://fixral-ao7clr42w-erdem-erciyas-projects.vercel.app/api/health)
-- 🗺️ **Sitemap**: [/sitemap.xml](https://fixral-ao7clr42w-erdem-erciyas-projects.vercel.app/sitemap.xml)
-- 🤖 **Robots**: [/robots.txt](https://fixral-ao7clr42w-erdem-erciyas-projects.vercel.app/robots.txt)
-
-## 📞 Support
-
-- 📧 **Email**: erdem.erciyas@gmail.com
-- 🐛 **Issues**: [GitHub Issues](https://github.com/erdemerciyas/personal-blog/issues)
-- 💬 **Discussions**: [GitHub Discussions](https://github.com/erdemerciyas/personal-blog/discussions)
-- 📚 **Documentation**: [Project Docs](https://github.com/erdemerciyas/personal-blog/tree/master)
+- GitHub: [@erdemerciyas](https://github.com/erdemerciyas)
+- Email: info@fixral.com
 
 ---
 
-⭐ **Bu projeyi beğendiyseniz star vermeyi unutmayın!**
-
-🚀 **Ready for production use!** | 🔒 **Security hardened** | ⚡ **Performance optimized**
+⭐ Bu projeyi beğendiyseniz yıldız vermeyi unutmayın!

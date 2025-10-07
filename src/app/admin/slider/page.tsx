@@ -611,9 +611,14 @@ export default function AdminSliderPage() {
                     Slider Görseli
                   </label>
                   <ImageUpload
-                    onImageUpload={handleImageChange}
-                    onImageRemove={handleImageRemove}
-                    currentImage={formData.imageUrl}
+                    label="Slider Görseli"
+                    value={formData.imageUrl}
+                    onChange={(url) => {
+                      const imageUrl = Array.isArray(url) ? url[0] : url;
+                      setFormData(prev => ({ ...prev, imageUrl }));
+                    }}
+                    pageContext="slider"
+                    showUrlInput={true}
                   />
                 </div>
                 

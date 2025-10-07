@@ -81,9 +81,6 @@ function PortfolioPageContent() {
           throw new Error('Portfolyo projeleri yüklenemedi.');
         }
         const portfolioData = await portfolioResponse.json();
-        console.log('Fetched Portfolio Data count:', Array.isArray(portfolioData) ? portfolioData.length : 0);
-        console.log('Categories count:', Array.isArray(catData) ? catData.length : 0);
-        
         setPortfolioItems(portfolioData);
 
       } catch (err) {

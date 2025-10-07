@@ -29,7 +29,7 @@ export default function EditorPage() {
             value={content}
             onChange={setContent}
             placeholder="İçeriğinizi buraya yazın..."
-            rows={8}
+            minHeight="300px"
           />
         </div>
 

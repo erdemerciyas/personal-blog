@@ -45,15 +45,15 @@ export default function PortfolioDetailHero({ project }: PortfolioDetailHeroProp
             )}
           </motion.div>
 
-          <div className="grid grid-cols-1 lg:grid-cols-[minmax(0,1.2fr)_minmax(380px,560px)] gap-10 items-start">
-            {/* Main Content */}
-            <div>
+          <div className="grid grid-cols-1 lg:grid-cols-[70%_30%] gap-8 lg:gap-12 items-start">
+            {/* Main Content - 70% */}
+            <div className="space-y-6">
               {/* Title */}
               <motion.h1 
                 initial={{ opacity: 0, y: 30 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.8, delay: 0.2 }}
-                className="text-4xl sm:text-5xl md:text-6xl font-bold mb-6 text-gradient-hero leading-tight"
+                className="text-3xl sm:text-4xl lg:text-5xl xl:text-6xl font-bold mb-6 text-gradient-hero leading-tight"
               >
                 {project.title}
               </motion.h1>
@@ -94,15 +94,15 @@ export default function PortfolioDetailHero({ project }: PortfolioDetailHeroProp
               )}
             </div>
 
-            {/* Project Info Sidebar */}
+            {/* Project Info Sidebar - 30% */}
             <motion.div 
               initial={{ opacity: 0, x: 20 }}
               animate={{ opacity: 1, x: 0 }}
               transition={{ duration: 0.8, delay: 0.8 }}
-              className=""
+              className="w-full"
             >
-              <div className="bg-white/10 backdrop-blur-xl border border-white/20 rounded-3xl p-8 md:p-10 space-y-6">
-                <h3 className="text-2xl font-bold text-white mb-6 border-b border-white/20 pb-4">
+              <div className="bg-white/10 backdrop-blur-xl border border-white/20 rounded-3xl p-6 lg:p-8 space-y-6 w-full">
+                <h3 className="text-xl lg:text-2xl font-bold text-white mb-6 border-b border-white/20 pb-4">
                   Proje Bilgileri
                 </h3>
 

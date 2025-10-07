@@ -339,11 +339,7 @@ export default function NewPortfolioItem() {
                 <UniversalEditor
                   value={formData.description}
                   onChange={(content) => setFormData(prev => ({ ...prev, description: content }))}
-                  id="description"
-                  aria-invalid={!!fieldErrors.description}
-                  aria-describedby={fieldErrors.description ? 'description-error' : 'description-help'}
                   placeholder="Proje hakkında detaylı açıklama yazınız"
-                  mode="text"
                   minHeight="200px"
                 />
                 <p id="description-help" className="mt-1 text-xs text-slate-500">Özet, kapsam ve katkılarınızı belirtin.</p>

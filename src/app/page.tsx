@@ -67,7 +67,10 @@ export default function HomePage() {
 
   // Use optimized API hooks with caching
   const { data: sliderData, loading: sliderLoading } = useSliderItems();
-  const { data: portfolioData, loading: portfolioLoading } = usePortfolioItems(6);
+  const { data: portfolioData, loading: portfolioLoading } = usePortfolioItems({ 
+    limit: 6, 
+    random: true 
+  });
   const { data: servicesData, loading: servicesLoading } = useServices();
 
   // Process slider data
