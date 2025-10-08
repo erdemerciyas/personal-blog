@@ -17,7 +17,7 @@ Modern, güvenli ve performanslı kişisel blog ve portfolyo platformu. Next.js 
 
 **[Live Site](https://www.fixral.com)** | **[Admin Panel](https://www.fixral.com/admin)** | **[API Health](https://www.fixral.com/api/health)**
 
-> **Status**: **LIVE** | **Last Deploy**: 2025-10-08 | **Version**: v2.5.2 | **CI/CD Pipeline**: **OPTIMIZED**
+> **Status**: **LIVE** | **Last Deploy**: 2025-10-08 | **Version**: v2.5.3 | **CI/CD Pipeline**: **OPTIMIZED**
 
 ## ✨ Özellikler
 
