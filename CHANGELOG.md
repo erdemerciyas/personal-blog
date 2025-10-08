@@ -5,6 +5,25 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2.5.2] - 2025-10-08
+
+### Added
+- **Cloudinary Günlük Kayıtları**: Cloudinary upload işlemlerine detaylı günlük kayıtları eklendi
+- **Güvenlik Geliştirmeleri**: Dosya yükleme işlemlerine magic number doğrulaması eklendi
+- **Hata Ayıklama Geliştirmeleri**: Cloudinary konfigürasyon hataları için detaylı günlük kayıtları
+
+### Changed
+- **Cloudinary Versiyonu**: Cloudinary kütüphanesi 1.41.0'dan 2.7.0 sürümüne yükseltildi
+- **Upload Route'ları**: Admin upload route'larına detaylı loglama eklendi
+- **README Güncellemesi**: Son deploy tarihi ve versiyon bilgisi güncellendi
+
+### Removed
+- **Gereksiz Debug Dosyaları**: Geliştirme amaçlı kullanılan debug-cloudinary klasörü kaldırıldı
+
+### Fixed
+- **Build Uyarıları**: Sentry entegrasyonu olmayan projede oluşan build uyarıları düzeltildi
+- **Cloudinary Konfigürasyonu**: Cloudinary konfigürasyon eksikliği durumunda hata loglama eklendi
+
 ## [2.5.1] - 2025-01-27
 
 ### Fixed

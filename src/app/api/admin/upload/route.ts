@@ -16,6 +16,15 @@ cloudinary.config({
   api_secret: process.env.CLOUDINARY_API_SECRET,
 });
 
+// Add this validation
+if (!process.env.CLOUDINARY_CLOUD_NAME || !process.env.CLOUDINARY_API_KEY || !process.env.CLOUDINARY_API_SECRET) {
+  logger.error('Cloudinary configuration missing', 'ERROR', {
+    cloud_name: !!process.env.CLOUDINARY_CLOUD_NAME,
+    api_key: !!process.env.CLOUDINARY_API_KEY,
+    api_secret: !!process.env.CLOUDINARY_API_SECRET,
+  });
+}
+
 // Allowed file types with their magic numbers for validation
 const ALLOWED_FILE_TYPES = {
   'image/jpeg': [0xFF, 0xD8, 0xFF],
@@ -59,6 +68,16 @@ export async function POST(request: NextRequest) {
   const clientIP = getClientIP(request);
   
   try {
+    // Add detailed logging
+    logger.info('Upload request received', 'UPLOAD', {
+      ip: clientIP,
+      cloudinaryConfig: {
+        cloud_name: process.env.CLOUDINARY_CLOUD_NAME ? 'SET' : 'MISSING',
+        api_key: process.env.CLOUDINARY_API_KEY ? 'SET' : 'MISSING',
+        api_secret: process.env.CLOUDINARY_API_SECRET ? 'SET' : 'MISSING',
+      }
+    });
+    
     // Rate limiting for file uploads
     const rateLimitResult = rateLimit(clientIP, 'UPLOAD');
     if (!rateLimitResult.allowed) {
@@ -182,6 +201,21 @@ export async function POST(request: NextRequest) {
     // Cloudinary'e güvenli yükleme
     // Ensure uploads here never go under products/
     const folder = `personal-blog/${pageContext}`;
+    
+    // Add detailed logging before upload
+    logger.info('Attempting Cloudinary upload', 'UPLOAD', {
+      ip: clientIP,
+      folder,
+      fileName: uniqueFileName,
+      fileType: file.type,
+      fileSize: file.size,
+      cloudinaryConfig: {
+        cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
+        api_key: process.env.CLOUDINARY_API_KEY ? 'SET' : 'MISSING',
+        api_secret: process.env.CLOUDINARY_API_SECRET ? 'SET' : 'MISSING',
+      }
+    });
+    
     const uploadResult = await new Promise<{ secure_url: string; public_id: string; width: number; height: number; format: string; resource_type: string; bytes: number }>((resolve, reject) => {
       cloudinary.uploader.upload_stream(
         {
@@ -208,10 +242,23 @@ export async function POST(request: NextRequest) {
             logger.error('Cloudinary upload failed', 'ERROR', {
               ip: clientIP,
               error: (error as Error | undefined)?.message || 'Unknown error',
-              fileName: file.name
+              errorDetails: error,
+              fileName: file.name,
+              cloudinaryConfig: {
+                cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
+                api_key: process.env.CLOUDINARY_API_KEY ? 'SET' : 'MISSING',
+                api_secret: process.env.CLOUDINARY_API_SECRET ? 'SET' : 'MISSING',
+              }
             });
             reject(error || new Error('Upload failed'));
           } else {
+            logger.info('Cloudinary upload successful', 'UPLOAD', {
+              ip: clientIP,
+              public_id: result.public_id,
+              secure_url: result.secure_url,
+              format: result.format,
+              resource_type: result.resource_type
+            });
             resolve(result);
           }
         }
@@ -255,4 +302,4 @@ export async function POST(request: NextRequest) {
       { status: 500 }
     );
   }
-} 
+}

@@ -1,3 +1,5 @@
+export const runtime = 'nodejs';
+export const dynamic = 'force-dynamic';
 import { NextRequest, NextResponse } from 'next/server';
 import { getServerSession } from 'next-auth';
 import { authOptions } from '@/lib/auth';
@@ -10,6 +12,15 @@ cloudinary.config({
   api_key: process.env.CLOUDINARY_API_KEY,
   api_secret: process.env.CLOUDINARY_API_SECRET,
 });
+
+// Add this validation
+if (!process.env.CLOUDINARY_CLOUD_NAME || !process.env.CLOUDINARY_API_KEY || !process.env.CLOUDINARY_API_SECRET) {
+  logger.error('Cloudinary configuration missing for product upload', 'ERROR', {
+    cloud_name: !!process.env.CLOUDINARY_CLOUD_NAME,
+    api_key: !!process.env.CLOUDINARY_API_KEY,
+    api_secret: !!process.env.CLOUDINARY_API_SECRET,
+  });
+}
 
 const ALLOWED_IMAGES: Record<string, number[]> = {
   'image/jpeg': [0xFF, 0xD8, 0xFF],
@@ -41,6 +52,15 @@ function validateSignature(buf: Buffer, sig: number[]) {
 
 export async function POST(request: NextRequest) {
   const ip = getClientIP(request);
+  logger.info('Product upload request received', 'UPLOAD', {
+    ip,
+    cloudinaryConfig: {
+      cloud_name: process.env.CLOUDINARY_CLOUD_NAME ? 'SET' : 'MISSING',
+      api_key: process.env.CLOUDINARY_API_KEY ? 'SET' : 'MISSING',
+      api_secret: process.env.CLOUDINARY_API_SECRET ? 'SET' : 'MISSING',
+    }
+  });
+  
   const session = await getServerSession(authOptions);
   if (!session?.user || (session.user as { role?: string }).role !== 'admin') {
     return NextResponse.json({ error: 'Admin yetkisi gerekli' }, { status: 403 });
@@ -74,6 +94,21 @@ export async function POST(request: NextRequest) {
     : 'personal-blog/products/docs';
 
   try {
+    // Add detailed logging before upload
+    logger.info('Attempting Product Cloudinary upload', 'UPLOAD', {
+      ip,
+      folder,
+      fileName: publicId,
+      fileType: file.type,
+      fileSize: file.size,
+      isImage,
+      cloudinaryConfig: {
+        cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
+        api_key: process.env.CLOUDINARY_API_KEY ? 'SET' : 'MISSING',
+        api_secret: process.env.CLOUDINARY_API_SECRET ? 'SET' : 'MISSING',
+      }
+    });
+    
     const upload = await new Promise<{ secure_url: string; public_id: string; bytes: number; format: string; resource_type: string }>((resolve, reject) => {
       cloudinary.uploader
         .upload_stream(
@@ -86,7 +121,31 @@ export async function POST(request: NextRequest) {
             transformation: isImage ? [{ quality: 'auto:good' }, { fetch_format: 'auto' }] : undefined,
             strip_metadata: isImage ? true : undefined,
           },
-          (error, result: UploadApiResponse | undefined) => (error || !result ? reject(error || new Error('Upload failed')) : resolve(result))
+          (error, result: UploadApiResponse | undefined) => {
+            if (error || !result) {
+              logger.error('Product upload failed in Cloudinary', 'UPLOAD', { 
+                ip, 
+                mime,
+                error: (error as Error | undefined)?.message || 'Unknown error',
+                errorDetails: error,
+                cloudinaryConfig: {
+                  cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
+                  api_key: process.env.CLOUDINARY_API_KEY ? 'SET' : 'MISSING',
+                  api_secret: process.env.CLOUDINARY_API_SECRET ? 'SET' : 'MISSING',
+                }
+              });
+              reject(error || new Error('Upload failed'));
+            } else {
+              logger.info('Product Cloudinary upload successful', 'UPLOAD', {
+                ip,
+                public_id: result.public_id,
+                secure_url: result.secure_url,
+                format: result.format,
+                resource_type: result.resource_type
+              });
+              resolve(result);
+            }
+          }
         )
         .end(buf);
     });
@@ -104,5 +163,3 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ error: 'Yükleme başarısız' }, { status: 500 });
   }
 }
-
-

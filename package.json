@@ -1,6 +1,6 @@
 {
   "name": "personal-blog",
-  "version": "2.5.1",
+  "version": "2.5.2",
   "private": true,
   "scripts": {
     "dev": "next dev",
@@ -48,7 +48,7 @@
     "@tiptap/starter-kit": "^3.6.5",
     "@types/dompurify": "^3.0.5",
     "bcryptjs": "^2.4.3",
-    "cloudinary": "^1.41.0",
+    "cloudinary": "^2.7.0",
     "clsx": "^2.1.1",
     "dompurify": "^3.2.7",
     "framer-motion": "^10.16.4",
