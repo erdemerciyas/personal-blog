@@ -142,7 +142,7 @@ export async function GET(request: Request) {
     const random = searchParams.get('random'); // Random sıralama
     const limit = searchParams.get('limit'); // Limit
     
-    let query: Record<string, any> = {};
+    const query: Record<string, any> = {};
     
     // Featured projeler filtresi
     if (featured === 'true') {
@@ -172,7 +172,7 @@ export async function GET(request: Request) {
       }
     }
     
-    let portfolioQuery = Portfolio.find(query)
+    const portfolioQuery = Portfolio.find(query)
       .populate('categoryId', 'name slug') // Eski tekli kategori alanı
       .populate('categoryIds', 'name slug'); // Yeni çoklu kategori alanı
     
