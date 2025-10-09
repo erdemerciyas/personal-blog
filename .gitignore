@@ -37,6 +37,9 @@ conf.env
 *.tsbuildinfo
 next-env.d.ts
 
+# build info
+*.tsbuildinfo
+
 # IDE
 .vscode/
 .idea/
