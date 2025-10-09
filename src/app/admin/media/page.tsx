@@ -12,7 +12,6 @@ import {
   DocumentIcon,
   InformationCircleIcon,
   MagnifyingGlassIcon,
-  FunnelIcon,
   TrashIcon,
   PlusIcon,
   LinkIcon,
@@ -48,6 +47,7 @@ export default function AdminMediaPage() {
   const [previewItem, setPreviewItem] = useState<MediaItem | null>(null);
   const [showPreviewModal, setShowPreviewModal] = useState(false);
   const [contextFilter, setContextFilter] = useState<'site' | 'products' | 'all'>('site');
+  const [imageDimensions, setImageDimensions] = useState<Record<string, { width: number; height: number }>>({});
 
   // Authentication check
   useEffect(() => {
@@ -141,8 +141,8 @@ export default function AdminMediaPage() {
   };
 
   const toggleMediaSelection = (mediaId: string) => {
-    setSelectedMedia(prev => 
-      prev.includes(mediaId) 
+    setSelectedMedia(prev =>
+      prev.includes(mediaId)
         ? prev.filter(id => id !== mediaId)
         : [...prev, mediaId]
     );
@@ -155,12 +155,12 @@ export default function AdminMediaPage() {
 
   const getFilteredMediaItems = () => {
     return mediaItems.filter(item => {
-      const matchesFilter = mediaFilter === 'all' || 
+      const matchesFilter = mediaFilter === 'all' ||
         (mediaFilter === 'cloudinary' && item.source === 'cloudinary') ||
         (mediaFilter === 'local' && item.source === 'local') ||
         (mediaFilter === 'images' && item.mimeType.startsWith('image/'));
 
-      const matchesSearch = !mediaSearch || 
+      const matchesSearch = !mediaSearch ||
         item.originalName.toLowerCase().includes(mediaSearch.toLowerCase()) ||
         item.filename.toLowerCase().includes(mediaSearch.toLowerCase());
 
@@ -174,6 +174,18 @@ export default function AdminMediaPage() {
     const sizes = ['Bytes', 'KB', 'MB', 'GB'];
     const i = Math.floor(Math.log(bytes) / Math.log(k));
     return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
+  };
+
+  // Görsel boyutlarını hesapla
+  const handleImageLoad = (item: MediaItem, naturalWidth: number, naturalHeight: number) => {
+    const targetHeight = 200; // Sabit yükseklik
+    const aspectRatio = naturalWidth / naturalHeight;
+    const calculatedWidth = targetHeight * aspectRatio;
+
+    setImageDimensions(prev => ({
+      ...prev,
+      [item._id]: { width: calculatedWidth, height: targetHeight }
+    }));
   };
 
   // Önizleme modalı açma
@@ -245,60 +257,55 @@ export default function AdminMediaPage() {
   }
 
   return (
-    <AdminLayout 
+    <AdminLayout
       title="Medya Kütüphanesi"
       breadcrumbs={[
         { label: 'Dashboard', href: '/admin/dashboard' },
         { label: 'Medya Kütüphanesi' }
       ]}
     >
-      <div className="space-y-6">
-        
-        {/* Header Actions */}
-        <div className="flex items-center justify-between">
-          <div>
-            <p className="text-slate-600">Dosya ve resim yönetimi</p>
-            <div className="flex items-center space-x-4 text-sm text-slate-500 mt-2">
-              <span>Toplam: {mediaItems.length} dosya</span>
-              <span>•</span>
-              <span>Cloudinary: {mediaItems.filter(item => item.source === 'cloudinary').length}</span>
-              <span>•</span>
-              <span>Yerel: {mediaItems.filter(item => item.source === 'local').length}</span>
+      <div className="min-h-screen bg-slate-50 dark:bg-slate-900 text-slate-900 dark:text-white">
+
+        {/* Header */}
+        <div className="bg-white dark:bg-slate-800 border-b border-slate-200 dark:border-slate-700 p-6">
+          <div className="flex items-center justify-between mb-4">
+            <div>
+              <h1 className="text-2xl font-bold text-slate-900 dark:text-white">Medya Kütüphanesi</h1>
+              <p className="text-slate-600 dark:text-slate-400 mt-1">Dosya ve resim yönetimi</p>
+            </div>
+            <div className="flex items-center space-x-3">
+              {/* Select All Button */}
+              {getFilteredMediaItems().length > 0 && (
+                <button
+                  onClick={selectAllMedia}
+                  className="flex items-center space-x-2 px-4 py-3 bg-slate-100 dark:bg-slate-700 border border-slate-300 dark:border-slate-600 rounded-lg cursor-pointer hover:bg-slate-200 dark:hover:bg-slate-600 hover:border-blue-500 transition-all duration-200 group"
+                >
+                  <CheckCircleIcon className="w-5 h-5 text-blue-500 dark:text-blue-400 group-hover:scale-110 transition-transform" />
+                  <span className="text-sm text-slate-700 dark:text-slate-300 font-medium">Tümünü Seç</span>
+                  <span className="text-xs text-slate-500 bg-slate-200 dark:bg-slate-600 px-2 py-1 rounded-full">{getFilteredMediaItems().length}</span>
+                </button>
+              )}
+
+              <button
+                onClick={() => {
+                  if (contextFilter === 'products') return;
+                  setShowUploadModal(true);
+                }}
+                disabled={contextFilter === 'products'}
+                title={contextFilter === 'products' ? 'Ürün medyası, ürün sayfalarından yüklenir' : ''}
+                className={`px-6 py-3 rounded-lg font-semibold transition-all duration-200 flex items-center space-x-2 ${contextFilter === 'products'
+                  ? 'bg-slate-300 dark:bg-slate-600 text-slate-500 dark:text-slate-400 cursor-not-allowed'
+                  : 'bg-blue-600 hover:bg-blue-700 text-white'
+                  }`}
+              >
+                <PlusIcon className="w-5 h-5" />
+                <span>Yükle</span>
+              </button>
             </div>
           </div>
-          <button
-            onClick={() => {
-              if (contextFilter === 'products') return;
-              setShowUploadModal(true);
-            }}
-            disabled={contextFilter === 'products'}
-            title={contextFilter === 'products' ? 'Ürün medyası, ürün sayfalarından yüklenir' : ''}
-            className={`px-6 py-3 rounded-xl font-semibold transition-all duration-200 flex items-center space-x-2 shadow-sm ${
-              contextFilter === 'products'
-                ? 'bg-slate-300 text-slate-500 cursor-not-allowed'
-                : 'bg-brand-primary-700 hover:bg-brand-primary-800 text-white'
-            }`}
-          >
-            <PlusIcon className="w-5 h-5" />
-            <span>Dosya Yükle</span>
-          </button>
-        </div>
 
-        {/* Success/Error Messages */}
-        {message && (
-          <div className={`p-4 rounded-xl border ${
-            message.type === 'success' 
-              ? 'bg-brand-primary-50 border-brand-primary-200 text-brand-primary-900' 
-              : 'bg-red-50 border-red-200 text-red-800'
-          }`}>
-            {message.text}
-          </div>
-        )}
-        
-        {/* Filters and Search */}
-        <div className="bg-white rounded-xl p-6 shadow-sm border border-slate-200">
+          {/* Search and Filters */}
           <div className="flex flex-col lg:flex-row gap-4">
-            
             {/* Search */}
             <div className="flex-1">
               <div className="relative">
@@ -308,329 +315,329 @@ export default function AdminMediaPage() {
                   placeholder="Dosya ara..."
                   value={mediaSearch}
                   onChange={(e) => setMediaSearch(e.target.value)}
-                  className="w-full bg-slate-50 border border-slate-200 rounded-xl pl-10 pr-4 py-3 text-slate-900 placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-brand-primary-600 focus:border-transparent"
+                  className="w-full bg-slate-100 dark:bg-slate-700 border border-slate-300 dark:border-slate-600 rounded-lg pl-10 pr-4 py-3 text-slate-900 dark:text-white placeholder-slate-500 dark:placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                 />
               </div>
             </div>
 
-            {/* Filter */}
+            {/* Filters */}
             <div className="flex items-center space-x-4">
-              <div className="flex items-center space-x-2">
-                <FunnelIcon className="w-5 h-5 text-slate-500" />
-                <select
-                  value={mediaFilter}
-                  onChange={(e) => setMediaFilter(e.target.value)}
-                  className="bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-slate-900 focus:outline-none focus:ring-2 focus:ring-brand-primary-600 focus:border-transparent"
-                >
-                  <option value="all">Tüm Dosyalar</option>
-                  <option value="images">Sadece Resimler</option>
-                  <option value="cloudinary">Cloudinary</option>
-                  <option value="local">Yerel Dosyalar</option>
-                </select>
-              </div>
+              <select
+                value={mediaFilter}
+                onChange={(e) => setMediaFilter(e.target.value)}
+                className="bg-slate-100 dark:bg-slate-700 border border-slate-300 dark:border-slate-600 rounded-lg px-4 py-3 text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              >
+                <option value="all">Tüm Dosyalar</option>
+                <option value="images">Sadece Resimler</option>
+                <option value="cloudinary">Cloudinary</option>
+                <option value="local">Yerel Dosyalar</option>
+              </select>
 
-              <div className="flex items-center space-x-2">
-                <span className="text-sm text-slate-600">Kapsam</span>
-                <select
-                  value={contextFilter}
-                  onChange={(e) => setContextFilter(e.target.value as 'site' | 'products' | 'all')}
-                  className="bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-slate-900 focus:outline-none focus:ring-2 focus:ring-brand-primary-600 focus:border-transparent"
-                >
-                  <option value="site">Site Medyası</option>
-                  <option value="products">Ürün Medyası</option>
-                  <option value="all">Hepsi (Site + Ürün)</option>
-                </select>
-              </div>
-
-              {/* Stats */}
-              <div className="hidden lg:flex items-center space-x-4 text-sm text-slate-600">
-                <span>Filtrelenen: {getFilteredMediaItems().length}</span>
-              </div>
+              <select
+                value={contextFilter}
+                onChange={(e) => setContextFilter(e.target.value as 'site' | 'products' | 'all')}
+                className="bg-slate-100 dark:bg-slate-700 border border-slate-300 dark:border-slate-600 rounded-lg px-4 py-3 text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              >
+                <option value="site">Site Medyası</option>
+                <option value="products">Ürün Medyası</option>
+                <option value="all">Hepsi</option>
+              </select>
             </div>
           </div>
 
-          {/* Selection Actions */}
-          {selectedMedia.length > 0 && (
-            <div className="mt-6 pt-6 border-t border-slate-200">
-              <div className="flex items-center justify-between bg-red-50 border border-red-200 rounded-xl p-4">
-                <div className="flex items-center space-x-3">
-                  <CheckCircleIcon className="w-5 h-5 text-brand-primary-700" />
-                  <span className="text-slate-900 font-semibold">
-                    {selectedMedia.length} dosya seçildi
-                  </span>
-                </div>
-                <div className="flex items-center space-x-3">
-                  <button
-                    onClick={() => setSelectedMedia([])}
-                    className="text-slate-600 hover:text-slate-900 px-3 py-1 rounded-lg text-sm transition-colors"
-                  >
-                    Seçimi Temizle
-                  </button>
-                  <button
-                    onClick={deleteSelectedMedia}
-                    className="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-lg text-sm font-semibold transition-all duration-200 flex items-center space-x-2"
-                  >
-                    <TrashIcon className="w-4 h-4" />
-                    <span>Sil</span>
-                  </button>
-                </div>
+          {/* Stats */}
+          <div className="flex items-center space-x-6 text-sm text-slate-600 dark:text-slate-400 mt-4">
+            <span>Toplam: {mediaItems.length}</span>
+            <span>Cloudinary: {mediaItems.filter(item => item.source === 'cloudinary').length}</span>
+            <span>Yerel: {mediaItems.filter(item => item.source === 'local').length}</span>
+            <span>Filtrelenen: {getFilteredMediaItems().length}</span>
+          </div>
+        </div>
+
+        {/* Success/Error Messages */}
+        {message && (
+          <div className={`mx-6 mt-4 p-4 rounded-lg ${message.type === 'success'
+            ? 'bg-green-50 dark:bg-green-900/50 border border-green-200 dark:border-green-700 text-green-800 dark:text-green-300'
+            : 'bg-red-50 dark:bg-red-900/50 border border-red-200 dark:border-red-700 text-red-800 dark:text-red-300'
+            }`}>
+            {message.text}
+          </div>
+        )}
+
+        {/* Selection Actions */}
+        {selectedMedia.length > 0 && (
+          <div className="mx-6 mt-4">
+            <div className="flex items-center justify-between bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg p-4">
+              <div className="flex items-center space-x-3">
+                <CheckCircleIcon className="w-5 h-5 text-blue-500 dark:text-blue-400" />
+                <span className="text-slate-900 dark:text-white font-semibold">
+                  {selectedMedia.length} dosya seçildi
+                </span>
               </div>
+              <div className="flex items-center space-x-3">
+                <button
+                  onClick={() => setSelectedMedia([])}
+                  className="text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white px-3 py-1 rounded text-sm transition-colors"
+                >
+                  Temizle
+                </button>
+                <button
+                  onClick={deleteSelectedMedia}
+                  className="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded text-sm font-semibold transition-all duration-200 flex items-center space-x-2"
+                >
+                  <TrashIcon className="w-4 h-4" />
+                  <span>Sil</span>
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* Media Grid */}
+        <div className="p-6">
+          {loadingMedia ? (
+            <div className="flex items-center justify-center py-16">
+              <div className="flex flex-col items-center space-y-4">
+                <div className="w-8 h-8 border-2 border-blue-500 border-t-transparent rounded-full animate-spin"></div>
+                <p className="text-slate-600 dark:text-slate-400">Yükleniyor...</p>
+              </div>
+            </div>
+          ) : (
+            <div className="flex flex-wrap gap-2">
+              {/* Media Items */}
+              {getFilteredMediaItems().map((item) => {
+                const dimensions = imageDimensions[item._id];
+                const width = dimensions?.width || 200; // Fallback genişlik
+
+                return (
+                  <div
+                    key={item._id}
+                    className={`relative rounded-lg overflow-hidden cursor-pointer transition-all duration-200 group ${selectedMedia.includes(item._id)
+                      ? 'ring-2 ring-blue-500 ring-offset-1 ring-offset-slate-50 dark:ring-offset-slate-900'
+                      : 'hover:ring-2 hover:ring-slate-300 dark:hover:ring-slate-600 hover:ring-offset-1 hover:ring-offset-slate-50 dark:hover:ring-offset-slate-900'
+                      }`}
+                    onClick={() => openPreview(item)}
+                    style={{
+                      height: '200px',
+                      width: `${width}px`,
+                      minWidth: '120px', // Minimum genişlik
+                      maxWidth: '400px'  // Maximum genişlik
+                    }}
+                  >
+                    {/* Selection Checkbox */}
+                    <div className="absolute top-2 right-2 z-10">
+                      <div
+                        className={`w-5 h-5 rounded border-2 flex items-center justify-center cursor-pointer transition-all duration-200 ${selectedMedia.includes(item._id)
+                          ? 'bg-blue-500 border-blue-500'
+                          : 'bg-black/60 border-white/70 hover:border-blue-400'
+                          }`}
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          toggleMediaSelection(item._id);
+                        }}
+                      >
+                        {selectedMedia.includes(item._id) && (
+                          <CheckCircleIcon className="w-3 h-3 text-white" />
+                        )}
+                      </div>
+                    </div>
+
+                    {/* Source Badge */}
+                    <div className="absolute top-2 left-2 z-10">
+                      <span className={`text-xs px-1.5 py-0.5 rounded text-white font-medium ${item.source === 'cloudinary'
+                        ? 'bg-blue-600/90'
+                        : 'bg-green-600/90'
+                        }`}>
+                        {item.source === 'cloudinary' ? 'C' : 'L'}
+                      </span>
+                    </div>
+
+                    {/* Image Preview - Sabit yükseklik, oransal genişlik, cropping yok */}
+                    <div className="w-full h-full bg-slate-200 dark:bg-slate-800">
+                      {item.mimeType.startsWith('image/') ? (
+                        <Image
+                          src={item.url}
+                          alt={item.originalName}
+                          width={width}
+                          height={200}
+                          className="w-full h-full object-cover group-hover:scale-[1.02] transition-transform duration-300"
+                          onLoad={(e) => {
+                            const img = e.target as HTMLImageElement;
+                            handleImageLoad(item, img.naturalWidth, img.naturalHeight);
+                          }}
+                          onError={(e) => {
+                            const target = e.target as HTMLImageElement;
+                            target.style.display = 'none';
+                          }}
+                        />
+                      ) : (
+                        <div className="w-full h-full flex items-center justify-center">
+                          <DocumentIcon className="w-12 h-12 text-slate-400 dark:text-slate-500 group-hover:text-slate-600 dark:group-hover:text-slate-300 transition-colors" />
+                        </div>
+                      )}
+                    </div>
+
+                    {/* File Info Overlay */}
+                    <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/90 to-transparent p-2 opacity-0 group-hover:opacity-100 transition-opacity duration-200">
+                      <p className="text-xs text-white font-medium truncate" title={item.originalName}>
+                        {item.originalName}
+                      </p>
+                      <p className="text-xs text-slate-300">
+                        {formatFileSize(item.size)}
+                      </p>
+                    </div>
+                  </div>
+                );
+              })}
+
+              {/* No Media Message */}
+              {getFilteredMediaItems().length === 0 && !loadingMedia && (
+                <div className="col-span-full text-center py-16 w-full">
+                  <PhotoIcon className="w-20 h-20 mx-auto text-slate-400 dark:text-slate-600 mb-6" />
+                  <h3 className="text-2xl font-bold text-slate-900 dark:text-white mb-2">
+                    {mediaFilter === 'all' ? 'Henüz medya dosyası yok' : 'Filtreye uygun dosya bulunamadı'}
+                  </h3>
+                  <p className="text-slate-600 dark:text-slate-400 mb-6 max-w-md mx-auto">
+                    {mediaFilter === 'all'
+                      ? 'İlk dosyanızı yükleyerek medya kütüphanenizi oluşturmaya başlayın.'
+                      : 'Farklı bir filtre deneyin veya arama terimini değiştirin.'
+                    }
+                  </p>
+                  {mediaFilter === 'all' && (
+                    <button
+                      onClick={() => setShowUploadModal(true)}
+                      className="bg-blue-600 hover:bg-blue-700 text-white px-8 py-4 rounded-lg font-semibold transition-all duration-200 flex items-center space-x-2 mx-auto"
+                    >
+                      <PlusIcon className="w-5 h-5" />
+                      <span>İlk Dosyayı Yükle</span>
+                    </button>
+                  )}
+                </div>
+              )}
             </div>
           )}
         </div>
 
-        {/* Media Grid */}
-        {loadingMedia ? (
-          <div className="flex items-center justify-center py-16">
-            <div className="flex flex-col items-center space-y-4">
-              <div className="w-full max-w-xs mx-auto bg-white/20 rounded-full h-2">
-                <div className="bg-gradient-to-r from-brand-primary-600 to-blue-500 h-2 rounded-full animate-pulse"></div>
-              </div>
-            </div>
-          </div>
-        ) : (
-          <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-6 lg:grid-cols-8 xl:grid-cols-10 gap-3">
-            {/* Select All Button */}
-            {getFilteredMediaItems().length > 0 && (
-              <div
-                onClick={selectAllMedia}
-                className="bg-white/10 border-2 border-dashed border-white/30 rounded-xl p-4 cursor-pointer hover:bg-white/20 hover:border-brand-primary-600 transition-all duration-200 flex flex-col items-center justify-center h-24 group"
-              >
-                <CheckCircleIcon className="w-6 h-6 text-brand-primary-400 mb-1 group-hover:scale-110 transition-transform" />
-                <span className="text-xs text-slate-300 text-center font-medium">Tümünü Seç</span>
-                <span className="text-xs text-slate-500">{getFilteredMediaItems().length} dosya</span>
-              </div>
-            )}
-
-            {/* Media Items */}
-            {getFilteredMediaItems().map((item) => (
-              <div
-                key={item._id}
-                className={`relative bg-white/5 border-2 rounded-xl overflow-hidden cursor-pointer transition-all duration-200 hover:bg-white/10 group h-24 ${
-                  selectedMedia.includes(item._id) 
-                    ? 'border-brand-primary-600 bg-brand-primary-600/10 shadow-lg shadow-brand-primary-600/20' 
-                    : 'border-white/20 hover:border-brand-primary-600/50'
-                }`}
-                onClick={() => openPreview(item)}
-              >
-                {/* Source Badge */}
-                <div className="absolute top-2 left-2 z-10">
-                  <span className={`text-xs px-2 py-1 rounded-full text-white font-semibold ${
-                    item.source === 'cloudinary' 
-                      ? 'bg-blue-600' 
-                      : 'bg-brand-primary-700'
-                  }`}>
-                    {item.source === 'cloudinary' ? '☁️' : '💾'}
-                  </span>
-                </div>
-
-                {/* Selection Checkbox */}
-                <div className="absolute top-2 right-2 z-10">
-                  <div 
-                    className={`w-6 h-6 rounded border-2 flex items-center justify-center cursor-pointer transition-all duration-200 ${
-                      selectedMedia.includes(item._id)
-                        ? 'bg-brand-primary-600 border-brand-primary-600'
-                        : 'bg-black/30 border-white/50 hover:border-brand-primary-400'
-                    }`}
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      toggleMediaSelection(item._id);
-                    }}
-                  >
-                    {selectedMedia.includes(item._id) && (
-                      <CheckCircleIcon className="w-4 h-4 text-white" />
-                    )}
-                  </div>
-                </div>
-
-                {/* Image Preview */}
-                <div className="aspect-square bg-slate-800 flex items-center justify-center h-24 w-24">
-                  {item.mimeType.startsWith('image/') ? (
-                    <Image
-                      src={item.url}
-                      alt={item.originalName}
-                      width={96}
-                      height={96}
-                      className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
-                      onError={(e) => {
-                        const target = e.target as HTMLImageElement;
-                        target.style.display = 'none';
-                      }}
-                    />
-                  ) : (
-                    <DocumentIcon className="w-8 h-8 text-slate-400 group-hover:text-slate-300 transition-colors" />
-                  )}
-                </div>
-
-                {/* File Info */}
-                <div className="p-1 bg-gradient-to-t from-black/70 to-transparent absolute bottom-0 left-0 right-0">
-                  <p className="text-xs text-white font-medium truncate" title={item.originalName}>
-                    {item.originalName}
-                  </p>
-                  <p className="text-xs text-slate-300">
-                    {formatFileSize(item.size)}
-                  </p>
-                </div>
-              </div>
-            ))}
-
-            {/* No Media Message */}
-            {getFilteredMediaItems().length === 0 && !loadingMedia && (
-              <div className="col-span-full text-center py-16">
-                <PhotoIcon className="w-20 h-20 mx-auto text-slate-400 mb-6" />
-                <h3 className="text-2xl font-bold text-slate-900 mb-2">
-                  {mediaFilter === 'all' ? 'Henüz medya dosyası yok' : 'Filtreye uygun dosya bulunamadı'}
-                </h3>
-                <p className="text-slate-600 mb-6 max-w-md mx-auto">
-                  {mediaFilter === 'all' 
-                    ? 'İlk dosyanızı yükleyerek medya kütüphanenizi oluşturmaya başlayın.'
-                    : 'Farklı bir filtre deneyin veya arama terimini değiştirin.'
-                  }
-                </p>
-                {mediaFilter === 'all' && (
-                  <button
-                    onClick={() => setShowUploadModal(true)}
-                    className="bg-brand-primary-700 hover:bg-brand-primary-800 text-white px-8 py-4 rounded-xl font-semibold transition-all duration-200 flex items-center space-x-2 mx-auto"
-                  >
-                    <PlusIcon className="w-5 h-5" />
-                    <span>İlk Dosyayı Yükle</span>
-                  </button>
-                )}
-              </div>
-            )}
-          </div>
-        )}
-
         {/* Media Upload Modal */}
         {showUploadModal && (
-          <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-[9999] p-4">
-            <div className="bg-white rounded-3xl max-w-2xl w-full shadow-2xl p-6">
-                          <div className="flex items-center justify-between mb-6">
-                <h3 className="text-lg font-semibold text-slate-900 flex items-center space-x-2">
-                  <CloudArrowUpIcon className="w-5 h-5 text-brand-primary-700" />
+          <div className="fixed inset-0 bg-black/80 backdrop-blur-sm flex items-center justify-center z-[9999] p-4">
+            <div className="bg-white dark:bg-slate-800 rounded-2xl max-w-2xl w-full shadow-2xl p-6 border border-slate-200 dark:border-slate-700">
+              <div className="flex items-center justify-between mb-6">
+                <h3 className="text-lg font-semibold text-slate-900 dark:text-white flex items-center space-x-2">
+                  <CloudArrowUpIcon className="w-5 h-5 text-blue-500 dark:text-blue-400" />
                   <span>Dosya Yükle</span>
                 </h3>
                 <button
                   onClick={() => setShowUploadModal(false)}
-                  className="p-2 hover:bg-slate-100 rounded-xl transition-colors"
+                  className="p-2 hover:bg-slate-100 dark:hover:bg-slate-700 rounded-lg transition-colors"
                   disabled={uploadingMedia}
                 >
-                  <XMarkIcon className="w-5 h-5 text-slate-500" />
+                  <XMarkIcon className="w-5 h-5 text-slate-500 dark:text-slate-400" />
                 </button>
               </div>
 
-            <div className="space-y-6">
-              {/* Upload Area */}
-              <div
-                className={`border-2 border-dashed rounded-xl p-8 text-center transition-all duration-200 ${
-                  uploadingMedia
-                    ? 'border-brand-primary-600 bg-brand-primary-600/10'
-                    : 'border-white/30 hover:border-brand-primary-600 hover:bg-white/5'
-                }`}
-                onDragOver={(e) => e.preventDefault()}
-                onDrop={(e) => {
-                  e.preventDefault();
-                  if (!uploadingMedia && e.dataTransfer.files) {
-                    handleMediaUpload(e.dataTransfer.files);
-                  }
-                }}
-              >
-                {/* Hidden file input - sadece programatik olarak tetiklenecek */}
-                <input
-                  type="file"
-                  id="media-upload"
-                  accept="image/*,video/*"
-                  multiple
-                  onChange={(e) => {
-                    if (e.target.files) {
-                      handleMediaUpload(e.target.files);
+              <div className="space-y-6">
+                {/* Upload Area */}
+                <div
+                  className={`border-2 border-dashed rounded-xl p-8 text-center transition-all duration-200 ${uploadingMedia
+                    ? 'border-blue-500 bg-blue-500/10'
+                    : 'border-slate-300 dark:border-slate-600 hover:border-blue-500 hover:bg-slate-100 dark:hover:bg-slate-700/50'
+                    }`}
+                  onDragOver={(e) => e.preventDefault()}
+                  onDrop={(e) => {
+                    e.preventDefault();
+                    if (!uploadingMedia && e.dataTransfer.files) {
+                      handleMediaUpload(e.dataTransfer.files);
                     }
                   }}
-                  className="hidden"
-                  disabled={uploadingMedia}
-                />
-                
-                {uploadingMedia ? (
-                  <div className="space-y-4">
-                    <CloudArrowUpIcon className="w-16 h-16 mx-auto text-brand-primary-400 animate-pulse" />
-                    <div>
-                      <p className="text-brand-primary-300 font-semibold text-lg">Dosyalar yükleniyor...</p>
-                      <p className="text-slate-400 text-sm mt-1">Lütfen bekleyin</p>
-                    </div>
-                    <div className="w-full max-w-xs mx-auto bg-white/20 rounded-full h-2">
-                      <div className="bg-gradient-to-r from-brand-primary-600 to-blue-500 h-2 rounded-full animate-pulse"></div>
-                    </div>
-                  </div>
-                ) : (
-                  <div className="space-y-4">
-                    {/* Tıklanabilir upload alanı */}
-                    <div 
-                      className="cursor-pointer hover:scale-105 transition-transform"
-                      onClick={() => {
-                        const fileInput = document.getElementById('media-upload');
-                        fileInput?.click();
-                      }}
-                    >
-                      <CloudArrowUpIcon className="w-16 h-16 mx-auto text-slate-400" />
-                      <div className="mt-4">
-                        <p className="text-white font-semibold text-lg">Dosya Yükle</p>
-                        <p className="text-slate-400 text-sm mt-1">
-                          Dosyaları buraya sürükleyin veya tıklayın
-                        </p>
+                >
+                  <input
+                    type="file"
+                    id="media-upload"
+                    accept="image/*,video/*"
+                    multiple
+                    onChange={(e) => {
+                      if (e.target.files) {
+                        handleMediaUpload(e.target.files);
+                      }
+                    }}
+                    className="hidden"
+                    disabled={uploadingMedia}
+                  />
+
+                  {uploadingMedia ? (
+                    <div className="space-y-4">
+                      <div className="w-8 h-8 border-2 border-blue-500 border-t-transparent rounded-full animate-spin mx-auto"></div>
+                      <div>
+                        <p className="text-blue-300 font-semibold text-lg">Dosyalar yükleniyor...</p>
+                        <p className="text-slate-400 text-sm mt-1">Lütfen bekleyin</p>
                       </div>
                     </div>
-                    
-                    {/* Dosya formatı bilgileri - tıklanamaz */}
-                    <div className="space-y-2">
-                      <p className="text-xs text-slate-500">
-                        Desteklenen formatlar: JPG, PNG, GIF, WebP, MP4, MOV
-                      </p>
-                      <p className="text-xs text-slate-500">
-                        Maksimum dosya boyutu: 10MB
-                      </p>
+                  ) : (
+                    <div className="space-y-4">
+                      <div
+                        className="cursor-pointer hover:scale-105 transition-transform"
+                        onClick={() => {
+                          const fileInput = document.getElementById('media-upload');
+                          fileInput?.click();
+                        }}
+                      >
+                        <CloudArrowUpIcon className="w-16 h-16 mx-auto text-slate-400 dark:text-slate-500" />
+                        <div className="mt-4">
+                          <p className="text-slate-900 dark:text-white font-semibold text-lg">Dosya Yükle</p>
+                          <p className="text-slate-600 dark:text-slate-400 text-sm mt-1">
+                            Dosyaları buraya sürükleyin veya tıklayın
+                          </p>
+                        </div>
+                      </div>
+
+                      <div className="space-y-2">
+                        <p className="text-xs text-slate-500 dark:text-slate-400">
+                          Desteklenen formatlar: JPG, PNG, GIF, WebP, MP4, MOV
+                        </p>
+                        <p className="text-xs text-slate-500 dark:text-slate-400">
+                          Maksimum dosya boyutu: 10MB
+                        </p>
+                      </div>
+
+                      <button
+                        type="button"
+                        className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-lg font-semibold transition-all duration-200"
+                        onClick={() => {
+                          const fileInput = document.getElementById('media-upload');
+                          fileInput?.click();
+                        }}
+                      >
+                        Dosya Seç
+                      </button>
                     </div>
-                    
-                    {/* Dosya Seç butonu */}
-                    <button
-                      type="button"
-                      className="bg-gradient-to-r from-brand-primary-700 to-blue-600 hover:from-brand-primary-800 hover:to-blue-700 text-white px-6 py-3 rounded-xl font-semibold transition-all duration-200"
-                      onClick={() => {
-                        console.log('Dosya Seç butonuna tıklandı');
-                        const fileInput = document.getElementById('media-upload');
-                        console.log('File input element:', fileInput);
-                        fileInput?.click();
-                      }}
-                    >
-                      Dosya Seç
-                    </button>
-                  </div>
-                )}
-              </div>
+                  )}
+                </div>
 
-              {/* Upload Tips */}
-              <div className="bg-blue-500/10 border border-blue-500/30 rounded-xl p-4">
-                <h4 className="text-blue-300 font-semibold mb-2 flex items-center space-x-2">
-                  <InformationCircleIcon className="w-5 h-5" />
-                  <span>İpuçları</span>
-                </h4>
-                <ul className="text-blue-200 text-sm space-y-1">
-                  <li>• Aynı anda birden fazla dosya seçebilirsiniz</li>
-                  <li>• Dosyalar otomatik olarak Cloudinary&apos;ye yüklenecek</li>
-                  <li>• Yüklenen dosyalar anında görünecek</li>
-                  <li>• Büyük dosyalar için sabırlı olun</li>
-                </ul>
-              </div>
+                {/* Upload Tips */}
+                <div className="bg-blue-500/10 border border-blue-500/30 rounded-xl p-4">
+                  <h4 className="text-blue-300 font-semibold mb-2 flex items-center space-x-2">
+                    <InformationCircleIcon className="w-5 h-5" />
+                    <span>İpuçları</span>
+                  </h4>
+                  <ul className="text-blue-200 text-sm space-y-1">
+                    <li>• Aynı anda birden fazla dosya seçebilirsiniz</li>
+                    <li>• Dosyalar otomatik olarak Cloudinary&apos;ye yüklenecek</li>
+                    <li>• Yüklenen dosyalar anında görünecek</li>
+                    <li>• Büyük dosyalar için sabırlı olun</li>
+                  </ul>
+                </div>
 
-              {/* Action Buttons */}
-              <div className="flex items-center justify-end space-x-3">
-                <button
-                  onClick={() => setShowUploadModal(false)}
-                  disabled={uploadingMedia}
-                  className="px-4 py-2 text-slate-400 hover:text-white transition-colors disabled:opacity-50"
-                >
-                  {uploadingMedia ? 'Yükleniyor...' : 'Kapat'}
-                </button>
-              </div>
+                {/* Action Buttons */}
+                <div className="flex items-center justify-end space-x-3">
+                  <button
+                    onClick={() => setShowUploadModal(false)}
+                    disabled={uploadingMedia}
+                    className="px-4 py-2 text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white transition-colors disabled:opacity-50"
+                  >
+                    {uploadingMedia ? 'Yükleniyor...' : 'Kapat'}
+                  </button>
+                </div>
               </div>
             </div>
           </div>
@@ -640,7 +647,7 @@ export default function AdminMediaPage() {
         {showPreviewModal && previewItem && (
           <div className="fixed inset-0 bg-black/80 backdrop-blur-sm flex items-center justify-center z-[9999] p-4">
             <div className="bg-white rounded-3xl max-w-4xl w-full max-h-[90vh] shadow-2xl overflow-hidden">
-              
+
               {/* Modal Header */}
               <div className="flex items-center justify-between p-6 border-b border-slate-200">
                 <div className="flex items-center space-x-3">
@@ -662,7 +669,7 @@ export default function AdminMediaPage() {
 
               {/* Modal Content */}
               <div className="flex flex-col lg:flex-row max-h-[calc(90vh-80px)]">
-                
+
                 {/* Image Preview */}
                 <div className="flex-1 flex items-center justify-center bg-slate-50 p-8">
                   {previewItem.mimeType.startsWith('image/') ? (
@@ -691,7 +698,7 @@ export default function AdminMediaPage() {
                 {/* File Details */}
                 <div className="lg:w-80 bg-slate-50 border-l border-slate-200 p-6 overflow-y-auto">
                   <div className="space-y-6">
-                    
+
                     {/* File Info */}
                     <div>
                       <h4 className="text-lg font-semibold text-slate-900 mb-4">Dosya Bilgileri</h4>
@@ -723,9 +730,8 @@ export default function AdminMediaPage() {
                         <div>
                           <label className="text-sm font-medium text-slate-600">Kaynak</label>
                           <div className="flex items-center space-x-2">
-                            <span className={`text-xs px-2 py-1 rounded-full text-white font-semibold ${
-                              previewItem.source === 'cloudinary' ? 'bg-blue-600' : 'bg-brand-primary-700'
-                            }`}>
+                            <span className={`text-xs px-2 py-1 rounded-full text-white font-semibold ${previewItem.source === 'cloudinary' ? 'bg-blue-600' : 'bg-brand-primary-700'
+                              }`}>
                               {previewItem.source === 'cloudinary' ? '☁️ Cloudinary' : '💾 Yerel'}
                             </span>
                           </div>
@@ -743,7 +749,7 @@ export default function AdminMediaPage() {
                     <div className="border-t border-slate-200 pt-6">
                       <h4 className="text-lg font-semibold text-slate-900 mb-4">İşlemler</h4>
                       <div className="space-y-3">
-                        
+
                         {/* Copy URL */}
                         <button
                           onClick={() => {
