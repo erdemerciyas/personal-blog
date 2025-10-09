@@ -5,18 +5,33 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2.5.4] - 2025-10-09
+
+### Added
+- **GitHub Compliance**: Enhanced README.md for better GitHub repository presentation
+- **Documentation Improvements**: Updated project structure and feature descriptions
+
+### Changed
+- **Media Upload UI**: Improved admin panel media upload interface with better styling
+- **UI Components**: Enhanced button states and user feedback in admin panel
+- **Version Update**: Project version updated from 2.5.3 to 2.5.4
+
+### Fixed
+- **UI Consistency**: Fixed styling inconsistencies in admin media management
+- **Accessibility**: Improved accessibility attributes in admin components
+
 ## [2.5.3] - 2025-10-08
 
 ### Added
-- **Admin User Management**: Geliştirilmiş admin kullanıcı oluşturma ve yönetimi
-- **Environment Configuration**: Geliştirilmiş ortam değişkeni yönetimi ve varsayılan şifre yapılandırması
+- **Admin User Management**: Enhanced admin user creation and management
+- **Environment Configuration**: Improved environment variable management and default password configuration
 
 ### Changed
-- **Version Update**: Proje versiyonu 2.5.2'den 2.5.3'e yükseltildi
-- **Documentation**: README ve CHANGELOG dosyaları güncellendi
+- **Version Update**: Project version upgraded from 2.5.2 to 2.5.3
+- **Documentation**: README and CHANGELOG files updated
 
 ### Fixed
-- **Login Issues**: Admin kullanıcı girişi ile ilgili sorunlar giderildi
+- **Login Issues**: Resolved admin user login issues
 
 ## [2.5.2] - 2025-10-08
 
