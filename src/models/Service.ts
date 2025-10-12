@@ -30,6 +30,7 @@ const serviceSchema = new mongoose.Schema<IService>(
     image: {
       type: String,
       required: [true, 'Görsel URL gerekli'],
+      default: 'https://placehold.co/600x400/cccccc/000000?text=Service+Image',
     },
     icon: {
       type: String,

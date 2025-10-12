@@ -1,6 +1,6 @@
 import { NextResponse } from 'next/server';
 import { getServerSession } from 'next-auth';
-import { connectToDatabase } from '../../../lib/mongoose';
+import connectDB from '../../../lib/mongoose';
 
 import { logger } from '../../../lib/logger';
 import { createError, asyncHandler } from '../../../lib/errorHandler';
@@ -25,7 +25,7 @@ export const GET = asyncHandler(async (req: Request) => {
     return NextResponse.json(cached);
   }
 
-  await connectToDatabase();
+  await connectDB();
   const services = await Service.find({})
     .sort({ createdAt: -1 });
 
@@ -65,9 +65,10 @@ export const POST = withSecurity(SecurityConfigs.admin)(asyncHandler(async (requ
     throw createError.validation('Açıklama çok uzun (maksimum 2000 karakter)');
   }
 
-  await connectToDatabase();
+  await connectDB();
 
-  const imageUrl = body.image || '';
+  // Use a default image if none provided
+  const imageUrl = body.image || 'https://placehold.co/600x400/cccccc/000000?text=Service+Image';
 
   const session = await getServerSession();
   const serviceData = {

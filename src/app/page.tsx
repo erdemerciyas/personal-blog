@@ -73,6 +73,15 @@ export default function HomePage() {
   });
   const { data: servicesData, loading: servicesLoading } = useServices();
 
+  // Add a state to track if initial data has been loaded
+  const [initialLoadComplete, setInitialLoadComplete] = useState(false);
+  
+  useEffect(() => {
+    if (!servicesLoading && servicesData !== null) {
+      setInitialLoadComplete(true);
+    }
+  }, [servicesLoading, servicesData]);
+
   // Process slider data
   const sliderItems: SliderItem[] = (sliderData as Array<{ _id: string; title: string; subtitle: string; description: string; isActive: boolean; buttonText?: string; buttonLink?: string; backgroundImage?: string }>)?.filter((item) => item.isActive)?.map((item) => ({
     _id: item._id,
@@ -118,7 +127,7 @@ export default function HomePage() {
   })) || [];
 
   // Process services data
-  const services = (servicesData as Array<{ _id: string; title: string; description: string; image: string }>)?.length > 0 ? (servicesData as Array<{ _id: string; title: string; description: string; image: string }>).slice(-6) : defaultServices;
+  const services = (servicesData as Array<{ _id: string; title: string; description: string; image: string }>)?.length > 0 ? (servicesData as Array<{ _id: string; title: string; description: string; image: string }>).slice(0, 6) : defaultServices;
   // Normalize services shape to always include optional icon for safer access
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const servicesList = (services as Array<any>).map((s) => ({
@@ -327,7 +336,7 @@ export default function HomePage() {
           </div>
 
           {/* Services Grid */}
-            {servicesLoading ? (
+          {(servicesLoading || !initialLoadComplete) ? (
             <ContentSkeleton type="card" count={3} className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8" />
           ) : services && services.length > 0 ? (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mb-16" aria-live="polite">

@@ -5,20 +5,27 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [2.5.4] - 2025-10-09
+## [2.5.4] - 2025-10-12
 
 ### Added
 - **GitHub Compliance**: Enhanced README.md for better GitHub repository presentation
 - **Documentation Improvements**: Updated project structure and feature descriptions
+- **Services Loading Fix**: Resolved issue where "Sunduğumuz Hizmetler" section wasn't loading on first visit
 
 ### Changed
 - **Media Upload UI**: Improved admin panel media upload interface with better styling
 - **UI Components**: Enhanced button states and user feedback in admin panel
 - **Version Update**: Project version updated from 2.5.3 to 2.5.4
+- **Services Data Processing**: Fixed services slice operation and loading state handling
+- **API Route Consistency**: Standardized database connection methods across all API routes
+- **Service Model Enhancement**: Added default image URL for services to prevent required field issues
 
 ### Fixed
 - **UI Consistency**: Fixed styling inconsistencies in admin media management
 - **Accessibility**: Improved accessibility attributes in admin components
+- **Services Loading Issue**: Fixed hydration mismatch causing services section to not load on first visit
+- **API Route Connection**: Standardized database connection method in services API route
+- **Service Model**: Added default value for required image field in service model
 
 ## [2.5.3] - 2025-10-08
 
