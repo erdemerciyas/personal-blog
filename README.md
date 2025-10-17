@@ -178,6 +178,7 @@ src/
 **Deployment URL**: https://www.fixral.com  
 **Last Deploy**: 2025-10-17  
 **Build Time**: ~45 seconds  
+**CI/CD Status**: ✅ Automated with GitHub Actions  
 
 #### Quick Deploy
 ```bash
