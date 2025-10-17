@@ -78,7 +78,7 @@ jobs:
         run: npm ci
 
       - name: Run unit tests
-        run: npm test -- --coverage --watchAll=false --passWithNoTests
+        run: npm test -- --watchAll=false --passWithNoTests --coverage=false
         env:
           NODE_ENV: test
           CI: true
