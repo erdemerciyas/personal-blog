@@ -51,12 +51,6 @@ export function useApi<T>(
 
       const response = await fetch(url);
       if (!response.ok) {
-        // Don't throw error for 404s on public APIs, just return empty data
-        if (response.status === 404 && !url.includes('/admin/')) {
-          setData([] as T);
-          setLoading(false);
-          return;
-        }
         throw new Error(`HTTP error! status: ${response.status}`);
       }
 
@@ -80,8 +74,8 @@ export function useApi<T>(
       setError(error);
       onError?.(error);
       
-      // Set empty data for failed requests to prevent UI issues
-      setData([] as T);
+      // Set null data for failed requests
+      setData(null);
     } finally {
       setLoading(false);
     }

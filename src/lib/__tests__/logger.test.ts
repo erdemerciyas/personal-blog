@@ -34,39 +34,49 @@ describe('Logger', () => {
 
   describe('warn logging', () => {
     it('should log warning messages', () => {
+      const warnSpy = jest.spyOn(console, 'warn').mockImplementation();
       logger.warn('Test warning', 'TEST_CONTEXT');
-      expect(consoleSpy).toHaveBeenCalled();
+      expect(warnSpy).toHaveBeenCalled();
+      warnSpy.mockRestore();
     });
 
     it('should include warning data', () => {
+      const warnSpy = jest.spyOn(console, 'warn').mockImplementation();
       const warnData = { attempt: 1 };
       logger.warn('Test warning', 'TEST', warnData);
-      expect(consoleSpy).toHaveBeenCalled();
+      expect(warnSpy).toHaveBeenCalled();
+      warnSpy.mockRestore();
     });
   });
 
   describe('info logging', () => {
     it('should log info messages', () => {
+      const infoSpy = jest.spyOn(console, 'info').mockImplementation();
       logger.info('Test info', 'TEST_CONTEXT');
-      expect(consoleSpy).toHaveBeenCalled();
+      expect(infoSpy).toHaveBeenCalled();
+      infoSpy.mockRestore();
     });
 
     it('should include info data', () => {
+      const infoSpy = jest.spyOn(console, 'info').mockImplementation();
       const infoData = { status: 'success' };
       logger.info('Test info', 'TEST', infoData);
-      expect(consoleSpy).toHaveBeenCalled();
+      expect(infoSpy).toHaveBeenCalled();
+      infoSpy.mockRestore();
     });
   });
 
   describe('debug logging', () => {
     it('should log debug messages in development', () => {
       const originalEnv = process.env.NODE_ENV;
+      const logSpy = jest.spyOn(console, 'log').mockImplementation();
       (process.env as any).NODE_ENV = 'development';
       
       logger.debug('Test debug', 'TEST_CONTEXT');
-      expect(consoleSpy).toHaveBeenCalled();
+      expect(logSpy).toHaveBeenCalled();
       
       (process.env as any).NODE_ENV = originalEnv;
+      logSpy.mockRestore();
     });
 
     it('should not log debug messages in production', () => {
@@ -103,22 +113,29 @@ describe('Logger', () => {
 
   describe('error handling', () => {
     it('should handle Error objects', () => {
+      const errorSpy = jest.spyOn(console, 'error').mockImplementation();
       const error = new Error('Test error');
       logger.error('An error occurred', 'TEST', undefined, error);
-      expect(consoleSpy).toHaveBeenCalled();
+      expect(errorSpy).toHaveBeenCalled();
+      errorSpy.mockRestore();
     });
 
     it('should handle string errors', () => {
+      const errorSpy = jest.spyOn(console, 'error').mockImplementation();
       logger.error('String error', 'TEST');
-      expect(consoleSpy).toHaveBeenCalled();
+      expect(errorSpy).toHaveBeenCalled();
+      errorSpy.mockRestore();
     });
   });
 
   describe('timestamp formatting', () => {
     it('should include timestamp in logs', () => {
+      const infoSpy = jest.spyOn(console, 'info').mockImplementation();
       logger.info('Test message', 'TEST');
-      const callArgs = consoleSpy.mock.calls[0][0];
+      expect(infoSpy).toHaveBeenCalled();
+      const callArgs = infoSpy.mock.calls[0][0];
       expect(callArgs).toMatch(/\d{4}-\d{2}-\d{2}/);
+      infoSpy.mockRestore();
     });
   });
 });

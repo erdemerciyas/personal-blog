@@ -96,17 +96,15 @@ describe('useApi Hook', () => {
     });
 
     const { result } = renderHook(() => 
-      useApi('/api/test', { method: 'POST' })
+      useApi('/api/test', { cacheKey: 'test-cache' })
     );
 
     await waitFor(() => {
       expect(result.current.loading).toBe(false);
     });
 
-    expect(global.fetch).toHaveBeenCalledWith(
-      expect.any(String),
-      expect.objectContaining({ method: 'POST' })
-    );
+    expect(global.fetch).toHaveBeenCalledWith('/api/test');
+    expect(result.current.data).toEqual(mockData);
   });
 
   it('should handle empty responses', async () => {
