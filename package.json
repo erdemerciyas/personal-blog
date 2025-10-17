@@ -1,6 +1,6 @@
 {
   "name": "personal-blog",
-  "version": "2.6.0",
+  "version": "2.7.0",
   "private": true,
   "scripts": {
     "dev": "next dev",
@@ -36,6 +36,8 @@
   "dependencies": {
     "@headlessui/react": "^1.7.17",
     "@heroicons/react": "^2.0.18",
+    "@react-three/drei": "^9.122.0",
+    "@react-three/fiber": "^8.18.0",
     "@tiptap/extension-code-block-lowlight": "^3.6.5",
     "@tiptap/extension-color": "^3.6.5",
     "@tiptap/extension-highlight": "^3.6.5",
@@ -72,7 +74,10 @@
     "sharp": "^0.32.6",
     "slugify": "^1.6.6",
     "swagger-jsdoc": "^6.2.8",
-    "swagger-ui-react": "^5.29.4"
+    "swagger-ui-react": "^5.29.4",
+    "swiper": "^11.2.10",
+    "three": "^0.160.1",
+    "three-stdlib": "^2.36.0"
   },
   "devDependencies": {
     "@playwright/test": "^1.40.0",
@@ -91,6 +96,7 @@
     "@types/react-dom": "18.2.7",
     "@types/sanitize-html": "^2.9.5",
     "@types/swagger-jsdoc": "^6.0.4",
+    "@types/three": "^0.160.0",
     "autoprefixer": "^10.4.15",
     "dotenv": "^16.3.1",
     "eslint": "8.49.0",

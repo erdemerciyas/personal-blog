@@ -7,10 +7,11 @@ import { appConfig } from '@/lib/config';
 export const dynamic = 'force-dynamic';
 
 export async function GET(req: NextRequest) {
-  if (!hasValidMongoUri()) {
-    return NextResponse.json({ items: [], total: 0, page: 1, limit: 0 });
-  }
-  await connectDB();
+  try {
+    if (!hasValidMongoUri()) {
+      return NextResponse.json({ items: [], total: 0, page: 1, limit: 0 });
+    }
+    await connectDB();
   const { searchParams } = new URL(req.url);
   const q = searchParams.get('q') || '';
   const ids = searchParams.get('ids');
@@ -71,9 +72,16 @@ export async function GET(req: NextRequest) {
     : (sort === 'priceAsc' ? { price: 1 } : { price: -1 });
   // Projection to reduce payload size
   const projection = '-attachments';
-  const items = await Product.find(filter, projection).sort(sortSpec).skip((page - 1) * limit).limit(limit).lean({ getters: true });
-  const total = await Product.countDocuments(filter);
-  return NextResponse.json({ items, total, page, limit });
+    const items = await Product.find(filter, projection).sort(sortSpec).skip((page - 1) * limit).limit(limit).lean({ getters: true });
+    const total = await Product.countDocuments(filter);
+    return NextResponse.json({ items, total, page, limit });
+  } catch (error) {
+    console.error('Products API error:', error);
+    return NextResponse.json(
+      { items: [], total: 0, page: 1, limit: 0, error: 'Internal server error' },
+      { status: 500 }
+    );
+  }
 }
 
 

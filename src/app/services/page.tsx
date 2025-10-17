@@ -136,7 +136,7 @@ export default function ServicesPage() {
       />
 
       {/* Breadcrumbs under Hero */}
-      <section className="py-4">
+      <section className="py-1">
         <div className="container mx-auto px-4">
           <Breadcrumbs />
         </div>

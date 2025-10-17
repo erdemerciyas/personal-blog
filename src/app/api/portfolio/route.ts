@@ -172,10 +172,6 @@ export async function GET(request: Request) {
       }
     }
     
-    const portfolioQuery = Portfolio.find(query)
-      .populate('categoryId', 'name slug') // Eski tekli kategori alanı
-      .populate('categoryIds', 'name slug'); // Yeni çoklu kategori alanı
-    
     // Sıralama: Random ise rastgele, değilse tarih ve order'a göre
     if (random === 'true') {
       // MongoDB'de rastgele sıralama için $sample kullan

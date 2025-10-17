@@ -18,7 +18,8 @@ import {
   StarIcon,
   FolderOpenIcon,
   CheckIcon,
-  XMarkIcon
+  XMarkIcon,
+  CubeIcon
 } from '@heroicons/react/24/outline';
 
 interface Category {
@@ -39,6 +40,16 @@ interface PortfolioItem {
   technologies: string[];
   coverImage: string;
   images: string[];
+  // 3D Model desteği
+  models3D?: Array<{
+    url: string;
+    name: string;
+    format: string;
+    size: number;
+    downloadable: boolean;
+    publicId: string;
+    uploadedAt: string;
+  }>;
   featured: boolean;
   order: number;
 }
@@ -347,6 +358,13 @@ export default function PortfolioManagement() {
                               </div>
                             )}
                             <span>Müşteri: {item.client}</span>
+                            {/* 3D Model durumu */}
+                            {item.models3D && item.models3D.length > 0 && (
+                              <div className="flex items-center space-x-1 text-blue-600">
+                                <CubeIcon className="w-4 h-4" />
+                                <span>{item.models3D.length} 3D Model</span>
+                              </div>
+                            )}
                           </div>
                         </div>
                         

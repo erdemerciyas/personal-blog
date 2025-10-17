@@ -39,3 +39,52 @@ export const deleteImage = async (publicId: string): Promise<void> => {
     throw new Error('Resim silinemedi');
   }
 };
+
+// 3D Model upload fonksiyonu
+export const upload3DModel = async (file: string, fileName: string): Promise<{ url: string; publicId: string; size: number }> => {
+  try {
+    const result = await cloudinary.uploader.upload(file, {
+      folder: 'fixral_3d_models',
+      resource_type: 'raw',
+      public_id: fileName,
+      use_filename: true,
+      unique_filename: false,
+    });
+
+    return {
+      url: result.secure_url,
+      publicId: result.public_id,
+      size: result.bytes,
+    };
+  } catch (error) {
+    logger.error('Cloudinary 3D model upload failed in lib', 'ERROR', { error });
+    throw new Error('3D model yüklenemedi');
+  }
+};
+
+// 3D Model silme fonksiyonu
+export const delete3DModel = async (publicId: string): Promise<void> => {
+  try {
+    await cloudinary.uploader.destroy(publicId, { resource_type: 'raw' });
+  } catch (error) {
+    logger.error('Cloudinary 3D model delete failed in lib', 'ERROR', { error });
+    throw new Error('3D model silinemedi');
+  }
+};
+
+// 3D Model listesi alma fonksiyonu
+export const list3DModels = async (): Promise<any[]> => {
+  try {
+    const result = await cloudinary.api.resources({
+      type: 'upload',
+      prefix: 'fixral_3d_models/',
+      resource_type: 'raw',
+      max_results: 100,
+    });
+
+    return result.resources;
+  } catch (error) {
+    logger.error('Cloudinary 3D models list failed in lib', 'ERROR', { error });
+    throw new Error('3D model listesi alınamadı');
+  }
+};

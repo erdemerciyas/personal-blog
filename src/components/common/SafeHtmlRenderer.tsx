@@ -18,7 +18,7 @@ const SafeHtmlRenderer: React.FC<SafeHtmlRendererProps> = ({
   allowedTags,
   allowedAttributes,
   maxLength,
-  showReadMore = false
+  showReadMore: _showReadMore = false
 }) => {
   const sanitizedHtml = useMemo(() => {
     if (!html) return '';

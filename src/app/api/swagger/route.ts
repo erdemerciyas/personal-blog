@@ -29,7 +29,7 @@ export async function GET() {
         'Cache-Control': 'public, max-age=3600',
       },
     });
-  } catch (error) {
+  } catch (_error) {
     return NextResponse.json(
       {
         error: {

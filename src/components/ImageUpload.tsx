@@ -6,8 +6,6 @@ import MediaBrowser from './MediaBrowser';
 import { useToast } from './ui/useToast';
 import {
   ArrowUpTrayIcon,
-  ExclamationTriangleIcon,
-  CheckIcon,
   TrashIcon,
   FolderOpenIcon,
   LinkIcon,

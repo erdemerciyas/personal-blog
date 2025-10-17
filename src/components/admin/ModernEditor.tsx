@@ -31,14 +31,12 @@ import {
   Bars3BottomLeftIcon,
   Bars3Icon,
   Bars3BottomRightIcon,
-  PaintBrushIcon,
   PaintBrushIcon as HighlightIcon,
   TableCellsIcon,
   EyeIcon,
   CodeBracketIcon,
   ArrowUturnLeftIcon,
-  ArrowUturnRightIcon,
-  DocumentTextIcon
+  ArrowUturnRightIcon
 } from '@heroicons/react/24/outline';
 import MediaBrowser from '../MediaBrowser';
 
@@ -92,8 +90,9 @@ const ModernEditor: React.FC<ModernEditorProps> = ({
 }) => {
   const [showMediaBrowser, setShowMediaBrowser] = useState(false);
   const [showPreview, setShowPreview] = useState(false);
-  const [linkUrl, setLinkUrl] = useState('');
-  const [showLinkDialog, setShowLinkDialog] = useState(false);
+  // Link dialog state (reserved for future use)
+  // const [linkUrl, setLinkUrl] = useState('');
+  // const [showLinkDialog, setShowLinkDialog] = useState(false);
   const [isMounted, setIsMounted] = useState(false);
 
   useEffect(() => {

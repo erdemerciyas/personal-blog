@@ -241,7 +241,6 @@ class ImageOptimizer {
     const avifUrl = this.generateOptimizedUrl(imageUrl, { ...options, format: 'avif' });
     const jpegUrl = this.generateOptimizedUrl(imageUrl, { ...options, format: 'jpeg' });
 
-    const srcSet = this.generateSrcSet(imageUrl, options);
     const sizes = this.generateSizes();
 
     return `

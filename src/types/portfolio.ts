@@ -30,6 +30,17 @@ export interface Category {
   description?: string;
 }
 
+export interface Model3D {
+  _id: string;
+  url: string;
+  name: string;
+  format: 'stl' | 'obj' | 'gltf' | 'glb';
+  size: number;
+  downloadable: boolean;
+  publicId: string;
+  uploadedAt: string;
+}
+
 export interface PortfolioItem {
   _id: string;
   title: string;
@@ -46,6 +57,8 @@ export interface PortfolioItem {
   technologies: string[];
   coverImage: string;
   images?: string[];
+  // 3D Model desteği
+  models3D?: Model3D[];
   featured?: boolean;
   order?: number;
   createdAt?: string;

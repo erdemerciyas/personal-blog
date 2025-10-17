@@ -143,6 +143,8 @@ export async function PUT(
       technologies: data.technologies,
       coverImage: data.coverImage || DEFAULT_IMAGE,
       images: data.images && data.images.length > 0 && data.images[0] ? data.images : DEFAULT_DETAIL_IMAGES,
+      // 3D Model desteği
+      models3D: data.models3D || [],
       featured: data.featured,
       order: data.order,
       updatedAt: new Date(),

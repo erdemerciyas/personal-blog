@@ -18,7 +18,10 @@ import {
   ExclamationTriangleIcon,
   TrashIcon,
   PlusIcon,
-  ArrowLeftIcon
+  ArrowLeftIcon,
+  CubeIcon,
+  CloudArrowUpIcon,
+  ArrowDownTrayIcon
 } from '@heroicons/react/24/outline';
 import Link from 'next/link';
 import { Category, PortfolioItem } from '../../../../../types/portfolio';
@@ -27,6 +30,15 @@ import slugify from 'slugify';
 
 type EditForm = Omit<PortfolioItem, 'categoryIds' | 'categoryId' | 'category'> & {
   categoryIds: string[];
+  models3D?: Array<{
+    url: string;
+    name: string;
+    format: string;
+    size: number;
+    downloadable: boolean;
+    publicId: string;
+    uploadedAt: string;
+  }>;
 };
 
 export default function EditPortfolioItem({ params }: { params: { id: string } }) {
@@ -38,6 +50,7 @@ export default function EditPortfolioItem({ params }: { params: { id: string } }
   const [success, setSuccess] = useState(false);
   const [categories, setCategories] = useState<Category[]>([]);
   const [slugLocked, setSlugLocked] = useState(true);
+  const [uploadingModel, setUploadingModel] = useState(false);
 
   const [formData, setFormData] = useState<EditForm>({
     _id: '',
@@ -50,6 +63,8 @@ export default function EditPortfolioItem({ params }: { params: { id: string } }
     technologies: [''],
     coverImage: '',
     images: [],
+    // 3D Model desteği
+    models3D: [],
     featured: false,
     order: 0,
   });
@@ -101,6 +116,7 @@ export default function EditPortfolioItem({ params }: { params: { id: string } }
         completionDate: formattedDate,
         technologies: [...data.technologies, ''],
         images: data.images || [],
+        models3D: data.models3D || [],
       });
     } catch (err) {
       setError('Portfolyo öğesi yüklenirken bir hata oluştu');
@@ -213,6 +229,117 @@ export default function EditPortfolioItem({ params }: { params: { id: string } }
 
   const handleCoverImageChange = (coverImage: string) => {
     setFormData(prev => ({ ...prev, coverImage }));
+  };
+
+  // 3D Model yönetimi fonksiyonları
+  const handle3DModelUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (!file) return;
+
+    // Dosya formatı kontrolü
+    const allowedFormats = ['stl', 'obj', 'gltf', 'glb'];
+    const fileExtension = file.name.split('.').pop()?.toLowerCase();
+    
+    if (!fileExtension || !allowedFormats.includes(fileExtension)) {
+      setError('Desteklenmeyen dosya formatı. Sadece STL, OBJ, GLTF, GLB dosyaları kabul edilir.');
+      return;
+    }
+
+    // Dosya boyutu kontrolü (50MB)
+    const maxSize = 50 * 1024 * 1024;
+    if (file.size > maxSize) {
+      setError('Dosya boyutu 50MB\'dan büyük olamaz');
+      return;
+    }
+
+    setUploadingModel(true);
+    setError('');
+
+    try {
+      const formDataUpload = new FormData();
+      formDataUpload.append('file', file);
+
+      const response = await fetch('/api/3dmodels/upload', {
+        method: 'POST',
+        body: formDataUpload,
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.message || 'Yükleme başarısız');
+      }
+
+      const result = await response.json();
+      
+      // Form data'ya yeni modeli ekle
+      setFormData(prev => ({
+        ...prev,
+        models3D: [...(prev.models3D || []), {
+          _id: new Date().getTime().toString(), // Geçici ID
+          url: result.data.url,
+          name: result.data.name,
+          format: result.data.format,
+          size: result.data.size,
+          downloadable: false, // Varsayılan olarak indirilebilir değil
+          publicId: result.data.publicId,
+          uploadedAt: new Date().toISOString(),
+        }]
+      }));
+
+      // Input'u temizle
+      event.target.value = '';
+    } catch (err) {
+      const msg = err instanceof Error ? err.message : 'Yükleme sırasında bir hata oluştu';
+      setError(msg);
+    } finally {
+      setUploadingModel(false);
+    }
+  };
+
+  const remove3DModel = async (index: number) => {
+    const model = formData.models3D?.[index];
+    if (!model) return;
+    
+    if (!confirm(`"${model.name}" modelini silmek istediğinizden emin misiniz?`)) {
+      return;
+    }
+
+    try {
+      // Cloudinary'den sil
+      const response = await fetch(`/api/3dmodels/delete?publicId=${encodeURIComponent(model.publicId)}`, {
+        method: 'DELETE',
+      });
+
+      if (!response.ok) {
+        throw new Error('Silme işlemi başarısız oldu');
+      }
+
+      // Form data'dan kaldır
+      setFormData(prev => ({
+        ...prev,
+        models3D: prev.models3D?.filter((_, i) => i !== index) || []
+      }));
+    } catch (err) {
+      const msg = err instanceof Error ? err.message : 'Silme sırasında bir hata oluştu';
+      setError(msg);
+    }
+  };
+
+  const toggle3DModelDownloadable = (index: number) => {
+    setFormData(prev => ({
+      ...prev,
+      models3D: prev.models3D?.map((model, i) => 
+        i === index ? { ...model, downloadable: !model.downloadable } : model
+      ) || []
+    }));
+  };
+
+  const formatFileSize = (bytes: number): string => {
+    if (bytes === 0) return '0 Bytes';
+    const k = 1024;
+    const sizes = ['Bytes', 'KB', 'MB', 'GB'];
+    const i = Math.floor(Math.log(bytes) / Math.log(k));
+    return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
   };
 
   if (status === 'loading' || loading) {
@@ -482,6 +609,130 @@ export default function EditPortfolioItem({ params }: { params: { id: string } }
               disabled={submitting}
               pageContext="portfolio"
             />
+          </div>
+
+          {/* 3D Models Section */}
+          <div className="bg-white rounded-xl p-6 shadow-sm border border-slate-200">
+            <div className="flex items-center justify-between mb-4">
+              <h3 className="text-lg font-semibold text-slate-900 flex items-center space-x-2">
+                <CubeIcon className="w-5 h-5 text-blue-600" />
+                <span>3D Modeller</span>
+              </h3>
+              
+              <div className="flex items-center space-x-3">
+                <input
+                  type="file"
+                  accept=".stl,.obj,.gltf,.glb"
+                  onChange={handle3DModelUpload}
+                  className="hidden"
+                  id="model-upload-edit"
+                  disabled={uploadingModel || submitting}
+                />
+                <label
+                  htmlFor="model-upload-edit"
+                  className={`flex items-center space-x-2 px-4 py-2 rounded-lg font-medium transition-colors cursor-pointer ${
+                    uploadingModel || submitting
+                      ? 'bg-blue-400 text-white cursor-not-allowed'
+                      : 'bg-blue-600 hover:bg-blue-700 text-white'
+                  }`}
+                >
+                  {uploadingModel ? (
+                    <>
+                      <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white"></div>
+                      <span>Yükleniyor...</span>
+                    </>
+                  ) : (
+                    <>
+                      <CloudArrowUpIcon className="w-4 h-4" />
+                      <span>Model Yükle</span>
+                    </>
+                  )}
+                </label>
+              </div>
+            </div>
+            
+            <div className="mb-4">
+              <p className="text-sm text-slate-600">
+                3D model dosyalarınızı yükleyin. Desteklenen formatlar: STL, OBJ, GLTF, GLB (Maksimum 50MB)
+              </p>
+            </div>
+
+            {/* 3D Models List */}
+            {formData.models3D && formData.models3D.length > 0 ? (
+              <div className="space-y-3">
+                {formData.models3D.map((model, index) => (
+                  <div key={index} className="flex items-center justify-between p-4 border border-slate-200 rounded-lg bg-slate-50">
+                    <div className="flex items-center space-x-3">
+                      <div className="w-10 h-10 bg-gradient-to-br from-blue-100 to-indigo-200 rounded-lg flex items-center justify-center">
+                        <CubeIcon className="w-6 h-6 text-blue-600" />
+                      </div>
+                      <div>
+                        <h4 className="font-medium text-slate-900">{model.name}</h4>
+                        <div className="flex items-center space-x-2 text-sm text-slate-500">
+                          <span className="uppercase font-medium">{model.format}</span>
+                          <span>•</span>
+                          <span>{formatFileSize(model.size)}</span>
+                          {model.downloadable && (
+                            <>
+                              <span>•</span>
+                              <span className="text-green-600 font-medium">İndirilebilir</span>
+                            </>
+                          )}
+                        </div>
+                      </div>
+                    </div>
+                    
+                    <div className="flex items-center space-x-2">
+                      <button
+                        type="button"
+                        onClick={() => toggle3DModelDownloadable(index)}
+                        className={`p-2 rounded-lg transition-colors ${
+                          model.downloadable
+                            ? 'text-green-600 hover:bg-green-50'
+                            : 'text-slate-400 hover:bg-slate-100'
+                        }`}
+                        title={model.downloadable ? 'İndirmeyi kapat' : 'İndirmeye aç'}
+                      >
+                        <ArrowDownTrayIcon className="w-4 h-4" />
+                      </button>
+                      
+                      <button
+                        type="button"
+                        onClick={() => remove3DModel(index)}
+                        className="p-2 text-red-500 hover:text-red-700 hover:bg-red-50 rounded-lg transition-colors"
+                        title="Modeli sil"
+                      >
+                        <TrashIcon className="w-4 h-4" />
+                      </button>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            ) : (
+              <div className="text-center py-8 border-2 border-dashed border-slate-300 rounded-lg">
+                <CubeIcon className="w-12 h-12 text-slate-400 mx-auto mb-3" />
+                <p className="text-slate-500 mb-2">Henüz 3D model yüklenmemiş</p>
+                <p className="text-sm text-slate-400">
+                  Yukarıdaki "Model Yükle" butonunu kullanarak 3D model ekleyebilirsiniz
+                </p>
+              </div>
+            )}
+
+            {/* 3D Model Info */}
+            <div className="mt-4 p-4 bg-blue-50 border border-blue-200 rounded-lg">
+              <div className="flex items-start space-x-3">
+                <CubeIcon className="w-5 h-5 text-blue-600 mt-0.5 flex-shrink-0" />
+                <div className="text-sm text-blue-800">
+                  <p className="font-medium mb-1">3D Model Bilgileri:</p>
+                  <ul className="space-y-1 text-blue-700">
+                    <li>• GLTF/GLB formatları canlı önizleme destekler</li>
+                    <li>• STL/OBJ formatları sadece indirilebilir</li>
+                    <li>• İndirme izni model bazında ayarlanabilir</li>
+                    <li>• Maksimum dosya boyutu: 50MB</li>
+                  </ul>
+                </div>
+              </div>
+            </div>
           </div>
 
           {/* Technologies */}

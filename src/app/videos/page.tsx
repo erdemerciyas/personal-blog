@@ -201,14 +201,15 @@ export default function VideosPage() {
     );
   };
 
-  const toggleSearch = () => {
-    setIsSearchOpen(!isSearchOpen);
-    if (!isSearchOpen && searchInputRef.current) {
-      setTimeout(() => {
-        searchInputRef.current?.focus();
-      }, 100);
-    }
-  };
+  // Search toggle function (reserved for future use)
+  // const toggleSearch = () => {
+  //   setIsSearchOpen(!isSearchOpen);
+  //   if (!isSearchOpen && searchInputRef.current) {
+  //     setTimeout(() => {
+  //       searchInputRef.current?.focus();
+  //     }, 100);
+  //   }
+  // };
 
   const clearSearch = () => {
     setSearchTerm('');
@@ -244,59 +245,57 @@ export default function VideosPage() {
       />
       
       {/* Breadcrumbs */}
-      <div className="py-4">
+      <div className="py-1">
         <div className="container mx-auto px-4">
           <Breadcrumbs />
         </div>
       </div>
       
       {/* Video Content */}
-      <div id="video-content" className="container mx-auto px-4 py-12">
+      <div id="video-content" className="container mx-auto px-4 py-1 md:py-2 lg:py-3">
         {/* Search and Filter */}
-        <div className="mb-10 max-w-3xl mx-auto">
-          <div className="flex flex-col md:flex-row md:items-center gap-4 mb-4">
-            <div className="relative flex-1">
+        <div className="bg-white/80 backdrop-blur-xl rounded-3xl shadow-xl border border-white/20 p-6 md:p-8 mb-8">
+          {/* Search and Quick Actions */}
+          <div className="flex flex-col lg:flex-row gap-4 mb-6">
+            {/* Search Input */}
+            <div className="flex-1 relative">
               <div className="relative">
-                <button 
-                  onClick={toggleSearch}
-                  className="absolute left-3 top-1/2 transform -translate-y-1/2 p-1"
-                >
-                  <MagnifyingGlassIcon className="w-5 h-5 text-slate-400" />
-                </button>
+                <MagnifyingGlassIcon className="absolute left-4 top-1/2 transform -translate-y-1/2 w-5 h-5 text-slate-400" />
                 <input
                   ref={searchInputRef}
                   type="text"
                   placeholder="Video ara..."
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
-                  className={`w-full px-4 py-3 pl-12 rounded-xl border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-800 text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-brand-primary-600 transition-all ${isSearchOpen ? 'md:w-full' : ''}`}
+                  className="w-full pl-12 pr-4 py-4 bg-white border-2 border-slate-200 rounded-2xl text-slate-700 placeholder-slate-400 focus:border-brand-primary-600 focus:ring-4 focus:ring-brand-primary-600/20 outline-none transition-all duration-300 shadow-sm focus:shadow-lg"
                 />
                 {searchTerm && (
-                  <button 
+                  <button
                     onClick={() => setSearchTerm('')}
-                    className="absolute right-3 top-1/2 transform -translate-y-1/2 p-1 text-slate-400 hover:text-slate-700"
+                    className="absolute right-4 top-1/2 transform -translate-y-1/2 p-1 hover:bg-slate-100 rounded-full transition-colors duration-200"
                   >
-                    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <svg className="w-4 h-4 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
                     </svg>
                   </button>
                 )}
               </div>
             </div>
-            
-            <div className="flex flex-col sm:flex-row gap-2">
+
+            {/* Filters */}
+            <div className="flex gap-3">
               {/* Type Filter */}
-              <div className="inline-flex rounded-lg border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-800 p-1">
+              <div className="inline-flex rounded-2xl border-2 border-slate-200 bg-white p-1 shadow-sm">
                 <button
                   onClick={() => {
                     const url = new URL(window.location.href);
                     url.searchParams.delete('type');
                     router.push(url.pathname + url.search);
                   }}
-                  className={`px-4 py-2 text-sm font-medium rounded-md ${
+                  className={`px-4 py-3 text-sm font-semibold rounded-xl transition-all duration-300 ${
                     !typeFilter
-                      ? 'bg-brand-primary-600 text-white'
-                      : 'text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700'
+                      ? 'bg-brand-primary-600 text-white shadow-sm'
+                      : 'text-slate-700 hover:bg-slate-100'
                   }`}
                 >
                   Tümü
@@ -307,10 +306,10 @@ export default function VideosPage() {
                     url.searchParams.set('type', 'normal');
                     router.push(url.pathname + url.search);
                   }}
-                  className={`px-4 py-2 text-sm font-medium rounded-md ${
+                  className={`px-4 py-3 text-sm font-semibold rounded-xl transition-all duration-300 ${
                     typeFilter === 'normal'
-                      ? 'bg-brand-primary-600 text-white'
-                      : 'text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700'
+                      ? 'bg-brand-primary-600 text-white shadow-sm'
+                      : 'text-slate-700 hover:bg-slate-100'
                   }`}
                 >
                   Normal
@@ -321,10 +320,10 @@ export default function VideosPage() {
                     url.searchParams.set('type', 'short');
                     router.push(url.pathname + url.search);
                   }}
-                  className={`px-4 py-2 text-sm font-medium rounded-md ${
+                  className={`px-4 py-3 text-sm font-semibold rounded-xl transition-all duration-300 ${
                     typeFilter === 'short'
-                      ? 'bg-brand-primary-600 text-white'
-                      : 'text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700'
+                      ? 'bg-brand-primary-600 text-white shadow-sm'
+                      : 'text-slate-700 hover:bg-slate-100'
                   }`}
                 >
                   Kısa
@@ -333,72 +332,98 @@ export default function VideosPage() {
 
               {/* Channel Filter */}
               {availableChannels.length > 0 && (
-                <select
-                  value={channelFilter}
-                  onChange={(e) => {
-                    const url = new URL(window.location.href);
-                    if (e.target.value) {
-                      url.searchParams.set('channel', e.target.value);
-                    } else {
-                      url.searchParams.delete('channel');
-                    }
-                    router.push(url.pathname + url.search);
-                  }}
-                  className="px-4 py-2 text-sm font-medium rounded-lg border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-300 focus:outline-none focus:ring-2 focus:ring-brand-primary-600"
-                >
-                  <option value="">Tüm Kanallar</option>
-                  {availableChannels.map((channel) => (
-                    <option key={channel.channelId} value={channel.channelId}>
-                      {channel.channelName} ({channel.videoCount} video)
-                    </option>
-                  ))}
-                </select>
+                <div className="relative">
+                  <select
+                    value={channelFilter}
+                    onChange={(e) => {
+                      const url = new URL(window.location.href);
+                      if (e.target.value) {
+                        url.searchParams.set('channel', e.target.value);
+                      } else {
+                        url.searchParams.delete('channel');
+                      }
+                      router.push(url.pathname + url.search);
+                    }}
+                    className="appearance-none bg-white border-2 border-slate-200 rounded-2xl px-4 py-4 pr-10 text-slate-700 focus:border-brand-primary-600 focus:ring-4 focus:ring-brand-primary-600/20 outline-none transition-all duration-300 shadow-sm focus:shadow-lg cursor-pointer"
+                  >
+                    <option value="">Tüm Kanallar</option>
+                    {availableChannels.map((channel) => (
+                      <option key={channel.channelId} value={channel.channelId}>
+                        {channel.channelName} ({channel.videoCount})
+                      </option>
+                    ))}
+                  </select>
+                  <svg className="absolute right-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-slate-400 pointer-events-none" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                  </svg>
+                </div>
               )}
             </div>
           </div>
           
           {/* Tags */}
           {availableTags.length > 0 && (
-            <div className="flex flex-wrap items-center gap-2 mt-4">
-              <span className="text-sm text-slate-500 dark:text-slate-400 flex items-center">
-                <TagIcon className="w-4 h-4 mr-1" />
-                Etiketler:
-              </span>
-              {availableTags.map((tag) => (
-                <button
-                  key={tag}
-                  onClick={() => toggleTag(tag)}
-                  className={`px-3 py-1 rounded-full text-xs font-medium transition-colors ${
-                    selectedTags.includes(tag)
-                      ? 'bg-brand-primary-600 text-white'
-                      : 'bg-slate-200 text-slate-700 dark:bg-slate-700 dark:text-slate-300 hover:bg-slate-300 dark:hover:bg-slate-600'
-                  }`}
-                >
-                  {tag}
-                </button>
-              ))}
-              {(searchTerm || selectedTags.length > 0) && (
-                <button
-                  onClick={clearSearch}
-                  className="px-3 py-1 rounded-full text-xs font-medium bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400 hover:bg-red-200 dark:hover:bg-red-900/50 transition-colors ml-2"
-                >
-                  Filtreleri Temizle
-                </button>
-              )}
+            <div className="border-t border-slate-200 pt-6">
+              <div className="flex flex-wrap items-center gap-2">
+                <span className="text-sm font-medium text-slate-600 flex items-center">
+                  <TagIcon className="w-4 h-4 mr-2 text-brand-primary-700" />
+                  Etiketler:
+                </span>
+                {availableTags.map((tag) => (
+                  <button
+                    key={tag}
+                    onClick={() => toggleTag(tag)}
+                    className={`px-3 py-2 rounded-xl text-sm font-medium transition-all duration-300 shadow-sm hover:shadow-md ${
+                      selectedTags.includes(tag)
+                        ? 'bg-brand-primary-600 text-white'
+                        : 'bg-white border-2 border-slate-200 text-slate-700 hover:border-brand-primary-300'
+                    }`}
+                  >
+                    {tag}
+                  </button>
+                ))}
+                {(searchTerm || selectedTags.length > 0) && (
+                  <button
+                    onClick={clearSearch}
+                    className="px-4 py-2 rounded-xl text-sm font-semibold bg-red-100 text-red-700 hover:bg-red-200 transition-all duration-300 shadow-sm hover:shadow-md ml-2"
+                  >
+                    Filtreleri Temizle
+                  </button>
+                )}
+              </div>
             </div>
           )}
+
+          {/* Results Count */}
+          <div className="flex items-center justify-between pt-4 border-t border-slate-200 mt-6">
+            <div className="flex items-center text-slate-600">
+              <svg className="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z" />
+              </svg>
+              <span className="font-medium">
+                {loading ? (
+                  <span className="inline-flex items-center">
+                    <div className="w-4 h-4 border-2 border-slate-300 border-t-slate-600 rounded-full animate-spin mr-2"></div>
+                    Yükleniyor...
+                  </span>
+                ) : (
+                  `${filteredVideos.length} video bulundu`
+                )}
+              </span>
+            </div>
+
+            {(searchTerm || selectedTags.length > 0) && (
+              <button
+                onClick={clearSearch}
+                className="text-sm text-brand-primary-700 hover:text-brand-primary-800 font-semibold transition-colors duration-200"
+              >
+                Filtreleri Temizle
+              </button>
+            )}
+          </div>
         </div>
 
-        {/* Search Results Stats */}
-        {(searchTerm || selectedTags.length > 0) && (
-          <div className="mb-6 text-center">
-            <p className="text-sm text-slate-500 dark:text-slate-400">
-              {searchTerm ? `"${searchTerm}" için ` : ''}
-              {selectedTags.length > 0 ? `${selectedTags.join(', ')} etiketli ` : ''}
-              <span className="font-medium">{filteredVideos.length}</span> video bulundu
-            </p>
-          </div>
-        )}
+
 
         {/* Videos Grid */}
         {filteredVideos.length > 0 ? (

@@ -128,14 +128,14 @@ function PortfolioPageContent() {
         buttonLink={hero.buttonLink}
       />
       {/* Breadcrumbs under Hero */}
-      <section className="py-4">
+      <section className="py-1">
         <div className="container mx-auto px-4">
           <Breadcrumbs />
         </div>
       </section>
 
       {/* Main Content */}
-      <section id="projects" className="py-12 md:py-16 lg:py-20">
+      <section id="projects" className="py-1 md:py-2 lg:py-3">
         <div className="container mx-auto px-4">
           {/* Filters */}
           <PortfolioFilters
@@ -191,7 +191,8 @@ function PortfolioPageContent() {
                 client: item.client,
                 completionDate: item.completionDate,
                 technologies: item.technologies,
-                featured: item.featured
+                featured: item.featured,
+                models3D: item.models3D
               }))}
               isLoading={loading}
               layout={layout}

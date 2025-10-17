@@ -116,7 +116,8 @@ export default function AdminLayout({ children, title, breadcrumbs }: AdminLayou
       subItems: [
         { label: 'Tüm Projeler', href: '/admin/portfolio' },
         { label: 'Yeni Proje Ekle', href: '/admin/portfolio/new' },
-        { label: 'Kategoriler', href: '/admin/portfolio?tab=categories' }
+        { label: 'Kategoriler', href: '/admin/portfolio?tab=categories' },
+        { label: '3D Model Yönetimi', href: '/admin/models' }
       ]
     },
     {
@@ -158,6 +159,7 @@ export default function AdminLayout({ children, title, breadcrumbs }: AdminLayou
       icon: CogIcon,
       href: '/admin/settings',
       subItems: [
+        { label: 'Site Ayarları', href: '/admin/site-settings' },
         { label: 'Genel Ayarlar', href: '/admin/settings' },
         { label: 'Footer Ayarları', href: '/admin/footer' }
       ]

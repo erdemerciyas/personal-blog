@@ -152,22 +152,23 @@ export default function AdminSliderPage() {
     }));
   };
 
-  const handleImageChange = (imageUrl: string | string[]) => {
-    const url = Array.isArray(imageUrl) ? imageUrl[0] : imageUrl;
-    setFormData(prev => ({
-      ...prev,
-      imageUrl: url,
-      imageType: 'upload'
-    }));
-  };
+  // Image handling functions (reserved for future use)
+  // const handleImageChange = (imageUrl: string | string[]) => {
+  //   const url = Array.isArray(imageUrl) ? imageUrl[0] : imageUrl;
+  //   setFormData(prev => ({
+  //     ...prev,
+  //     imageUrl: url,
+  //     imageType: 'upload'
+  //   }));
+  // };
 
-  const handleImageRemove = () => {
-    setFormData(prev => ({
-      ...prev,
-      imageUrl: '',
-      imageType: 'upload'
-    }));
-  };
+  // const handleImageRemove = () => {
+  //   setFormData(prev => ({
+  //     ...prev,
+  //     imageUrl: '',
+  //     imageType: 'upload'
+  //   }));
+  // };
 
   const handleDurationChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const seconds = parseInt(e.target.value) || 5;

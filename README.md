@@ -1,9 +1,10 @@
-# Modern Portfolio & Blog Platform
+# Modern Portfolio & Blog Platform with 3D Model Support
 
 [![Next.js](https://img.shields.io/badge/Next.js-14.2.33-black?style=for-the-badge&logo=next.js)](https://nextjs.org/)
 [![TypeScript](https://img.shields.io/badge/TypeScript-5.6.3-blue?style=for-the-badge&logo=typescript)](https://www.typescriptlang.org/)
 [![MongoDB](https://img.shields.io/badge/MongoDB-Latest-003450?style=for-the-badge&logo=mongodb)](https://www.mongodb.com/)
 [![Tailwind CSS](https://img.shields.io/badge/Tailwind_CSS-3.4.0-003450?style=for-the-badge&logo=tailwind-css)](https://tailwindcss.com/)
+[![Three.js](https://img.shields.io/badge/Three.js-0.160.1-black?style=for-the-badge&logo=three.js)](https://threejs.org/)
 [![Vercel](https://img.shields.io/badge/Vercel-Live-black?style=for-the-badge&logo=vercel)](https://www.fixral.com)
 
 [![Security](https://img.shields.io/badge/Security-Hardened-003450?style=for-the-badge&logo=shield)](SECURITY.md)
@@ -11,13 +12,13 @@
 [![Build Status](https://img.shields.io/badge/Build-Passing-075985?style=for-the-badge&logo=github-actions)](https://github.com/erdemerciyas/personal-blog/actions)
 [![Code Quality](https://img.shields.io/badge/Code_Quality-Optimized-075985?style=for-the-badge&logo=codeclimate)](https://github.com/erdemerciyas/personal-blog)
 
-Modern, secure, and performant personal blog and portfolio platform built with Next.js 14, TypeScript, MongoDB, and Tailwind CSS.
+Modern, secure, and performant personal blog and portfolio platform with advanced 3D model support, built with Next.js 14, TypeScript, MongoDB, Three.js, and Tailwind CSS.
 
 ## 🚀 Live Demo
 
 **[Live Site](https://www.fixral.com)** | **[Admin Panel](https://www.fixral.com/admin)** | **[API Health](https://www.fixral.com/api/health)**
 
-> **Status**: **LIVE** | **Last Deploy**: 2025-10-17 | **Version**: v2.6.0 | **CI/CD Pipeline**: **OPTIMIZED**
+> **Status**: **LIVE** | **Last Deploy**: 2025-10-18 | **Version**: v2.7.0 | **Build**: **OPTIMIZED**
 
 ## ✨ Features
 
@@ -30,7 +31,10 @@ Modern, secure, and performant personal blog and portfolio platform built with N
 ### 📊 Portfolio Management
 - **Dynamic Portfolio**: Random project showcase
 - **Advanced Filtering**: Category, technology, and date filters
-- **Lightbox Gallery**: Full-screen image gallery
+- **Lightbox Gallery**: Full-screen image gallery with 3D model support
+- **3D Model Integration**: STL, OBJ, GLTF, GLB file support
+- **Interactive 3D Viewer**: Real-time 3D model preview with orbit controls
+- **3D Model Downloads**: Secure file sharing with admin permissions
 - **SEO Optimized**: Slug-based URL structure
 
 ### 🛡️ Security Features
@@ -46,6 +50,14 @@ Modern, secure, and performant personal blog and portfolio platform built with N
 - **Bundle Optimization**: Code splitting and tree shaking
 - **Client-Side Caching**: Smart API caching system
 - **Lazy Loading**: On-demand loading
+
+### 🎯 3D Model System
+- **Multi-Format Support**: STL, OBJ, GLTF, GLB files
+- **Live 3D Preview**: Interactive model viewer with React Three Fiber
+- **Orbit Controls**: Rotate, zoom, and pan 3D models
+- **Model Gallery**: Integrated with portfolio image gallery
+- **Download Management**: Admin-controlled file sharing
+- **Cloudinary Integration**: Secure cloud storage for 3D files
 
 ### 📹 Video Management
 - **YouTube Integration**: Simple video addition
@@ -65,6 +77,9 @@ Modern, secure, and performant personal blog and portfolio platform built with N
 - **Next.js 14**: React framework
 - **TypeScript**: Type safety
 - **Tailwind CSS**: Utility-first CSS
+- **Three.js**: 3D graphics library
+- **React Three Fiber**: React renderer for Three.js
+- **React Three Drei**: Useful helpers for React Three Fiber
 - **Framer Motion**: Animations
 - **Heroicons**: Modern icons
 
@@ -132,19 +147,49 @@ npm run dev
 
 The application will be available at [http://localhost:3000](http://localhost:3000).
 
+## 🎯 3D Model Features
+
+### Supported Formats
+- **STL**: Stereolithography files with custom material rendering
+- **OBJ**: Wavefront OBJ files with automatic material assignment
+- **GLTF/GLB**: Full-featured 3D scenes with materials and animations
+
+### Interactive Viewer
+- **Orbit Controls**: Mouse/touch controls for rotation and zoom
+- **Auto-centering**: Automatic model positioning and scaling
+- **Material Rendering**: Format-specific material assignments
+- **Performance Optimized**: Lazy loading and efficient rendering
+
+### Admin Management
+- **Drag & Drop Upload**: Easy file upload interface
+- **Preview System**: Real-time 3D preview in admin panel
+- **Download Permissions**: Granular control over file access
+- **Cloud Storage**: Secure Cloudinary integration
+
+### Portfolio Integration
+- **Unified Gallery**: 3D models integrated with image gallery
+- **Lightbox Support**: Full-screen 3D model viewing
+- **Responsive Design**: Works on all devices and screen sizes
+- **SEO Friendly**: Proper metadata and structured data
+
 ## 📁 Project Structure
 
 ```
 src/
 ├── app/                    # Next.js 14 App Router
 │   ├── admin/             # Admin panel pages
+│   │   └── models/        # 3D model management
 │   ├── api/               # API routes
+│   │   └── 3dmodels/      # 3D model API endpoints
 │   ├── portfolio/         # Portfolio pages
 │   └── ...
 ├── components/            # React components
 │   ├── common/           # Common components
 │   ├── portfolio/        # Portfolio components
-│   └── admin/            # Admin components
+│   │   └── PortfolioMediaGallery.tsx  # 3D + Image gallery
+│   ├── admin/            # Admin components
+│   ├── 3DModelViewer.tsx # 3D model viewer component
+│   └── ModelGallery.tsx  # 3D model gallery
 ├── lib/                  # Utility functions
 ├── models/               # MongoDB models
 ├── types/                # TypeScript types
@@ -165,9 +210,11 @@ src/
 ## ⚡ Performance
 
 ### Bundle Sizes (Production)
-- **Homepage**: 9.18 kB (159 kB First Load)
-- **Portfolio**: 7.42 kB (164 kB First Load)
-- **Shared JS**: 87.3 kB (optimized)
+- **Homepage**: 6.88 kB (109 kB First Load)
+- **Portfolio**: 7.19 kB (158 kB First Load)
+- **Portfolio Detail**: 11.8 kB (406 kB First Load)
+- **Shared JS**: 87.8 kB (optimized)
+- **Total Pages**: 77 static pages
 - **Performance Score**: 92% (Excellent)
 
 ## 🚀 Deployment
@@ -176,7 +223,7 @@ src/
 
 **Current Status**: **LIVE** on Vercel  
 **Deployment URL**: https://www.fixral.com  
-**Last Deploy**: 2025-10-17  
+**Last Deploy**: 2025-10-18  
 **Build Time**: ~45 seconds  
 **CI/CD Status**: ✅ Automated with GitHub Actions  
 

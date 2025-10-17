@@ -14,6 +14,16 @@ type PortfolioLean = {
   technologies?: string[];
   coverImage?: string;
   images?: string[];
+  // 3D Model desteği
+  models3D?: Array<{
+    url: string;
+    name: string;
+    format: string;
+    size: number;
+    downloadable: boolean;
+    publicId: string;
+    uploadedAt: string;
+  }>;
   featured?: boolean;
   order?: number;
   createdAt?: Date;
@@ -96,6 +106,8 @@ export async function GET(request: Request, { params }: { params: { slug: string
       technologies: p.technologies || [],
       coverImage: p.coverImage,
       images: p.images || [],
+      // 3D Model desteği
+      models3D: (p as any).models3D || [],
       featured: p.featured || false,
       order: p.order || 0,
       createdAt: p.createdAt,

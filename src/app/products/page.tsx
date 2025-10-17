@@ -11,17 +11,26 @@ import Breadcrumbs from '@/components/Breadcrumbs';
 
 async function getData(searchParams: Record<string, string>) {
   const qs = new URLSearchParams(searchParams as Record<string, string>).toString();
-  const base = process.env.NEXTAUTH_URL || '';
-  const res = await fetch(`${base}/api/products?${qs}`, { next: { revalidate: 60 } });
-  return res.json();
+  const base = process.env.NEXTAUTH_URL || 'http://localhost:3000';
+  try {
+    const res = await fetch(`${base}/api/products?${qs}`, { next: { revalidate: 60 } });
+    if (!res.ok) {
+      console.error('Products API error:', res.status, res.statusText);
+      return { items: [], total: 0, limit: 12 };
+    }
+    return await res.json();
+  } catch (error) {
+    console.error('Products fetch error:', error);
+    return { items: [], total: 0, limit: 12 };
+  }
 }
 
 async function getPageSettings(pageId: string) {
-  const base = process.env.NEXTAUTH_URL || '';
+  const base = process.env.NEXTAUTH_URL || 'http://localhost:3000';
   try {
     const res = await fetch(`${base}/api/admin/page-settings/${pageId}`, { next: { revalidate: 300 } });
     if (!res.ok) return null;
-    return res.json();
+    return await res.json();
   } catch {
     return null;
   }
@@ -37,12 +46,21 @@ export default async function ProductsPage({ searchParams }: { searchParams: Rec
   const ratingMin = searchParams?.ratingMin || '';
   const inStock = searchParams?.inStock || '';
   const freeShipping = searchParams?.freeShipping || '';
-  const catRes = await fetch(`${process.env.NEXTAUTH_URL || ''}/api/product-categories`, { next: { revalidate: 300 } });
-  const catData = await catRes.json().catch(() => ({ items: [] }));
-  const cats = Array.isArray(catData.items) ? catData.items : [];
+  let cats: Array<{ _id?: string; name: string }> = [];
+  try {
+    const catRes = await fetch(`${process.env.NEXTAUTH_URL || 'http://localhost:3000'}/api/product-categories`, { next: { revalidate: 300 } });
+    if (catRes.ok) {
+      const catData = await catRes.json();
+      cats = Array.isArray(catData.items) ? catData.items : [];
+    }
+  } catch (error) {
+    console.error('Categories fetch error:', error);
+    cats = [];
+  }
   const sort = (searchParams?.sort || '') as 'priceAsc'|'priceDesc'|'';
   const view = (searchParams?.view || 'grid') as 'grid' | 'list';
-  const { items = [], total = 0, limit = 12 }: { items: Array<{ _id: string; slug: string; coverImage: string; title: string; condition: 'new'|'used'; stock: number; price?: number; currency?: string; ratingAverage?: number; ratingCount?: number }>; total: number; limit: number } = await getData({ page: String(page), condition, category, q, sort, priceMin, priceMax, ratingMin, inStock, freeShipping });
+  const data = await getData({ page: String(page), condition, category, q, sort, priceMin, priceMax, ratingMin, inStock, freeShipping });
+  const { items = [], total = 0, limit = 12 } = data || {};
   const totalPages = Math.max(1, Math.ceil(total / limit));
   const pageSettings = await getPageSettings('products');
   const pageIsActive = pageSettings?.isActive !== false;
@@ -63,7 +81,7 @@ export default async function ProductsPage({ searchParams }: { searchParams: Rec
         minHeightVh={33}
       />
       {/* Breadcrumbs under Hero */}
-      <section className="py-4">
+      <section className="py-1">
         <div className="container mx-auto px-4">
           <Breadcrumbs />
         </div>

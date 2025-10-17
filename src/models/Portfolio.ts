@@ -45,6 +45,38 @@ const portfolioSchema = new mongoose.Schema({
   images: [{
     type: String,
   }],
+  // 3D Model desteği
+  models3D: [{
+    url: {
+      type: String,
+      required: true,
+    },
+    name: {
+      type: String,
+      required: true,
+    },
+    format: {
+      type: String,
+      enum: ['stl', 'obj', 'gltf', 'glb'],
+      required: true,
+    },
+    size: {
+      type: Number, // bytes
+      required: true,
+    },
+    downloadable: {
+      type: Boolean,
+      default: false,
+    },
+    publicId: {
+      type: String,
+      required: true,
+    },
+    uploadedAt: {
+      type: Date,
+      default: Date.now,
+    }
+  }],
   featured: {
     type: Boolean,
     default: false,

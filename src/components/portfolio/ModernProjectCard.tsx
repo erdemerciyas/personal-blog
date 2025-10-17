@@ -7,7 +7,8 @@ import { motion } from 'framer-motion';
 import { 
   ArrowRightIcon,
   EyeIcon,
-  PhotoIcon
+  PhotoIcon,
+  CubeIcon
 } from '@heroicons/react/24/outline';
 import { ProjectSummary } from '@/types/portfolio';
 import HTMLContent from '../HTMLContent';
@@ -18,6 +19,16 @@ interface ModernProjectCardProps {
     completionDate?: string;
     technologies?: string[];
     featured?: boolean;
+    models3D?: Array<{
+      _id?: string;
+      url: string;
+      name: string;
+      format: 'stl' | 'obj' | 'gltf' | 'glb';
+      size: number;
+      downloadable: boolean;
+      publicId: string;
+      uploadedAt: string;
+    }>;
   };
   index: number;
   layout?: 'grid' | 'masonry' | 'list';
@@ -95,6 +106,16 @@ export default function ModernProjectCard({
         <div className="absolute top-4 left-4 z-20">
           <span className="inline-flex items-center px-3 py-1 bg-gradient-to-r from-yellow-400 to-orange-500 text-white text-xs font-bold rounded-full shadow-lg">
             ⭐ Öne Çıkan
+          </span>
+        </div>
+      )}
+
+      {/* 3D Model Badge */}
+      {project.models3D && project.models3D.length > 0 && (
+        <div className={`absolute z-20 ${project.featured ? 'top-16 left-4' : 'top-4 left-4'}`}>
+          <span className="inline-flex items-center px-3 py-1 bg-gradient-to-r from-purple-500 to-indigo-600 text-white text-xs font-bold rounded-full shadow-lg">
+            <CubeIcon className="w-3 h-3 mr-1" />
+            3D Model
           </span>
         </div>
       )}

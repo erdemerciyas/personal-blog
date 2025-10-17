@@ -3,7 +3,7 @@ export const dynamic = 'force-dynamic';
 
 import { NextRequest, NextResponse } from 'next/server';
 import { v2 as cloudinary } from 'cloudinary';
-import { withSecurity } from '../../../../../lib/security-middleware';
+// import { withSecurity } from '../../../../../lib/security-middleware';
 import { logger } from '../../../../../lib/logger';
 
 // Cloudinary config
