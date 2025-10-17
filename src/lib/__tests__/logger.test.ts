@@ -15,20 +15,27 @@ describe('Logger', () => {
 
   describe('error logging', () => {
     it('should log error messages', () => {
+      const errorSpy = jest.spyOn(console, 'error').mockImplementation();
       logger.error('Test error', 'TEST_CONTEXT');
-      expect(consoleSpy).toHaveBeenCalled();
+      expect(errorSpy).toHaveBeenCalled();
+      errorSpy.mockRestore();
     });
 
     it('should include context in error logs', () => {
+      const errorSpy = jest.spyOn(console, 'error').mockImplementation();
       logger.error('Test error', 'MY_CONTEXT');
-      const callArgs = consoleSpy.mock.calls[0][0];
+      expect(errorSpy).toHaveBeenCalled();
+      const callArgs = errorSpy.mock.calls[0][0];
       expect(callArgs).toContain('MY_CONTEXT');
+      errorSpy.mockRestore();
     });
 
     it('should include error data', () => {
+      const errorSpy = jest.spyOn(console, 'error').mockImplementation();
       const errorData = { userId: '123', action: 'login' };
       logger.error('Test error', 'TEST', errorData);
-      expect(consoleSpy).toHaveBeenCalled();
+      expect(errorSpy).toHaveBeenCalled();
+      errorSpy.mockRestore();
     });
   });
 
@@ -70,9 +77,15 @@ describe('Logger', () => {
     it('should log debug messages in development', () => {
       const originalEnv = process.env.NODE_ENV;
       const logSpy = jest.spyOn(console, 'log').mockImplementation();
+      
+      // Set to development and create new logger instance to pick up env change
       (process.env as any).NODE_ENV = 'development';
       
-      logger.debug('Test debug', 'TEST_CONTEXT');
+      // Import logger again to get fresh instance with new env
+      jest.resetModules();
+      const { logger: freshLogger } = require('../logger');
+      
+      freshLogger.debug('Test debug', 'TEST_CONTEXT');
       expect(logSpy).toHaveBeenCalled();
       
       (process.env as any).NODE_ENV = originalEnv;
@@ -81,15 +94,16 @@ describe('Logger', () => {
 
     it('should not log debug messages in production', () => {
       const originalEnv = process.env.NODE_ENV;
+      const logSpy = jest.spyOn(console, 'log').mockImplementation();
       (process.env as any).NODE_ENV = 'production';
       
-      consoleSpy.mockClear();
       logger.debug('Test debug', 'TEST_CONTEXT');
       
       // In production, debug logs should be skipped
-      // This depends on logger implementation
+      expect(logSpy).not.toHaveBeenCalled();
       
       (process.env as any).NODE_ENV = originalEnv;
+      logSpy.mockRestore();
     });
   });
 
