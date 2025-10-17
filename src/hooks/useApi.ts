@@ -5,6 +5,7 @@ interface UseApiOptions {
   cacheKey?: string;
   cacheTTL?: number;
   immediate?: boolean;
+  method?: string;
   onSuccess?: (data: unknown) => void;
   onError?: (error: Error) => void;
 }

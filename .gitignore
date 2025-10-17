@@ -81,3 +81,16 @@ jspm_packages/
 
 # Temporary commit message file
 temp_commit_message.txt
+
+# Test artifacts
+/test-results/
+/playwright-report/
+/playwright/.cache/
+*.lcov
+
+# Cache directories
+.cache/
+.parcel-cache/
+
+# Sentry
+.sentryclirc

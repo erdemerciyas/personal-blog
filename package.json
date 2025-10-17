@@ -1,6 +1,6 @@
 {
   "name": "personal-blog",
-  "version": "2.5.4",
+  "version": "2.6.0",
   "private": true,
   "scripts": {
     "dev": "next dev",
@@ -27,7 +27,11 @@
     "test:mail": "node scripts/test-mail-system.js",
     "health:check": "curl -f http://localhost:3000/api/health || exit 1",
     "monitoring:test": "curl -f http://localhost:3000/api/monitoring/performance || exit 1",
-    "monitoring:dashboard": "open http://localhost:3000/admin/monitoring"
+    "monitoring:dashboard": "open http://localhost:3000/admin/monitoring",
+    "test:e2e": "playwright test",
+    "test:e2e:ui": "playwright test --ui",
+    "test:e2e:debug": "playwright test --debug",
+    "test:all": "npm run test && npm run test:e2e"
   },
   "dependencies": {
     "@headlessui/react": "^1.7.17",
@@ -47,6 +51,7 @@
     "@tiptap/react": "^3.6.5",
     "@tiptap/starter-kit": "^3.6.5",
     "@types/dompurify": "^3.0.5",
+    "@types/swagger-ui-react": "^5.18.0",
     "bcryptjs": "^2.4.3",
     "cloudinary": "^2.7.0",
     "clsx": "^2.1.1",
@@ -62,12 +67,15 @@
     "nodemailer": "^7.0.9",
     "react": "18.2.0",
     "react-dom": "18.2.0",
+    "redis": "^4.6.11",
     "sanitize-html": "^2.11.0",
     "sharp": "^0.32.6",
     "slugify": "^1.6.6",
-    "swagger-jsdoc": "^6.2.8"
+    "swagger-jsdoc": "^6.2.8",
+    "swagger-ui-react": "^5.29.4"
   },
   "devDependencies": {
+    "@playwright/test": "^1.40.0",
     "@tailwindcss/aspect-ratio": "^0.4.2",
     "@tailwindcss/forms": "^0.5.7",
     "@tailwindcss/typography": "^0.5.10",
