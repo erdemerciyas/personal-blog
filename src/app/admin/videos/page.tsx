@@ -449,6 +449,8 @@ export default function AdminVideosPage() {
                     <td className="px-6 py-4 whitespace-nowrap">
                       <div className="flex items-center">
                         <div className="flex-shrink-0 h-16 w-24">
+                          {/* Using img element for thumbnail preview - no Image component available */}
+                          {/* eslint-disable-next-line @next/next/no-img-element */}
                           <img 
                             src={video.thumbnail} 
                             alt={video.title} 

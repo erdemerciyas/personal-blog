@@ -30,7 +30,6 @@ export default function VideosPage() {
   const [selectedTags, setSelectedTags] = useState<string[]>([]);
   const [availableTags, setAvailableTags] = useState<string[]>([]);
   const [availableChannels, setAvailableChannels] = useState<any[]>([]);
-  const [isSearchOpen, setIsSearchOpen] = useState(false);
   const [hero, setHero] = useState<{ 
     title: string; 
     description: string; 

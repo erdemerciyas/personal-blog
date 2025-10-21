@@ -350,15 +350,23 @@ E-posta: ${projectForm.email}
   };
 
   return (
-    <header className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${
-      isScrolled 
-        ? 'bg-white/90 backdrop-blur-md shadow border-b border-slate-200/60' 
-        : 'bg-transparent'
-    }`}>
+    <>
+      {/* Skip to main content link */}
+      <a 
+        href="#main-content" 
+        className="sr-only focus:not-sr-only focus:fixed focus:top-0 focus:left-0 focus:z-[9999] focus:bg-brand-primary-600 focus:text-white focus:px-4 focus:py-2 focus:rounded-br-lg"
+      >
+        Ana içeriğe atla
+      </a>
+      <header className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${
+        isScrolled 
+          ? 'bg-white/90 backdrop-blur-md shadow border-b border-slate-200/60' 
+          : 'bg-transparent'
+      }`} role="banner">
       <div className="container-main">
         <div className="flex items-center justify-between h-16 sm:h-20">
-          {/* Logo */}
-          <Link href="/" className="flex items-center space-x-3 group shrink-0 -ml-2 sm:-ml-4 lg:-ml-6">
+          {/* Logo - Home Link */}
+          <Link href="/" className="flex items-center space-x-3 group shrink-0 -ml-2 sm:-ml-4 lg:-ml-6 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-primary-600 focus-visible:ring-offset-2 rounded-xl" aria-label="Anasayfaya git">
             {siteSettings?.logo?.url && (
               <div className="relative w-12 h-12 sm:w-14 sm:h-14 rounded-2xl overflow-hidden bg-white/10 backdrop-blur-sm p-1">
                 <Image
@@ -456,13 +464,13 @@ E-posta: ${projectForm.email}
           {/* Mobile Menu Button */}
           <button
             onClick={toggleMobileMenu}
-            aria-label="Mobil menüyü aç/kapat"
+            aria-label={isMobileMenuOpen ? "Mobil menüyü kapat" : "Mobil menüyü aç"}
             aria-controls="mobile-menu"
             aria-expanded={isMobileMenuOpen}
-            className={`md:hidden p-2 rounded-xl transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-white/30 ${
+            className={`md:hidden p-2 rounded-xl transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 ${
               isScrolled
-                ? 'text-slate-700 hover:bg-slate-100'
-                : 'text-white hover:bg-white/10'
+                ? 'text-slate-700 hover:bg-slate-100 focus-visible:ring-slate-400'
+                : 'text-white hover:bg-white/10 focus-visible:ring-white/50'
             }`}
           >
             {isMobileMenuOpen ? (
@@ -542,13 +550,15 @@ E-posta: ${projectForm.email}
               </h2>
               <button
                 onClick={closeProjectModal}
-                className="p-2 rounded-full hover:bg-gray-100 transition-colors"
+                aria-label="Diyaloğu kapat"
+                className="p-2 rounded-full hover:bg-gray-100 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-primary-600"
               >
                 <XMarkIcon className="w-6 h-6 text-gray-500" />
               </button>
             </div>
             
-            <form onSubmit={handleProjectFormSubmit} className="p-6 space-y-6">
+            <form onSubmit={handleProjectFormSubmit} className="p-6 space-y-6" aria-labelledby="project-modal-title">
+              <h2 id="project-modal-title" className="sr-only">Proje Başvurusu Formu</h2>
               {submitStatus === 'success' && (
                 <div className="bg-brand-primary-50 border border-brand-primary-200 rounded-xl p-4">
                   <div className="flex items-center space-x-2">
@@ -580,7 +590,8 @@ E-posta: ${projectForm.email}
                     value={projectForm.name}
                     onChange={handleProjectFormChange}
                     required
-                    className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-brand-primary-600 focus:border-transparent transition-all"
+                    aria-required="true"
+                    className="w-full px-4 py-3 border border-gray-300 rounded-xl focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-primary-600 focus-visible:ring-offset-2 transition-all"
                     placeholder="Adınız ve soyadınız"
                   />
                 </div>
@@ -596,7 +607,8 @@ E-posta: ${projectForm.email}
                     value={projectForm.email}
                     onChange={handleProjectFormChange}
                     required
-                    className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-brand-primary-600 focus:border-transparent transition-all"
+                    aria-required="true"
+                    className="w-full px-4 py-3 border border-gray-300 rounded-xl focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-primary-600 focus-visible:ring-offset-2 transition-all"
                     placeholder="ornek@email.com"
                   />
                 </div>
@@ -611,7 +623,7 @@ E-posta: ${projectForm.email}
                     name="phone"
                     value={projectForm.phone}
                     onChange={handleProjectFormChange}
-                    className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-brand-primary-600 focus:border-transparent transition-all"
+                    className="w-full px-4 py-3 border border-gray-300 rounded-xl focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-primary-600 focus-visible:ring-offset-2 transition-all"
                     placeholder="05XX XXX XX XX"
                   />
                 </div>
@@ -626,7 +638,8 @@ E-posta: ${projectForm.email}
                     value={projectForm.projectType}
                     onChange={handleProjectFormChange}
                     required
-                    className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-brand-primary-600 focus:border-transparent transition-all"
+                    aria-required="true"
+                    className="w-full px-4 py-3 border border-gray-300 rounded-xl focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-primary-600 focus-visible:ring-offset-2 transition-all"
                   >
                     <option value="">Seçiniz</option>
                     <option value="3d-scanning">3D Tarama</option>
@@ -648,7 +661,7 @@ E-posta: ${projectForm.email}
                     name="budget"
                     value={projectForm.budget}
                     onChange={handleProjectFormChange}
-                    className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-brand-primary-600 focus:border-transparent transition-all"
+                    className="w-full px-4 py-3 border border-gray-300 rounded-xl focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-primary-600 focus-visible:ring-offset-2 transition-all"
                   >
                     <option value="">Seçiniz</option>
                     <option value="under-5k">5.000 TL altı</option>
@@ -668,7 +681,7 @@ E-posta: ${projectForm.email}
                     name="timeline"
                     value={projectForm.timeline}
                     onChange={handleProjectFormChange}
-                    className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-brand-primary-600 focus:border-transparent transition-all"
+                    className="w-full px-4 py-3 border border-gray-300 rounded-xl focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-primary-600 focus-visible:ring-offset-2 transition-all"
                   >
                     <option value="">Seçiniz</option>
                     <option value="asap">Mümkün olan en kısa sürede</option>
@@ -690,8 +703,9 @@ E-posta: ${projectForm.email}
                   value={projectForm.description}
                   onChange={handleProjectFormChange}
                   required
+                  aria-required="true"
                   rows={4}
-                  className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-brand-primary-600 focus:border-transparent transition-all resize-none"
+                  className="w-full px-4 py-3 border border-gray-300 rounded-xl focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-primary-600 focus-visible:ring-offset-2 transition-all resize-none"
                   placeholder="Projenizin detaylarını, hedeflerinizi ve özel gereksinimlerinizi açıklayın..."
                 />
               </div>
@@ -700,14 +714,14 @@ E-posta: ${projectForm.email}
                 <button
                   type="button"
                   onClick={closeProjectModal}
-                  className="flex-1 px-6 py-3 border border-gray-300 text-gray-700 rounded-xl font-semibold hover:bg-gray-50 transition-colors"
+                  className="flex-1 px-6 py-3 border border-gray-300 text-gray-700 rounded-xl font-semibold hover:bg-gray-50 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gray-400"
                 >
                   İptal
                 </button>
                 <button
                   type="submit"
                   disabled={isSubmitting}
-                  className="flex-1 px-6 py-3 bg-gradient-primary text-white rounded-xl font-semibold hover:opacity-90 transition-opacity disabled:opacity-50 flex items-center justify-center space-x-2"
+                  className="flex-1 px-6 py-3 bg-gradient-primary text-white rounded-xl font-semibold hover:opacity-90 transition-opacity disabled:opacity-50 flex items-center justify-center space-x-2 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-primary-600 focus-visible:ring-offset-2"
                 >
                   {isSubmitting ? (
                     <span>Gönderiliyor...</span>
@@ -723,8 +737,9 @@ E-posta: ${projectForm.email}
           </div>
         </div>, document.body)
       }
-    </header>
+      </header>
+    </>
   );
 };
 
-export default Header; 
+export default Header;

@@ -46,8 +46,9 @@ const nextConfig = {
       '@/types': path.resolve(__dirname, 'src/types'),
     };
     
-    // Vercel için MongoDB optimizasyonu
+    // Optional dependencies - mark as external to avoid build errors
     config.externals.push({
+      '@sentry/nextjs': 'commonjs @sentry/nextjs',
       'utf-8-validate': 'commonjs utf-8-validate',
       'bufferutil': 'commonjs bufferutil',
     });

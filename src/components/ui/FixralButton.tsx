@@ -17,7 +17,10 @@ const FixralButton: React.FC<FixralButtonProps> = ({
   disabled,
   ...props
 }) => {
-  const baseClasses = 'inline-flex items-center justify-center font-medium rounded-fixral transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-offset-2 disabled:opacity-80 disabled:cursor-not-allowed disabled:!bg-slate-200 disabled:!text-slate-600 disabled:border disabled:border-slate-300 disabled:shadow-none';
+  const baseClasses = 'inline-flex items-center justify-center font-medium rounded-fixral transition-all duration-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 disabled:opacity-80 disabled:cursor-not-allowed disabled:!bg-slate-200 disabled:!text-slate-600 disabled:border disabled:border-slate-300 disabled:shadow-none';
+  
+  // Aria label for loading state
+  const ariaLabel = loading ? `${props['aria-label'] || 'İşlem'} yükleniyor` : props['aria-label'];
   
   const variantClasses = {
     primary: 'bg-brand-primary-900 text-white hover:bg-brand-primary-800 focus-visible:ring-brand-primary-600',
@@ -43,6 +46,8 @@ const FixralButton: React.FC<FixralButtonProps> = ({
         className
       )}
       disabled={disabled || loading}
+      aria-busy={loading}
+      aria-label={ariaLabel}
       {...props}
     >
       {loading && (

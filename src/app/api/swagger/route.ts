@@ -29,7 +29,8 @@ export async function GET() {
         'Cache-Control': 'public, max-age=3600',
       },
     });
-  } catch (_error) {
+  } catch (error) {
+    console.error('Swagger generation error:', error);
     return NextResponse.json(
       {
         error: {

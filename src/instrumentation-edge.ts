@@ -1,9 +1,23 @@
 // Sentry is optional - only import if available
 let Sentry: any = null;
-try {
-  Sentry = require('@sentry/nextjs');
-} catch {
-  console.warn('Sentry not installed, skipping edge instrumentation');
+
+function loadSentry() {
+  try {
+    // Use completely dynamic require to avoid webpack bundling
+    const moduleName = '@sentry/nextjs';
+    return eval('require')(moduleName);
+  } catch (_e) {
+    return null;
+  }
+}
+
+if (process.env.NEXT_PUBLIC_SENTRY_DSN) {
+  Sentry = loadSentry();
+  if (!Sentry) {
+    console.warn('Sentry not installed, skipping edge instrumentation');
+  }
+} else {
+  console.warn('Sentry not installed, skipping Sentry configuration');
 }
 
 export function register() {

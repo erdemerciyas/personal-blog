@@ -1,15 +1,24 @@
-// Sentry is optional - only import if available
-let Sentry: any = null;
-try {
-  Sentry = require('@sentry/nextjs');
-} catch {
-  // Only warn in development
-  if (process.env.NODE_ENV === 'development') {
-    console.warn('Sentry not installed, monitoring features disabled');
-  }
-}
-
 import { NextRequest } from 'next/server';
+
+// Sentry is optional - mock it if not available
+let Sentry: any = null;
+
+function getSentry() {
+  if (Sentry) return Sentry;
+  
+  if (typeof window !== 'undefined') {
+    return null; // No Sentry in browser
+  }
+  
+  try {
+    // eslint-disable-next-line global-require, @typescript-eslint/no-var-requires
+    Sentry = require('@sentry/nextjs');
+  } catch (_error) {
+    Sentry = null;
+  }
+  
+  return Sentry;
+}
 
 // Performance monitoring utilities
 export class PerformanceMonitor {
@@ -19,10 +28,11 @@ export class PerformanceMonitor {
    * Start a performance transaction
    */
   static startTransaction(name: string, op: string = 'custom') {
-    if (!Sentry) return null;
+    const sentry = getSentry();
+    if (!sentry) return null;
     
     try {
-      const transaction = Sentry.startTransaction({ name, op });
+      const transaction = sentry.startTransaction({ name, op });
       this.transactions.set(name, transaction);
       return transaction;
     } catch (error) {
@@ -50,9 +60,10 @@ export class PerformanceMonitor {
    * Add breadcrumb for debugging
    */
   static addBreadcrumb(message: string, category: string = 'custom', level: string = 'info') {
-    if (Sentry) {
+    const sentry = getSentry();
+    if (sentry) {
       try {
-        Sentry.addBreadcrumb({
+        sentry.addBreadcrumb({
           message,
           category,
           level,
@@ -68,9 +79,10 @@ export class PerformanceMonitor {
    * Set user context
    */
   static setUser(user: { id?: string; email?: string; username?: string }) {
-    if (Sentry) {
+    const sentry = getSentry();
+    if (sentry) {
       try {
-        Sentry.setUser(user);
+        sentry.setUser(user);
       } catch (error) {
         console.warn('Failed to set user:', error);
       }
@@ -81,9 +93,10 @@ export class PerformanceMonitor {
    * Set custom tags
    */
   static setTags(tags: Record<string, string>) {
-    if (Sentry) {
+    const sentry = getSentry();
+    if (sentry) {
       try {
-        Sentry.setTags(tags);
+        sentry.setTags(tags);
       } catch (error) {
         console.warn('Failed to set tags:', error);
       }
@@ -94,17 +107,18 @@ export class PerformanceMonitor {
    * Capture exception
    */
   static captureException(error: Error, context?: Record<string, any>) {
-    if (Sentry) {
+    const sentry = getSentry();
+    if (sentry) {
       try {
         if (context) {
-          Sentry.withScope((scope: any) => {
+          sentry.withScope((scope: any) => {
             Object.keys(context).forEach(key => {
               scope.setContext(key, context[key]);
             });
-            Sentry.captureException(error);
+            sentry.captureException(error);
           });
         } else {
-          Sentry.captureException(error);
+          sentry.captureException(error);
         }
       } catch (sentryError) {
         console.warn('Failed to capture exception:', sentryError);
@@ -119,17 +133,18 @@ export class PerformanceMonitor {
    * Capture message
    */
   static captureMessage(message: string, level: string = 'info', context?: Record<string, any>) {
-    if (Sentry) {
+    const sentry = getSentry();
+    if (sentry) {
       try {
         if (context) {
-          Sentry.withScope((scope: any) => {
+          sentry.withScope((scope: any) => {
             Object.keys(context).forEach(key => {
               scope.setContext(key, context[key]);
             });
-            Sentry.captureMessage(message, level as any);
+            sentry.captureMessage(message, level as any);
           });
         } else {
-          Sentry.captureMessage(message, level as any);
+          sentry.captureMessage(message, level as any);
         }
       } catch (error) {
         console.warn('Failed to capture message:', error);

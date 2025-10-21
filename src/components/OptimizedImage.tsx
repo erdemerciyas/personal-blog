@@ -42,16 +42,20 @@ export const OptimizedImage: React.FC<OptimizedImageProps> = ({
 
   if (hasError) {
     return (
-      <div className={`bg-gray-200 flex items-center justify-center ${className}`}>
+      <div className={`bg-gray-200 flex items-center justify-center ${className}`} role="img" aria-label={`${alt} - yüklenemedi`}>
         <span className="text-gray-400 text-sm">Görsel yüklenemedi</span>
       </div>
     );
   }
 
   return (
-    <div className={`relative ${className}`}>
+    <div className={`relative ${className}`} aria-busy={isLoading}>
       {isLoading && (
-        <div className="absolute inset-0 z-10 bg-gray-200 animate-pulse rounded" />
+        <div 
+          className="absolute inset-0 z-10 bg-gray-200 animate-pulse rounded" 
+          role="status" 
+          aria-label="Görsel yüklünüyor"
+        />
       )}
       <Image
         src={src}

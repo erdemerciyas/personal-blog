@@ -17,6 +17,7 @@ export default function VideoCard({ video }: VideoCardProps) {
     <div className="bg-white dark:bg-slate-800 rounded-xl overflow-hidden shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1 group">
       <div className="relative">
         {/* Thumbnail */}
+        {/* eslint-disable-next-line @next/next/no-img-element */}
         <img 
           src={video.thumbnail} 
           alt={video.title} 

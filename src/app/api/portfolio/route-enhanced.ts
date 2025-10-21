@@ -192,7 +192,8 @@ export async function POST(request: NextRequest) {
     return NextResponse.json(portfolio, { status: 201 });
   } catch (error) {
     const duration = Date.now() - startTime;
-    const _category = categorizeError(error);
+    // Category would be used for error recovery strategy
+    categorizeError(error);
 
     // Log detailed error
     logDetailedError(error as Error, {

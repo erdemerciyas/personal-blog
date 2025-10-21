@@ -9,7 +9,9 @@
 
 [![Security](https://img.shields.io/badge/Security-Hardened-003450?style=for-the-badge&logo=shield)](SECURITY.md)
 [![License](https://img.shields.io/badge/License-MIT-yellow?style=for-the-badge)](LICENSE)
-[![Build Status](https://img.shields.io/badge/Build-Passing-075985?style=for-the-badge&logo=github-actions)](https://github.com/erdemerciyas/personal-blog/actions)
+[![ESLint](https://img.shields.io/badge/ESLint-Passing-075985?style=for-the-badge&logo=eslint)](https://eslint.org/)
+[![TypeScript Check](https://img.shields.io/badge/TypeScript-Strict-0066cc?style=for-the-badge&logo=typescript)](https://www.typescriptlang.org/)
+[![GitHub Actions](https://img.shields.io/badge/CI%2FCD-Active-2ea44f?style=for-the-badge&logo=github-actions)](https://github.com/erdemerciyas/personal-blog/actions)
 [![Code Quality](https://img.shields.io/badge/Code_Quality-Optimized-075985?style=for-the-badge&logo=codeclimate)](https://github.com/erdemerciyas/personal-blog)
 
 Modern, secure, and performant personal blog and portfolio platform with advanced 3D model support, built with Next.js 14, TypeScript, MongoDB, Three.js, and Tailwind CSS.
@@ -240,24 +242,36 @@ vercel --prod
 
 ### Development
 ```bash
-npm run dev              # Development server
-npm run build            # Production build
+npm run dev              # Development server with hot reload
+npm run build            # Production build with optimizations
 npm run start            # Production server
+npm run clean            # Clean build artifacts
+npm run format           # Format code with Prettier
 ```
 
 ### Quality & Testing
 ```bash
-npm run lint             # ESLint check
-npm run lint:fix         # ESLint fix
-npm run type-check       # TypeScript check
-npm run test:config      # Configuration test
+npm run lint             # ESLint static analysis
+npm run lint:fix         # ESLint auto-fix issues
+npm run type-check       # TypeScript strict type checking
+npm run test:config      # Configuration validation
+npm run test             # Unit tests with Jest
+npm run test:watch       # Watch mode for tests
+npm run test:coverage    # Generate coverage report
+```
+
+### Security & Performance
+```bash
+npm run security:check   # npm audit for vulnerabilities
+npm run security:test    # Audit with moderate severity
+npm run perf:check       # Performance profiling
+npm run perf:analyze     # Build analysis
 ```
 
 ### Deployment
 ```bash
-npm run deploy           # Deploy to production
-npm run security:check   # Security audit
-npm run perf:check       # Performance test
+npm run deploy           # Deploy to production (Vercel)
+npm run deploy:preview   # Deploy to preview (Vercel)
 ```
 
 ## 📚 Documentation
@@ -274,6 +288,46 @@ npm run perf:check       # Performance test
 3. Commit your changes (`git commit -m 'Add some amazing feature'`)
 4. Push to the branch (`git push origin feature/amazing-feature`)
 5. Open a pull request
+
+## 🚪 Code Quality & Standards
+
+### ESLint & Code Style
+- **ESLint Configuration**: Extends `next/core-web-vitals` and `next/typescript`
+- **Prettier Integration**: Automatic code formatting
+- **Strict Type Checking**: Full TypeScript strict mode enabled
+- **No Unused Variables**: Enforced via ESLint rules
+- **Accessibility**: WCAG 2.1 AA compliance
+
+### Build & Type Safety
+```bash
+# Pre-commit checks
+npm run type-check  # Verify TypeScript
+npm run lint        # Check code style
+npm run build       # Build verification
+```
+
+### Security Practices
+- **Dependency Audits**: Regular npm audit checks
+- **CSRF Protection**: Built-in with NextAuth.js
+- **XSS Prevention**: HTML sanitization enabled
+- **Security Headers**: Comprehensive CSP and headers
+- **Rate Limiting**: API endpoint protection
+- **Input Validation**: Strict schema validation
+
+## 🔄 GitHub Actions & CI/CD
+
+### Automated Workflows
+The project includes GitHub Actions workflows for:
+- **Build Verification**: Checks TypeScript compilation
+- **Lint & Format**: Ensures code quality standards
+- **Type Safety**: Validates TypeScript strict mode
+- **Security**: Runs npm audit for vulnerabilities
+
+### Local Pre-commit Setup
+Husky git hooks are configured to:
+1. Run ESLint before commit
+2. Validate TypeScript
+3. Check for security issues
 
 ## 📄 License
 

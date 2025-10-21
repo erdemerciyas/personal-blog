@@ -251,14 +251,19 @@ export default function ModelViewer({ modelUrl, format, className = '' }: ModelV
   console.log('ModelViewer - Rendering:', { modelUrl, format, className });
   
   return (
-    <div className={`w-full h-96 bg-gray-100 rounded-lg overflow-hidden ${className}`}>
-      <Canvas
+    <>
+      <div 
+        className={`w-full h-96 bg-gray-100 rounded-lg overflow-hidden ${className}`}
+        role="img"
+        aria-label={`3D ${format.toUpperCase()} Model Görüntüleyici`}
+      >
+        <Canvas
         camera={{ position: [3, 3, 3], fov: 60 }}
         style={{ background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)' }}
-        onCreated={(state) => {
+        onCreated={(_state) => {
           // Kamerayı modele odakla
-          state.camera.lookAt(0, 0, 0);
-          console.log('Canvas created:', state);
+          _state.camera.lookAt(0, 0, 0);
+          console.log('Canvas created:', _state);
         }}
       >
         <ambientLight intensity={0.7} />
@@ -286,11 +291,13 @@ export default function ModelViewer({ modelUrl, format, className = '' }: ModelV
           autoRotate={false}
         />
       </Canvas>
-    </div>
+      </div>
+      <p className="sr-only">3D {format.toUpperCase()} model - Döndürmek için fare ya da dokunmayı kullanın, zoom için tekerlek ya da pinch hareketi</p>
+    </>
   );
 }
 
 // GLTF loader için preload
-useGLTF.preload = (url: string) => {
-  // Preload fonksiyonu
-};
+// Note: preload function is intentionally empty and used for type declaration
+// eslint-disable-next-line @typescript-eslint/no-empty-function
+useGLTF.preload = (_url: string) => {};
