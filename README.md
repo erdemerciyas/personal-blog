@@ -20,7 +20,7 @@ Modern, secure, and performant personal blog and portfolio platform with advance
 
 **[Live Site](https://www.fixral.com)** | **[Admin Panel](https://www.fixral.com/admin)** | **[API Health](https://www.fixral.com/api/health)**
 
-> **Status**: **LIVE** | **Last Deploy**: 2025-10-18 | **Version**: v2.7.0 | **Build**: **OPTIMIZED**
+> **Status**: **LIVE** | **Last Deploy**: 2025-10-29 | **Version**: v2.8.0 | **Build**: **OPTIMIZED**
 
 ## ✨ Features
 

@@ -13,7 +13,7 @@ function getSentry() {
   try {
     // eslint-disable-next-line global-require, @typescript-eslint/no-var-requires
     Sentry = require('@sentry/nextjs');
-  } catch (_error) {
+  } catch {
     Sentry = null;
   }
   

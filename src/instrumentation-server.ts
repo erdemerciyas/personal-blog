@@ -6,7 +6,7 @@ function loadSentry() {
     // Use completely dynamic require to avoid webpack bundling
     const moduleName = '@sentry/nextjs';
     return eval('require')(moduleName);
-  } catch (_e) {
+  } catch {
     return null;
   }
 }
