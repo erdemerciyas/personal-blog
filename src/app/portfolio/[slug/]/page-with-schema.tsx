@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import { useParams } from 'next/navigation';
+import Image from 'next/image';
 import { StructuredData } from '@/components/seo/StructuredData';
 import { schemaMarkupGenerator } from '@/lib/schema-markup';
 
@@ -74,10 +75,13 @@ export default function PortfolioItemPage() {
         <p className="text-gray-600 mb-8">{portfolio.description}</p>
 
         {portfolio.coverImage && (
-          <img
+          <Image
             src={portfolio.coverImage}
             alt={portfolio.title}
-            className="w-full h-auto rounded-lg mb-8"
+            width={800}
+            height={400}
+            priority
+            className="w-full h-auto rounded-lg mb-8 object-cover"
           />
         )}
 
@@ -102,11 +106,13 @@ export default function PortfolioItemPage() {
             <h2 className="text-2xl font-bold mb-4">Proje Görselleri</h2>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               {portfolio.images.map((image: string, index: number) => (
-                <img
+                <Image
                   key={index}
                   src={image}
                   alt={`${portfolio.title} - Görsel ${index + 1}`}
-                  className="w-full h-auto rounded-lg"
+                  width={500}
+                  height={300}
+                  className="w-full h-auto rounded-lg object-cover"
                 />
               ))}
             </div>

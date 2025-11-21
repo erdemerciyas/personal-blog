@@ -4,7 +4,7 @@ import React, { useState } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
 import { motion } from 'framer-motion';
-import { 
+import {
   ArrowRightIcon,
   EyeIcon,
   PhotoIcon,
@@ -34,10 +34,10 @@ interface ModernProjectCardProps {
   layout?: 'grid' | 'masonry' | 'list';
 }
 
-export default function ModernProjectCard({ 
-  project, 
-  index, 
-  layout = 'grid' 
+export default function ModernProjectCard({
+  project,
+  index,
+  layout = 'grid'
 }: ModernProjectCardProps) {
   const [imageLoaded, setImageLoaded] = useState(false);
   const [imageError, setImageError] = useState(false);
@@ -47,13 +47,13 @@ export default function ModernProjectCard({
   };
 
   const cardVariants = {
-    hidden: { 
-      opacity: 0, 
+    hidden: {
+      opacity: 0,
       y: 50,
       scale: 0.95
     },
-    visible: { 
-      opacity: 1, 
+    visible: {
+      opacity: 1,
       y: 0,
       scale: 1,
       transition: {
@@ -65,8 +65,8 @@ export default function ModernProjectCard({
 
   const imageVariants = {
     hidden: { scale: 1.2, opacity: 0 },
-    visible: { 
-      scale: 1, 
+    visible: {
+      scale: 1,
       opacity: 1,
       transition: { duration: 0.8 }
     }
@@ -77,9 +77,8 @@ export default function ModernProjectCard({
       variants={cardVariants}
       initial="hidden"
       animate="visible"
-      className={`group relative bg-white rounded-3xl shadow hover:shadow-2xl border border-slate-200/70 overflow-hidden transition-all duration-500 flex flex-col h-full hover:-translate-y-1.5 ${
-        layout === 'masonry' ? 'break-inside-avoid mb-6' : ''
-      }`}
+      className={`group relative bg-white rounded-3xl shadow hover:shadow-2xl border border-slate-200/70 overflow-hidden transition-all duration-500 flex flex-col h-full hover:-translate-y-1.5 ${layout === 'masonry' ? 'break-inside-avoid mb-6' : ''
+        }`}
       onMouseMove={(e) => {
         // Reduce motion and pointer checks
         if (typeof window !== 'undefined') {
@@ -139,7 +138,7 @@ export default function ModernProjectCard({
                 sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
               />
             </motion.div>
-            
+
             {/* Loading Skeleton */}
             {!imageLoaded && (
               <div className="absolute inset-0 bg-gradient-to-b from-slate-200 to-slate-300 animate-pulse">
@@ -169,8 +168,6 @@ export default function ModernProjectCard({
             <EyeIcon className="w-5 h-5 text-slate-700" />
           </Link>
         </div>
-
-
       </div>
 
       {/* Content */}
@@ -183,8 +180,8 @@ export default function ModernProjectCard({
         {/* Description */}
         {project.description && (
           <div className="text-slate-600 mb-4 line-clamp-3">
-            <HTMLContent 
-              content={project.description} 
+            <HTMLContent
+              content={project.description}
               className="text-sm leading-relaxed"
               truncate={120}
             />
@@ -207,24 +204,17 @@ export default function ModernProjectCard({
           )}
         </dl>
 
-
-
         {/* Spacer to push button to bottom */}
         <div className="flex-grow"></div>
 
         {/* Action Button */}
-        <button
-          onClick={(e) => {
-            e.preventDefault();
-            e.stopPropagation();
-            window.location.href = `/portfolio/${project.slug}`;
-          }}
-          className="btn-primary w-full group/btn mt-auto relative z-50 cursor-pointer rounded-full"
-          type="button"
+        <Link
+          href={`/portfolio/${project.slug}`}
+          className="btn-primary w-full group/btn mt-auto relative z-50 cursor-pointer rounded-full text-center flex items-center justify-center"
         >
           <span>Detayları Görüntüle</span>
           <ArrowRightIcon className="w-5 h-5 ml-2 transition-transform duration-300 group-hover/btn:translate-x-1" />
-        </button>
+        </Link>
       </div>
 
       {/* Hover Effect Border */}

@@ -81,6 +81,10 @@ const portfolioSchema = new mongoose.Schema({
     type: Boolean,
     default: false,
   },
+  isActive: {
+    type: Boolean,
+    default: true,
+  },
   order: {
     type: Number,
     default: 0,
@@ -95,14 +99,14 @@ const portfolioSchema = new mongoose.Schema({
   },
 });
 
-portfolioSchema.pre('save', function(next) {
+portfolioSchema.pre('save', function (next) {
   if (this.isModified('title')) {
     this.slug = slugify(this.title, { lower: true, strict: true });
   }
-  
+
   // updatedAt'i her kaydetmede güncelle
   this.updatedAt = new Date();
-  
+
   next();
 });
 
