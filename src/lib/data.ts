@@ -2,6 +2,7 @@ import connectDB from './mongoose';
 import Slider from '../models/Slider';
 import Portfolio from '../models/Portfolio';
 import Service from '../models/Service';
+import Category from '../models/Category'; // Import Category model to ensure it's registered
 import { cache } from 'react';
 
 // Cache the data fetching for the duration of the request
@@ -34,11 +35,22 @@ export const getSliderItems = cache(async () => {
 export const getPortfolioItems = cache(async (limit = 6) => {
     try {
         await connectDB();
+
+        // Ensure Category model is registered by using it (optional, but good for safety)
+        // The import above should be enough, but we can log to confirm
+        console.log('Fetching portfolio items with limit:', limit);
+
         const items = await Portfolio.find({ isActive: true })
             .sort({ completionDate: -1 })
             .limit(limit)
-            .populate('categoryIds', 'name slug')
+            .populate({
+                path: 'categoryIds',
+                model: Category,
+                select: 'name slug'
+            })
             .lean();
+
+        console.log(`Found ${items.length} portfolio items`);
 
         return items.map((item: any) => ({
             ...item,
