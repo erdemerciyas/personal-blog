@@ -180,7 +180,7 @@ const ConditionalFooter: React.FC = () => {
 
   return (
     <footer className="bg-[#0f1b26] text-white relative overflow-hidden" role="contentinfo">
-      
+
 
       <div className="container-main section-sm relative z-10">
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-8 md:gap-12 mb-12 md:mb-16">

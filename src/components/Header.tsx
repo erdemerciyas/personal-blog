@@ -145,7 +145,6 @@ const Header: React.FC = () => {
           // Fallback
           setNavLinks([
             { href: '/', label: 'Anasayfa', icon: HomeIcon },
-            { href: '/about', label: 'Hakkımda', icon: UserIcon },
             { href: '/services', label: 'Hizmetler', icon: WrenchScrewdriverIcon },
             { href: '/portfolio', label: 'Portfolyo', icon: FolderOpenIcon },
             { href: '/videos', label: 'Videolar', icon: FilmIcon },
@@ -158,7 +157,6 @@ const Header: React.FC = () => {
         console.error('Navigation fetch error:', error);
         setNavLinks([
           { href: '/', label: 'Anasayfa', icon: HomeIcon },
-          { href: '/about', label: 'Hakkımda', icon: UserIcon },
           { href: '/services', label: 'Hizmetler', icon: WrenchScrewdriverIcon },
           { href: '/portfolio', label: 'Portfolyo', icon: FolderOpenIcon },
           { href: '/videos', label: 'Videolar', icon: FilmIcon },

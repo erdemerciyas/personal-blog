@@ -15,7 +15,6 @@ export async function GET() {
     // Varsayılan sayfalar
     const defaultPages = [
       { pageId: 'home', title: 'Ana Sayfa', path: '/', description: 'Mühendislik ve 3D tarama hizmetlerimizi keşfedin', icon: 'HomeIcon', isExternal: false, isActive: true, showInNavigation: true, order: 0 },
-      { pageId: 'about', title: 'Hakkımda', path: '/about', description: 'Deneyimim ve uzmanlık alanlarım hakkında bilgi alın', icon: 'UserIcon', isExternal: false, isActive: true, showInNavigation: true, order: 1 },
       { pageId: 'services', title: 'Hizmetler', path: '/services', description: 'Sunduğum profesyonel hizmetleri inceleyin', icon: 'WrenchScrewdriverIcon', isExternal: false, isActive: true, showInNavigation: true, order: 2 },
       { pageId: 'portfolio', title: 'Portfolio', path: '/portfolio', description: 'Tamamladığım projeleri ve çalışmalarımı görün', icon: 'FolderOpenIcon', isExternal: false, isActive: true, showInNavigation: true, order: 3 },
       { pageId: 'videos', title: 'Videolar', path: '/videos', description: 'YouTube kanalımızdaki videoları izleyin', icon: 'FilmIcon', isExternal: false, isActive: true, showInNavigation: true, order: 4 },
@@ -51,7 +50,6 @@ export async function GET() {
     console.error('Page settings fetch error:', error);
     const fallbackPages = [
       { pageId: 'home', title: 'Ana Sayfa', path: '/', description: 'Mühendislik ve 3D tarama hizmetlerimizi keşfedin', icon: 'HomeIcon', isExternal: false, isActive: true, showInNavigation: true, order: 0 },
-      { pageId: 'about', title: 'Hakkımda', path: '/about', description: 'Deneyimim ve uzmanlık alanlarım hakkında bilgi alın', icon: 'UserIcon', isExternal: false, isActive: true, showInNavigation: true, order: 1 },
       { pageId: 'services', title: 'Hizmetler', path: '/services', description: 'Sunduğum profesyonel hizmetleri inceleyin', icon: 'WrenchScrewdriverIcon', isExternal: false, isActive: true, showInNavigation: true, order: 2 },
       { pageId: 'portfolio', title: 'Portfolio', path: '/portfolio', description: 'Tamamladığım projeleri ve çalışmalarımı görün', icon: 'FolderOpenIcon', isExternal: false, isActive: true, showInNavigation: true, order: 3 },
       { pageId: 'videos', title: 'Videolar', path: '/videos', description: 'YouTube kanalımızdaki videoları izleyin', icon: 'FilmIcon', isExternal: false, isActive: true, showInNavigation: true, order: 4 },
@@ -71,7 +69,7 @@ export async function GET() {
 export async function POST(request: NextRequest) {
   try {
     const session = await getServerSession(authOptions);
-    
+
     if (!session?.user || session.user.role !== 'admin') {
       return NextResponse.json({ message: 'Yetkisiz erişim' }, { status: 401 });
     }
@@ -99,7 +97,7 @@ export async function POST(request: NextRequest) {
 export async function PUT(request: NextRequest) {
   try {
     const session = await getServerSession(authOptions);
-    
+
     if (!session?.user || session.user.role !== 'admin') {
       return NextResponse.json({ message: 'Yetkisiz erişim' }, { status: 401 });
     }

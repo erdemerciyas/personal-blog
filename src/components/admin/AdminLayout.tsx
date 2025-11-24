@@ -88,7 +88,6 @@ export default function AdminLayout({ children, title, breadcrumbs }: AdminLayou
       icon: DocumentTextIcon,
       href: '/admin/content',
       subItems: [
-        { label: 'Hakkımda', href: '/admin/about' },
         { label: 'Hizmetler', href: '/admin/services' },
         { label: 'Sayfa Yönetimi', href: '/admin/pages' },
         { label: 'Slider', href: '/admin/slider' }
@@ -134,41 +133,28 @@ export default function AdminLayout({ children, title, breadcrumbs }: AdminLayou
       badge: stats.mediaCount
     },
     {
-      id: 'messages',
-      label: 'Mesajlar',
+      id: 'communication',
+      label: 'İletişim',
       icon: ChatBubbleLeftRightIcon,
       href: '/admin/messages',
-      badge: stats.messagesCount
-    },
-    {
-      id: 'users',
-      label: 'Kullanıcı Yönetimi',
-      icon: UsersIcon,
-      href: '/admin/users',
-      badge: (stats as { usersCount: number }).usersCount
-    },
-    {
-      id: 'contact',
-      label: 'İletişim',
-      icon: PhoneIcon,
-      href: '/admin/contact'
-    },
-    {
-      id: 'settings',
-      label: 'Ayarlar',
-      icon: CogIcon,
-      href: '/admin/settings',
+      badge: stats.messagesCount,
       subItems: [
-        { label: 'Site Ayarları', href: '/admin/site-settings' },
-        { label: 'Genel Ayarlar', href: '/admin/settings' },
-        { label: 'Footer Ayarları', href: '/admin/footer' }
+        { label: 'Mesajlar', href: '/admin/messages' },
+        { label: 'İletişim Bilgileri', href: '/admin/contact' }
       ]
     },
     {
-      id: 'editor',
-      label: 'Universal Editor',
-      icon: WrenchScrewdriverIcon,
-      href: '/admin/editor'
+      id: 'system',
+      label: 'Sistem Yönetimi',
+      icon: CogIcon,
+      href: '/admin/settings',
+      subItems: [
+        { label: 'Kullanıcılar', href: '/admin/users' },
+        { label: 'Site Ayarları', href: '/admin/site-settings' },
+        { label: 'Genel Ayarlar', href: '/admin/settings' },
+        { label: 'Footer Ayarları', href: '/admin/footer' },
+        { label: 'Universal Editor', href: '/admin/editor' }
+      ]
     }
   ];
 
