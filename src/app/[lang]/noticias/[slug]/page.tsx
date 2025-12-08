@@ -92,6 +92,11 @@ export async function generateStaticParams() {
 }
 
 /**
+ * Revalidate news detail pages every hour
+ */
+export const revalidate = 3600; // 1 hour
+
+/**
  * News Detail Page Component (Spanish)
  */
 export default async function NewsDetailPage({ params }: PageProps) {

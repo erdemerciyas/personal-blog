@@ -1,10 +1,13 @@
 import { Metadata } from 'next';
 import { getServerSession } from 'next-auth';
 import { redirect } from 'next/navigation';
-import dynamic from 'next/dynamic';
+import dynamicImport from 'next/dynamic';
 import AdminLayout from '@/components/admin/AdminLayout';
 
-const NewsList = dynamic(() => import('@/components/admin/NewsList'), {
+export const dynamic = 'force-dynamic';
+export const revalidate = 0;
+
+const NewsList = dynamicImport(() => import('@/components/admin/NewsList'), {
   ssr: false,
   loading: () => (
     <div className="flex items-center justify-center py-12">

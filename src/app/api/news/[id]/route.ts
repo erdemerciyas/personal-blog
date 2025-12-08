@@ -183,6 +183,12 @@ export async function PUT(
 
     await news.save();
 
+    // Revalidate cache for updated news
+    const { revalidateNewsDetail, revalidateNewsListing, revalidateNewsCarousel } = await import('@/lib/news-cache-service');
+    await revalidateNewsDetail(news.slug);
+    await revalidateNewsListing();
+    await revalidateNewsCarousel();
+
     logger.info('News article updated', 'NEWS_API', {
       newsId: news._id,
       userId: (session.user as any).id,

@@ -92,6 +92,12 @@ export async function generateStaticParams() {
 }
 
 /**
+ * Revalidate news detail pages every hour
+ * This ensures content updates are reflected without full rebuild
+ */
+export const revalidate = 3600; // 1 hour
+
+/**
  * News Detail Page Component
  */
 export default async function NewsDetailPage({ params }: PageProps) {

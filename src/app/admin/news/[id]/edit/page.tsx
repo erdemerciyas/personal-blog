@@ -1,14 +1,18 @@
 import { Metadata } from 'next';
 import { getServerSession } from 'next-auth';
 import { redirect, notFound } from 'next/navigation';
-import dynamic from 'next/dynamic';
+
+export const dynamic = 'force-dynamic';
+export const revalidate = 0;
+
+import dynamicImport from 'next/dynamic';
 import connectDB from '@/lib/mongoose';
 import News from '@/models/News';
 import { NewsItem } from '@/types/news';
 import AdminLayout from '@/components/admin/AdminLayout';
 import { logger } from '@/lib/logger';
 
-const NewsForm = dynamic(() => import('@/components/admin/NewsForm'), {
+const NewsForm = dynamicImport(() => import('@/components/admin/NewsForm'), {
   ssr: false,
   loading: () => (
     <div className="flex items-center justify-center py-12">
