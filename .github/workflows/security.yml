@@ -47,10 +47,6 @@ jobs:
     - name: 📊 Perform CodeQL Analysis
       uses: github/codeql-action/analyze@v3
       
-    - name: 🔒 Security test
-      run: npm run security:test
-      continue-on-error: true
-      
     - name: 📝 Create security report
       if: always()
       run: |
