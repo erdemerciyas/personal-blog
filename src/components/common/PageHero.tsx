@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import Link from 'next/link';
-import { 
+import {
   ArrowRightIcon
 } from '@heroicons/react/24/outline';
 import HTMLContent from '../HTMLContent';
@@ -19,8 +19,8 @@ interface PageHeroProps {
   minHeightVh?: number; // Only applied when variant is compact
 }
 
-export default function PageHero({ 
-  title = "Sayfa Başlığı", 
+export default function PageHero({
+  title = "Sayfa Başlığı",
   description = "Sayfa açıklaması",
   buttonText = "Keşfet",
   buttonLink = "#content",
@@ -53,12 +53,12 @@ export default function PageHero({
       <div className={`${variant === 'compact' ? '' : 'section-hero'} relative z-10`}>
         <div className="container-content text-center">
           {/* Title */}
-          <motion.h1 
+          <motion.h1
             initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8, delay: 0.2 }}
-            className="hero-title text-gradient-hero mb-6 max-w-6xl mx-auto prevent-font-clipping"
-            style={{ 
+            className={`${variant === 'compact' ? 'hero-title-compact' : 'hero-title'} text-gradient-hero mb-6 max-w-6xl mx-auto prevent-font-clipping`}
+            style={{
               overflow: 'visible',
               lineHeight: '1.1',
               padding: '0.15em 0',
@@ -69,13 +69,13 @@ export default function PageHero({
           </motion.h1>
 
           {/* Description */}
-          <motion.div 
+          <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8, delay: 0.4 }}
             className="text-xl leading-relaxed text-slate-200/90 max-w-4xl mx-auto mb-12"
           >
-            <HTMLContent 
+            <HTMLContent
               content={description}
               className="text-xl leading-relaxed text-slate-200"
             />
@@ -83,7 +83,7 @@ export default function PageHero({
 
           {/* CTA Button */}
           {showButton && buttonText && (
-            <motion.div 
+            <motion.div
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.8, delay: 0.6 }}

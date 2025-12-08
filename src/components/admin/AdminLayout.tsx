@@ -120,6 +120,16 @@ export default function AdminLayout({ children, title, breadcrumbs }: AdminLayou
       ]
     },
     {
+      id: 'news',
+      label: 'Haber Yönetimi',
+      icon: DocumentTextIcon,
+      href: '/admin/news',
+      subItems: [
+        { label: 'Tüm Haberler', href: '/admin/news' },
+        { label: 'Yeni Haber Ekle', href: '/admin/news/create' }
+      ]
+    },
+    {
       id: 'videos',
       label: 'Video Yönetimi',
       icon: PhotoIcon,

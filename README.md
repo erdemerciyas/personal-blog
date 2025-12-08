@@ -20,7 +20,7 @@ Modern, secure, and performant personal blog and portfolio platform with advance
 
 **[Live Site](https://www.fixral.com)** | **[Admin Panel](https://www.fixral.com/admin)** | **[API Health](https://www.fixral.com/api/health)**
 
-> **Status**: **LIVE** | **Last Deploy**: 2025-11-24 | **Version**: v2.9.2 | **Build**: **OPTIMIZED**
+> **Status**: **LIVE** | **Last Deploy**: 2025-12-08 | **Version**: v3.0.0 | **Build**: **OPTIMIZED**
 
 ## ✨ Features
 
@@ -60,6 +60,16 @@ Modern, secure, and performant personal blog and portfolio platform with advance
 - **Model Gallery**: Integrated with portfolio image gallery
 - **Download Management**: Admin-controlled file sharing
 - **Cloudinary Integration**: Secure cloud storage for 3D files
+
+### 📰 News Management
+- **Multilingual News**: Turkish and Spanish support
+- **Admin CMS**: Full CRUD operations with WYSIWYG editor
+- **AI Metadata Generation**: Automatic title, description, keywords
+- **Cloudinary Integration**: Optimized image management
+- **SEO Optimized**: JSON-LD schema, Open Graph tags
+- **Responsive Carousel**: Featured news on homepage
+- **Content Relationships**: Link news to portfolio items
+- **Status Management**: Draft/Published workflow
 
 ### 📹 Video Management
 - **YouTube Integration**: Simple video addition
@@ -225,7 +235,7 @@ src/
 
 **Current Status**: **LIVE** on Vercel  
 **Deployment URL**: https://www.fixral.com  
-**Last Deploy**: 2025-11-24  
+**Last Deploy**: 2025-12-08  
 **Build Time**: ~45 seconds  
 **CI/CD Status**: ✅ Automated with GitHub Actions  
 
@@ -249,15 +259,11 @@ npm run clean            # Clean build artifacts
 npm run format           # Format code with Prettier
 ```
 
-### Quality & Testing
+### Quality
 ```bash
 npm run lint             # ESLint static analysis
 npm run lint:fix         # ESLint auto-fix issues
 npm run type-check       # TypeScript strict type checking
-npm run test:config      # Configuration validation
-npm run test             # Unit tests with Jest
-npm run test:watch       # Watch mode for tests
-npm run test:coverage    # Generate coverage report
 ```
 
 ### Security & Performance
@@ -276,10 +282,8 @@ npm run deploy:preview   # Deploy to preview (Vercel)
 
 ## 📚 Documentation
 
-- [CHANGELOG.md](CHANGELOG.md) - Detailed change history
-- [CONTRIBUTING.md](CONTRIBUTING.md) - Contribution guide
-- [SECURITY.md](SECURITY.md) - Security policies
 - [LICENSE](LICENSE) - MIT License
+- [README.md](README.md) - This file
 
 ## 🤝 Contributing
 

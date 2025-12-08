@@ -52,6 +52,12 @@ const Header: React.FC = () => {
 
   const pathname = usePathname();
 
+  // Define pages with transparent header (Hero sections)
+  const isTransparentPage = pathname === '/' ||
+    pathname?.includes('/haberler') ||
+    pathname?.includes('/noticias') ||
+    pathname?.includes('/portfolio');
+
   // Scroll detection
   useEffect(() => {
     const handleScroll = () => {
@@ -233,13 +239,13 @@ const Header: React.FC = () => {
               )}
               <div className="hidden sm:block">
                 {siteSettings?.siteName && (
-                  <h1 className={`text-xl font-bold tracking-tight transition-colors duration-300 ${isScrolled ? 'text-slate-900' : 'text-white'
+                  <h1 className={`text-xl font-bold tracking-tight transition-colors duration-300 ${isScrolled || !isTransparentPage ? 'text-slate-900' : 'text-white'
                     }`}>
                     {siteSettings.siteName}
                   </h1>
                 )}
                 {siteSettings?.slogan && (
-                  <p className={`text-sm opacity-80 transition-colors duration-300 ${isScrolled ? 'text-slate-600' : 'text-white/80'
+                  <p className={`text-sm opacity-80 transition-colors duration-300 ${isScrolled || !isTransparentPage ? 'text-slate-600' : 'text-white/80'
                     }`}>
                     {siteSettings.slogan}
                   </p>
@@ -260,7 +266,7 @@ const Header: React.FC = () => {
               aria-label={isMobileMenuOpen ? "Mobil menüyü kapat" : "Mobil menüyü aç"}
               aria-controls="mobile-menu"
               aria-expanded={isMobileMenuOpen}
-              className={`md:hidden p-2 rounded-xl transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 ${isScrolled
+              className={`md:hidden p-2 rounded-xl transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 ${isScrolled || !isTransparentPage
                 ? 'text-slate-700 hover:bg-slate-100 focus-visible:ring-slate-400'
                 : 'text-white hover:bg-white/10 focus-visible:ring-white/50'
                 }`}
@@ -289,7 +295,7 @@ const Header: React.FC = () => {
           isOpen={isProjectModalOpen}
           onClose={() => setIsProjectModalOpen(false)}
         />
-      </header>
+      </header >
     </>
   );
 };

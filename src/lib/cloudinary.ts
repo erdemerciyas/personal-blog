@@ -88,3 +88,89 @@ export const list3DModels = async (): Promise<any[]> => {
     throw new Error('3D model listesi alınamadı');
   }
 };
+
+/**
+ * News Module Cloudinary Functions
+ */
+
+export interface NewsImageUploadOptions {
+  folder?: string;
+  width?: number;
+  height?: number;
+  crop?: string;
+}
+
+/**
+ * Upload news featured image with responsive variants
+ */
+export const uploadNewsImage = async (
+  file: string,
+  options: NewsImageUploadOptions = {}
+): Promise<{ url: string; publicId: string; altText: string }> => {
+  try {
+    const result = await cloudinary.uploader.upload(file, {
+      folder: options.folder || 'fixral_news',
+      transformation: [
+        {
+          width: options.width || 1200,
+          height: options.height || 630,
+          crop: options.crop || 'fill',
+          quality: 'auto',
+          fetch_format: 'auto',
+        },
+      ],
+    });
+
+    return {
+      url: result.secure_url,
+      publicId: result.public_id,
+      altText: result.original_filename || 'News article image',
+    };
+  } catch (error) {
+    logger.error('Cloudinary news image upload failed', 'CLOUDINARY', { error });
+    throw new Error('News image upload failed');
+  }
+};
+
+/**
+ * Delete news image
+ */
+export const deleteNewsImage = async (publicId: string): Promise<void> => {
+  try {
+    await cloudinary.uploader.destroy(publicId);
+  } catch (error) {
+    logger.error('Cloudinary news image delete failed', 'CLOUDINARY', { error });
+    throw new Error('News image delete failed');
+  }
+};
+
+/**
+ * Generate responsive image URL for news
+ */
+export const getResponsiveNewsImageUrl = (publicId: string, width: number, height: number): string => {
+  return cloudinary.url(publicId, {
+    width,
+    height,
+    crop: 'fill',
+    quality: 'auto',
+    fetch_format: 'auto',
+  });
+};
+
+/**
+ * Generate Cloudinary upload signature for client-side uploads
+ */
+export const generateUploadSignature = (timestamp: number): { signature: string; timestamp: number } => {
+  const signature = cloudinary.utils.api_sign_request(
+    {
+      timestamp,
+      folder: 'fixral_news',
+    },
+    process.env.CLOUDINARY_API_SECRET!
+  );
+
+  return {
+    signature,
+    timestamp,
+  };
+};

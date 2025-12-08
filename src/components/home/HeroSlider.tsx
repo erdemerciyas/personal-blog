@@ -119,7 +119,7 @@ export default function HeroSlider({ items = [] }: HeroSliderProps) {
                             priority={index === 0}
                             sizes="(max-width: 640px) 100vw, (max-width: 1024px) 100vw, 100vw"
                         />
-                        <div className="absolute inset-0 bg-gradient-to-b from-[#0f1e2d]/85 via-[#0f1b26]/85 to-[#0b1520]/90"></div>
+                        <div className="absolute inset-0 bg-gradient-to-b from-[#0f1e2d]/70 via-[#0f1b26]/40 to-[#0b1520]/90"></div>
                     </div>
                 ))}
             </div>

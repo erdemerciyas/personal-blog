@@ -435,6 +435,13 @@ function AdminDashboardContent() {
               </div>
               <span className="text-sm font-medium text-slate-700 text-center">Hakkımda</span>
             </Link>
+            
+            <Link href="/admin/news" className="flex flex-col items-center space-y-3 p-4 rounded-xl hover:bg-slate-50 transition-colors group">
+              <div className="w-12 h-12 bg-gradient-to-br from-red-500 to-red-600 rounded-xl flex items-center justify-center group-hover:scale-110 transition-transform">
+                <GlobeAltIcon className="w-6 h-6 text-white" />
+              </div>
+              <span className="text-sm font-medium text-slate-700 text-center">Haberler</span>
+            </Link>
           </div>
         </div>
 

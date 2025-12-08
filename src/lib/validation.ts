@@ -61,7 +61,7 @@ export class Sanitizer {
   static sanitizeHtml(html: string, allowedTags?: string[]): string {
     const defaultAllowedTags = ['p', 'br', 'strong', 'em', 'u', 'ol', 'ul', 'li', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6'];
     const tags = allowedTags || defaultAllowedTags;
-    
+
     return purify.sanitize(html, {
       ALLOWED_TAGS: tags,
       ALLOWED_ATTR: ['href', 'target', 'rel'],
@@ -90,32 +90,32 @@ export class Sanitizer {
 
   static sanitizeUrl(url: string): string {
     const sanitized = url.trim();
-    
+
     // Only allow http/https protocols
     if (!sanitized.startsWith('http://') && !sanitized.startsWith('https://')) {
       return '';
     }
-    
+
     try {
       const urlObj = new URL(sanitized);
       // Block dangerous protocols and localhost
-      if (['javascript:', 'data:', 'vbscript:', 'file:'].some(proto => 
+      if (['javascript:', 'data:', 'vbscript:', 'file:'].some(proto =>
         urlObj.protocol.toLowerCase().includes(proto))) {
         return '';
       }
-      
+
       // Block localhost and private IPs in production
       if (process.env.NODE_ENV === 'production') {
         const hostname = urlObj.hostname.toLowerCase();
-        if (hostname === 'localhost' || 
-            hostname.startsWith('127.') || 
-            hostname.startsWith('192.168.') ||
-            hostname.startsWith('10.') ||
-            hostname.match(/^172\.(1[6-9]|2[0-9]|3[0-1])\./)) {
+        if (hostname === 'localhost' ||
+          hostname.startsWith('127.') ||
+          hostname.startsWith('192.168.') ||
+          hostname.startsWith('10.') ||
+          hostname.match(/^172\.(1[6-9]|2[0-9]|3[0-1])\./)) {
           return '';
         }
       }
-      
+
       return urlObj.toString();
     } catch {
       return '';
@@ -150,7 +150,7 @@ export class RequestValidator {
 
     for (const rule of rules) {
       const value = data[rule.field];
-      
+
       // Check required fields
       if (rule.required && (value === undefined || value === null || value === '')) {
         errors.push(`${rule.field} is required`);
@@ -250,14 +250,14 @@ export const CommonValidationRules = {
       { field: 'role', required: false, type: 'string' as const, allowedValues: ['admin', 'user'] }
     ]
   },
-  
+
   contact: [
     { field: 'name', required: true, type: 'string' as const, minLength: 2, maxLength: 100, sanitize: true },
     { field: 'email', required: true, type: 'email' as const, sanitize: true },
     { field: 'subject', required: true, type: 'string' as const, minLength: 5, maxLength: 200, sanitize: true },
     { field: 'message', required: true, type: 'string' as const, minLength: 10, maxLength: 2000, sanitize: true }
   ],
-  
+
   portfolio: {
     create: [
       { field: 'title', required: true, type: 'string' as const, minLength: 3, maxLength: 200, sanitize: true },
@@ -267,7 +267,7 @@ export const CommonValidationRules = {
       { field: 'categoryId', required: false, type: 'mongoId' as const }
     ]
   },
-  
+
   service: {
     create: [
       { field: 'title', required: true, type: 'string' as const, minLength: 3, maxLength: 200, sanitize: true },
@@ -276,3 +276,202 @@ export const CommonValidationRules = {
     ]
   }
 };
+
+// News validation functions
+export function validateNewsInput(data: any): { valid: boolean; error?: string } {
+  if (!data) {
+    return { valid: false, error: 'Request body is required' };
+  }
+
+  // Validate translations
+  if (!data.translations || typeof data.translations !== 'object') {
+    return { valid: false, error: 'Translations object is required' };
+  }
+
+  // At least one language must be provided with complete data
+  const languages = ['tr', 'es'];
+  let hasAtLeastOneLanguage = false;
+
+  for (const lang of languages) {
+    const translation = data.translations[lang];
+
+    // Skip if translation is not provided or empty
+    if (!translation || typeof translation !== 'object') {
+      continue;
+    }
+
+    // Check if this language has at least title and content
+    const hasTitle = translation.title && typeof translation.title === 'string' && translation.title.trim().length > 0;
+    const hasContent = translation.content && typeof translation.content === 'string' && translation.content.trim().length > 0;
+
+    if (hasTitle && hasContent) {
+      hasAtLeastOneLanguage = true;
+    }
+
+    // Validate only if translation fields are provided
+    if (translation.title && typeof translation.title !== 'string') {
+      return { valid: false, error: `${lang.toUpperCase()} title must be a string` };
+    }
+
+    if (translation.title && translation.title.trim().length > 0 && (translation.title.length < 3 || translation.title.length > 200)) {
+      return { valid: false, error: `${lang.toUpperCase()} title must be between 3 and 200 characters` };
+    }
+
+    if (translation.content && typeof translation.content !== 'string') {
+      return { valid: false, error: `${lang.toUpperCase()} content must be a string` };
+    }
+
+    if (translation.content && translation.content.trim().length > 0) {
+      // Strip HTML tags for length validation
+      const plainText = translation.content.replace(/<[^>]*>/g, '').trim();
+      if (plainText.length < 100) {
+        return { valid: false, error: `${lang.toUpperCase()} content must be at least 100 characters` };
+      }
+    }
+
+    if (translation.excerpt && typeof translation.excerpt !== 'string') {
+      return { valid: false, error: `${lang.toUpperCase()} excerpt must be a string` };
+    }
+
+    if (translation.excerpt && translation.excerpt.length > 150) {
+      return { valid: false, error: `${lang.toUpperCase()} excerpt must not exceed 150 characters` };
+    }
+
+    if (translation.metaDescription && typeof translation.metaDescription !== 'string') {
+      return { valid: false, error: `${lang.toUpperCase()} meta description must be a string` };
+    }
+
+    if (translation.metaDescription && translation.metaDescription.length > 160) {
+      return { valid: false, error: `${lang.toUpperCase()} meta description must not exceed 160 characters` };
+    }
+
+    if (translation.keywords && !Array.isArray(translation.keywords)) {
+      return { valid: false, error: `${lang.toUpperCase()} keywords must be an array` };
+    }
+
+    if (translation.keywords && translation.keywords.length > 10) {
+      return { valid: false, error: `${lang.toUpperCase()} keywords must not exceed 10 items` };
+    }
+  }
+
+  if (!hasAtLeastOneLanguage) {
+    return { valid: false, error: 'At least one language translation with title and content is required' };
+  }
+
+  // Validate featuredImage only if publishing
+  if (data.status === 'published') {
+    if (!data.featuredImage || typeof data.featuredImage !== 'object') {
+      return { valid: false, error: 'Featured image is required for publishing' };
+    }
+
+    if (!data.featuredImage.url || typeof data.featuredImage.url !== 'string') {
+      return { valid: false, error: 'Featured image URL is required for publishing' };
+    }
+
+    if (!data.featuredImage.altText || typeof data.featuredImage.altText !== 'string') {
+      return { valid: false, error: 'Featured image alt text is required for publishing' };
+    }
+
+    if (!data.featuredImage.cloudinaryPublicId || typeof data.featuredImage.cloudinaryPublicId !== 'string') {
+      return { valid: false, error: 'Cloudinary public ID is required for publishing' };
+    }
+  }
+
+  // Validate optional fields
+  if (data.tags && !Array.isArray(data.tags)) {
+    return { valid: false, error: 'Tags must be an array' };
+  }
+
+  if (data.relatedPortfolioIds && !Array.isArray(data.relatedPortfolioIds)) {
+    return { valid: false, error: 'Related portfolio IDs must be an array' };
+  }
+
+  if (data.relatedNewsIds && !Array.isArray(data.relatedNewsIds)) {
+    return { valid: false, error: 'Related news IDs must be an array' };
+  }
+
+  return { valid: true };
+}
+
+export function validateNewsUpdateInput(data: any): { valid: boolean; error?: string } {
+  if (!data || typeof data !== 'object') {
+    return { valid: false, error: 'Request body is required' };
+  }
+
+  // Validate translations if provided
+  if (data.translations) {
+    if (typeof data.translations !== 'object') {
+      return { valid: false, error: 'Translations must be an object' };
+    }
+
+    const languages = ['tr', 'es'];
+    for (const lang of languages) {
+      const translation = data.translations[lang];
+
+      if (!translation) continue;
+
+      if (translation.title && (translation.title.length < 3 || translation.title.length > 200)) {
+        return { valid: false, error: `${lang.toUpperCase()} title must be between 3 and 200 characters` };
+      }
+
+      if (translation.content) {
+        // Strip HTML tags for length validation
+        const plainText = translation.content.replace(/<[^>]*>/g, '').trim();
+        if (plainText.length < 100) {
+          return { valid: false, error: `${lang.toUpperCase()} content must be at least 100 characters` };
+        }
+      }
+
+      if (translation.excerpt && translation.excerpt.length > 150) {
+        return { valid: false, error: `${lang.toUpperCase()} excerpt must not exceed 150 characters` };
+      }
+
+      if (translation.metaDescription && translation.metaDescription.length > 160) {
+        return { valid: false, error: `${lang.toUpperCase()} meta description must not exceed 160 characters` };
+      }
+
+      if (translation.keywords && !Array.isArray(translation.keywords)) {
+        return { valid: false, error: `${lang.toUpperCase()} keywords must be an array` };
+      }
+
+      if (translation.keywords && translation.keywords.length > 10) {
+        return { valid: false, error: `${lang.toUpperCase()} keywords must not exceed 10 items` };
+      }
+    }
+  }
+
+  // Validate status if provided
+  if (data.status && !['draft', 'published'].includes(data.status)) {
+    return { valid: false, error: 'Status must be either "draft" or "published"' };
+  }
+
+  // Validate featured image if provided
+  if (data.featuredImage) {
+    if (typeof data.featuredImage !== 'object') {
+      return { valid: false, error: 'Featured image must be an object' };
+    }
+
+    if (data.featuredImage.url && typeof data.featuredImage.url !== 'string') {
+      return { valid: false, error: 'Featured image URL must be a string' };
+    }
+
+    if (data.featuredImage.altText && typeof data.featuredImage.altText !== 'string') {
+      return { valid: false, error: 'Featured image alt text must be a string' };
+    }
+  }
+
+  // Validate optional arrays
+  if (data.tags && !Array.isArray(data.tags)) {
+    return { valid: false, error: 'Tags must be an array' };
+  }
+
+  if (data.relatedPortfolioIds && !Array.isArray(data.relatedPortfolioIds)) {
+    return { valid: false, error: 'Related portfolio IDs must be an array' };
+  }
+
+  if (data.relatedNewsIds && !Array.isArray(data.relatedNewsIds)) {
+    return { valid: false, error: 'Related news IDs must be an array' };
+  }
+
+  return { valid: true };
+}

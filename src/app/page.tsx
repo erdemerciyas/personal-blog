@@ -6,6 +6,7 @@ import {
 import HeroSlider from '../components/home/HeroSlider';
 import ServicesGrid from '../components/home/ServicesGrid';
 import HomePortfolioSection from '../components/portfolio/HomePortfolioSection';
+import NewsCarousel from '../components/NewsCarousel';
 import { getSliderItems, getPortfolioItems, getServices } from '../lib/data';
 
 // Force dynamic rendering to ensure fresh data on every request
@@ -45,6 +46,30 @@ export default async function HomePage() {
             <nav className="text-center" aria-label="Hizmetler navigasyonu">
               <Link href="/services" className="btn-secondary">
                 Tüm Hizmetlerimizi Görüntüle
+                <ArrowRightIcon className="w-5 h-5 ml-2" />
+              </Link>
+            </nav>
+          </div>
+        </section>
+
+        {/* News Section */}
+        <section className="section bg-white" aria-label="Son Haberler">
+          <div className="container-main">
+            {/* Header */}
+            <div className="section-header">
+              <h2>Son Haberler</h2>
+              <p>
+                Fixral'dan en son haberler, duyurular ve güncellemeleri takip edin.
+              </p>
+            </div>
+
+            {/* News Carousel */}
+            <NewsCarousel language="tr" limit={6} autoplay={true} />
+
+            {/* View All Link */}
+            <nav className="text-center mt-8" aria-label="Haberler navigasyonu">
+              <Link href="/tr/haberler" className="btn-secondary">
+                Tüm Haberleri Görüntüle
                 <ArrowRightIcon className="w-5 h-5 ml-2" />
               </Link>
             </nav>
