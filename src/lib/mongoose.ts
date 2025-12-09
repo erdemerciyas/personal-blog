@@ -40,9 +40,18 @@ async function connectDB() {
   if (cached!.conn) {
     // Bağlantının hala aktif olup olmadığını kontrol et
     try {
-      if (cached!.conn.connection.readyState === 1) {
+      const state = cached!.conn.connection.readyState;
+      if (state === 1) { // Connected
         return cached!.conn;
       }
+      if (state === 2) { // Connecting
+        if (cached!.promise) {
+          return await cached!.promise;
+        }
+      }
+      // 0 (disconnected) veya 3 (disconnecting) durumundaysa yenile
+      cached!.conn = null;
+      cached!.promise = null;
     } catch {
       // Cached connection check failed, reconnecting
       cached!.conn = null;
