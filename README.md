@@ -20,7 +20,7 @@ Modern, secure, and performant personal blog and portfolio platform with advance
 
 **[Live Site](https://www.fixral.com)** | **[Admin Panel](https://www.fixral.com/admin)** | **[API Health](https://www.fixral.com/api/health)**
 
-> **Status**: **LIVE** | **Last Deploy**: 2025-12-08 | **Version**: v3.0.0 | **Build**: **OPTIMIZED**
+> **Status**: **LIVE** | **Last Deploy**: 2025-12-28 | **Version**: v3.0.1 | **Build**: **OPTIMIZED**
 
 ## ✨ Features
 
@@ -235,7 +235,7 @@ src/
 
 **Current Status**: **LIVE** on Vercel  
 **Deployment URL**: https://www.fixral.com  
-**Last Deploy**: 2025-12-08  
+**Last Deploy**: 2025-12-28  
 **Build Time**: ~45 seconds  
 **CI/CD Status**: ✅ Automated with GitHub Actions  
 

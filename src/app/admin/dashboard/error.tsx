@@ -29,7 +29,7 @@ export default function DashboardError({
             Dashboard yüklenirken bir hata oluştu. Bu genellikle geçici bir sorundur.
           </p>
           <p className="text-sm text-slate-500">
-            Hata: {error.message}
+            {process.env.NODE_ENV === 'development' ? `Hata: ${error.message}` : 'Hata ayrıntıları yalnızca geliştirme ortamında gösterilir'}
           </p>
         </div>
 

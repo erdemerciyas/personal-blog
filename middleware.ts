@@ -6,7 +6,7 @@ import { logger } from '@/lib/logger';
 
 // Cache for page settings (short TTL)
 let pageSettingsCache: { data: any[]; timestamp: number } | null = null;
-const PAGE_SETTINGS_CACHE_TTL = 30 * 1000; // 30s
+const PAGE_SETTINGS_CACHE_TTL = 60 * 1000; // 60s - Increased for better performance
 
 export function clearPageSettingsCache() {
   pageSettingsCache = null;
@@ -75,13 +75,47 @@ async function checkPageAccess(path: string): Promise<boolean> {
   try {
     if (path.startsWith('/admin') || path.startsWith('/api')) return true;
     if (path.includes('.') || path.startsWith('/_next')) return true;
-    const pageId = path === '/' ? 'home' : path.slice(1);
-    const pageSettings = await getPageSettings();
-    const pageSetting = pageSettings.find((page: { pageId: string; path: string; isActive?: boolean }) =>
-      page.pageId === pageId || page.path === path
-    );
-    if (!pageSetting) return true;
-    return pageSetting.isActive === true;
+    
+    // Extract pageId by removing language prefix if present
+    let pageId = path === '/' ? 'home' : path.slice(1);
+    
+    // Handle localized routes (e.g., /tr/haberler -> haberler)
+    const pathParts = path.split('/');
+    if (pathParts.length >= 3 && ['tr', 'es'].includes(pathParts[1])) {
+      // For localized routes, try the path without language prefix
+      const localizedPageId = pathParts.slice(2).join('/');
+      
+      // First check with full path
+      const pageSettings = await getPageSettings();
+      let pageSetting = pageSettings.find((page: { pageId: string; path: string; isActive?: boolean }) =>
+        page.path === path
+      );
+      
+      // If not found, check with localized pageId
+      if (!pageSetting) {
+        pageSetting = pageSettings.find((page: { pageId: string; path: string; isActive?: boolean }) =>
+          page.pageId === localizedPageId
+        );
+      }
+      
+      // If still not found, check with original pageId
+      if (!pageSetting) {
+        pageSetting = pageSettings.find((page: { pageId: string; path: string; isActive?: boolean }) =>
+          page.pageId === pageId
+        );
+      }
+      
+      if (!pageSetting) return true;
+      return pageSetting.isActive === true;
+    } else {
+      // For non-localized routes
+      const pageSettings = await getPageSettings();
+      const pageSetting = pageSettings.find((page: { pageId: string; path: string; isActive?: boolean }) =>
+        page.pageId === pageId || page.path === path
+      );
+      if (!pageSetting) return true;
+      return pageSetting.isActive === true;
+    }
   } catch {
     return true;
   }

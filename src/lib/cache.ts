@@ -1,6 +1,7 @@
 /**
- * Caching utility for improved performance
+ * Unified caching utility for improved performance
  * Provides in-memory caching with TTL support
+ * Consolidates multiple caching implementations
  */
 
 interface CacheItem<T> {
@@ -147,12 +148,20 @@ export const CacheTTL = {
   DAY: 24 * 60 * 60 * 1000,  // 24 hours
 };
 
-// Auto cleanup every 10 minutes
+// Auto cleanup every 5 minutes
 if (typeof window === 'undefined') { // Server-side only
   setInterval(() => {
     const cleaned = cache.cleanup();
     void cleaned;
-  }, 10 * 60 * 1000);
+  }, 5 * 60 * 1000);
+}
+
+// Client-side cleanup every 5 minutes
+if (typeof window !== 'undefined') { // Client-side only
+  setInterval(() => {
+    const cleaned = cache.cleanup();
+    void cleaned;
+  }, 5 * 60 * 1000);
 }
 
 // Cache helpers for common operations

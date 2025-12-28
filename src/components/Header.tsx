@@ -50,13 +50,13 @@ const Header: React.FC = () => {
   const [siteSettings, setSiteSettings] = useState<SiteSettings | null>(null);
   const [mounted, setMounted] = useState(false);
 
-  const pathname = usePathname();
+  const pathname = usePathname() || '';
 
   // Define pages with transparent header (Hero sections)
   const isTransparentPage = pathname === '/' ||
-    pathname?.includes('/haberler') ||
-    pathname?.includes('/noticias') ||
-    pathname?.includes('/portfolio');
+    pathname.includes('/haberler') ||
+    pathname.includes('/noticias') ||
+    pathname.includes('/portfolio');
 
   // Scroll detection
   useEffect(() => {
@@ -258,6 +258,7 @@ const Header: React.FC = () => {
               navLinks={navLinks}
               pathname={pathname || ''}
               isScrolled={isScrolled}
+              isTransparentPage={isTransparentPage}
             />
 
             {/* Mobile Menu Button */}

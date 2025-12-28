@@ -134,11 +134,11 @@ export const authOptions: NextAuthOptions = {
   ],
   session: {
     strategy: 'jwt',
-    maxAge: 8 * 60 * 60, // 8 hours (reduced for better security)
-    updateAge: 30 * 60, // 30 minutes (more frequent updates)
+    maxAge: 2 * 60 * 60, // 2 hours for better security
+    updateAge: 15 * 60, // 15 minutes (more frequent updates)
   },
   jwt: {
-    maxAge: 8 * 60 * 60, // 8 hours (reduced for better security)
+    maxAge: 2 * 60 * 60, // 2 hours for better security
   },
   cookies: {
     sessionToken: {

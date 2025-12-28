@@ -13,13 +13,10 @@ interface DesktopNavProps {
     navLinks: NavLink[];
     pathname: string;
     isScrolled: boolean;
+    isTransparentPage: boolean;
 }
 
-export default function DesktopNav({ navLinks, pathname, isScrolled }: DesktopNavProps) {
-    const isTransparentPage = pathname === '/' ||
-        pathname?.includes('/haberler') ||
-        pathname?.includes('/noticias') ||
-        pathname?.includes('/portfolio');
+export default function DesktopNav({ navLinks, pathname, isScrolled, isTransparentPage }: DesktopNavProps) {
 
     return (
         <nav role="navigation" aria-label="Ana navigasyon" className="hidden md:flex items-center gap-2 flex-1 min-w-0 justify-center overflow-x-auto">

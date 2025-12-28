@@ -82,13 +82,13 @@ export class SecurityHeaders {
   static apply(response: NextResponse, customConfig?: SecurityHeadersConfig): NextResponse {
     const config = { ...this.DEFAULT_HEADERS, ...customConfig };
 
-    // Content Security Policy - Skip in development to avoid conflicts with Next.js dev server
-    if (config.contentSecurityPolicy && process.env.NODE_ENV === 'production') {
+    // Content Security Policy - Apply in both environments
+    if (config.contentSecurityPolicy) {
       response.headers.set('Content-Security-Policy', config.contentSecurityPolicy);
     }
 
-    // HTTP Strict Transport Security
-    if (config.strictTransportSecurity && process.env.NODE_ENV === 'production') {
+    // HTTP Strict Transport Security - Apply in both environments
+    if (config.strictTransportSecurity) {
       response.headers.set('Strict-Transport-Security', config.strictTransportSecurity);
     }
 

@@ -49,9 +49,15 @@ export default function Error({
           {/* Error Details */}
           <div className="bg-slate-50 rounded-2xl p-6 mb-8 text-left">
             <h3 className="text-sm font-semibold text-slate-700 mb-2">Hata Detayları:</h3>
-            <p className="text-sm text-slate-600 font-mono break-all">
-              {error.message}
-            </p>
+            {process.env.NODE_ENV === 'development' ? (
+              <p className="text-sm text-slate-600 font-mono break-all">
+                {error.message}
+              </p>
+            ) : (
+              <p className="text-sm text-slate-600">
+                Hata ayrıntıları yalnızca geliştirme ortamında gösterilir
+              </p>
+            )}
             {error.digest && (
               <p className="text-xs text-slate-500 mt-2">
                 Hata Kodu: {error.digest}

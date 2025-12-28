@@ -35,24 +35,24 @@ const PRODUCTION_LIMITS = {
 };
 
 const DEVELOPMENT_LIMITS = {
-  // Development'da çok daha gevşek limitler
-  AUTH: { limit: 50, windowMs: 5 * 60 * 1000 }, // 50 attempts per 5 minutes
-  LOGIN: { limit: 20, windowMs: 5 * 60 * 1000 }, // 20 attempts per 5 minutes
-  REGISTER: { limit: 10, windowMs: 10 * 60 * 1000 }, // 10 attempts per 10 minutes
-  PASSWORD_RESET: { limit: 10, windowMs: 10 * 60 * 1000 }, // 10 attempts per 10 minutes
+  // Development'da daha güvenli limitler
+  AUTH: { limit: 10, windowMs: 15 * 60 * 1000 }, // 10 attempts per 15 minutes
+  LOGIN: { limit: 5, windowMs: 15 * 60 * 1000 }, // 5 attempts per 15 minutes
+  REGISTER: { limit: 3, windowMs: 15 * 60 * 1000 }, // 3 attempts per 15 minutes
+  PASSWORD_RESET: { limit: 3, windowMs: 15 * 60 * 1000 }, // 3 attempts per 15 minutes
 
-  // API endpoints - çok gevşek
-  API_STRICT: { limit: 1000, windowMs: 5 * 60 * 1000 }, // 1000 requests per 5 minutes
-  API_MODERATE: { limit: 2000, windowMs: 5 * 60 * 1000 }, // 2000 requests per 5 minutes
+  // API endpoints
+  API_STRICT: { limit: 100, windowMs: 15 * 60 * 1000 }, // 100 requests per 15 minutes
+  API_MODERATE: { limit: 200, windowMs: 15 * 60 * 1000 }, // 200 requests per 15 minutes
 
   // Contact form
-  CONTACT: { limit: 20, windowMs: 10 * 60 * 1000 }, // 20 messages per 10 minutes
+  CONTACT: { limit: 5, windowMs: 15 * 60 * 1000 }, // 5 messages per 15 minutes
 
   // File upload
-  UPLOAD: { limit: 100, windowMs: 10 * 60 * 1000 }, // 100 uploads per 10 minutes
+  UPLOAD: { limit: 10, windowMs: 15 * 60 * 1000 }, // 10 uploads per 15 minutes
 
-  // General - çok gevşek
-  GENERAL: { limit: 5000, windowMs: 5 * 60 * 1000 }, // 5000 requests per 5 minutes
+  // General
+  GENERAL: { limit: 1000, windowMs: 15 * 60 * 1000 }, // 1000 requests per 15 minutes
 };
 
 export const RATE_LIMITS = process.env.NODE_ENV === 'production' ? PRODUCTION_LIMITS : DEVELOPMENT_LIMITS;
