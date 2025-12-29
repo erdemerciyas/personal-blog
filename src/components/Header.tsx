@@ -11,7 +11,6 @@ import {
   WrenchScrewdriverIcon,
   FolderOpenIcon,
   PhoneIcon,
-  UserIcon,
   FilmIcon
 } from '@heroicons/react/24/outline';
 import { resolveIcon, getIconForPage } from '../lib/icons';
@@ -48,7 +47,6 @@ const Header: React.FC = () => {
   const [navLinks, setNavLinks] = useState<Array<{ href: string; label: string; icon: any; isExternal?: boolean }>>([]);
   const [navLoaded, setNavLoaded] = useState(false);
   const [siteSettings, setSiteSettings] = useState<SiteSettings | null>(null);
-  const [mounted, setMounted] = useState(false);
 
   const pathname = usePathname() || '';
 
@@ -92,10 +90,7 @@ const Header: React.FC = () => {
     setIsMobileMenuOpen(false);
   }, [trackEvent]);
 
-  // Mark as mounted for portal usage
-  useEffect(() => {
-    setMounted(true);
-  }, []);
+
 
   // Fetch site settings
   useEffect(() => {

@@ -48,7 +48,6 @@ const DynamicHeader: React.FC = () => {
   const [navLinks, setNavLinks] = useState<Array<{ href: string; label: string; icon: any; isExternal?: boolean }>>([]);
   const [navLoaded, setNavLoaded] = useState(false);
   const [siteSettings, setSiteSettings] = useState<SiteSettings | null>(null);
-  const [mounted, setMounted] = useState(false);
 
   const pathname = usePathname() || '';
 
@@ -93,9 +92,7 @@ const DynamicHeader: React.FC = () => {
     setIsMobileMenuOpen(false);
   }, [trackEvent]);
 
-  useEffect(() => {
-    setMounted(true);
-  }, []);
+
 
   // Fetch site settings
   useEffect(() => {

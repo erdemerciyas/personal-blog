@@ -37,6 +37,7 @@ export default function NewsCarousel({
 
   useEffect(() => {
     fetchNews();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [language, limit]);
 
   const fetchNews = async () => {

@@ -3,7 +3,7 @@
 import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
-import { NewsItem, NewsListResponse } from '@/types/news';
+import { NewsItem } from '@/types/news';
 import { logger } from '@/lib/logger';
 
 interface NewsListProps {
@@ -33,6 +33,7 @@ export default function NewsList({ language = 'tr', page = 1 }: NewsListProps) {
 
   useEffect(() => {
     fetchNews();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [page, search, status]);
 
   const fetchNews = async () => {

@@ -1,6 +1,5 @@
 'use client';
 
-import { useEffect, useState } from 'react';
 import { usePathname } from 'next/navigation';
 import { motion, AnimatePresence } from 'framer-motion';
 
@@ -16,14 +15,6 @@ interface PageTransitionWrapperProps {
  */
 export default function PageTransitionWrapper({ children }: PageTransitionWrapperProps) {
   const pathname = usePathname();
-  const [isTransitioning, setIsTransitioning] = useState(false);
-
-  useEffect(() => {
-    // Trigger transition state on route change
-    setIsTransitioning(true);
-    const timer = setTimeout(() => setIsTransitioning(false), 50);
-    return () => clearTimeout(timer);
-  }, [pathname]);
 
   return (
     <AnimatePresence mode="wait">

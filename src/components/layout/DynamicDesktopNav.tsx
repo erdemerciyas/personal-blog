@@ -24,7 +24,6 @@ export default function DynamicDesktopNav({
     pathname, 
     isScrolled, 
     isTransparentPage,
-    scrollProgress,
     onOpenProjectModal 
 }: DynamicDesktopNavProps) {
     

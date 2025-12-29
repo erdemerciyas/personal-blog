@@ -1,13 +1,12 @@
 'use client';
 
-import { useEffect, useState, useRef } from 'react';
+import { useEffect, useState } from 'react';
 import { usePathname } from 'next/navigation';
 
 export default function LoadingBar() {
   const [loading, setLoading] = useState(false);
   const [progress, setProgress] = useState(0);
   const pathname = usePathname();
-  const progressIntervalRef = useRef<NodeJS.Timeout | null>(null);
 
   useEffect(() => {
     // Start loading on route change
@@ -38,9 +37,6 @@ export default function LoadingBar() {
     return () => {
       timers.forEach(timer => clearTimeout(timer));
       clearTimeout(completeTimer);
-      if (progressIntervalRef.current) {
-        clearInterval(progressIntervalRef.current);
-      }
     };
   }, [pathname]);
 

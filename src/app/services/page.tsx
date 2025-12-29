@@ -2,7 +2,6 @@
 
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
-import ContentSkeleton from '../../components/ContentSkeleton';
 import PageHero from '../../components/common/PageHero';
 import Image from 'next/image';
 import HTMLContent from '../../components/HTMLContent';
@@ -32,7 +31,6 @@ interface Service {
 
 export default function ServicesPage() {
   const [services, setServices] = useState<Service[]>([]);
-  const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [hero, setHero] = useState<{ title: string; description: string }>({ 
     title: 'Sunduğumuz Hizmetler',

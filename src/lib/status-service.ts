@@ -209,8 +209,8 @@ export async function getPublicationTimeline(
  * Validate status transition
  */
 export function isValidStatusTransition(
-  currentStatus: 'draft' | 'published',
-  newStatus: 'draft' | 'published'
+  _currentStatus: 'draft' | 'published',
+  _newStatus: 'draft' | 'published'
 ): boolean {
   // All transitions are valid
   return true;

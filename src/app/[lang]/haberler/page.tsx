@@ -31,7 +31,7 @@ export const metadata: Metadata = {
 
 const ITEMS_PER_PAGE = 12;
 
-export default async function NewsListPage({ params, searchParams }: PageProps) {
+export default async function NewsListPage({ searchParams }: PageProps) {
   try {
     await connectDB();
 

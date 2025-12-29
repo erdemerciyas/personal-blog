@@ -30,12 +30,12 @@ async function getProduct(slug: string) {
 }
 
 async function getRelatedProducts(categorySlug?: string, currentSlug?: string) {
-  if (!categorySlug) return [] as Array<{ _id: string; slug: string; coverImage: string; title: string; price?: number; currency?: string; condition: 'new'|'used' }>;
+  if (!categorySlug) return [] as Array<{ _id: string; slug: string; coverImage: string; title: string; price?: number; currency?: string; condition: 'new' | 'used' }>;
   const base = process.env.NEXTAUTH_URL || '';
   const res = await fetch(`${base}/api/products?categorySlug=${encodeURIComponent(categorySlug)}&limit=4`, { next: { revalidate: 60 } });
-  if (!res.ok) return [] as Array<{ _id: string; slug: string; coverImage: string; title: string; price?: number; currency?: string; condition: 'new'|'used' }>;
+  if (!res.ok) return [] as Array<{ _id: string; slug: string; coverImage: string; title: string; price?: number; currency?: string; condition: 'new' | 'used' }>;
   const data = await res.json();
-  const items = (data.items || []) as Array<{ _id: string; slug: string; coverImage: string; title: string; price?: number; currency?: string; condition: 'new'|'used' }>;
+  const items = (data.items || []) as Array<{ _id: string; slug: string; coverImage: string; title: string; price?: number; currency?: string; condition: 'new' | 'used' }>;
   return items.filter((p) => p.slug !== currentSlug).slice(0, 3);
 }
 
@@ -70,7 +70,6 @@ export default async function ProductDetail({ params }: { params: { slug: string
         buttonText={buttonText}
         buttonLink={buttonLink}
         variant="compact"
-        minHeightVh={33}
       />
       {/* Breadcrumbs under Hero */}
       <section className="py-1">
@@ -102,7 +101,7 @@ export default async function ProductDetail({ params }: { params: { slug: string
         } : undefined}
         baseUrl={baseUrl}
       />
-         <div className="container mx-auto p-6 space-y-6" id="product-detail">
+      <div className="container mx-auto p-6 space-y-6" id="product-detail">
         <div className="grid lg:grid-cols-[1fr_380px] gap-8 items-start">
           <ProductGallery cover={product.coverImage} images={product.images || []} title={product.title} />
           <div className="space-y-5">
@@ -201,11 +200,13 @@ export default async function ProductDetail({ params }: { params: { slug: string
               <div className="prose max-w-none prose-slate">
                 <div
                   // eslint-disable-next-line react/no-danger
-                  dangerouslySetInnerHTML={{ __html: sanitizeHtml(product.description, {
-                    allowedTags: sanitizeHtml.defaults.allowedTags.concat(['img', 'h1', 'h2', 'h3', 'figure', 'figcaption']),
-                    allowedAttributes: { ...sanitizeHtml.defaults.allowedAttributes, img: ['src','alt','title','width','height','loading'], a: ['href','title','target','rel'] },
-                    transformTags: { img: sanitizeHtml.simpleTransform('img', { loading: 'lazy' }, true), a: sanitizeHtml.simpleTransform('a', { rel: 'noreferrer noopener' }, true) },
-                  }) }}
+                  dangerouslySetInnerHTML={{
+                    __html: sanitizeHtml(product.description, {
+                      allowedTags: sanitizeHtml.defaults.allowedTags.concat(['img', 'h1', 'h2', 'h3', 'figure', 'figcaption']),
+                      allowedAttributes: { ...sanitizeHtml.defaults.allowedAttributes, img: ['src', 'alt', 'title', 'width', 'height', 'loading'], a: ['href', 'title', 'target', 'rel'] },
+                      transformTags: { img: sanitizeHtml.simpleTransform('img', { loading: 'lazy' }, true), a: sanitizeHtml.simpleTransform('a', { rel: 'noreferrer noopener' }, true) },
+                    })
+                  }}
                 />
               </div>
             </div>
@@ -247,7 +248,7 @@ export default async function ProductDetail({ params }: { params: { slug: string
             </div>
           </div>
         </div>
-        
+
 
         {/* Özellikler / Açıklama */}
         {Array.isArray(product.attributes) && product.attributes.length > 0 && (
@@ -264,14 +265,14 @@ export default async function ProductDetail({ params }: { params: { slug: string
           </div>
         )}
 
-        
+
       </div>
       {/* Sticky mobile action bar */}
       {product.price ? (
         <div className="md:hidden fixed inset-x-0 bottom-0 z-30 border-t bg-white/90 backdrop-blur supports-[backdrop-filter]:bg-white/70">
           <div className="max-w-6xl mx-auto px-4 py-3 flex items-center justify-between">
             <div className="text-xl font-bold text-emerald-600">{product.price} {product.currency}</div>
-            <Link href={`/products/${product.slug}/order`} className={`px-5 py-2.5 rounded-md ${product.stock>0?'bg-emerald-600 text-white hover:bg-emerald-700':'bg-slate-200 text-slate-500 pointer-events-none'}`}>{product.stock>0?'Sipariş Ver':'Stokta Yok'}</Link>
+            <Link href={`/products/${product.slug}/order`} className={`px-5 py-2.5 rounded-md ${product.stock > 0 ? 'bg-emerald-600 text-white hover:bg-emerald-700' : 'bg-slate-200 text-slate-500 pointer-events-none'}`}>{product.stock > 0 ? 'Sipariş Ver' : 'Stokta Yok'}</Link>
           </div>
         </div>
       ) : null}
