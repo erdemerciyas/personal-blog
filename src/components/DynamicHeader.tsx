@@ -7,6 +7,11 @@ import { usePathname } from 'next/navigation';
 import {
   Bars3Icon,
   XMarkIcon,
+  HomeIcon,
+  WrenchScrewdriverIcon,
+  FolderOpenIcon,
+  FilmIcon,
+  PhoneIcon,
 } from '@heroicons/react/24/outline';
 import { resolveIcon, getIconForPage } from '../lib/icons';
 import DynamicDesktopNav from './layout/DynamicDesktopNav';
@@ -149,24 +154,24 @@ const DynamicHeader: React.FC = () => {
           setNavLoaded(true);
         } else {
           setNavLinks([
-            { href: '/', label: 'Anasayfa', icon: require('@heroicons/react/24/outline').HomeIcon },
-            { href: '/services', label: 'Hizmetler', icon: require('@heroicons/react/24/outline').WrenchScrewdriverIcon },
-            { href: '/portfolio', label: 'Portfolyo', icon: require('@heroicons/react/24/outline').FolderOpenIcon },
-            { href: '/videos', label: 'Videolar', icon: require('@heroicons/react/24/outline').FilmIcon },
-            { href: '/products', label: 'Ürünler', icon: require('@heroicons/react/24/outline').FolderOpenIcon },
-            { href: '/contact', label: 'İletişim', icon: require('@heroicons/react/24/outline').PhoneIcon },
+            { href: '/', label: 'Anasayfa', icon: HomeIcon },
+            { href: '/services', label: 'Hizmetler', icon: WrenchScrewdriverIcon },
+            { href: '/portfolio', label: 'Portfolyo', icon: FolderOpenIcon },
+            { href: '/videos', label: 'Videolar', icon: FilmIcon },
+            { href: '/products', label: 'Ürünler', icon: FolderOpenIcon },
+            { href: '/contact', label: 'İletişim', icon: PhoneIcon },
           ]);
           setNavLoaded(true);
         }
       } catch (error) {
         console.error('Navigation fetch error:', error);
         setNavLinks([
-          { href: '/', label: 'Anasayfa', icon: require('@heroicons/react/24/outline').HomeIcon },
-          { href: '/services', label: 'Hizmetler', icon: require('@heroicons/react/24/outline').WrenchScrewdriverIcon },
-          { href: '/portfolio', label: 'Portfolyo', icon: require('@heroicons/react/24/outline').FolderOpenIcon },
-          { href: '/videos', label: 'Videolar', icon: require('@heroicons/react/24/outline').FilmIcon },
-          { href: '/products', label: 'Ürünler', icon: require('@heroicons/react/24/outline').FolderOpenIcon },
-          { href: '/contact', label: 'İletişim', icon: require('@heroicons/react/24/outline').PhoneIcon },
+          { href: '/', label: 'Anasayfa', icon: HomeIcon },
+          { href: '/services', label: 'Hizmetler', icon: WrenchScrewdriverIcon },
+          { href: '/portfolio', label: 'Portfolyo', icon: FolderOpenIcon },
+          { href: '/videos', label: 'Videolar', icon: FilmIcon },
+          { href: '/products', label: 'Ürünler', icon: FolderOpenIcon },
+          { href: '/contact', label: 'İletişim', icon: PhoneIcon },
         ]);
         setNavLoaded(true);
       }
@@ -219,10 +224,10 @@ const DynamicHeader: React.FC = () => {
       >
         Ana içeriğe atla
       </a>
-      <header 
+      <header
         className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300`}
         style={{
-          backgroundColor: isTransparentPage 
+          backgroundColor: isTransparentPage
             ? `rgba(255, 255, 255, ${bgOpacity * 0.95})`
             : 'rgba(255, 255, 255, 0.95)',
           backdropFilter: 'blur(12px)',
@@ -232,7 +237,7 @@ const DynamicHeader: React.FC = () => {
         role="banner"
       >
         {/* Accent line at bottom */}
-        <div 
+        <div
           className="absolute bottom-0 left-0 h-0.5 bg-gradient-to-r from-brand-primary-600 via-brand-primary-500 to-transparent"
           style={{
             width: `${bgOpacity * 100}%`,
@@ -244,8 +249,8 @@ const DynamicHeader: React.FC = () => {
         <div className="container-main">
           <div className="flex items-center justify-between h-20 sm:h-24">
             {/* Logo - Home Link */}
-            <Link 
-              href="/" 
+            <Link
+              href="/"
               className="flex items-center gap-3 group shrink-0 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-primary-600 focus-visible:ring-offset-2 rounded-xl transition-transform duration-200 hover:scale-105"
               aria-label="Anasayfaya git"
             >
@@ -286,11 +291,10 @@ const DynamicHeader: React.FC = () => {
               aria-label={isMobileMenuOpen ? "Mobil menüyü kapat" : "Mobil menüyü aç"}
               aria-controls="mobile-menu"
               aria-expanded={isMobileMenuOpen}
-              className={`md:hidden p-3 rounded-xl transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-primary-600 focus-visible:ring-offset-2 hover:scale-110 ${
-                isScrolled || !isTransparentPage
+              className={`md:hidden p-3 rounded-xl transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-primary-600 focus-visible:ring-offset-2 hover:scale-110 ${isScrolled || !isTransparentPage
                   ? 'text-slate-700 hover:bg-brand-primary-100'
                   : 'text-white hover:bg-white/20 drop-shadow'
-              }`}
+                }`}
             >
               {isMobileMenuOpen ? (
                 <XMarkIcon className="w-7 h-7 transition-transform duration-300 rotate-90" />
