@@ -25,7 +25,6 @@ export default async function OrderPage({ params }: { params: { slug: string } }
         buttonText="Ürün Sayfasına Dön"
         buttonLink={`/products/${product.slug}`}
         variant="compact"
-        minHeightVh={33}
       />
       {/* Breadcrumbs under Hero */}
       <section className="py-1">

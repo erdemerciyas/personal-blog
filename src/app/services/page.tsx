@@ -64,8 +64,6 @@ export default function ServicesPage() {
         setServices(data);
       } catch (err) {
         setError(err instanceof Error ? err.message : 'Bir hata oluştu');
-      } finally {
-        setLoading(false);
       }
     };
 
