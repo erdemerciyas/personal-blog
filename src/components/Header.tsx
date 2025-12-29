@@ -53,15 +53,20 @@ const Header: React.FC = () => {
   const pathname = usePathname() || '';
 
   // Define pages with transparent header (Hero sections)
+  // Expanded to include all pages with hero sections
   const isTransparentPage = pathname === '/' ||
     pathname.includes('/haberler') ||
     pathname.includes('/noticias') ||
-    pathname.includes('/portfolio');
+    pathname.includes('/portfolio') ||
+    pathname.includes('/services') ||
+    pathname.includes('/contact') ||
+    pathname.includes('/videos') ||
+    pathname.includes('/products');
 
-  // Scroll detection
+  // Scroll detection with improved threshold (100px for better UX)
   useEffect(() => {
     const handleScroll = () => {
-      setIsScrolled(window.scrollY > 20);
+      setIsScrolled(window.scrollY > 100);
     };
     window.addEventListener('scroll', handleScroll);
     return () => window.removeEventListener('scroll', handleScroll);
@@ -189,6 +194,11 @@ const Header: React.FC = () => {
     };
   }, []);
 
+  // Close mobile menu on route change
+  useEffect(() => {
+    setIsMobileMenuOpen(false);
+  }, [pathname]);
+
   // Listen for global openProjectModal event
   useEffect(() => {
     const handleOpen: EventListener = () => openProjectModal();
@@ -218,8 +228,10 @@ const Header: React.FC = () => {
         Ana içeriğe atla
       </a>
       <header className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${isScrolled
-        ? 'bg-white/90 backdrop-blur-md shadow border-b border-slate-200/60'
-        : 'bg-transparent'
+        ? 'bg-white/95 backdrop-blur-md shadow-lg border-b border-slate-200/40'
+        : isTransparentPage
+          ? 'bg-gradient-to-b from-black/20 to-transparent backdrop-blur-sm'
+          : 'bg-white/95 backdrop-blur-md shadow-lg border-b border-slate-200/40'
         }`} role="banner">
         <div className="container-main">
           <div className="flex items-center justify-between h-16 sm:h-20">
@@ -238,14 +250,22 @@ const Header: React.FC = () => {
                 </div>
               )}
               <div className="hidden sm:block">
-                {siteSettings?.siteName && (
-                  <h1 className={`text-xl font-bold tracking-tight transition-colors duration-300 ${isScrolled || !isTransparentPage ? 'text-slate-900' : 'text-white'
+              {siteSettings?.siteName && (
+                  <h1 className={`text-xl font-bold tracking-tight transition-colors duration-300 ${isScrolled
+                    ? 'text-slate-900'
+                    : isTransparentPage
+                      ? 'text-white drop-shadow-lg'
+                      : 'text-slate-900'
                     }`}>
                     {siteSettings.siteName}
                   </h1>
                 )}
                 {siteSettings?.slogan && (
-                  <p className={`text-sm opacity-80 transition-colors duration-300 ${isScrolled || !isTransparentPage ? 'text-slate-600' : 'text-white/80'
+                  <p className={`text-sm opacity-90 transition-colors duration-300 ${isScrolled
+                    ? 'text-slate-600'
+                    : isTransparentPage
+                      ? 'text-white/90 drop-shadow'
+                      : 'text-slate-600'
                     }`}>
                     {siteSettings.slogan}
                   </p>
@@ -259,6 +279,7 @@ const Header: React.FC = () => {
               pathname={pathname || ''}
               isScrolled={isScrolled}
               isTransparentPage={isTransparentPage}
+              onOpenProjectModal={openProjectModal}
             />
 
             {/* Mobile Menu Button */}
@@ -267,9 +288,11 @@ const Header: React.FC = () => {
               aria-label={isMobileMenuOpen ? "Mobil menüyü kapat" : "Mobil menüyü aç"}
               aria-controls="mobile-menu"
               aria-expanded={isMobileMenuOpen}
-              className={`md:hidden p-2 rounded-xl transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 ${isScrolled || !isTransparentPage
-                ? 'text-slate-700 hover:bg-slate-100 focus-visible:ring-slate-400'
-                : 'text-white hover:bg-white/10 focus-visible:ring-white/50'
+              className={`md:hidden p-2 rounded-lg transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-primary-600 focus-visible:ring-offset-2 ${isScrolled
+                ? 'text-slate-700 hover:bg-slate-100'
+                : isTransparentPage
+                  ? 'text-white hover:bg-white/15 drop-shadow'
+                  : 'text-slate-700 hover:bg-slate-100'
                 }`}
             >
               {isMobileMenuOpen ? (
@@ -288,6 +311,8 @@ const Header: React.FC = () => {
             onClose={closeMobileMenu}
             onOpenProjectModal={openProjectModal}
             navLoaded={navLoaded}
+            isScrolled={isScrolled}
+            isTransparentPage={isTransparentPage}
           />
         </div>
 

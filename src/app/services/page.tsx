@@ -34,7 +34,10 @@ export default function ServicesPage() {
   const [services, setServices] = useState<Service[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [hero, setHero] = useState<{ title: string; description: string }>({ title: '', description: '' });
+  const [hero, setHero] = useState<{ title: string; description: string }>({ 
+    title: 'Sunduğumuz Hizmetler',
+    description: 'Modern teknoloji çözümleri ve profesyonel hizmetlerimizi keşfedin'
+  });
   const [expandedServices, setExpandedServices] = useState<Set<string>>(new Set());
 
   useEffect(() => {
@@ -82,22 +85,6 @@ export default function ServicesPage() {
   };
 
 
-
-  if (loading) {
-    return (
-      <div className="min-h-screen bg-gray-50">
-        <div className="bg-gradient-to-br from-brand-primary-700 to-brand-primary-800 py-28">
-          <div className="max-w-3xl mx-auto px-4 text-center">
-            <div className="w-16 h-16 border-4 border-white/30 border-t-white rounded-full animate-spin mx-auto mb-4"></div>
-            <p className="text-white text-lg">Hizmetler yükleniyor...</p>
-          </div>
-        </div>
-        <div className="container mx-auto px-4 py-20">
-          <ContentSkeleton type="card" count={3} />
-        </div>
-      </div>
-    );
-  }
 
   if (error) {
     return (

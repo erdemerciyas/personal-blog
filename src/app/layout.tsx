@@ -12,6 +12,7 @@ import Settings from '../models/Settings'
 import Script from 'next/script'
 import FloatingCta from '../components/FloatingCta';
 import GlobalBreadcrumbsJsonLd from '../components/seo/GlobalBreadcrumbsJsonLd';
+import PageTransitionWrapper from '../components/PageTransitionWrapper';
 
 // Force dynamic rendering and disable caching for layout/metadata
 export const dynamic = 'force-dynamic'
@@ -295,12 +296,14 @@ export default async function RootLayout({
                 <Header />
                 <GlobalBreadcrumbsJsonLd />
                 <FloatingCta />
-                {/* Main content area (flat background) */}
-                <div className="relative flex-grow">
-                  <main id="main-content" className="relative z-10">
-                    <div>{children}</div>
-                  </main>
-                </div>
+                {/* Main content area with smooth transitions */}
+                <PageTransitionWrapper>
+                  <div className="relative flex-grow">
+                    <main id="main-content" className="relative z-10">
+                      <div>{children}</div>
+                    </main>
+                  </div>
+                </PageTransitionWrapper>
 
                 <ConditionalFooter />
               </ClientWrapper>

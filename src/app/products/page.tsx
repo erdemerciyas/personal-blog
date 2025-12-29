@@ -77,8 +77,7 @@ export default async function ProductsPage({ searchParams }: { searchParams: Rec
         description={heroDesc}
         buttonText={heroButtonText}
         buttonLink={heroButtonLink}
-        variant="compact"
-        minHeightVh={33}
+        showButton={true}
       />
       {/* Breadcrumbs under Hero */}
       <section className="py-1">

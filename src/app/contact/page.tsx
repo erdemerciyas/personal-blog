@@ -43,7 +43,10 @@ function ContactPageContent() {
   const [submitStatus, setSubmitStatus] = useState<'success' | 'error' | null>(null);
   const [submitMessage, setSubmitMessage] = useState<string | null>(null);
   const [contactLoading, setContactLoading] = useState(true);
-  const [hero, setHero] = useState<{ title: string; description: string }>({ title: '', description: '' });
+  const [hero, setHero] = useState<{ title: string; description: string }>({ 
+    title: 'Bizimle İletişime Geçin',
+    description: 'Sorularınız ve önerileriniz için bize ulaşın'
+  });
 
   // Fetch contact information
   useEffect(() => {

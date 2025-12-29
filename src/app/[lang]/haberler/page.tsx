@@ -75,7 +75,6 @@ export default async function NewsListPage({ params, searchParams }: PageProps) 
           description="Fixral'dan en son haberler, şirket duyuruları ve sektör güncellemelerini buradan takip edebilirsiniz."
           backgroundGradient="bg-gradient-primary"
           showButton={false}
-          variant="compact"
         />
         <div className="max-w-7xl mx-auto px-4 md:px-6 lg:px-8 py-8">
 

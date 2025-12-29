@@ -1,49 +1,62 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useRef } from 'react';
 import { usePathname } from 'next/navigation';
 
 export default function LoadingBar() {
   const [loading, setLoading] = useState(false);
   const [progress, setProgress] = useState(0);
   const pathname = usePathname();
+  const progressIntervalRef = useRef<NodeJS.Timeout | null>(null);
 
   useEffect(() => {
     // Start loading on route change
     setLoading(true);
-    setProgress(10);
+    setProgress(15);
 
-    // Simulate loading progress
-    const timer1 = setTimeout(() => setProgress(30), 100);
-    const timer2 = setTimeout(() => setProgress(60), 200);
-    const timer3 = setTimeout(() => setProgress(90), 300);
-    
+    // Simulate realistic loading progress with easing
+    const progressSteps = [
+      { delay: 100, value: 35 },
+      { delay: 300, value: 55 },
+      { delay: 600, value: 75 },
+      { delay: 1000, value: 85 },
+    ];
+
+    const timers = progressSteps.map(step =>
+      setTimeout(() => setProgress(step.value), step.delay)
+    );
+
     // Complete loading
-    const timer4 = setTimeout(() => {
+    const completeTimer = setTimeout(() => {
       setProgress(100);
       setTimeout(() => {
         setLoading(false);
         setProgress(0);
-      }, 200);
-    }, 500);
+      }, 300);
+    }, 1200);
 
     return () => {
-      clearTimeout(timer1);
-      clearTimeout(timer2);
-      clearTimeout(timer3);
-      clearTimeout(timer4);
+      timers.forEach(timer => clearTimeout(timer));
+      clearTimeout(completeTimer);
+      if (progressIntervalRef.current) {
+        clearInterval(progressIntervalRef.current);
+      }
     };
   }, [pathname]);
 
-  if (!loading) return null;
-
   return (
-    <div className="fixed top-0 left-0 right-0 z-50">
+    <div className="fixed top-0 left-0 right-0 z-[9999] pointer-events-none">
       <div 
-        className="h-1 bg-gradient-to-r from-brand-primary-600 via-brand-primary-500 to-blue-500 transition-all duration-300 ease-out"
-        style={{ width: `${progress}%` }}
+        className="h-1.5 bg-gradient-to-r from-brand-primary-600 via-brand-primary-500 to-blue-500 shadow-lg transition-all duration-500 ease-out"
+        style={{ 
+          width: `${progress}%`,
+          boxShadow: progress > 0 ? '0 0 20px rgba(6, 132, 199, 0.6)' : 'none'
+        }}
       />
-      <div className="absolute top-0 right-0 w-20 h-1 bg-gradient-to-l from-transparent to-white/20 animate-pulse" />
+      {/* Shimmer effect on progress bar */}
+      {loading && progress < 100 && (
+        <div className="absolute top-0 right-0 w-32 h-1.5 bg-gradient-to-l from-white/40 via-white/20 to-transparent animate-pulse" />
+      )}
     </div>
   );
 }
