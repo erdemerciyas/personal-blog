@@ -1,6 +1,10 @@
-# Personal Blog & Portfolio Platform
+# FIXRAL - Personal Blog & Portfolio Platform
 
 A modern, full-featured personal blog and portfolio platform built with Next.js 14, TypeScript, MongoDB, and Tailwind CSS.
+
+**Creator:** FIXRAL  
+**Email:** fixral3d@gmail.com  
+**Last Updated:** December 30, 2024
 
 ## 🎯 Features
 
@@ -270,7 +274,7 @@ This project is licensed under the MIT License - see LICENSE file for details.
 
 ## 📧 Support
 
-For support, email support@example.com or open an issue on GitHub.
+For support, email fixral3d@gmail.com or open an issue on GitHub.
 
 ## 🙏 Acknowledgments
 
@@ -281,6 +285,7 @@ For support, email support@example.com or open an issue on GitHub.
 
 ---
 
-**Last Updated:** December 2024  
+**Creator:** FIXRAL (fixral3d@gmail.com)  
+**Last Updated:** December 30, 2024  
 **Version:** 3.3.0  
 **Status:** Production Ready ✅
