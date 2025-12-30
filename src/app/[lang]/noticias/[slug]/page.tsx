@@ -76,10 +76,13 @@ export async function generateStaticParams() {
   try {
     await connectDB();
 
+    // Fetch all published news articles without limit
+    // This ensures all articles get static paths generated
     const news = await News.find({ status: 'published' })
       .select('slug')
-      .lean()
-      .limit(100);
+      .lean();
+
+    logger.info('Generated static params for news articles (ES)', 'NEWS_DETAIL', { count: news.length });
 
     return news.map((item: any) => ({
       lang: 'es',
@@ -97,6 +100,12 @@ export async function generateStaticParams() {
 export const revalidate = 3600; // 1 hour
 
 /**
+ * Enable dynamic params to allow on-demand rendering for new articles
+ * This prevents 404 errors for articles not in generateStaticParams
+ */
+export const dynamicParams = true;
+
+/**
  * News Detail Page Component (Spanish)
  */
 export default async function NewsDetailPage({ params }: PageProps) {
@@ -108,7 +117,13 @@ export default async function NewsDetailPage({ params }: PageProps) {
       .populate('relatedNewsIds', 'slug translations featuredImage')
       .lean()) as NewsItem | null;
 
-    if (!news || news.status !== 'published') {
+    if (!news) {
+      logger.warn('News article not found (ES)', 'NEWS_DETAIL', { slug: params.slug });
+      notFound();
+    }
+
+    if (news.status !== 'published') {
+      logger.warn('News article not published (ES)', 'NEWS_DETAIL', { slug: params.slug, status: news.status });
       notFound();
     }
 

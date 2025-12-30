@@ -66,11 +66,10 @@ export default function UnifiedPageHero({
   if (!mounted) {
     return (
       <section
-        className={`${backgroundGradient} text-white ${
-          variant === 'compact'
-            ? 'py-12 md:py-16'
-            : 'py-32 md:py-48 lg:py-56 flex items-center justify-center'
-        }`}
+        className={`${backgroundGradient} text-white ${variant === 'compact'
+          ? 'py-12 md:py-16'
+          : 'py-32 md:py-48 lg:py-56 flex items-center justify-center'
+          }`}
       >
         <div className="container-content">
           <div className="text-center">
@@ -84,11 +83,10 @@ export default function UnifiedPageHero({
 
   return (
     <section
-      className={`relative overflow-hidden ${backgroundGradient} text-white ${
-        variant === 'compact'
-          ? 'py-12 md:py-16'
-          : 'py-32 md:py-48 lg:py-56 flex items-center justify-center'
-      }`}
+      className={`relative overflow-hidden ${backgroundGradient} text-white ${variant === 'compact'
+        ? 'pt-24 pb-16 md:pt-28 md:pb-20'
+        : 'pt-48 pb-40 md:pt-56 md:pb-52 lg:pt-64 lg:pb-60 flex items-center justify-center'
+        }`}
       role="banner"
       aria-label={`${title} - Sayfa başlığı`}
     >
@@ -114,9 +112,8 @@ export default function UnifiedPageHero({
           {/* Title */}
           <motion.h1
             variants={itemVariants}
-            className={`${
-              variant === 'compact' ? 'hero-title-compact' : 'hero-title'
-            } text-gradient-hero mb-6`}
+            className={`${variant === 'compact' ? 'hero-title-compact' : 'hero-title'
+              } text-gradient-hero mb-6`}
           >
             {title}
           </motion.h1>

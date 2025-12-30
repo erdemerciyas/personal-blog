@@ -234,6 +234,12 @@ export async function POST(request: NextRequest) {
     await news.save();
     logger.info('News saved successfully', 'NEWS_API', { newsId: news._id });
 
+    // Revalidate cache for new news article
+    const { revalidateNewsDetail, revalidateNewsListing, revalidateNewsCarousel } = await import('@/lib/news-cache-service');
+    await revalidateNewsDetail(news.slug);
+    await revalidateNewsListing();
+    await revalidateNewsCarousel();
+
     logger.info('News article created', 'NEWS_API', {
       newsId: news._id,
       slug: news.slug,

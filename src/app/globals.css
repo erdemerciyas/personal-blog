@@ -194,9 +194,9 @@ h6 {
 
   /* Typography */
   .hero-title {
-    @apply text-4xl sm:text-5xl md:text-6xl lg:text-7xl xl:text-8xl 2xl:text-9xl font-black tracking-tight;
-    line-height: 1.1;
-    padding: 0.1em 0;
+    @apply text-3xl sm:text-4xl md:text-5xl lg:text-6xl xl:text-7xl font-bold tracking-tight;
+    line-height: 1.2;
+    padding: 0.15em 0;
     font-display: swap;
     text-rendering: optimizeLegibility;
     -webkit-font-smoothing: antialiased;
@@ -205,9 +205,9 @@ h6 {
 
   /* Responsive hero title that stays single line on large screens */
   .hero-title-responsive {
-    @apply text-3xl sm:text-4xl md:text-5xl lg:text-6xl xl:text-7xl 2xl:text-8xl font-black tracking-tight;
-    line-height: 1.1;
-    padding: 0.1em 0;
+    @apply text-3xl sm:text-4xl md:text-5xl lg:text-6xl xl:text-6xl font-bold tracking-tight;
+    line-height: 1.2;
+    padding: 0.15em 0;
     word-spacing: -0.1em;
     hyphens: none;
     font-display: swap;
@@ -218,9 +218,9 @@ h6 {
 
   /* For very long titles, use smaller sizes */
   .hero-title-compact {
-    @apply text-3xl sm:text-4xl md:text-5xl lg:text-6xl xl:text-6xl 2xl:text-7xl font-black tracking-tight;
-    line-height: 1.1;
-    padding: 0.1em 0;
+    @apply text-2xl sm:text-3xl md:text-4xl lg:text-5xl xl:text-5xl font-bold tracking-tight;
+    line-height: 1.2;
+    padding: 0.15em 0;
     font-display: swap;
     text-rendering: optimizeLegibility;
     -webkit-font-smoothing: antialiased;
@@ -322,8 +322,9 @@ h6 {
 
   /* Backgrounds */
   .bg-gradient-primary {
-    /* Daha rafine ve kurumsal bir ana degrade */
-    @apply bg-gradient-to-b from-[#0f1e2d] via-[#0f1b26] to-[#0b1520];
+    /* Stabil ve profesyonel koyu mavi arka plan */
+    @apply bg-[#003450];
+    background: linear-gradient(135deg, #003450 0%, #002a3f 50%, #00344d 100%);
   }
 
   .bg-gradient-subtle {

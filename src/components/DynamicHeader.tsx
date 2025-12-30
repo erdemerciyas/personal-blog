@@ -289,8 +289,8 @@ const DynamicHeader: React.FC = () => {
               aria-controls="mobile-menu"
               aria-expanded={isMobileMenuOpen}
               className={`md:hidden p-3 rounded-xl transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-primary-600 focus-visible:ring-offset-2 hover:scale-110 ${isScrolled || !isTransparentPage
-                  ? 'text-slate-700 hover:bg-brand-primary-100'
-                  : 'text-white hover:bg-white/20 drop-shadow'
+                ? 'text-slate-700 hover:bg-brand-primary-100'
+                : 'text-white hover:bg-white/20 drop-shadow'
                 }`}
             >
               {isMobileMenuOpen ? (
@@ -301,25 +301,27 @@ const DynamicHeader: React.FC = () => {
             </button>
           </div>
 
-          {/* Mobile Menu */}
-          <DynamicMobileNav
-            isOpen={isMobileMenuOpen}
-            navLinks={navLinks}
-            pathname={pathname || ''}
-            onClose={closeMobileMenu}
-            onOpenProjectModal={openProjectModal}
-            navLoaded={navLoaded}
-            isScrolled={isScrolled}
-            isTransparentPage={isTransparentPage}
-          />
         </div>
+
+
+        {/* Mobile Menu */}
+        <DynamicMobileNav
+          isOpen={isMobileMenuOpen}
+          navLinks={navLinks}
+          pathname={pathname || ''}
+          onClose={closeMobileMenu}
+          onOpenProjectModal={openProjectModal}
+          navLoaded={navLoaded}
+          isScrolled={isScrolled}
+          isTransparentPage={isTransparentPage}
+        />
 
         {/* Project Request Modal */}
         <ProjectModal
           isOpen={isProjectModalOpen}
           onClose={() => setIsProjectModalOpen(false)}
         />
-      </header>
+      </header >
     </>
   );
 };
