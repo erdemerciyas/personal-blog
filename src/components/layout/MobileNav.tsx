@@ -41,9 +41,15 @@ export default function MobileNav({
 
     if (!isOpen) return null;
 
-    const handleNavClick = (callback?: () => void) => {
+    const handleLinkClick = (e: React.MouseEvent<HTMLAnchorElement>) => {
+        e.stopPropagation();
         onClose();
-        callback?.();
+    };
+
+    const handleProjectModalClick = (e: React.MouseEvent<HTMLButtonElement>) => {
+        e.stopPropagation();
+        onClose();
+        onOpenProjectModal();
     };
 
     return (
@@ -99,7 +105,7 @@ export default function MobileNav({
                                     href={link.href}
                                     target="_blank"
                                     rel="noopener noreferrer"
-                                    onClick={() => handleNavClick()}
+                                    onClick={handleLinkClick}
                                     className={baseClasses}
                                     aria-current={isActive ? 'page' : undefined}
                                 >
@@ -114,7 +120,7 @@ export default function MobileNav({
                                 href={link.href}
                                 className={baseClasses}
                                 aria-current={isActive ? 'page' : undefined}
-                                onClick={() => handleNavClick()}
+                                onClick={handleLinkClick}
                             >
                                 {content}
                             </PrefetchLink>
@@ -126,7 +132,7 @@ export default function MobileNav({
                 {navLoaded && (
                     <div className="mt-6 pt-6 border-t border-slate-200">
                         <button
-                            onClick={() => handleNavClick(onOpenProjectModal)}
+                            onClick={handleProjectModalClick}
                             className={`
                                 w-full
                                 flex items-center justify-center gap-2

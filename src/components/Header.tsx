@@ -206,7 +206,8 @@ const Header: React.FC = () => {
     return null;
   }
 
-  const toggleMobileMenu = () => {
+  const toggleMobileMenu = (e: React.MouseEvent<HTMLButtonElement>) => {
+    e.stopPropagation();
     setIsMobileMenuOpen(!isMobileMenuOpen);
   };
 
