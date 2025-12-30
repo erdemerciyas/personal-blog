@@ -4,7 +4,7 @@ A modern, full-featured personal blog and portfolio platform built with Next.js 
 
 **Creator:** FIXRAL  
 **Email:** fixral3d@gmail.com  
-**Last Updated:** December 30, 2024
+**Last Updated:** December 30, 2025
 
 ## 🎯 Features
 
@@ -286,6 +286,6 @@ For support, email fixral3d@gmail.com or open an issue on GitHub.
 ---
 
 **Creator:** FIXRAL (fixral3d@gmail.com)  
-**Last Updated:** December 30, 2024  
+**Last Updated:** December 30, 2025  
 **Version:** 3.3.0  
 **Status:** Production Ready ✅
