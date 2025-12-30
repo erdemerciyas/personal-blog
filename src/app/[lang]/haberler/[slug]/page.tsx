@@ -24,7 +24,14 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
 
     const news = (await News.findOne({ slug: params.slug }).lean()) as unknown as NewsItem | null;
 
-    if (!news || news.status !== 'published') {
+    if (!news) {
+      return {
+        title: 'Not Found',
+        description: 'The requested news article was not found.',
+      };
+    }
+
+    if (news.status !== 'published') {
       return {
         title: 'Not Found',
         description: 'The requested news article was not found.',
@@ -384,6 +391,7 @@ export default async function NewsDetailPage({ params }: PageProps) {
     );
   } catch (error) {
     logger.error('Error rendering news detail page', 'NEWS_DETAIL', { error });
-    notFound();
+    // Do not show 404 for runtime/DB errors, let Next.js error boundary handle it (500)
+    throw error;
   }
 }

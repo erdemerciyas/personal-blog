@@ -112,10 +112,12 @@ export async function GET(request: Request, { params }: { params: { slug: string
       order: p.order || 0,
       createdAt: p.createdAt,
       updatedAt: p.updatedAt,
+      // Normalize category fields - return only the first category as 'category'
       category: category,
-      // Geriye uyumluluk için
-      categoryId: p.categoryId,
-      categoryIds: p.categoryIds
+      // Return all categories as 'categories' array
+      categories: (p.categoryIds && Array.isArray(p.categoryIds) && p.categoryIds.length > 0)
+        ? p.categoryIds.filter(cat => typeof cat === 'object' && cat !== null)
+        : (category ? [category] : [])
     };
 
     // Cache headers ekle

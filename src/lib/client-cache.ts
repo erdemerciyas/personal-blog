@@ -15,7 +15,9 @@ export async function cachedFetch<T>(
   options?: RequestInit,
   ttl: number = CacheTTL.MEDIUM // Default to 5 minutes
 ): Promise<T> {
-  const cacheKey = `fetch:${url}:${JSON.stringify(options || {})}`;
+  // Create a stable cache key - only use URL, ignore signal and headers
+  // Signal and headers shouldn't affect cache validity
+  const cacheKey = `fetch:${url}`;
   
   // Check cache first
   const cached = clientCache.get<T>(cacheKey);
@@ -23,8 +25,11 @@ export async function cachedFetch<T>(
     return cached;
   }
 
-  // Fetch from API
-  const response = await fetch(url, options);
+  // Fetch from API - remove signal from options to avoid cache key issues
+  const fetchOptions = { ...options };
+  delete (fetchOptions as any).signal;
+  
+  const response = await fetch(url, fetchOptions);
   
   if (!response.ok) {
     throw new Error(`HTTP ${response.status}: ${response.statusText}`);

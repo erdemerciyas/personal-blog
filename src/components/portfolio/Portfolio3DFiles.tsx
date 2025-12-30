@@ -55,7 +55,7 @@ export default function Portfolio3DFiles({ models3D }: Portfolio3DFilesProps) {
       <div className="bg-white rounded-lg border border-gray-200 overflow-hidden">
         {models3D.map((model, index) => (
           <motion.div
-            key={model._id}
+            key={`model-${model._id || index}`}
             initial={{ opacity: 0, x: -20 }}
             animate={{ opacity: 1, x: 0 }}
             transition={{ duration: 0.3, delay: index * 0.1 }}

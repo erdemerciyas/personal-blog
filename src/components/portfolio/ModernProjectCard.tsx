@@ -2,11 +2,8 @@
 
 import React, { useState } from 'react';
 import Image from 'next/image';
-import Link from 'next/link';
 import { motion } from 'framer-motion';
 import {
-  ArrowRightIcon,
-  EyeIcon,
   PhotoIcon,
   CubeIcon
 } from '@heroicons/react/24/outline';
@@ -77,27 +74,10 @@ export default function ModernProjectCard({
       variants={cardVariants}
       initial="hidden"
       animate="visible"
-      className={`group relative bg-white rounded-3xl shadow hover:shadow-2xl border border-slate-200/70 overflow-hidden transition-all duration-500 flex flex-col h-full hover:-translate-y-1.5 ${layout === 'masonry' ? 'break-inside-avoid mb-6' : ''
+      className={`group relative bg-white rounded-3xl shadow hover:shadow-2xl border border-slate-200/70 overflow-hidden transition-all duration-500 flex flex-col h-full hover:-translate-y-1.5 cursor-pointer ${layout === 'masonry' ? 'break-inside-avoid mb-6' : ''
         }`}
-      onMouseMove={(e) => {
-        // Reduce motion and pointer checks
-        if (typeof window !== 'undefined') {
-          if (window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
-          if (window.matchMedia && !window.matchMedia('(pointer: fine)').matches) return;
-        }
-        const el = e.currentTarget as HTMLElement;
-        const rect = el.getBoundingClientRect();
-        const x = e.clientX - rect.left;
-        const y = e.clientY - rect.top;
-        const midX = rect.width / 2;
-        const midY = rect.height / 2;
-        const rotateY = ((x - midX) / midX) * 1.5;
-        const rotateX = -((y - midY) / midY) * 1.5;
-        el.style.transform = `perspective(900px) rotateX(${rotateX}deg) rotateY(${rotateY}deg)`;
-      }}
-      onMouseLeave={(e) => {
-        const el = e.currentTarget as HTMLElement;
-        el.style.transform = 'perspective(900px) rotateX(0deg) rotateY(0deg)';
+      onClick={() => {
+        window.location.href = `/portfolio/${project.slug}`;
       }}
     >
       {/* Featured Badge */}
@@ -158,16 +138,6 @@ export default function ModernProjectCard({
 
         {/* Overlay */}
         <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent opacity-60 group-hover:opacity-40 transition-opacity duration-500"></div>
-
-        {/* Quick View Button */}
-        <div className="absolute top-4 right-4 opacity-0 group-hover:opacity-100 transition-all duration-300 transform translate-y-2 group-hover:translate-y-0">
-          <Link
-            href={`/portfolio/${project.slug}`}
-            className="flex items-center justify-center w-10 h-10 bg-white/90 backdrop-blur-sm rounded-full shadow-lg hover:bg-white hover:scale-110 transition-all duration-300"
-          >
-            <EyeIcon className="w-5 h-5 text-slate-700" />
-          </Link>
-        </div>
       </div>
 
       {/* Content */}
@@ -206,15 +176,6 @@ export default function ModernProjectCard({
 
         {/* Spacer to push button to bottom */}
         <div className="flex-grow"></div>
-
-        {/* Action Button */}
-        <Link
-          href={`/portfolio/${project.slug}`}
-          className="btn-primary w-full group/btn mt-auto relative z-50 cursor-pointer rounded-full text-center flex items-center justify-center"
-        >
-          <span>Detayları Görüntüle</span>
-          <ArrowRightIcon className="w-5 h-5 ml-2 transition-transform duration-300 group-hover/btn:translate-x-1" />
-        </Link>
       </div>
 
       {/* Hover Effect Border */}

@@ -141,7 +141,7 @@ const DynamicHeader: React.FC = () => {
             .filter((page: PageSetting) => page.isActive && page.showInNavigation)
             .sort((a: PageSetting, b: PageSetting) => a.order - b.order)
             .map((page: PageSetting) => ({
-              href: page.path,
+              href: page.path.startsWith('http') || page.path.startsWith('/') ? page.path : `/${page.path}`,
               label: page.title,
               icon: resolveIcon(page.icon) || getIconForPage(page.pageId),
               isExternal: page.isExternal

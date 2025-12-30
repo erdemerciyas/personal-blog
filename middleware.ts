@@ -76,6 +76,12 @@ async function checkPageAccess(path: string): Promise<boolean> {
     if (path.startsWith('/admin') || path.startsWith('/api')) return true;
     if (path.includes('.') || path.startsWith('/_next')) return true;
     
+    // Allow all portfolio routes (list and detail pages)
+    if (path.startsWith('/portfolio')) return true;
+    
+    // Allow dynamic routes (portfolio detail pages, etc.)
+    if (path.includes('[') || path.includes(']')) return true;
+    
     // Extract pageId by removing language prefix if present
     let pageId = path === '/' ? 'home' : path.slice(1);
     

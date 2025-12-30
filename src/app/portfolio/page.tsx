@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect, Suspense } from 'react';
+import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import Link from 'next/link';
 import { ArrowRightIcon, SparklesIcon } from '@heroicons/react/24/outline';
@@ -9,23 +9,21 @@ import Breadcrumbs from '../../components/Breadcrumbs';
 import PortfolioHero from '../../components/portfolio/PortfolioHero';
 import PortfolioFilters from '../../components/portfolio/PortfolioFilters';
 import ModernProjectGrid from '../../components/portfolio/ModernProjectGrid';
-import ContentSkeleton from '../../components/ContentSkeleton';
 import { usePortfolioFilters } from '../../hooks/usePortfolioFilters';
 import type { PortfolioItem, Category } from '../../types/portfolio';
 
-// Helper component to handle client-side logic dependent on Suspense
-function PortfolioPageContent() {
+export default function PortfolioPage() {
   const [portfolioItems, setPortfolioItems] = useState<PortfolioItem[]>([]);
   const [categories, setCategories] = useState<Category[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [hero, setHero] = useState<{ 
-    title: string; 
-    description: string; 
-    buttonText: string; 
-    buttonLink: string; 
-  }>({ 
-    title: 'Portfolyo', 
+  const [hero, setHero] = useState<{
+    title: string;
+    description: string;
+    buttonText: string;
+    buttonLink: string;
+  }>({
+    title: 'Portfolyo',
     description: 'Tamamladığımız başarılı projeler ve yaratıcı çözümler',
     buttonText: 'Projeleri İncele',
     buttonLink: '#projects'
@@ -46,7 +44,7 @@ function PortfolioPageContent() {
     const fetchInitialData = async () => {
       setLoading(true);
       setError(null);
-      
+
       try {
         // Fetch hero content
         const heroRes = await fetch('/api/admin/page-settings/portfolio');
@@ -57,13 +55,6 @@ function PortfolioPageContent() {
             description: heroData.description || 'Tamamladığımız başarılı projeler ve yaratıcı çözümler',
             buttonText: heroData.buttonText || 'Projeleri İncele',
             buttonLink: heroData.buttonLink || '#projects'
-          });
-        } else {
-          setHero({ 
-            title: 'Portfolyo', 
-            description: 'Tamamladığımız başarılı projeler ve yaratıcı çözümler',
-            buttonText: 'Projeleri İncele',
-            buttonLink: '#projects'
           });
         }
 
@@ -94,8 +85,6 @@ function PortfolioPageContent() {
     fetchInitialData();
   }, []);
 
-
-
   if (error) {
     return (
       <div className="min-h-screen bg-gray-50 flex items-center justify-center">
@@ -107,8 +96,8 @@ function PortfolioPageContent() {
           </div>
           <h3 className="text-xl font-semibold text-slate-800 mb-4">Bir Hata Oluştu</h3>
           <p className="text-slate-600 mb-6">{error}</p>
-          <button 
-            onClick={() => window.location.reload()} 
+          <button
+            onClick={() => window.location.reload()}
             className="btn-primary"
           >
             Tekrar Dene
@@ -161,31 +150,24 @@ function PortfolioPageContent() {
                 description: item.description,
                 coverImage: item.coverImage,
                 category: (() => {
-                  // Önce yeni çoklu kategori sistemini kontrol et (categoryIds)
                   if (item.categoryIds && Array.isArray(item.categoryIds) && item.categoryIds.length > 0) {
                     return item.categoryIds.map((cat: { name?: string } | string) => (typeof cat === 'object' ? cat.name : cat) || cat).join(', ');
                   }
-                  // Sonra eski tekli kategori sistemini kontrol et (categoryId)
                   if (item.categoryId && typeof item.categoryId === 'object' && 'name' in item.categoryId) {
                     return (item.categoryId as { name: string }).name;
                   }
-                  // Eğer categoryId string ise (populate edilmemiş)
                   if (item.categoryId && typeof item.categoryId === 'string') {
-                    // Kategoriler listesinden ismi bul
                     const foundCategory = categories.find(cat => cat._id === (item.categoryId as unknown as string));
                     return foundCategory?.name || 'Genel';
                   }
-                  // Legacy: categories alanını kontrol et
                   const legacyCategories = (item as unknown as { categories?: Array<{ name?: string } | string> }).categories;
                   if (legacyCategories && Array.isArray(legacyCategories) && legacyCategories.length > 0) {
                     return legacyCategories.map((cat: { name?: string } | string) => (typeof cat === 'object' ? cat.name : cat) || cat).join(', ');
                   }
-                  // Legacy: category alanını kontrol et
                   const legacyCategory = (item as unknown as { category?: { name?: string } }).category;
                   if (legacyCategory?.name) {
                     return legacyCategory.name;
                   }
-                  // Son çare olarak "Genel" döndür
                   return 'Genel';
                 })(),
                 client: item.client,
@@ -231,58 +213,32 @@ function PortfolioPageContent() {
               >
                 Filtreleri Temizle
               </button>
-          </motion.div>
-        )}
-      </div>
-    </section>
+            </motion.div>
+          )}
+        </div>
+      </section>
 
-    {/* CTA Section */}
-    <section className="section bg-gradient-primary text-white relative overflow-hidden" aria-labelledby="portfolio-cta-title">
-      <div className="container-content text-center relative z-10">
-        <div className="section-header">
-          <h2 id="portfolio-cta-title" className="text-white">Projenizi Birlikte Gerçekleştirelim</h2>
-          <p className="text-brand-primary-100">
-            Portföyümüzdeki projeler gibi sizin de fikirlerinizi hayata geçirmeye hazırız.
-          </p>
+      {/* CTA Section */}
+      <section className="section bg-gradient-primary text-white relative overflow-hidden" aria-labelledby="portfolio-cta-title">
+        <div className="container-content text-center relative z-10">
+          <div className="section-header">
+            <h2 id="portfolio-cta-title" className="text-white">Projenizi Birlikte Gerçekleştirelim</h2>
+            <p className="text-brand-primary-100">
+              Portföyümüzdeki projeler gibi sizin de fikirlerinizi hayata geçirmeye hazırız.
+            </p>
+          </div>
+          <div className="flex flex-col sm:flex-row gap-6 justify-center">
+            <Link href="/contact" className="btn-primary">
+              <SparklesIcon className="w-5 h-5 mr-2" />
+              Proje Başlatalım
+            </Link>
+            <Link href="/services" className="btn-secondary">
+              Hizmetlerimizi İnceleyin
+              <ArrowRightIcon className="w-5 h-5 ml-2" />
+            </Link>
+          </div>
         </div>
-        <div className="flex flex-col sm:flex-row gap-6 justify-center">
-          <Link href="/contact" className="btn-primary">
-            <SparklesIcon className="w-5 h-5 mr-2" />
-            Proje Başlatalım
-          </Link>
-          <Link href="/services" className="btn-secondary">
-            Hizmetlerimizi İnceleyin
-            <ArrowRightIcon className="w-5 h-5 ml-2" />
-          </Link>
-        </div>
-      </div>
-    </section>
+      </section>
     </div>
-  );
-}
-
-export default function PortfolioPage() {
-  return (
-    <Suspense fallback={
-      <div className="min-h-screen bg-gray-50">
-        {/* Hero Skeleton */}
-        <section className="bg-gradient-to-br from-slate-900 via-brand-primary-900 to-blue-900 py-32">
-          <div className="container mx-auto px-4 text-center">
-            <div className="w-16 h-16 border-4 border-white/30 border-t-white rounded-full animate-spin mx-auto mb-4"></div>
-            <p className="text-white text-lg">Portfolio yükleniyor...</p>
-          </div>
-        </section>
-        
-        {/* Content Skeleton */}
-        <div className="container mx-auto px-4 py-20">
-          <div className="bg-white rounded-3xl shadow-xl p-8 mb-8">
-            <div className="h-16 bg-slate-200 rounded-2xl animate-pulse"></div>
-          </div>
-          <ContentSkeleton type="card" count={6} className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8" />
-        </div>
-      </div>
-    }>
-      <PortfolioPageContent />
-    </Suspense>
   );
 }

@@ -5,7 +5,41 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [3.1.0] - 2025-12-29
+## [3.3.0] - 2024-12-30
+
+### Fixed
+
+#### 🐛 Portfolio System Fixes
+- **Portfolio Detail Navigation**: Fixed infinite render loops and hydration mismatches in portfolio detail pages
+- **Link Navigation**: Resolved issue where portfolio cards weren't navigating to detail pages
+- **Image Positioning**: Fixed Next.js Image component position warnings in media gallery
+- **Key Props**: Added proper key props to Portfolio3DFiles map to eliminate React warnings
+- **Cache Mechanism**: Improved client-side cache to avoid stale data on retries
+- **Middleware Route Handling**: Fixed middleware blocking dynamic portfolio routes
+
+#### 🧹 Code Quality
+- **Removed Unused Imports**: Cleaned up unused imports in portfolio components
+- **Console Logs**: Removed debug console logs from PortfolioDetailHero and PortfolioMediaGallery
+- **ESLint Warnings**: Fixed all ESLint warnings (unused variables, imports)
+- **Build Optimization**: Ensured clean build with no warnings or errors
+
+#### ⚡ Performance
+- **Optimized Fetching**: Direct fetch without unnecessary caching for detail pages
+- **Image Optimization**: Added priority prop to LCP images
+- **Reduced Re-renders**: Simplified component structure to prevent infinite loops
+
+### Changed
+- **Portfolio Page Structure**: Refactored to use simpler state management
+- **Detail Page Rendering**: Moved from complex Suspense/wrapper pattern to direct rendering
+- **Media Gallery**: Improved image container structure with proper relative positioning
+
+### Technical Details
+- Fixed hydration mismatch by ensuring consistent server/client rendering
+- Resolved event propagation issues in motion.div components
+- Improved error handling with proper fallbacks
+- Enhanced TypeScript type safety
+
+## [3.2.0] - 2025-12-29
 
 ### Added
 

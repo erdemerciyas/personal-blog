@@ -48,13 +48,6 @@ export default function PortfolioMediaGallery({
   const allMediaItems = useMemo(() => {
     const mediaItems: MediaItem[] = [];
     
-    // Debug: Log the received data
-    console.log('PortfolioMediaGallery - Debug:', {
-      images: images,
-      models3D: models3D,
-      coverImage: coverImage
-    });
-    
     // Add images
     const imageList = coverImage && !images.includes(coverImage) 
       ? [coverImage, ...images] 
@@ -79,8 +72,6 @@ export default function PortfolioMediaGallery({
         publicId: model.publicId
       });
     });
-    
-    console.log('PortfolioMediaGallery - All Media Items:', mediaItems);
     
     return mediaItems;
   }, [coverImage, images, models3D]);
@@ -205,7 +196,7 @@ export default function PortfolioMediaGallery({
           {selectedItem ? (
             <>
               {selectedItem.type === 'image' ? (
-                <>
+                <div className="relative w-full h-full">
                   <Image
                     key={`selected-${selectedItem.url}`}
                     src={selectedItem.url}
@@ -227,7 +218,7 @@ export default function PortfolioMediaGallery({
                       </div>
                     </motion.div>
                   </div>
-                </>
+                </div>
               ) : (
                 <>
                   {/* 3D Model Preview - Mini viewer */}

@@ -80,6 +80,15 @@ const ConditionalFooter: React.FC = () => {
         const response = await fetch('/api/footer-settings');
         if (response.ok) {
           const data = await response.json();
+          // Sanitize links to ensure absolute paths
+          if (data && data.quickLinks) {
+            data.quickLinks = data.quickLinks.map((link: any) => ({
+              ...link,
+              url: link.isExternal || link.url.startsWith('http') || link.url.startsWith('/')
+                ? link.url
+                : `/${link.url}`
+            }));
+          }
           setSettings(data);
         }
       } catch (error) {
@@ -96,7 +105,10 @@ const ConditionalFooter: React.FC = () => {
             { title: 'Hizmetler', url: '/services', isExternal: false },
             { title: 'Projeler', url: '/portfolio', isExternal: false },
             { title: 'İletişim', url: '/contact', isExternal: false }
-          ],
+          ].map(link => ({
+            ...link,
+            url: link.isExternal || link.url.startsWith('/') ? link.url : `/${link.url}`
+          })),
           socialLinks: {
             linkedin: '',
             twitter: '',
