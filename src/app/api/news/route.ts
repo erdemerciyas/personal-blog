@@ -6,7 +6,7 @@ import News from '@/models/News';
 import User from '@/models/User';
 import slugify from 'slugify';
 import { ApiResponse, NewsListResponse, CreateNewsInput, NewsItem } from '@/types/news';
-import { logger } from '@/lib/logger';
+import { logger } from '@/core/lib/logger';
 import { validateNewsInput } from '@/lib/validation';
 
 /**

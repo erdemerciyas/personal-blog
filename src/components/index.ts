@@ -30,7 +30,7 @@ export { default as Breadcrumbs } from './Breadcrumbs';
 
 // Loading System exports
 
-export { default as LoadingBar } from './LoadingBar';
+export { default as LoadingBar } from '@/core/components/LoadingBar';
 export { default as AdminLoader, PageLoader, CardLoader, InlineLoader } from './AdminLoader';
 
 // UI Component exports

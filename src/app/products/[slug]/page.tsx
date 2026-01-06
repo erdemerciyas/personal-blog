@@ -4,7 +4,7 @@ import Link from 'next/link';
 import FixralCard from '@/components/ui/FixralCard';
 import TiltHover from '@/components/TiltHover';
 import sanitizeHtml from 'sanitize-html';
-import { appConfig, config } from '@/lib/config';
+import { appConfig, config } from '@/core/lib/config';
 const PageHero = dynamic(() => import('@/components/common/PageHero'), { ssr: false });
 // Avoid importing client-only image component in server page
 import { ApprovedReviews, ProductReviewForm } from './ReviewClient';

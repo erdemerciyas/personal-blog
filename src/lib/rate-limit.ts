@@ -1,5 +1,5 @@
 import { NextRequest } from 'next/server';
-import { logger } from './logger';
+import { logger } from '@/core/lib/logger';
 
 // Enhanced rate limiting with security features
 interface RateLimitEntry {

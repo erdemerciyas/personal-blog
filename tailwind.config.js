@@ -1,4 +1,6 @@
 /** @type {import('tailwindcss').Config} */
+const siteConfig = require('./site.config');
+
 module.exports = {
   content: [
     './src/pages/**/*.{js,ts,jsx,tsx,mdx}',
@@ -9,52 +11,31 @@ module.exports = {
   theme: {
     extend: {
       colors: {
-        // Fixral Design System Colors - Updated to match brand primary
+        // Fixral Design System Colors - Loaded from site.config.js
         fixral: {
-          'night-blue': '#003450', // Updated to match brand primary
-          'primary': '#003450', // Main brand color
-          'light-gray': '#F8F9FA',
-          'charcoal': '#3D3D3D',
-          'gray-blue': '#3A506B',
-          // Extended palette for better design flexibility
-          'deep-blue': '#002235',
-          'ocean-blue': '#0369a1',
-          'sky-blue': '#7dd3fc',
-          'mint': '#38bdf8',
-          'slate': '#2F4F4F',
-          'pearl': '#F5F5F5',
-          'graphite': '#2C2C2C',
+          ...siteConfig.theme.colors.brand,
+          'primary': siteConfig.theme.colors.primary,
         },
         // Backward compatibility
-        primary: '#003450', // Ana Brand Rengi
-        secondary: '#3A506B', // Gri Mavi
-        accent: '#003450', // Brand Primary
-        // Primary brand colors based on #003450
-        'brand-primary': {
-          50: '#f0f9ff',
-          100: '#e0f2fe',
-          200: '#bae6fd',
-          300: '#7dd3fc',
-          400: '#38bdf8',
-          500: '#0ea5e9',
-          600: '#0284c7',
-          700: '#0369a1',
-          800: '#075985',
-          900: '#003450', // Main brand color
-          950: '#002235',
-        },
-        // Accessibility-focused colors
+        primary: siteConfig.theme.colors.primary,
+        secondary: siteConfig.theme.colors.secondary,
+        accent: siteConfig.theme.colors.accent,
+
+        // Primary brand colors
+        'brand-primary': siteConfig.theme.colors.primaryScale,
+
+        // Accessibility-focused colors (Derived from primary scale for now, can be customized in config later)
         'accessible-brand': {
-          50: '#f0f9ff',
-          100: '#e0f2fe',
-          200: '#bae6fd',
-          300: '#7dd3fc',
-          400: '#38bdf8',
-          500: '#0ea5e9',
-          600: '#0284c7',
-          700: '#0369a1', // WCAG AA compliant
-          800: '#075985', // WCAG AAA compliant
-          900: '#003450',
+          50: siteConfig.theme.colors.primaryScale[50],
+          100: siteConfig.theme.colors.primaryScale[100],
+          200: siteConfig.theme.colors.primaryScale[200],
+          300: siteConfig.theme.colors.primaryScale[300],
+          400: siteConfig.theme.colors.primaryScale[400],
+          500: siteConfig.theme.colors.primaryScale[500],
+          600: siteConfig.theme.colors.primaryScale[600],
+          700: siteConfig.theme.colors.primaryScale[700],
+          800: siteConfig.theme.colors.primaryScale[800],
+          900: siteConfig.theme.colors.primaryScale[900],
         }
       },
       fontFamily: {
@@ -72,7 +53,7 @@ module.exports = {
         'fixral-4xl': ['2.25rem', { lineHeight: '2.5rem' }],
         'fixral-5xl': ['3rem', { lineHeight: '1' }],
         'fixral-6xl': ['3.75rem', { lineHeight: '1' }],
-        // Atlas section heading sizes (daha tutarlı başlık ritmi)
+        // Atlas section heading sizes
         'atlas-2xl': ['1.5rem', { lineHeight: '2rem', letterSpacing: '-0.01em' }],
         'atlas-3xl': ['1.875rem', { lineHeight: '2.25rem', letterSpacing: '-0.01em' }],
         'atlas-4xl': ['2.25rem', { lineHeight: '2.5rem', letterSpacing: '-0.02em' }],

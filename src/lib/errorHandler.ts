@@ -4,7 +4,7 @@
  */
 
 import { NextResponse } from 'next/server';
-import { logger } from './logger';
+import { logger } from '@/core/lib/logger';
 
 export enum ErrorCode {
   // Client errors (4xx)
@@ -14,12 +14,12 @@ export enum ErrorCode {
   NOT_FOUND = 'NOT_FOUND',
   VALIDATION_ERROR = 'VALIDATION_ERROR',
   RATE_LIMITED = 'RATE_LIMITED',
-  
+
   // Server errors (5xx)
   INTERNAL_ERROR = 'INTERNAL_ERROR',
   DATABASE_ERROR = 'DATABASE_ERROR',
   EXTERNAL_SERVICE_ERROR = 'EXTERNAL_SERVICE_ERROR',
-  
+
   // Custom application errors
   AUTH_ERROR = 'AUTH_ERROR',
   UPLOAD_ERROR = 'UPLOAD_ERROR',
@@ -58,34 +58,34 @@ export class CustomError extends Error implements AppError {
 
 // Predefined error creators
 export const createError = {
-  badRequest: (message: string, details?: unknown) => 
+  badRequest: (message: string, details?: unknown) =>
     new CustomError(message, ErrorCode.BAD_REQUEST, 400, details),
-  
-  unauthorized: (message: string = 'Unauthorized') => 
+
+  unauthorized: (message: string = 'Unauthorized') =>
     new CustomError(message, ErrorCode.UNAUTHORIZED, 401),
-  
-  forbidden: (message: string = 'Forbidden') => 
+
+  forbidden: (message: string = 'Forbidden') =>
     new CustomError(message, ErrorCode.FORBIDDEN, 403),
-  
-  notFound: (message: string = 'Not found') => 
+
+  notFound: (message: string = 'Not found') =>
     new CustomError(message, ErrorCode.NOT_FOUND, 404),
-  
-  validation: (message: string, details?: unknown) => 
+
+  validation: (message: string, details?: unknown) =>
     new CustomError(message, ErrorCode.VALIDATION_ERROR, 422, details),
-  
-  internal: (message: string = 'Internal server error', details?: unknown) => 
+
+  internal: (message: string = 'Internal server error', details?: unknown) =>
     new CustomError(message, ErrorCode.INTERNAL_ERROR, 500, details),
-  
-  database: (message: string, details?: unknown) => 
+
+  database: (message: string, details?: unknown) =>
     new CustomError(message, ErrorCode.DATABASE_ERROR, 500, details),
-  
-  auth: (message: string, details?: unknown) => 
+
+  auth: (message: string, details?: unknown) =>
     new CustomError(message, ErrorCode.AUTH_ERROR, 401, details),
-  
-  upload: (message: string, details?: unknown) => 
+
+  upload: (message: string, details?: unknown) =>
     new CustomError(message, ErrorCode.UPLOAD_ERROR, 400, details),
-  
-  permission: (message: string, details?: unknown) => 
+
+  permission: (message: string, details?: unknown) =>
     new CustomError(message, ErrorCode.PERMISSION_ERROR, 403, details)
 };
 
@@ -96,7 +96,7 @@ export function formatErrorResponse(error: Error | AppError, path?: string) {
 
   if (isAppError) {
     const appError = error as AppError;
-    
+
     // Log the error
     logger.error(appError.message, 'ERROR_HANDLER', {
       code: appError.code,
@@ -135,8 +135,8 @@ export function formatErrorResponse(error: Error | AppError, path?: string) {
 export function handleApiError(error: Error, request?: Request): NextResponse {
   const path = request?.url;
   const { error: formattedError, statusCode } = formatErrorResponse(error, path);
-  
-  return NextResponse.json(formattedError, { 
+
+  return NextResponse.json(formattedError, {
     status: statusCode,
     headers: {
       'Content-Type': 'application/json',
@@ -166,7 +166,7 @@ export function parseDatabaseError(error: unknown): AppError {
       value: err.keyValue ? err.keyValue[field] : undefined
     });
   }
-  
+
   if (err.name === 'ValidationError' && err.errors) {
     // Mongoose validation error
     const errors = Object.values(err.errors).map((e) => ({
@@ -175,12 +175,12 @@ export function parseDatabaseError(error: unknown): AppError {
     }));
     return createError.validation('Validation failed', { errors });
   }
-  
+
   if (err.name === 'CastError') {
     // MongoDB cast error (invalid ObjectId, etc.)
     return createError.badRequest(`Invalid ${err.path}: ${err.value}`);
   }
-  
+
   // Generic database error
   return createError.database('Database operation failed');
 }

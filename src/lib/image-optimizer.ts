@@ -3,7 +3,7 @@
  * Provides image compression, format conversion, and responsive image generation
  */
 
-import { logger } from './logger';
+import { logger } from '@/core/lib/logger';
 
 export interface ImageOptimizationOptions {
   quality?: number; // 1-100, default 80

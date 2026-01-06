@@ -4,7 +4,7 @@ import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { NewsItem } from '@/types/news';
-import { logger } from '@/lib/logger';
+import { logger } from '@/core/lib/logger';
 
 interface NewsListProps {
   language?: 'tr' | 'es';
@@ -286,11 +286,10 @@ export default function NewsList({ language = 'tr', page = 1 }: NewsListProps) {
                     </td>
                     <td className="px-4 py-3">
                       <span
-                        className={`px-3 py-1 rounded-full text-sm font-medium ${
-                          item.status === 'published'
+                        className={`px-3 py-1 rounded-full text-sm font-medium ${item.status === 'published'
                             ? 'bg-green-100 text-green-800'
                             : 'bg-yellow-100 text-yellow-800'
-                        }`}
+                          }`}
                       >
                         {item.status === 'published' ? 'Published' : 'Draft'}
                       </span>
@@ -347,11 +346,10 @@ export default function NewsList({ language = 'tr', page = 1 }: NewsListProps) {
             <Link
               key={p}
               href={`?page=${p}`}
-              className={`px-4 py-2 rounded-lg transition-colors ${
-                p === pagination.page
+              className={`px-4 py-2 rounded-lg transition-colors ${p === pagination.page
                   ? 'bg-fixral-primary text-white'
                   : 'border border-gray-300 hover:bg-gray-50'
-              }`}
+                }`}
             >
               {p}
             </Link>

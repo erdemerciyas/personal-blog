@@ -2,7 +2,7 @@ import { NextResponse } from 'next/server';
 import { getServerSession } from 'next-auth';
 import connectDB from '../../../lib/mongoose';
 
-import { logger } from '../../../lib/logger';
+import { logger } from '@/core/lib/logger';
 import { createError, asyncHandler } from '../../../lib/errorHandler';
 import { cache, CacheKeys, CacheTTL, cacheHelpers } from '../../../lib/cache';
 import { withSecurity, SecurityConfigs } from '../../../lib/security-middleware';
@@ -45,7 +45,7 @@ export const POST = withSecurity(SecurityConfigs.admin)(asyncHandler(async (requ
   logger.apiRequest('POST', '/api/services');
 
   const body = await request.json();
-  
+
   // Validate required fields
   if (!body.title || !body.description) {
     throw createError.validation('Başlık ve açıklama alanları zorunludur', {
@@ -84,15 +84,15 @@ export const POST = withSecurity(SecurityConfigs.admin)(asyncHandler(async (requ
   try {
     const newService = new Service(serviceData);
     await newService.save();
-    
+
     // Invalidate services cache
     cacheHelpers.invalidateContentCaches();
-    
+
     const duration = Date.now() - startTime;
     logger.apiResponse('POST', '/api/services', 201, duration);
-    logger.info('Service created successfully', 'API', { 
+    logger.info('Service created successfully', 'API', {
       serviceId: newService._id,
-      title: body.title 
+      title: body.title
     });
 
     return NextResponse.json(newService, { status: 201 });

@@ -1,7 +1,7 @@
 import connectDB from './mongoose';
 import News from '@/models/News';
 import Portfolio from '@/models/Portfolio';
-import { logger } from './logger';
+import { logger } from '@/core/lib/logger';
 
 /**
  * Relationship Service

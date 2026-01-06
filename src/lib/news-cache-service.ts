@@ -1,5 +1,5 @@
 import { revalidatePath, revalidateTag } from 'next/cache';
-import { logger } from './logger';
+import { logger } from '@/core/lib/logger';
 
 /**
  * News Cache Service

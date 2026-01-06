@@ -45,14 +45,15 @@ const nextConfig = {
       '@/models': path.resolve(__dirname, 'src/models'),
       '@/types': path.resolve(__dirname, 'src/types'),
     };
-    
+
     // Optional dependencies - mark as external to avoid build errors
     config.externals.push({
       '@sentry/nextjs': 'commonjs @sentry/nextjs',
       'utf-8-validate': 'commonjs utf-8-validate',
       'bufferutil': 'commonjs bufferutil',
+      'archiver': 'commonjs archiver',
     });
-    
+
     // Three.js için webpack konfigürasyonu
     config.module.rules.push({
       test: /\.(glb|gltf)$/,
@@ -64,7 +65,7 @@ const nextConfig = {
         },
       },
     });
-    
+
     return config;
   },
   images: {

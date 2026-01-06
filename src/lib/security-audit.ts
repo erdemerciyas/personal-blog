@@ -2,11 +2,11 @@
  * Security audit and monitoring utilities
  */
 
-import { logger } from './logger';
+import { logger } from '@/core/lib/logger';
 
 export interface SecurityEvent {
-  type: 'login_attempt' | 'login_success' | 'login_failure' | 'password_change' | 
-        'admin_access' | 'suspicious_activity' | 'rate_limit_exceeded' | 'input_validation_failed';
+  type: 'login_attempt' | 'login_success' | 'login_failure' | 'password_change' |
+  'admin_access' | 'suspicious_activity' | 'rate_limit_exceeded' | 'input_validation_failed';
   severity: 'low' | 'medium' | 'high' | 'critical';
   ip: string;
   userAgent?: string;
@@ -75,7 +75,7 @@ class SecurityAudit {
         .filter(e => e.email)
         .map(e => e.email)
     );
-    
+
     if (uniqueEmails.size >= 3) {
       this.logEvent({
         type: 'suspicious_activity',
@@ -129,7 +129,7 @@ class SecurityAudit {
   // Get security summary
   static getSecuritySummary(timeframeMs = 24 * 60 * 60 * 1000): Record<string, unknown> {
     const recentEvents = this.getRecentEvents(timeframeMs);
-    
+
     const summary = {
       timeframe: `${timeframeMs / (60 * 60 * 1000)} hours`,
       totalEvents: recentEvents.length,
@@ -175,11 +175,11 @@ class SecurityAudit {
   // Get blocked IPs (for rate limiting enhancement)
   static getBlockedIPs(): string[] {
     const suspiciousIPs = new Set<string>();
-    
+
     // Get IPs with recent suspicious activity
     const recentSuspicious = this.getRecentEvents(60 * 60 * 1000) // Last hour
       .filter(e => e.type === 'suspicious_activity');
-    
+
     recentSuspicious.forEach(event => {
       suspiciousIPs.add(event.ip);
     });
@@ -200,10 +200,10 @@ class SecurityAudit {
     } else {
       // CSV format
       const headers = 'timestamp,type,severity,ip,email,userAgent,details\n';
-      const rows = this.events.map(event => 
+      const rows = this.events.map(event =>
         `${event.timestamp.toISOString()},${event.type},${event.severity},${event.ip},${event.email || ''},${event.userAgent || ''},"${JSON.stringify(event.details || {})}"`
       ).join('\n');
-      
+
       return headers + rows;
     }
   }

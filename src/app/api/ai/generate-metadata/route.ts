@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { getServerSession } from 'next-auth';
 import { generateMetadata, validateMetadata } from '@/lib/ai-service';
 import { ApiResponse, AIMetadataGenerationResponse } from '@/types/news';
-import { logger } from '@/lib/logger';
+import { logger } from '@/core/lib/logger';
 
 /**
  * @swagger

@@ -4,7 +4,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import nodemailer from 'nodemailer';
 import { rateLimit, getClientIP } from '../../../lib/rate-limit';
 import { RequestValidator, CommonValidationRules } from '../../../lib/validation';
-import { logger } from '../../../lib/logger';
+import { logger } from '@/core/lib/logger';
 
 // Force dynamic rendering
 export const dynamic = 'force-dynamic';
@@ -12,7 +12,7 @@ export const dynamic = 'force-dynamic';
 export async function POST(request: NextRequest) {
   const startTime = Date.now();
   const clientIP = getClientIP(request);
-  
+
   try {
     // Rate limiting - contact form specific
     const rateLimitResult = rateLimit(clientIP, 'CONTACT');
@@ -21,13 +21,13 @@ export async function POST(request: NextRequest) {
         ip: clientIP,
         remaining: rateLimitResult.remaining
       });
-      
+
       return NextResponse.json(
-        { 
+        {
           message: 'Çok fazla mesaj gönderdiniz. Lütfen 1 saat sonra tekrar deneyin.',
-          success: false 
+          success: false
         },
-        { 
+        {
           status: 429,
           headers: {
             'Retry-After': Math.ceil((rateLimitResult.resetTime - Date.now()) / 1000).toString(),
@@ -38,20 +38,20 @@ export async function POST(request: NextRequest) {
     }
 
     const body = await request.json();
-    
+
     // Input validation and sanitization
     const validation = RequestValidator.validate(body, CommonValidationRules.contact);
-    
+
     if (!validation.isValid) {
       logger.warn('Contact form validation failed', 'VALIDATION', {
         ip: clientIP,
         errors: validation.errors
       });
-      
+
       return NextResponse.json(
-        { 
+        {
           message: 'Gönderilen veriler geçersiz: ' + validation.errors.join(', '),
-          success: false 
+          success: false
         },
         { status: 400 }
       );
@@ -211,9 +211,9 @@ export async function POST(request: NextRequest) {
     });
 
     return NextResponse.json(
-      { 
+      {
         message: 'Mesajınız başarıyla gönderildi! 24 saat içinde geri dönüş yapacağız. Ayrıca size bir onay emaili gönderdik.',
-        success: true 
+        success: true
       },
       { status: 200 }
     );
@@ -223,7 +223,7 @@ export async function POST(request: NextRequest) {
       error: error instanceof Error ? error.message : 'Unknown error',
       responseTime: Date.now() - startTime
     });
-    
+
     return NextResponse.json(
       { message: 'Mesaj gönderimi başarısız oldu. Lütfen tekrar deneyin.', success: false },
       { status: 500 }

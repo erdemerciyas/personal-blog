@@ -3,7 +3,7 @@
  * Tracks API response times, memory usage, and system metrics
  */
 
-import { logger } from './logger';
+import { logger } from '@/core/lib/logger';
 
 interface PerformanceMetric {
   name: string;
@@ -33,7 +33,7 @@ class PerformanceMonitor {
   // Start a performance measurement
   startMeasurement(name: string): (metadata?: Record<string, unknown>) => void {
     const startTime = Date.now();
-    
+
     return (metadata?: Record<string, unknown>) => {
       const duration = Date.now() - startTime;
       this.recordMetric(name, duration, metadata);
@@ -82,7 +82,7 @@ class PerformanceMonitor {
     p95Duration: number;
     p99Duration: number;
   } {
-    const filteredMetrics = name 
+    const filteredMetrics = name
       ? this.metrics.filter(m => m.name === name)
       : this.metrics;
 
@@ -136,7 +136,7 @@ class PerformanceMonitor {
   private startSystemMetricsCollection(): void {
     this.systemMetricsInterval = setInterval(() => {
       const systemMetrics = this.getSystemMetrics();
-      
+
       // Log if memory usage is high
       const memoryMB = systemMetrics.memoryUsage.heapUsed / 1024 / 1024;
       if (memoryMB > 500) { // > 500MB

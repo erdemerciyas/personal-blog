@@ -1,4 +1,4 @@
-import { logger } from './logger';
+import { logger } from '@/core/lib/logger';
 
 /**
  * Image validation constants

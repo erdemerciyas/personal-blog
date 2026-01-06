@@ -2,7 +2,7 @@
  * Advanced logging system with structured logging, performance tracking, and analytics
  */
 
-import { logger } from './logger';
+import { logger } from '@/core/lib/logger';
 
 export interface LogEntry {
   timestamp: string;

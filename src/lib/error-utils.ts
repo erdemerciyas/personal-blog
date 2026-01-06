@@ -3,7 +3,7 @@
  * Provides detailed error tracking, categorization, and recovery strategies
  */
 
-import { logger } from './logger';
+import { logger } from '@/core/lib/logger';
 
 export interface ErrorContext {
   userId?: string;
@@ -37,7 +37,7 @@ export class ErrorTracker {
     if (existing) {
       existing.errorCount++;
       existing.lastOccurrence = now;
-      
+
       // Keep only recent contexts
       if (existing.contexts.length < this.maxContextsPerError) {
         existing.contexts.push(context || {});
@@ -314,7 +314,7 @@ export async function retryWithBackoff<T>(
       return await fn();
     } catch (error) {
       lastError = error instanceof Error ? error : new Error(String(error));
-      
+
       if (i < maxRetries - 1) {
         const delay = initialDelay * Math.pow(2, i);
         await new Promise(resolve => setTimeout(resolve, delay));

@@ -1,6 +1,6 @@
 import { NextRequest } from 'next/server';
 import { randomBytes, createHash } from 'crypto';
-import { logger } from './logger';
+import { logger } from '@/core/lib/logger';
 
 // CSRF token storage (in production, use Redis or database)
 const csrfTokens = new Map<string, { token: string; expires: number; used: boolean }>();
@@ -15,19 +15,19 @@ export class CSRFProtection {
   static generateToken(sessionId: string): string {
     const token = randomBytes(32).toString('hex');
     const expires = Date.now() + TOKEN_EXPIRY;
-    
+
     // Store token with session ID
     csrfTokens.set(sessionId, {
       token,
       expires,
       used: false
     });
-    
+
     // Clean up expired tokens
     this.cleanupExpiredTokens();
-    
+
     logger.info('CSRF token generated', 'SECURITY', { sessionId });
-    
+
     return token;
   }
 
@@ -36,7 +36,7 @@ export class CSRFProtection {
    */
   static validateToken(sessionId: string, providedToken: string): boolean {
     const storedData = csrfTokens.get(sessionId);
-    
+
     if (!storedData) {
       logger.warn('CSRF validation failed: No token found', 'SECURITY', { sessionId });
       return false;
@@ -63,7 +63,7 @@ export class CSRFProtection {
 
     // Mark token as used
     storedData.used = true;
-    
+
     logger.info('CSRF token validated successfully', 'SECURITY', { sessionId });
     return true;
   }
@@ -127,7 +127,7 @@ export class CSRFProtection {
     const ip = this.getClientIP(request);
     const userAgent = request.headers.get('user-agent') || '';
     const timestamp = Math.floor(Date.now() / (5 * 60 * 1000)); // 5-minute windows
-    
+
     return createHash('sha256')
       .update(`${ip}:${userAgent}:${timestamp}`)
       .digest('hex');
@@ -139,15 +139,15 @@ export class CSRFProtection {
   private static getClientIP(request: NextRequest): string {
     const forwarded = request.headers.get('x-forwarded-for');
     const real = request.headers.get('x-real-ip');
-    
+
     if (forwarded) {
       return forwarded.split(',')[0].trim();
     }
-    
+
     if (real) {
       return real;
     }
-    
+
     return request.ip || 'unknown';
   }
 

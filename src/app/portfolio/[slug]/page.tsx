@@ -12,7 +12,7 @@ import HTMLContent from '../../../components/HTMLContent';
 import ContentSkeleton from '../../../components/ContentSkeleton';
 import BreadcrumbsJsonLd from '../../../components/seo/BreadcrumbsJsonLd';
 import PortfolioJsonLd from '../../../components/seo/PortfolioJsonLd';
-import { config } from '../../../lib/config';
+import { config } from '@/core/lib/config';
 import Breadcrumbs from '../../../components/Breadcrumbs';
 
 export default function PortfolioDetailPage({ params }: { params: { slug: string } }) {
@@ -110,7 +110,7 @@ export default function PortfolioDetailPage({ params }: { params: { slug: string
     ? [portfolioItem.coverImage, ...(portfolioItem.images || []).filter(img => img !== portfolioItem.coverImage)]
     : (portfolioItem.images || []);
 
-  const baseUrl = config.app.url 
+  const baseUrl = config.app.url
     ? config.app.url.replace(/\/$/, '')
     : (typeof window !== 'undefined' ? window.location.origin : '');
   const safeDescription = (portfolioItem.description || '').replace(/<[^>]*>/g, '').slice(0, 200);
@@ -144,7 +144,7 @@ export default function PortfolioDetailPage({ params }: { params: { slug: string
         <div className="max-w-7xl mx-auto px-4 md:px-6 lg:px-8">
           <div className="bg-white rounded-2xl shadow-sm border border-gray-200 p-3 md:p-4 lg:p-6">
             <div className="grid grid-cols-1 lg:grid-cols-10 gap-2 lg:gap-3 mb-4">
-              <motion.div 
+              <motion.div
                 initial={{ opacity: 0, x: -20 }}
                 animate={{ opacity: 1, x: 0 }}
                 transition={{ duration: 0.8 }}
@@ -158,7 +158,7 @@ export default function PortfolioDetailPage({ params }: { params: { slug: string
                 />
               </motion.div>
 
-              <motion.div 
+              <motion.div
                 initial={{ opacity: 0, x: 20 }}
                 animate={{ opacity: 1, x: 0 }}
                 transition={{ duration: 0.8, delay: 0.2 }}
@@ -168,7 +168,7 @@ export default function PortfolioDetailPage({ params }: { params: { slug: string
                   <h2 className="text-base font-bold text-slate-800 mb-3 text-center">
                     Proje Bilgileri
                   </h2>
-                  
+
                   <div className="space-y-3">
                     {portfolioItem.client && (
                       <div className="flex items-center justify-between py-1">
@@ -194,7 +194,7 @@ export default function PortfolioDetailPage({ params }: { params: { slug: string
                       <div className="flex items-center justify-between py-1">
                         <span className="text-sm text-slate-600">Kategori</span>
                         <span className="text-sm font-medium text-slate-900">
-                          {portfolioItem.categories && portfolioItem.categories.length > 0 
+                          {portfolioItem.categories && portfolioItem.categories.length > 0
                             ? portfolioItem.categories.map(cat => cat.name).join(', ')
                             : portfolioItem.category?.name || 'Genel'
                           }
@@ -220,7 +220,7 @@ export default function PortfolioDetailPage({ params }: { params: { slug: string
 
                     {portfolioItem.models3D && portfolioItem.models3D.length > 0 && (
                       <div className="pt-2 border-t border-gray-100">
-                        <Portfolio3DFiles 
+                        <Portfolio3DFiles
                           models3D={portfolioItem.models3D}
                         />
                       </div>
@@ -235,7 +235,7 @@ export default function PortfolioDetailPage({ params }: { params: { slug: string
               </motion.div>
             </div>
 
-            <motion.div 
+            <motion.div
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.8, delay: 0.4 }}
@@ -244,7 +244,7 @@ export default function PortfolioDetailPage({ params }: { params: { slug: string
               <div className="bg-gray-50 rounded-xl shadow-sm border border-gray-200 p-2 md:p-3">
                 <h2 className="text-lg font-bold text-slate-800 mb-2 text-center">Proje Açıklaması</h2>
                 <div className="prose prose-lg prose-slate max-w-none">
-                  <HTMLContent 
+                  <HTMLContent
                     content={portfolioItem.description}
                     className="text-lg leading-relaxed text-slate-700"
                   />
@@ -253,7 +253,7 @@ export default function PortfolioDetailPage({ params }: { params: { slug: string
             </motion.div>
 
             {relatedProjects.length > 0 && (
-              <motion.section 
+              <motion.section
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.8, delay: 0.6 }}
@@ -263,15 +263,15 @@ export default function PortfolioDetailPage({ params }: { params: { slug: string
                   <h2 className="text-gradient">Benzer Projeler</h2>
                   <p>Aynı kategoriden diğer projelerimizi inceleyin</p>
                 </div>
-                
-                <ModernProjectGrid 
+
+                <ModernProjectGrid
                   projects={relatedProjects.map(p => ({
                     id: p._id,
                     slug: p.slug,
                     title: p.title || '',
                     description: p.description || '',
                     coverImage: p.coverImage || '',
-                    category: p.categories && p.categories.length > 0 
+                    category: p.categories && p.categories.length > 0
                       ? p.categories.map(cat => cat.name).join(', ')
                       : p.category?.name || 'Genel',
                     client: p.client,
@@ -281,7 +281,7 @@ export default function PortfolioDetailPage({ params }: { params: { slug: string
                   }))}
                   layout="grid"
                 />
-                
+
                 <div className="text-center mt-3">
                   <Link href="/portfolio" className="btn-secondary rounded-full">
                     Tüm Projeleri Gör

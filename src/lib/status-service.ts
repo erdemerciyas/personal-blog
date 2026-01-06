@@ -1,6 +1,6 @@
 import connectDB from './mongoose';
 import News from '@/models/News';
-import { logger } from './logger';
+import { logger } from '@/core/lib/logger';
 
 /**
  * Status Service

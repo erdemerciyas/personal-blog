@@ -3,7 +3,7 @@ export const dynamic = 'force-dynamic';
 import { NextRequest, NextResponse } from 'next/server';
 import { getServerSession } from 'next-auth';
 import { authOptions } from '@/lib/auth';
-import { logger } from '@/lib/logger';
+import { logger } from '@/core/lib/logger';
 import { getClientIP, rateLimit } from '@/lib/rate-limit';
 import { v2 as cloudinary, UploadApiResponse } from 'cloudinary';
 
@@ -60,7 +60,7 @@ export async function POST(request: NextRequest) {
       api_secret: process.env.CLOUDINARY_API_SECRET ? 'SET' : 'MISSING',
     }
   });
-  
+
   const session = await getServerSession(authOptions);
   if (!session?.user || (session.user as { role?: string }).role !== 'admin') {
     return NextResponse.json({ error: 'Admin yetkisi gerekli' }, { status: 403 });
@@ -108,7 +108,7 @@ export async function POST(request: NextRequest) {
         api_secret: process.env.CLOUDINARY_API_SECRET ? 'SET' : 'MISSING',
       }
     });
-    
+
     const upload = await new Promise<{ secure_url: string; public_id: string; bytes: number; format: string; resource_type: string }>((resolve, reject) => {
       cloudinary.uploader
         .upload_stream(
@@ -123,8 +123,8 @@ export async function POST(request: NextRequest) {
           },
           (error, result: UploadApiResponse | undefined) => {
             if (error || !result) {
-              logger.error('Product upload failed in Cloudinary', 'UPLOAD', { 
-                ip, 
+              logger.error('Product upload failed in Cloudinary', 'UPLOAD', {
+                ip,
                 mime,
                 error: (error as Error | undefined)?.message || 'Unknown error',
                 errorDetails: error,

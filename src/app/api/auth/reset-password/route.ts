@@ -4,12 +4,12 @@ import User from '../../../../models/User';
 import bcrypt from 'bcryptjs';
 import { rateLimit, getClientIP } from '../../../../lib/rate-limit';
 import { Validator, Sanitizer } from '../../../../lib/validation';
-import { logger } from '../../../../lib/logger';
+import { logger } from '@/core/lib/logger';
 
 export async function POST(request: NextRequest) {
   const startTime = Date.now();
   const clientIP = getClientIP(request);
-  
+
   try {
     // Rate limiting for password reset
     const rateLimitResult = rateLimit(clientIP, 'PASSWORD_RESET');
@@ -18,10 +18,10 @@ export async function POST(request: NextRequest) {
         ip: clientIP,
         remaining: rateLimitResult.remaining
       });
-      
+
       return NextResponse.json(
         { error: 'Çok fazla şifre sıfırlama denemesi. Lütfen 1 saat sonra tekrar deneyin.' },
-        { 
+        {
           status: 429,
           headers: {
             'Retry-After': Math.ceil((rateLimitResult.resetTime - Date.now()) / 1000).toString()
@@ -74,10 +74,10 @@ export async function POST(request: NextRequest) {
         ip: clientIP,
         tokenLength: token.length
       });
-      
+
       // Timing attack'ları önlemek için sabit süre bekle
       await new Promise(resolve => setTimeout(resolve, 100));
-      
+
       return NextResponse.json(
         { error: 'Geçersiz veya süresi dolmuş token' },
         { status: 400 }
@@ -91,7 +91,7 @@ export async function POST(request: NextRequest) {
         ip: clientIP,
         userId: user._id.toString()
       });
-      
+
       return NextResponse.json(
         { error: 'Yeni şifre mevcut şifrenizle aynı olamaz' },
         { status: 400 }
@@ -127,7 +127,7 @@ export async function POST(request: NextRequest) {
       error: error instanceof Error ? error.message : 'Unknown error',
       responseTime: Date.now() - startTime
     });
-    
+
     return NextResponse.json(
       { error: 'Şifre sıfırlama sırasında bir hata oluştu' },
       { status: 500 }

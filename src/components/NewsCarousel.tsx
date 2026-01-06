@@ -9,7 +9,7 @@ import 'swiper/css';
 import 'swiper/css/navigation';
 import 'swiper/css/pagination';
 import { NewsItem } from '@/types/news';
-import { logger } from '@/lib/logger';
+import { logger } from '@/core/lib/logger';
 
 interface NewsCarouselProps {
   language: 'tr' | 'es';

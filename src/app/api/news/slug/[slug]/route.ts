@@ -3,7 +3,7 @@ import { getServerSession } from 'next-auth';
 import connectDB from '@/lib/mongoose';
 import News from '@/models/News';
 import { ApiResponse } from '@/types/news';
-import { logger } from '@/lib/logger';
+import { logger } from '@/core/lib/logger';
 
 /**
  * @swagger

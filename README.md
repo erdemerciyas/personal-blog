@@ -1,291 +1,102 @@
-# FIXRAL - Personal Blog & Portfolio Platform
+# FIXRAL - Personal Blog & Portfolio CMS
 
-A modern, full-featured personal blog and portfolio platform built with Next.js 14, TypeScript, MongoDB, and Tailwind CSS.
+**Advanced Personal Blog & Portfolio Platform** built with Next.js 14, TypeScript, MongoDB, and Tailwind CSS.
+Designed for high performance, ease of use, and complete content management.
 
-**Creator:** FIXRAL  
-**Email:** fixral3d@gmail.com  
-**Last Updated:** December 30, 2025
+![Status](https://img.shields.io/badge/status-production--ready-success)
+![Version](https://img.shields.io/badge/version-3.3.0-blue)
+![License](https://img.shields.io/badge/license-MIT-green)
 
-## 🎯 Features
+---
 
-### Core Functionality
-- **Blog System** - Full-featured blog with categories, tags, and search
-- **Portfolio Management** - Showcase projects with images, 3D models, and detailed descriptions
-- **Product Catalog** - E-commerce ready product management with reviews
-- **Video Gallery** - YouTube integration with video management
-- **Contact System** - Email-based contact form with validation
-- **Admin Dashboard** - Comprehensive admin panel for content management
+## � Key Features (v3.3.0)
 
-### Technical Features
-- **Authentication** - NextAuth.js with secure session management
-- **Database** - MongoDB with Mongoose ODM
-- **File Storage** - Cloudinary integration for image/media management
-- **3D Models** - Support for STL, OBJ, GLTF, GLB formats
-- **SEO Optimization** - JSON-LD structured data, sitemaps, robots.txt
-- **Performance** - Image optimization, caching strategies, lazy loading
-- **Responsive Design** - Mobile-first approach with Tailwind CSS
-- **Accessibility** - WCAG AAA compliance with semantic HTML
+### 🛡️ System & Security
+- **Full Site Backup & Restore**: One-click export of ALL site data (19+ models) including images/media into a ZIP archive. Intelligent restoration engine handles deduplication and media recovery.
+- **GitHub-Integrated Updates**: Admin panel checks your GitHub repository for new releases and allows one-click system updates (`git pull` based).
+- **Authentication**: Secure NextAuth.js implementation with role-based access control (Admin/User).
 
-### Advanced Features
-- **Real-time Updates** - Redis caching for performance
-- **Email Notifications** - Nodemailer integration
-- **API Documentation** - Swagger/OpenAPI integration
-- **Monitoring** - Performance tracking and health checks
-- **PWA Support** - Progressive Web App capabilities
-- **Dark Mode** - Theme switching with context API
+### 📝 Content Management
+- **Dashboard**: Comprehensive stats, charts, and management tools.
+- **Dynamic Content**: Manage Portfolio, Blogs, Products, Services, Sliders, and Settings directly from the UI.
+- **Media Manager**: Cloudinary integration for seamless image optimization and storage.
+- **3D Model Support**: Native support for uploading and displaying 3D models (GLB/GLTF/STL) with an interactive 3D viewer.
+
+### ⚡ Technical Excellence
+- **Tech Stack**: Next.js 14 (App Router), TypeScript, MongoDB (Mongoose), Tailwind CSS.
+- **Performance**: Redis caching layer, optimized images (Next/Image), and code splitting.
+- **SEO Ready**: Auto-generated sitemaps, JSON-LD schemas, and meta tag management.
+
+---
 
 ## 🚀 Getting Started
 
-### Prerequisites
-- Node.js 18+ 
-- npm or yarn
-- MongoDB instance
-- Cloudinary account (for media storage)
-- SMTP credentials (for email)
+### 1. Requirements
+- Node.js 18+
+- MongoDB Database
+- Cloudinary Account
+- SMTP Server (for emails)
 
-### Installation
+### 2. Installation
 
 ```bash
-# Clone repository
-git clone <repository-url>
+# Clone the repository
+git clone https://github.com/erdemerciyas/personal-blog.git
 cd personal-blog
 
 # Install dependencies
 npm install
 
-# Setup environment variables
+# Setup Environment
 cp .env.example .env.local
+# Edit .env.local with your DB and API keys
+```
 
-# Configure .env.local with your credentials:
-# - MONGODB_URI
-# - NEXTAUTH_SECRET
-# - CLOUDINARY_CLOUD_NAME
-# - CLOUDINARY_API_KEY
-# - CLOUDINARY_API_SECRET
-# - SMTP credentials
+### 3. Usage
 
-# Run development server
+```bash
+# Start Development Server
 npm run dev
 
-# Open http://localhost:3000
+# Build for Production
+npm run build && npm start
 ```
-
-### Build & Deploy
-
-```bash
-# Build for production
-npm run build
-
-# Start production server
-npm start
-
-# Deploy to Vercel
-npm run deploy
-```
-
-## 📁 Project Structure
-
-```
-src/
-├── app/                    # Next.js app directory
-│   ├── api/               # API routes
-│   ├── admin/             # Admin dashboard
-│   ├── portfolio/         # Portfolio pages
-│   ├── blog/              # Blog pages
-│   └── ...
-├── components/            # React components
-│   ├── portfolio/         # Portfolio components
-│   ├── blog/              # Blog components
-│   └── ui/                # UI components
-├── lib/                   # Utilities & helpers
-├── models/                # MongoDB schemas
-├── types/                 # TypeScript types
-├── hooks/                 # Custom React hooks
-└── context/               # React context
-```
-
-## 🔧 Available Scripts
-
-```bash
-# Development
-npm run dev              # Start dev server
-npm run build            # Build for production
-npm start                # Start production server
-
-# Code Quality
-npm run lint             # Run ESLint
-npm run lint:fix         # Fix ESLint issues
-npm run type-check       # TypeScript type checking
-npm run format           # Format code with Prettier
-
-# Testing
-npm test                 # Run Jest tests
-npm run test:watch       # Watch mode
-npm run test:coverage    # Coverage report
-npm run test:e2e         # Playwright E2E tests
-
-# Performance
-npm run perf:check       # Profile build
-npm run build:analyze    # Bundle analysis
-
-# Deployment
-npm run deploy           # Deploy to Vercel (production)
-npm run deploy:preview   # Deploy preview
-```
-
-## 🔐 Environment Variables
-
-```env
-# Database
-MONGODB_URI=mongodb+srv://...
-
-# Authentication
-NEXTAUTH_URL=http://localhost:3000
-NEXTAUTH_SECRET=your-secret-key
-
-# Media Storage
-CLOUDINARY_CLOUD_NAME=your-cloud-name
-CLOUDINARY_API_KEY=your-api-key
-CLOUDINARY_API_SECRET=your-api-secret
-
-# Email
-SMTP_HOST=smtp.gmail.com
-SMTP_PORT=587
-SMTP_USER=your-email@gmail.com
-SMTP_PASS=your-app-password
-
-# API Keys
-YOUTUBE_API_KEY=your-youtube-api-key
-```
-
-## 📦 Dependencies
-
-### Core
-- **Next.js 14** - React framework
-- **React 18** - UI library
-- **TypeScript** - Type safety
-- **Tailwind CSS** - Styling
-
-### Database & Auth
-- **MongoDB** - Database
-- **Mongoose** - ODM
-- **NextAuth.js** - Authentication
-- **bcryptjs** - Password hashing
-
-### Media & Storage
-- **Cloudinary** - Image/media hosting
-- **Sharp** - Image optimization
-- **Three.js** - 3D model rendering
-
-### UI & Animation
-- **Framer Motion** - Animations
-- **Heroicons** - Icon library
-- **Swiper** - Carousel component
-
-### Development
-- **ESLint** - Code linting
-- **Prettier** - Code formatting
-- **Jest** - Testing framework
-- **Playwright** - E2E testing
-
-## 🎨 Design System
-
-### Colors
-- **Primary** - Brand color (customizable)
-- **Secondary** - Accent color
-- **Neutral** - Grays for text/backgrounds
-- **Status** - Success, warning, error colors
-
-### Typography
-- **Display** - Large headings
-- **Body** - Regular text
-- **Mono** - Code blocks
-
-### Components
-- Buttons, inputs, cards, modals
-- Navigation, breadcrumbs, pagination
-- Forms, galleries, carousels
-- Alerts, toasts, tooltips
-
-## 🔄 Recent Updates (v3.3.0)
-
-### Portfolio System Improvements
-- ✅ Fixed portfolio detail page navigation
-- ✅ Resolved infinite render loops
-- ✅ Fixed hydration mismatches
-- ✅ Improved image loading and positioning
-- ✅ Enhanced 3D model support
-- ✅ Optimized media gallery
-- ✅ Fixed ESLint warnings
-- ✅ Improved performance and caching
-
-### Bug Fixes
-- Portfolio cards now properly navigate to detail pages
-- Image position issues resolved in media gallery
-- Console warnings cleaned up
-- Build pipeline optimized
-
-## 🧪 Testing
-
-```bash
-# Unit tests
-npm test
-
-# E2E tests
-npm run test:e2e
-
-# Coverage report
-npm run test:coverage
-```
-
-## 📊 Performance
-
-- **Lighthouse Score** - 90+
-- **Core Web Vitals** - All green
-- **Bundle Size** - Optimized with code splitting
-- **Image Optimization** - Automatic with Next.js Image
-
-## 🔒 Security
-
-- CSRF protection
-- XSS prevention with DOMPurify
-- SQL injection prevention (MongoDB)
-- Rate limiting on API endpoints
-- Secure password hashing
-- HTTPS enforced in production
-
-## 📱 Browser Support
-
-- Chrome/Edge 90+
-- Firefox 88+
-- Safari 14+
-- Mobile browsers (iOS Safari, Chrome Mobile)
-
-## 🤝 Contributing
-
-1. Create feature branch (`git checkout -b feature/amazing-feature`)
-2. Commit changes (`git commit -m 'Add amazing feature'`)
-3. Push to branch (`git push origin feature/amazing-feature`)
-4. Open Pull Request
-
-## 📝 License
-
-This project is licensed under the MIT License - see LICENSE file for details.
-
-## 📧 Support
-
-For support, email fixral3d@gmail.com or open an issue on GitHub.
-
-## 🙏 Acknowledgments
-
-- Next.js team for the amazing framework
-- Tailwind CSS for utility-first styling
-- MongoDB for reliable database
-- All open-source contributors
 
 ---
 
+## 🛠️ Admin Features
+
+### Backup & Export
+Navigate to `Admin > Backup`.
+- **Export**: Choose to download just data (JSON) or full media archives (ZIP).
+- **Import**: Upload a previously generated backup to restore the entire site or migrating to a new server.
+
+### System Updates
+Navigate to `Admin > Updates`.
+- The system automatically checks `erdemerciyas/personal-blog` for new releases.
+- Click "Update Now" to pull the latest code changes directly from GitHub.
+
+---
+
+## 🧪 Development
+
+### Scripts
+- `npm run dev`: Dev server
+- `npm run build`: Production build
+- `npm run lint`: Run ESLint
+- `npm run test:e2e`: Run Playwright tests
+
+### Folder Structure
+- `src/app`: Next.js App Router pages
+- `src/components`: UI components (Admin, Blog, Portfolio)
+- `src/models`: Mongoose schemas (19+ data models)
+- `src/lib`: Utilities (DB, Auth, Cloudinary)
+
+---
+
+## 🤝 Support & License
+
 **Creator:** FIXRAL (fixral3d@gmail.com)  
-**Last Updated:** December 30, 2025  
-**Version:** 3.3.0  
-**Status:** Production Ready ✅
+**License:** MIT  
+
+For detailed cloning and white-labeling instructions, see [PROJECT_CLONE_GUIDE.md](./PROJECT_CLONE_GUIDE.md).

@@ -160,7 +160,9 @@ export default function AdminLayout({ children, title, breadcrumbs }: AdminLayou
         { label: 'Site Ayarları', href: '/admin/site-settings' },
         { label: 'Genel Ayarlar', href: '/admin/settings' },
         { label: 'Footer Ayarları', href: '/admin/footer' },
-        { label: 'Universal Editor', href: '/admin/editor' }
+        { label: 'Universal Editor', href: '/admin/editor' },
+        { label: 'Güncellemeler', href: '/admin/updates' },
+        { label: 'Yedekleme', href: '/admin/backup' }
       ]
     }
   ];

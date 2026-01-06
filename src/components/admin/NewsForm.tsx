@@ -8,7 +8,7 @@ import StarterKit from '@tiptap/starter-kit';
 import Link from '@tiptap/extension-link';
 import TiptapImage from '@tiptap/extension-image';
 import { NewsItem, AIMetadataGenerationResponse } from '@/types/news';
-import { logger } from '@/lib/logger';
+import { logger } from '@/core/lib/logger';
 import {
   SparklesIcon,
   CheckIcon,
@@ -234,11 +234,11 @@ export default function NewsForm({ initialData, onSubmit, isLoading = false }: N
 
       // Only send translations that have content
       const translations: any = {};
-      
+
       if (formData.translations.tr.title || formData.translations.tr.content) {
         translations.tr = formData.translations.tr;
       }
-      
+
       if (formData.translations.es.title || formData.translations.es.content) {
         translations.es = formData.translations.es;
       }
@@ -318,11 +318,10 @@ export default function NewsForm({ initialData, onSubmit, isLoading = false }: N
               key={lang}
               type="button"
               onClick={() => setActiveLanguage(lang)}
-              className={`flex-1 px-6 py-4 text-sm font-semibold transition-all duration-200 ${
-                activeLanguage === lang
+              className={`flex-1 px-6 py-4 text-sm font-semibold transition-all duration-200 ${activeLanguage === lang
                   ? 'bg-brand-primary-50 text-brand-primary-800 border-b-2 border-brand-primary-700'
                   : 'text-slate-600 hover:text-slate-900 hover:bg-slate-50'
-              }`}
+                }`}
             >
               {lang === 'tr' ? 'Türkçe' : 'Español'}
             </button>
@@ -333,7 +332,7 @@ export default function NewsForm({ initialData, onSubmit, isLoading = false }: N
       {/* Featured Image */}
       <div className="bg-white rounded-xl shadow-sm border border-slate-200 p-6">
         <h3 className="text-lg font-semibold text-slate-900 mb-4">Öne Çıkan Resim</h3>
-        
+
         {formData.featuredImage.url && (
           <div className="mb-4">
             <div className="relative w-full h-64 rounded-xl overflow-hidden bg-slate-100">

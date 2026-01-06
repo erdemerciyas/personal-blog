@@ -1,5 +1,5 @@
 import { v2 as cloudinary } from 'cloudinary';
-import { logger } from './logger';
+import { logger } from '@/core/lib/logger';
 
 cloudinary.config({
   cloud_name: process.env.CLOUDINARY_CLOUD_NAME,

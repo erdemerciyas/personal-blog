@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { config } from '../../../../lib/config';
+import { config } from '@/core/lib/config';
 import nodemailer from 'nodemailer';
 
 export const dynamic = 'force-dynamic';
@@ -7,7 +7,7 @@ export const dynamic = 'force-dynamic';
 export async function GET(_request: NextRequest) {
   try {
     const mailConfig = config.mail;
-    
+
     // Mail konfigürasyon durumu
     const status = {
       configured: mailConfig.isConfigured,
@@ -38,7 +38,7 @@ export async function GET(_request: NextRequest) {
     return NextResponse.json({
       success: true,
       data: status,
-      message: status.configured 
+      message: status.configured
         ? (status.smtpTest ? 'Mail sistemi aktif ve çalışıyor' : 'Mail konfigürasyonu var ama SMTP bağlantısı başarısız')
         : 'Mail sistemi konfigüre edilmemiş'
     });

@@ -6,7 +6,7 @@ import { authOptions } from '../../../../lib/auth';
 import { v2 as cloudinary, UploadApiResponse } from 'cloudinary';
 import { rateLimit, getClientIP } from '../../../../lib/rate-limit';
 import { Sanitizer } from '../../../../lib/validation';
-import { logger } from '../../../../lib/logger';
+import { logger } from '@/core/lib/logger';
 import crypto from 'crypto';
 
 // Cloudinary config
@@ -46,7 +46,7 @@ const MAX_FILE_SIZES = {
 function validateFileSignature(buffer: Buffer, mimeType: string): boolean {
   const signature = ALLOWED_FILE_TYPES[mimeType as keyof typeof ALLOWED_FILE_TYPES];
   if (!signature) return false;
-  
+
   for (let i = 0; i < signature.length; i++) {
     if (buffer[i] !== signature[i]) {
       return false;
@@ -66,7 +66,7 @@ function sanitizeFileName(fileName: string): string {
 export async function POST(request: NextRequest) {
   const startTime = Date.now();
   const clientIP = getClientIP(request);
-  
+
   try {
     // Add detailed logging
     logger.info('Upload request received', 'UPLOAD', {
@@ -77,7 +77,7 @@ export async function POST(request: NextRequest) {
         api_secret: process.env.CLOUDINARY_API_SECRET ? 'SET' : 'MISSING',
       }
     });
-    
+
     // Rate limiting for file uploads
     const rateLimitResult = rateLimit(clientIP, 'UPLOAD');
     if (!rateLimitResult.allowed) {
@@ -85,10 +85,10 @@ export async function POST(request: NextRequest) {
         ip: clientIP,
         remaining: rateLimitResult.remaining
       });
-      
+
       return NextResponse.json(
         { error: 'Çok fazla dosya yükleme denemesi. Lütfen 1 saat sonra tekrar deneyin.' },
-        { 
+        {
           status: 429,
           headers: {
             'Retry-After': Math.ceil((rateLimitResult.resetTime - Date.now()) / 1000).toString()
@@ -139,7 +139,7 @@ export async function POST(request: NextRequest) {
         fileType: file.type,
         fileName: file.name
       });
-      
+
       return NextResponse.json(
         { error: 'Geçersiz dosya türü. Sadece JPG, PNG, GIF ve WebP desteklenir.' },
         { status: 400 }
@@ -155,7 +155,7 @@ export async function POST(request: NextRequest) {
         maxSize: maxSize,
         fileName: file.name
       });
-      
+
       return NextResponse.json(
         { error: `Dosya boyutu ${Math.round(maxSize / 1024 / 1024)}MB'dan küçük olmalıdır.` },
         { status: 400 }
@@ -174,7 +174,7 @@ export async function POST(request: NextRequest) {
         fileType: file.type,
         actualSignature: Array.from(buffer.slice(0, 8)).map(b => '0x' + b.toString(16).toUpperCase())
       });
-      
+
       return NextResponse.json(
         { error: 'Dosya içeriği dosya türüyle eşleşmiyor. Güvenlik nedeniyle yükleme reddedildi.' },
         { status: 400 }
@@ -183,7 +183,7 @@ export async function POST(request: NextRequest) {
 
     // Sanitize filename
     const sanitizedFileName = sanitizeFileName(file.name);
-    
+
     // Generate unique filename with hash
     const fileHash = crypto.createHash('md5').update(new Uint8Array(buffer)).digest('hex').substring(0, 8);
     const uniqueFileName = `${Date.now()}_${fileHash}_${sanitizedFileName}`;
@@ -201,7 +201,7 @@ export async function POST(request: NextRequest) {
     // Cloudinary'e güvenli yükleme
     // Ensure uploads here never go under products/
     const folder = `personal-blog/${pageContext}`;
-    
+
     // Add detailed logging before upload
     logger.info('Attempting Cloudinary upload', 'UPLOAD', {
       ip: clientIP,
@@ -215,7 +215,7 @@ export async function POST(request: NextRequest) {
         api_secret: process.env.CLOUDINARY_API_SECRET ? 'SET' : 'MISSING',
       }
     });
-    
+
     const uploadResult = await new Promise<{ secure_url: string; public_id: string; width: number; height: number; format: string; resource_type: string; bytes: number }>((resolve, reject) => {
       cloudinary.uploader.upload_stream(
         {
@@ -296,7 +296,7 @@ export async function POST(request: NextRequest) {
       fileName: 'unknown',
       responseTime: Date.now() - startTime
     });
-    
+
     return NextResponse.json(
       { error: 'Dosya yüklenirken hata oluştu' },
       { status: 500 }

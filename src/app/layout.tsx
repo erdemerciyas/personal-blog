@@ -1,7 +1,7 @@
 import type { Metadata } from 'next'
 import { Inter } from 'next/font/google'
 import './globals.css'
-import { config } from '../lib/config'
+import { config } from '../core/lib/config'
 import Header from '../components/Header'
 import ClientWrapper from '../components/ClientWrapper'
 import ConditionalFooter from '../components/ConditionalFooter'
@@ -153,7 +153,7 @@ export async function generateMetadata(): Promise<Metadata> {
 }
 
 import { ThemeProvider } from '../context/ThemeContext';
-import LoadingBar from '../components/LoadingBar';
+import { LoadingBar } from '../components';
 import { ToastProvider } from '../components/ui/useToast';
 import FixralToastViewport from '../components/ui/FixralToast';
 
@@ -191,10 +191,10 @@ export default async function RootLayout({
         <meta name="apple-mobile-web-app-capable" content="yes" />
         <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
         <meta name="apple-mobile-web-app-title" content="FIXRAL Blog" />
-        
+
         {/* PWA Manifest */}
         <link rel="manifest" href="/manifest.json" />
-        
+
         {/* PWA iOS specific */}
         <meta name="apple-touch-fullscreen" content="yes" />
         <link rel="apple-touch-icon" href="/icons/icon-192x192.png" />

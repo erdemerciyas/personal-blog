@@ -10,7 +10,7 @@ import connectDB from '@/lib/mongoose';
 import News from '@/models/News';
 import { NewsItem } from '@/types/news';
 import AdminLayout from '@/components/admin/AdminLayout';
-import { logger } from '@/lib/logger';
+import { logger } from '@/core/lib/logger';
 
 const NewsForm = dynamicImport(() => import('@/components/admin/NewsForm'), {
   ssr: false,

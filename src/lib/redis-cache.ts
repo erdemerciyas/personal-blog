@@ -6,7 +6,7 @@
  * For production, integrate with actual Redis server
  */
 
-import { logger } from './logger';
+import { logger } from '@/core/lib/logger';
 
 export interface CacheOptions {
   ttl?: number; // Time to live in seconds

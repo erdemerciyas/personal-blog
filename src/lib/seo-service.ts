@@ -1,6 +1,6 @@
 import connectDB from './mongoose';
 import News from '@/models/News';
-import { logger } from './logger';
+import { logger } from '@/core/lib/logger';
 
 /**
  * SEO Service
@@ -61,15 +61,15 @@ export async function generateNewsSitemap(): Promise<string> {
     const xml = `<?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
 ${entries
-  .map(
-    (entry) => `  <url>
+        .map(
+          (entry) => `  <url>
     <loc>${entry.url}</loc>
     <lastmod>${entry.lastmod}</lastmod>
     <changefreq>${entry.changefreq}</changefreq>
     <priority>${entry.priority}</priority>
   </url>`
-  )
-  .join('\n')}
+        )
+        .join('\n')}
 </urlset>`;
 
     return xml;

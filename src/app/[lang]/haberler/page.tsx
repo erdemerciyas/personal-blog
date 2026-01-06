@@ -4,7 +4,7 @@ import Image from 'next/image';
 import connectDB from '@/lib/mongoose';
 import News from '@/models/News';
 import { NewsItem } from '@/types/news';
-import { logger } from '@/lib/logger';
+import { logger } from '@/core/lib/logger';
 import PageHero from '@/components/common/PageHero';
 
 interface PageProps {
