@@ -56,7 +56,7 @@ export async function POST(req: NextRequest) {
     console.log('6. Order created:', order._id, 'Saved Price:', order.price);
 
     // 5. Send Emails
-    let emailStatus = { admin: false, customer: false };
+    const emailStatus = { admin: false, customer: false };
 
     // 1. To Admin
     const adminEmail = process.env.ADMIN_EMAIL || process.env.SMTP_USER || process.env.GMAIL_USER || 'admin@example.com';
