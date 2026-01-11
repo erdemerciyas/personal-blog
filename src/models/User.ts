@@ -6,7 +6,10 @@ export interface IUser {
   name: string;
   email: string;
   password: string;
-  role: 'admin' | 'user';
+  role: 'admin' | 'editor' | 'user';
+  isActive: boolean;
+  verificationCode?: string;
+  verificationCodeExpiry?: Date;
   resetToken?: string;
   resetTokenExpiry?: Date;
   createdAt: Date;
@@ -33,8 +36,20 @@ const userSchema = new mongoose.Schema<IUser>(
     },
     role: {
       type: String,
-      enum: ['admin', 'user'],
+      enum: ['admin', 'editor', 'user'],
       default: 'user',
+    },
+    isActive: {
+      type: Boolean,
+      default: true,
+    },
+    verificationCode: {
+      type: String,
+      required: false,
+    },
+    verificationCodeExpiry: {
+      type: Date,
+      required: false,
     },
     resetToken: {
       type: String,
@@ -66,21 +81,23 @@ userSchema.pre('save', async function (next) {
 });
 
 // Şifre karşılaştırma metodu
-userSchema.methods.comparePassword = async function(candidatePassword: string): Promise<boolean> {
+userSchema.methods.comparePassword = async function (candidatePassword: string): Promise<boolean> {
   return bcrypt.compare(candidatePassword, this.password);
 };
 
 // Güvenlik için şifreyi JSON'da gösterme
-userSchema.methods.toJSON = function() {
+userSchema.methods.toJSON = function () {
   const userObject = this.toObject();
   delete userObject.password;
   delete userObject.resetToken;
   delete userObject.resetTokenExpiry;
+  delete userObject.verificationCode;
+  delete userObject.verificationCodeExpiry;
   return userObject;
 };
 
 // Şifre geçmişi kontrolü için (opsiyonel)
-userSchema.methods.isPasswordReused = async function(newPassword: string): Promise<boolean> {
+userSchema.methods.isPasswordReused = async function (newPassword: string): Promise<boolean> {
   // Bu örnekte sadece mevcut şifre ile karşılaştırıyoruz
   // Gerçek uygulamada son 5-10 şifreyi saklayabilirsiniz
   return bcrypt.compare(newPassword, this.password);

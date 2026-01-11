@@ -139,7 +139,7 @@ const Header: React.FC = () => {
             .filter((page: PageSetting) => page.isActive && page.showInNavigation)
             .sort((a: PageSetting, b: PageSetting) => a.order - b.order)
             .map((page: PageSetting) => ({
-              href: page.path,
+              href: page.path.startsWith('http') || page.path.startsWith('/') ? page.path : `/${page.path}`,
               label: page.title,
               icon: resolveIcon(page.icon) || getIconForPage(page.pageId),
               isExternal: page.isExternal
@@ -245,8 +245,8 @@ const Header: React.FC = () => {
                   />
                 </div>
               )}
-              <div className="hidden sm:block">
-              {siteSettings?.siteName && (
+              <div className="hidden sm:block lg:hidden xl:block">
+                {siteSettings?.siteName && (
                   <h1 className={`text-xl font-bold tracking-tight transition-colors duration-300 ${isScrolled
                     ? 'text-slate-900'
                     : isTransparentPage
@@ -284,7 +284,7 @@ const Header: React.FC = () => {
               aria-label={isMobileMenuOpen ? "Mobil menüyü kapat" : "Mobil menüyü aç"}
               aria-controls="mobile-menu"
               aria-expanded={isMobileMenuOpen}
-              className={`md:hidden p-2 rounded-lg transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-primary-600 focus-visible:ring-offset-2 ${isScrolled
+              className={`lg:hidden p-2 rounded-lg transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-primary-600 focus-visible:ring-offset-2 ${isScrolled
                 ? 'text-slate-700 hover:bg-slate-100'
                 : isTransparentPage
                   ? 'text-white hover:bg-white/15 drop-shadow'

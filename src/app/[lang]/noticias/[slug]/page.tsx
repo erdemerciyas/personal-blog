@@ -168,7 +168,6 @@ export default async function NewsDetailPage({ params }: PageProps) {
       <div className="min-h-screen bg-slate-50">
         <PageHero
           title={translation.title}
-          backgroundGradient="bg-gradient-primary"
           showButton={false}
           variant="compact"
         />

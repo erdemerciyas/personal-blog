@@ -3,547 +3,463 @@
 import { useState, useEffect } from 'react';
 import { useSession } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
-import Image from 'next/image';
 import Link from 'next/link';
-import { PageLoader, InlineLoader } from '../../../components/AdminLoader';
-import AdminLayout from '../../../components/admin/AdminLayout';
-import HTMLContent from '../../../components/HTMLContent';
-import { 
+import {
+  PhotoIcon,
   PlusIcon,
+  MagnifyingGlassIcon,
   PencilIcon,
   TrashIcon,
-  EyeIcon,
+  CalendarIcon,
   TagIcon,
-  ClockIcon,
-  StarIcon,
-  FolderOpenIcon,
-  CheckIcon,
-  XMarkIcon,
-  CubeIcon
+  Squares2X2Icon,
+  ListBulletIcon,
+  FunnelIcon,
+  CheckCircleIcon
 } from '@heroicons/react/24/outline';
-
-interface Category {
-  _id: string;
-  name: string;
-  slug: string;
-  description?: string;
-}
 
 interface PortfolioItem {
   _id: string;
   title: string;
-  description: string;
-  category?: Category;
-  categoryId?: string;
-  client: string;
-  completionDate: string;
-  technologies: string[];
-  coverImage: string;
-  images: string[];
-  // 3D Model desteği
-  models3D?: Array<{
-    url: string;
-    name: string;
-    format: string;
-    size: number;
-    downloadable: boolean;
-    publicId: string;
-    uploadedAt: string;
-  }>;
-  featured: boolean;
-  order: number;
+  slug?: string;
+  description?: string;
+  status: 'published' | 'draft';
+  category?: string;
+  coverImage?: string;
+  images?: string[];
+  createdAt: string;
+  updatedAt: string;
 }
 
-export default function PortfolioManagement() {
-  const { status } = useSession(); // session is used indirectly for auth
+export default function AdminPortfolioPage() {
+  const { data: session, status } = useSession();
   const router = useRouter();
-  const [activeTab, setActiveTab] = useState<'projects' | 'categories'>('projects');
-  const [portfolioItems, setPortfolioItems] = useState<PortfolioItem[]>([]);
-  const [categories, setCategories] = useState<Category[]>([]);
   const [loading, setLoading] = useState(true);
-  const [categoriesLoading, setCategoriesLoading] = useState(false);
-  const [error, setError] = useState('');
-  const [newCategoryName, setNewCategoryName] = useState('');
-  const [newCategoryDescription, setNewCategoryDescription] = useState('');
-  const [editingCategory, setEditingCategory] = useState<Category | null>(null);
-
-  // URL parametresini kontrol et
-  useEffect(() => {
-    if (typeof window !== 'undefined') {
-      const urlParams = new URLSearchParams(window.location.search);
-      const tab = urlParams.get('tab');
-      if (tab === 'categories') {
-        setActiveTab('categories');
-      }
-    }
-  }, []);
+  const [portfolioItems, setPortfolioItems] = useState<PortfolioItem[]>([]);
+  const [searchQuery, setSearchQuery] = useState('');
+  const [statusFilter, setStatusFilter] = useState<'all' | 'published' | 'draft'>('all');
+  const [selectedItems, setSelectedItems] = useState<Set<string>>(new Set());
+  const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid');
 
   useEffect(() => {
+    if (status === 'loading') return;
+
     if (status === 'unauthenticated') {
       router.push('/admin/login');
-    } else if (status === 'authenticated') {
-      fetchPortfolioItems();
-      fetchCategories();
+      return;
     }
+
+    loadPortfolio();
   }, [status, router]);
 
-  const fetchPortfolioItems = async () => {
+  const loadPortfolio = async () => {
     try {
-      const response = await fetch('/api/portfolio');
-      if (!response.ok) throw new Error('Portfolyo öğeleri getirilemedi');
-      const data = await response.json();
-      setPortfolioItems(data);
-    } catch (err) {
-      setError('Portfolyo öğeleri yüklenirken bir hata oluştu');
-      console.error(err);
+      const response = await fetch('/api/admin/portfolio');
+      if (response.ok) {
+        const data = await response.json();
+        const mappedData = data.map((item: any) => ({
+          ...item,
+          title: item.title || item.name || item.translations?.tr?.title || item.translations?.en?.title || 'İsimsiz Proje',
+          status: item.isActive === true ? 'published' : (item.isActive === false ? 'draft' : 'published'),
+          description: item.description || item.translations?.tr?.description || '',
+          category: item.category || (item.categoryId ? 'Bağlı Kategori' : 'Kategorisiz'),
+          coverImage: item.coverImage || item.image || item.thumbnail || ''
+        }));
+        setPortfolioItems(mappedData);
+      }
+    } catch (error) {
+      console.error('Portfolyo yüklenirken hata:', error);
     } finally {
       setLoading(false);
     }
   };
 
-  const fetchCategories = async () => {
-    setCategoriesLoading(true);
-    try {
-      const response = await fetch('/api/categories');
-      if (!response.ok) throw new Error('Kategoriler getirilemedi');
-      const data = await response.json();
-      setCategories(data);
-    } catch (err) {
-      console.error('Kategoriler yüklenirken hata:', err);
-    } finally {
-      setCategoriesLoading(false);
-    }
-  };
-
-  const handleCreateCategory = async () => {
-    if (!newCategoryName.trim()) return;
+  const handleDelete = async (itemId: string) => {
+    if (!confirm('Bu projeyi silmek istediğinizden emin misiniz?')) return;
 
     try {
-      const response = await fetch('/api/categories', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          name: newCategoryName,
-          description: newCategoryDescription
-        })
-      });
-
-      if (!response.ok) throw new Error('Kategori oluşturulamadı');
-      
-      await fetchCategories();
-      setNewCategoryName('');
-      setNewCategoryDescription('');
-    } catch (err) {
-      setError('Kategori oluşturulurken hata oluştu');
-      console.error(err);
-    }
-  };
-
-  const handleUpdateCategory = async () => {
-    if (!editingCategory) return;
-
-    try {
-      const response = await fetch(`/api/categories/${editingCategory._id}`, {
-        method: 'PUT',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          name: editingCategory.name,
-          description: editingCategory.description
-        })
-      });
-
-      if (!response.ok) throw new Error('Kategori güncellenemedi');
-      
-      await fetchCategories();
-      setEditingCategory(null);
-    } catch (err) {
-      setError('Kategori güncellenirken hata oluştu');
-      console.error(err);
-    }
-  };
-
-  const handleDeleteCategory = async (id: string) => {
-    if (!confirm('Bu kategoriyi silmek istediğinizden emin misiniz?')) {
-      return;
-    }
-
-    try {
-      const response = await fetch(`/api/categories/${id}`, {
-        method: 'DELETE'
-      });
-
-      if (!response.ok) throw new Error('Kategori silinemedi');
-      
-      await fetchCategories();
-    } catch (err) {
-      setError('Kategori silinirken hata oluştu');
-      console.error(err);
-    }
-  };
-
-  const handleTabChange = (tab: 'projects' | 'categories') => {
-    setActiveTab(tab);
-    const newUrl = tab === 'categories' ? '/admin/portfolio?tab=categories' : '/admin/portfolio';
-    
-    // URL'yi güncelle ama sayfayı yeniden yükleme
-    if (typeof window !== 'undefined') {
-      window.history.pushState(null, '', newUrl);
-    }
-  };
-
-  const handleDelete = async (id: string) => {
-    if (!confirm('Bu portfolyo öğesini silmek istediğinizden emin misiniz?')) {
-      return;
-    }
-
-    try {
-      const response = await fetch(`/api/portfolio/${id}`, {
+      const response = await fetch(`/api/admin/portfolio/${itemId}`, {
         method: 'DELETE',
       });
 
-      if (!response.ok) throw new Error('Silme işlemi başarısız oldu');
-      
-      setPortfolioItems(prev => prev.filter(item => item._id !== id));
-    } catch (err) {
-      setError('Silme işlemi sırasında bir hata oluştu');
-      console.error(err);
+      if (response.ok) {
+        setPortfolioItems(portfolioItems.filter(item => item._id !== itemId));
+        if (selectedItems.has(itemId)) {
+          const newSelected = new Set(selectedItems);
+          newSelected.delete(itemId);
+          setSelectedItems(newSelected);
+        }
+      }
+    } catch (error) {
+      console.error('Proje silinirken hata:', error);
     }
+  };
+
+  const handleBulkDelete = async () => {
+    if (!confirm(`${selectedItems.size} öğeyi silmek istediğinizden emin misiniz?`)) return;
+
+    try {
+      await Promise.all(
+        Array.from(selectedItems).map(id =>
+          fetch(`/api/admin/portfolio/${id}`, { method: 'DELETE' })
+        )
+      );
+      setPortfolioItems(portfolioItems.filter(item => !selectedItems.has(item._id)));
+      setSelectedItems(new Set());
+    } catch (error) {
+      console.error('Projeler silinirken hata:', error);
+    }
+  };
+
+  const handleSelectItem = (itemId: string) => {
+    const newSelected = new Set(selectedItems);
+    if (newSelected.has(itemId)) {
+      newSelected.delete(itemId);
+    } else {
+      newSelected.add(itemId);
+    }
+    setSelectedItems(newSelected);
+  };
+
+  const filteredItems = portfolioItems.filter(item => {
+    const title = item.title || '';
+    const description = item.description || '';
+    const matchesSearch = title.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      description.toLowerCase().includes(searchQuery.toLowerCase());
+    const matchesStatus = statusFilter === 'all' || item.status === statusFilter;
+    return matchesSearch && matchesStatus;
+  });
+
+  const formatDate = (dateString: string) => {
+    return new Date(dateString).toLocaleDateString('tr-TR', {
+      month: 'long',
+      day: 'numeric',
+      year: 'numeric'
+    });
   };
 
   if (status === 'loading' || loading) {
     return (
-      <AdminLayout>
-        <PageLoader text="Portfolio yükleniyor..." />
-      </AdminLayout>
+      <div className="flex items-center justify-center min-h-[60vh]">
+        <div className="flex flex-col items-center space-y-4">
+          <div className="relative">
+            <div className="w-16 h-16 border-4 border-indigo-200 rounded-full"></div>
+            <div className="absolute top-0 left-0 w-16 h-16 border-4 border-transparent border-t-indigo-600 rounded-full animate-spin"></div>
+          </div>
+          <p className="text-lg font-medium text-slate-600">Portfolyo yükleniyor...</p>
+        </div>
+      </div>
     );
   }
 
-  if (status === 'unauthenticated') {
-    return null;
-  }
-
   return (
-    <AdminLayout 
-      title="Portfolyo Yönetimi"
-      breadcrumbs={[
-        { label: 'Dashboard', href: '/admin/dashboard' },
-        { label: 'Portfolyo Yönetimi' }
-      ]}
-    >
-      <div className="space-y-6">
-        
-        {/* Tab Navigation */}
-        <div className="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden">
-          <div className="flex border-b border-slate-200">
+    <div className="space-y-6">
+      {/* Page Header */}
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 sticky top-0 z-20 bg-slate-50/80 backdrop-blur-sm py-4">
+        <div>
+          <h1 className="text-3xl font-bold text-slate-900 tracking-tight">Portfolyo</h1>
+          <p className="text-slate-500 mt-1 font-medium">Projelerinizi yönetin ve düzenleyin</p>
+        </div>
+        <div className="flex items-center gap-3">
+          {selectedItems.size > 0 && (
             <button
-              onClick={() => handleTabChange('projects')}
-              className={`flex-1 px-6 py-4 text-sm font-semibold transition-all duration-200 ${
-                activeTab === 'projects'
-                  ? 'bg-brand-primary-50 text-brand-primary-800 border-b-2 border-brand-primary-700'
-                  : 'text-slate-600 hover:text-slate-900 hover:bg-slate-50'
-              }`}
+              onClick={handleBulkDelete}
+              className="hidden sm:inline-flex items-center px-4 py-2.5 bg-red-50 text-red-600 font-medium rounded-xl hover:bg-red-100 transition-all border border-red-100"
             >
-              <div className="flex items-center justify-center space-x-2">
-                <FolderOpenIcon className="w-5 h-5" />
-                <span>Projeler ({portfolioItems.length})</span>
-              </div>
+              <TrashIcon className="w-4 h-4 mr-2" />
+              {selectedItems.size} Sil
             </button>
-            <button
-              onClick={() => handleTabChange('categories')}
-              className={`flex-1 px-6 py-4 text-sm font-semibold transition-all duration-200 ${
-                activeTab === 'categories'
-                  ? 'bg-purple-50 text-purple-700 border-b-2 border-purple-600'
-                  : 'text-slate-600 hover:text-slate-900 hover:bg-slate-50'
-              }`}
-            >
-              <div className="flex items-center justify-center space-x-2">
-                <TagIcon className="w-5 h-5" />
-                <span>Kategoriler ({categories.length})</span>
-              </div>
-            </button>
+          )}
+          <Link
+            href="/admin/portfolio/new"
+            className="inline-flex items-center px-5 py-2.5 bg-slate-900 text-white font-semibold rounded-xl hover:bg-slate-800 hover:shadow-lg hover:shadow-slate-900/20 transition-all duration-200 transform hover:-translate-y-0.5"
+          >
+            <PlusIcon className="w-5 h-5 mr-2" />
+            Yeni Proje
+          </Link>
+        </div>
+      </div>
+
+      {/* Toolbar */}
+      <div className="bg-white rounded-2xl shadow-sm border border-slate-200 p-2 sm:p-3 sticky top-24 z-10 transition-all duration-300">
+        <div className="flex flex-col lg:flex-row gap-3 items-center justify-between">
+          <div className="flex-1 w-full lg:w-auto relative group">
+            <div className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 group-focus-within:text-indigo-500 transition-colors">
+              <MagnifyingGlassIcon className="w-5 h-5" />
+            </div>
+            <input
+              type="text"
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              placeholder="Proje ara..."
+              className="w-full pl-10 pr-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500/50 focus:border-indigo-500 focus:bg-white transition-all"
+            />
+          </div>
+
+          <div className="flex items-center gap-2 w-full lg:w-auto overflow-x-auto pb-1 lg:pb-0 no-scrollbar">
+            <div className="flex bg-slate-100 p-1 rounded-xl shrink-0">
+              {(['all', 'published', 'draft'] as const).map((s) => (
+                <button
+                  key={s}
+                  onClick={() => setStatusFilter(s)}
+                  className={`px-3 py-1.5 rounded-lg text-sm font-medium transition-all ${statusFilter === s
+                      ? 'bg-white text-slate-900 shadow-sm'
+                      : 'text-slate-500 hover:text-slate-700'
+                    }`}
+                >
+                  {s === 'all' ? 'Tümü' : s === 'published' ? 'Yayında' : 'Taslak'}
+                </button>
+              ))}
+            </div>
+
+            <div className="w-px h-8 bg-slate-200 mx-1 shrink-0 hidden sm:block"></div>
+
+            <div className="flex bg-slate-100 p-1 rounded-xl shrink-0">
+              <button
+                onClick={() => setViewMode('grid')}
+                className={`p-2 rounded-lg transition-all ${viewMode === 'grid' ? 'bg-white text-indigo-600 shadow-sm' : 'text-slate-500 hover:text-slate-700'}`}
+                title="Izgara Görünümü"
+              >
+                <Squares2X2Icon className="w-5 h-5" />
+              </button>
+              <button
+                onClick={() => setViewMode('list')}
+                className={`p-2 rounded-lg transition-all ${viewMode === 'list' ? 'bg-white text-indigo-600 shadow-sm' : 'text-slate-500 hover:text-slate-700'}`}
+                title="Liste Görünümü"
+              >
+                <ListBulletIcon className="w-5 h-5" />
+              </button>
+            </div>
           </div>
         </div>
 
-        {/* Error Message */}
-        {error && (
-          <div className="bg-red-50 border border-red-200 text-red-800 p-4 rounded-xl">
-            {error}
+        {/* Mobile Bulk Delete */}
+        {selectedItems.size > 0 && (
+          <div className="mt-3 pt-3 border-t border-slate-100 flex sm:hidden justify-between items-center px-1">
+            <span className="text-sm font-medium text-slate-600">{selectedItems.size} seçildi</span>
+            <button
+              onClick={handleBulkDelete}
+              className="text-sm font-medium text-red-600 bg-red-50 px-3 py-1.5 rounded-lg"
+            >
+              Sil
+            </button>
           </div>
         )}
+      </div>
 
-        {/* Tab Content */}
-        {activeTab === 'projects' && (
-          <div className="space-y-6">
-            {/* Header Actions */}
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-slate-600">Projelerinizi düzenleyin ve yönetin</p>
-                <div className="flex items-center space-x-4 text-sm text-slate-500 mt-2">
-                  <span>Toplam: {portfolioItems.length} proje</span>
-                  <span>•</span>
-                  <span>Öne çıkan: {portfolioItems.filter(item => item.featured).length}</span>
-                </div>
-              </div>
-              <Link
-                href="/admin/portfolio/new"
-                className="bg-brand-primary-700 hover:bg-brand-primary-800 text-white px-6 py-3 rounded-xl font-semibold transition-all duration-200 flex items-center space-x-2 shadow-sm"
-              >
-                <PlusIcon className="w-5 h-5" />
-                <span>Yeni Proje</span>
-              </Link>
-            </div>
+      {/* Content Area */}
+      {filteredItems.length === 0 ? (
+        <div className="flex flex-col items-center justify-center py-20 bg-white rounded-2xl shadow-sm border border-slate-200 border-dashed">
+          <PhotoIcon className="w-16 h-16 text-slate-300 mb-4" />
+          <h3 className="text-xl font-semibold text-slate-900 mb-2">Proje Bulunamadı</h3>
+          <p className="text-slate-500 mb-6 text-center max-w-md px-4">
+            Aradığınız kriterlere uygun proje bulunamadı veya henüz hiç proje eklemediniz.
+          </p>
+          {!searchQuery && statusFilter === 'all' && (
+            <Link
+              href="/admin/portfolio/new"
+              className="inline-flex items-center px-6 py-3 bg-indigo-600 text-white font-semibold rounded-xl hover:bg-indigo-700 transition-colors"
+            >
+              <PlusIcon className="w-5 h-5 mr-2" />
+              İlk Projeyi Ekle
+            </Link>
+          )}
+        </div>
+      ) : (
+        <>
+          {viewMode === 'grid' ? (
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 2xl:grid-cols-4 gap-6">
+              {filteredItems.map(item => (
+                <div
+                  key={item._id}
+                  className={`group relative bg-white rounded-2xl shadow-sm border transition-all duration-300 overflow-hidden hover:shadow-xl hover:-translate-y-1 ${selectedItems.has(item._id)
+                      ? 'ring-2 ring-indigo-500 border-transparent'
+                      : 'border-slate-200'
+                    }`}
+                  onClick={() => handleSelectItem(item._id)}
+                >
+                  {/* Selection Checkbox */}
+                  <div className={`absolute top-3 left-3 z-10 p-1 bg-white/90 backdrop-blur rounded-lg shadow-sm transition-opacity duration-200 ${selectedItems.has(item._id) ? 'opacity-100' : 'opacity-0 group-hover:opacity-100'}`}>
+                    <input
+                      type="checkbox"
+                      checked={selectedItems.has(item._id)}
+                      onChange={(e) => { e.stopPropagation(); handleSelectItem(item._id); }}
+                      className="w-5 h-5 text-indigo-600 border-slate-300 rounded focus:ring-indigo-500 cursor-pointer block"
+                    />
+                  </div>
 
-        {/* Portfolio Items */}
-        <div className="bg-white rounded-xl shadow-sm border border-slate-200">
-          <div className="p-6 border-b border-slate-200">
-            <h3 className="text-lg font-semibold text-slate-900">Projeler</h3>
-          </div>
-          
-          <div className="divide-y divide-slate-200">
-            {portfolioItems.length === 0 ? (
-              <div className="p-12 text-center">
-                <FolderOpenIcon className="w-12 h-12 text-slate-400 mx-auto mb-4" />
-                <p className="text-slate-600 text-lg">Henüz proje eklenmemiş</p>
-                <p className="text-slate-500 mt-2">İlk projenizi eklemek için &quot;Yeni Proje&quot; butonuna tıklayın</p>
-              </div>
-            ) : (
-              portfolioItems.map((item) => (
-                <div key={item._id} className="p-6 hover:bg-slate-50 transition-colors">
-                  <div className="flex items-start space-x-4">
-                    {/* Image */}
-                    <div className="flex-shrink-0">
-                      <div className="w-20 h-20 relative overflow-hidden rounded-xl bg-slate-200">
-                        {item.coverImage ? (
-                          <Image
-                            src={item.coverImage}
-                            alt={item.title}
-                            fill
-                            sizes="80px"
-                            className="object-cover"
-                          />
-                        ) : (
-                          <div className="w-full h-full flex items-center justify-center">
-                            <span className="text-slate-400 text-xs">Görsel Yok</span>
-                          </div>
-                        )}
+                  {/* Image Container */}
+                  <div className="aspect-[4/3] bg-slate-100 relative overflow-hidden">
+                    {item.coverImage || (item.images && item.images.length > 0) ? (
+                      <img
+                        src={item.coverImage || item.images![0]}
+                        alt={item.title}
+                        className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
+                        loading="lazy"
+                      />
+                    ) : (
+                      <div className="w-full h-full flex items-center justify-center text-slate-300">
+                        <PhotoIcon className="w-16 h-16" />
                       </div>
+                    )}
+
+                    {/* Overlay Actions */}
+                    <div className="absolute inset-x-0 bottom-0 p-4 bg-gradient-to-t from-black/80 via-black/40 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex justify-end gap-2">
+                      <Link
+                        href={`/admin/portfolio/edit/${item._id}`}
+                        onClick={(e) => e.stopPropagation()}
+                        className="p-2 bg-white/20 backdrop-blur-md text-white rounded-xl hover:bg-white hover:text-slate-900 transition-colors"
+                        title="Düzenle"
+                      >
+                        <PencilIcon className="w-5 h-5" />
+                      </Link>
+                      <button
+                        onClick={(e) => { e.stopPropagation(); handleDelete(item._id); }}
+                        className="p-2 bg-white/20 backdrop-blur-md text-white rounded-xl hover:bg-red-500 hover:text-white transition-colors"
+                        title="Sil"
+                      >
+                        <TrashIcon className="w-5 h-5" />
+                      </button>
                     </div>
-                    
-                    {/* Content */}
-                    <div className="flex-1 min-w-0">
-                      <div className="flex items-start justify-between">
-                        <div className="flex-1">
-                          <h4 className="text-lg font-semibold text-slate-900 mb-2 flex items-center space-x-2">
-                            <span>{item.title}</span>
-                            {item.featured && (
-                              <StarIcon className="w-5 h-5 text-yellow-500" />
-                            )}
-                          </h4>
-                          <div className="text-slate-600 mb-3">
-                            <HTMLContent 
-                              content={item.description}
-                              truncate={150}
-                              className="line-clamp-2"
-                            />
-                          </div>
-                          <div className="flex items-center space-x-4 text-sm text-slate-500">
-                            <div className="flex items-center space-x-1">
-                              <ClockIcon className="w-4 h-4" />
-                              <span>{new Date(item.completionDate).toLocaleDateString('tr-TR')}</span>
-                            </div>
-                            {item.category && (
-                              <div className="flex items-center space-x-1">
-                                <TagIcon className="w-4 h-4" />
-                                <span>{item.category.name}</span>
-                              </div>
-                            )}
-                            <span>Müşteri: {item.client}</span>
-                            {/* 3D Model durumu */}
-                            {item.models3D && item.models3D.length > 0 && (
-                              <div className="flex items-center space-x-1 text-blue-600">
-                                <CubeIcon className="w-4 h-4" />
-                                <span>{item.models3D.length} 3D Model</span>
-                              </div>
-                            )}
-                          </div>
-                        </div>
-                        
-                        {/* Actions */}
-                        <div className="flex items-center space-x-2 ml-4">
-                          <Link
-                            href={`/portfolio/${item._id}`}
-                            className="p-2 text-slate-600 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-colors"
-                            title="Görüntüle"
-                          >
-                            <EyeIcon className="w-5 h-5" />
-                          </Link>
-                          <Link
-                            href={`/admin/portfolio/edit/${item._id}`}
-                            className="p-2 text-slate-600 hover:text-brand-primary-700 hover:bg-brand-primary-50 rounded-lg transition-colors"
-                            title="Düzenle"
-                          >
-                            <PencilIcon className="w-5 h-5" />
-                          </Link>
-                          <button
-                            onClick={() => handleDelete(item._id)}
-                            className="p-2 text-slate-600 hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors"
-                            title="Sil"
-                          >
-                            <TrashIcon className="w-5 h-5" />
-                          </button>
-                        </div>
+
+                    {/* Status Badge */}
+                    <div className="absolute top-3 right-3">
+                      <span className={`px-2.5 py-1 rounded-full text-xs font-semibold backdrop-blur-md border border-white/10 shadow-sm ${item.status === 'published'
+                          ? 'bg-emerald-500/90 text-white'
+                          : 'bg-amber-400/90 text-white'
+                        }`}>
+                        {item.status === 'published' ? 'Yayında' : 'Taslak'}
+                      </span>
+                    </div>
+                  </div>
+
+                  {/* Content */}
+                  <div className="p-5">
+                    <div className="flex items-center gap-2 mb-2 text-xs font-medium text-indigo-600">
+                      <TagIcon className="w-3.5 h-3.5" />
+                      <span className="uppercase tracking-wider truncate">{item.category}</span>
+                    </div>
+                    <h3 className="text-lg font-bold text-slate-900 mb-2 line-clamp-1 group-hover:text-indigo-600 transition-colors" title={item.title}>
+                      {item.title}
+                    </h3>
+                    <p className="text-slate-500 text-sm line-clamp-2 leading-relaxed mb-4 min-h-[2.5rem]">
+                      {item.description ? item.description.replace(/<[^>]+>/g, '') : 'Açıklama yok'}
+                    </p>
+
+                    <div className="flex items-center justify-between pt-4 border-t border-slate-100 text-xs text-slate-400 font-medium">
+                      <div className="flex items-center gap-1.5">
+                        <CalendarIcon className="w-4 h-4" />
+                        {formatDate(item.createdAt)}
                       </div>
                     </div>
                   </div>
                 </div>
-              ))
-            )}
-          </div>
-        </div>
-          </div>
-        )}
-
-        {/* Categories Tab */}
-        {activeTab === 'categories' && (
-          <div className="space-y-6">
-            {/* Add New Category */}
-            <div className="bg-white rounded-xl shadow-sm border border-slate-200 p-6">
-              <h3 className="text-lg font-semibold text-slate-900 mb-4">Yeni Kategori Ekle</h3>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div>
-                  <label className="block text-sm font-medium text-slate-700 mb-2">
-                    Kategori Adı
-                  </label>
-                  <input
-                    type="text"
-                    value={newCategoryName}
-                    onChange={(e) => setNewCategoryName(e.target.value)}
-                    className="w-full px-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
-                    placeholder="Kategori adını girin"
-                  />
-                </div>
-                <div>
-                  <label className="block text-sm font-medium text-slate-700 mb-2">
-                    Açıklama (İsteğe bağlı)
-                  </label>
-                  <input
-                    type="text"
-                    value={newCategoryDescription}
-                    onChange={(e) => setNewCategoryDescription(e.target.value)}
-                    className="w-full px-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
-                    placeholder="Kategori açıklaması"
-                  />
-                </div>
-              </div>
-              <div className="mt-4">
-                <button
-                  onClick={handleCreateCategory}
-                  disabled={!newCategoryName.trim()}
-                  className="bg-purple-600 hover:bg-purple-700 disabled:bg-slate-300 text-white px-6 py-2 rounded-lg font-semibold transition-all duration-200 flex items-center space-x-2"
-                >
-                  <PlusIcon className="w-5 h-5" />
-                  <span>Kategori Ekle</span>
-                </button>
-              </div>
+              ))}
             </div>
-
-            {/* Categories List */}
-            <div className="bg-white rounded-xl shadow-sm border border-slate-200">
-              <div className="p-6 border-b border-slate-200">
-                <h3 className="text-lg font-semibold text-slate-900">Kategoriler</h3>
-              </div>
-              
-              {categoriesLoading ? (
-                <div className="p-6">
-                  <InlineLoader text="Kategoriler yükleniyor..." />
-                </div>
-              ) : categories.length === 0 ? (
-                <div className="p-12 text-center">
-                  <TagIcon className="w-12 h-12 text-slate-400 mx-auto mb-4" />
-                  <p className="text-slate-600 text-lg">Henüz kategori eklenmemiş</p>
-                  <p className="text-slate-500 mt-2">İlk kategorinizi yukarıdaki formdan ekleyebilirsiniz</p>
-                </div>
-              ) : (
-                <div className="divide-y divide-slate-200">
-                  {categories.map((category) => (
-                    <div key={category._id} className="p-6 hover:bg-slate-50 transition-colors">
-                      {editingCategory?._id === category._id ? (
-                        <div className="space-y-4">
-                          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                            <input
-                              type="text"
-                              value={editingCategory.name}
-                              onChange={(e) => setEditingCategory({
-                                ...editingCategory,
-                                name: e.target.value
-                              })}
-                              className="px-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
-                            />
-                            <input
-                              type="text"
-                              value={editingCategory.description || ''}
-                              onChange={(e) => setEditingCategory({
-                                ...editingCategory,
-                                description: e.target.value
-                              })}
-                              className="px-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
-                              placeholder="Açıklama"
-                            />
+          ) : (
+            <div className="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden">
+              <div className="overflow-x-auto">
+                <table className="w-full text-left text-sm text-slate-600">
+                  <thead className="bg-slate-50 border-b border-slate-200 font-semibold text-slate-700 uppercase tracking-wider text-xs">
+                    <tr>
+                      <th className="px-6 py-4 w-12">
+                        <input
+                          type="checkbox"
+                          checked={selectedItems.size === filteredItems.length && filteredItems.length > 0}
+                          onChange={() => {
+                            if (selectedItems.size === filteredItems.length) setSelectedItems(new Set());
+                            else setSelectedItems(new Set(filteredItems.map(i => i._id)));
+                          }}
+                          className="w-4 h-4 text-indigo-600 border-slate-300 rounded focus:ring-indigo-500 rounded cursor-pointer"
+                        />
+                      </th>
+                      <th className="px-6 py-4">Proje Detayları</th>
+                      <th className="px-6 py-4">Kategori</th>
+                      <th className="px-6 py-4">Durum</th>
+                      <th className="px-6 py-4 text-right">Tarih</th>
+                      <th className="px-6 py-4 text-right">İşlemler</th>
+                    </tr>
+                  </thead>
+                  <tbody className="divide-y divide-slate-100">
+                    {filteredItems.map(item => (
+                      <tr
+                        key={item._id}
+                        className={`group hover:bg-slate-50/80 transition-colors ${selectedItems.has(item._id) ? 'bg-indigo-50/30' : ''}`}
+                        onClick={() => handleSelectItem(item._id)}
+                      >
+                        <td className="px-6 py-4" onClick={e => e.stopPropagation()}>
+                          <input
+                            type="checkbox"
+                            checked={selectedItems.has(item._id)}
+                            onChange={() => handleSelectItem(item._id)}
+                            className="w-4 h-4 text-indigo-600 border-slate-300 rounded focus:ring-indigo-500 cursor-pointer"
+                          />
+                        </td>
+                        <td className="px-6 py-4">
+                          <div className="flex items-center gap-4">
+                            <div className="w-16 h-12 bg-slate-100 rounded-lg overflow-hidden shrink-0 border border-slate-200">
+                              {item.coverImage || (item.images && item.images.length > 0) ? (
+                                <img
+                                  src={item.coverImage || item.images![0]}
+                                  alt={item.title}
+                                  className="w-full h-full object-cover"
+                                />
+                              ) : (
+                                <div className="w-full h-full flex items-center justify-center">
+                                  <PhotoIcon className="w-6 h-6 text-slate-300" />
+                                </div>
+                              )}
+                            </div>
+                            <div>
+                              <div className="font-bold text-slate-900 group-hover:text-indigo-600 transition-colors">{item.title}</div>
+                              <div className="text-xs text-slate-500 mt-0.5 max-w-xs truncate">{item.slug}</div>
+                            </div>
                           </div>
-                          <div className="flex space-x-2">
-                            <button
-                              onClick={handleUpdateCategory}
-                              className="bg-brand-primary-700 hover:bg-brand-primary-800 text-white px-4 py-2 rounded-lg font-medium transition-colors flex items-center space-x-1"
-                            >
-                              <CheckIcon className="w-4 h-4" />
-                              <span>Kaydet</span>
-                            </button>
-                            <button
-                              onClick={() => setEditingCategory(null)}
-                              className="bg-slate-600 hover:bg-slate-700 text-white px-4 py-2 rounded-lg font-medium transition-colors flex items-center space-x-1"
-                            >
-                              <XMarkIcon className="w-4 h-4" />
-                              <span>İptal</span>
-                            </button>
-                          </div>
-                        </div>
-                      ) : (
-                        <div className="flex items-center justify-between">
-                          <div>
-                            <h4 className="text-lg font-semibold text-slate-900">{category.name}</h4>
-                            {category.description && (
-                              <p className="text-slate-600 mt-1">{category.description}</p>
-                            )}
-                            <p className="text-sm text-slate-500 mt-2">
-                              Slug: {category.slug}
-                            </p>
-                          </div>
-                          <div className="flex space-x-2">
-                            <button
-                              onClick={() => setEditingCategory(category)}
-                              className="p-2 text-slate-600 hover:text-brand-primary-700 hover:bg-brand-primary-50 rounded-lg transition-colors"
+                        </td>
+                        <td className="px-6 py-4">
+                          <span className="inline-flex items-center px-2.5 py-1 rounded-lg bg-slate-100 text-slate-600 text-xs font-medium">
+                            <TagIcon className="w-3 h-3 mr-1.5" />
+                            {item.category}
+                          </span>
+                        </td>
+                        <td className="px-6 py-4">
+                          <span className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium ${item.status === 'published' ? 'bg-emerald-50 text-emerald-700 border border-emerald-100' : 'bg-amber-50 text-amber-700 border border-amber-100'
+                            }`}>
+                            <div className={`w-1.5 h-1.5 rounded-full ${item.status === 'published' ? 'bg-emerald-500' : 'bg-amber-500'}`}></div>
+                            {item.status === 'published' ? 'Yayında' : 'Taslak'}
+                          </span>
+                        </td>
+                        <td className="px-6 py-4 text-right text-xs font-mono text-slate-500">
+                          {formatDate(item.createdAt)}
+                        </td>
+                        <td className="px-6 py-4 text-right">
+                          <div className="flex items-center justify-end gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
+                            <Link
+                              href={`/admin/portfolio/edit/${item._id}`}
+                              onClick={e => e.stopPropagation()}
+                              className="p-1.5 text-slate-400 hover:text-indigo-600 hover:bg-indigo-50 rounded-lg transition-colors"
                               title="Düzenle"
                             >
                               <PencilIcon className="w-4 h-4" />
-                            </button>
+                            </Link>
                             <button
-                              onClick={() => handleDeleteCategory(category._id)}
-                              className="p-2 text-slate-600 hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors"
+                              onClick={(e) => { e.stopPropagation(); handleDelete(item._id); }}
+                              className="p-1.5 text-slate-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors"
                               title="Sil"
                             >
                               <TrashIcon className="w-4 h-4" />
                             </button>
                           </div>
-                        </div>
-                      )}
-                    </div>
-                  ))}
-                </div>
-              )}
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
             </div>
-          </div>
-        )}
-      </div>
-    </AdminLayout>
+          )}
+        </>
+      )}
+    </div>
   );
 }

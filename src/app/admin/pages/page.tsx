@@ -1,512 +1,611 @@
- "use client";
-import { useEffect, useState } from "react";
-import { useSession } from "next-auth/react";
-import { useRouter } from "next/navigation";
-import AdminLayout from "../../../components/admin/AdminLayout";
-import { PageLoader } from "../../../components/AdminLoader";
-import UniversalEditor from "../../../components/ui/UniversalEditor";
+'use client';
+
+import { useState, useEffect } from 'react';
+import { useSession } from 'next-auth/react';
+import { useRouter } from 'next/navigation';
+import { Reorder, useDragControls } from 'framer-motion';
 import {
   DocumentTextIcon,
-  EyeIcon,
-  EyeSlashIcon,
-  Cog6ToothIcon,
-  ArrowUpIcon,
-  ArrowDownIcon,
+  PlusIcon,
+  MagnifyingGlassIcon,
+  PencilIcon,
+  TrashIcon,
   CheckCircleIcon,
   XCircleIcon,
-  PencilIcon,
-  XMarkIcon,
-  CheckIcon,
-  ExclamationTriangleIcon,
-  HomeIcon,
-} from "@heroicons/react/24/outline";
+  Bars3Icon,
+  XMarkIcon
+} from '@heroicons/react/24/outline';
 
-type PageSetting = {
+interface PageItem {
   _id: string;
   pageId: string;
   title: string;
   path: string;
   description: string;
-  buttonText?: string;
-  buttonLink?: string;
-  icon?: string;
-  isExternal?: boolean;
   isActive: boolean;
   showInNavigation: boolean;
   order: number;
-};
+  createdAt: string;
+  updatedAt: string;
+}
 
-export default function AdminPages() {
-  const router = useRouter();
+export default function AdminPagesPage() {
   const { data: session, status } = useSession();
-
-  const [pages, setPages] = useState<PageSetting[]>([]);
+  const router = useRouter();
   const [loading, setLoading] = useState(true);
-  const [saving, setSaving] = useState(false);
-  const [error, setError] = useState("");
-  const [success, setSuccess] = useState("");
+  const [pages, setPages] = useState<PageItem[]>([]);
+  const [searchQuery, setSearchQuery] = useState('');
+  const [statusFilter, setStatusFilter] = useState<'all' | 'published' | 'draft'>('all');
+  const [hasReordered, setHasReordered] = useState(false);
+  const [savingOrder, setSavingOrder] = useState(false);
 
-  const [editingPage, setEditingPage] = useState<string | null>(null);
-  const [editForm, setEditForm] = useState<{
-    title: string;
-    description: string;
-    buttonText: string;
-    buttonLink: string;
-    icon?: string;
-    isExternal?: boolean;
-    isActive?: boolean;
-    showInNavigation?: boolean;
-  }>({
-    title: "",
-    description: "",
-    buttonText: "",
-    buttonLink: "",
-    icon: "",
-    isExternal: false,
-    isActive: true,
-    showInNavigation: true,
-  });
-
-  const [newPage, setNewPage] = useState<{
-    pageId: string;
-    title: string;
-    path: string;
-    icon?: string;
-    isExternal?: boolean;
-    isActive: boolean;
-    showInNavigation: boolean;
-  }>({
-    pageId: "",
-    title: "",
-    path: "",
-    icon: "",
-    isExternal: false,
-    isActive: true,
-    showInNavigation: true,
+  // Edit Modal State
+  const [editingPage, setEditingPage] = useState<PageItem | null>(null);
+  const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+  const [editForm, setEditForm] = useState({
+    title: '',
+    path: '',
+    description: '',
+    showInNavigation: true
   });
 
   useEffect(() => {
-    if (status === "loading") return;
-    const role = (session?.user as { role?: string } | undefined)?.role;
-    if (!session?.user || role !== "admin") {
-      router.replace("/admin/login");
+    if (status === 'loading') return;
+
+    if (status === 'unauthenticated') {
+      router.push('/admin/login');
       return;
     }
-    const fetchPages = async () => {
-      try {
-        const res = await fetch("/api/admin/page-settings", { cache: "no-store" });
-        const data = await res.json();
-        setPages(Array.isArray(data) ? data : []);
-      } catch {
-        setError("Sayfalar yüklenirken bir hata oluştu");
-        setTimeout(() => setError(""), 3000);
-      } finally {
-        setLoading(false);
+
+    loadPages();
+  }, [status, router]);
+
+  const loadPages = async () => {
+    try {
+      const response = await fetch('/api/admin/pages');
+      if (response.ok) {
+        const data = await response.json();
+        setPages(data);
       }
-    };
-    fetchPages();
-  }, [status, session, router]);
-
-  const updatePage = async (pageId: string, updates: Partial<PageSetting>) => {
-    try {
-      setSaving(true);
-      const res = await fetch("/api/admin/page-settings", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ pageId, ...updates }),
-      });
-      if (!res.ok) throw new Error("Güncelleme başarısız");
-      const updated: PageSetting = await res.json();
-      setPages(prev => prev.map(p => (p.pageId === pageId ? { ...p, ...updated } : p)));
-      setSuccess("Güncellendi");
-      setTimeout(() => setSuccess(""), 1500);
-      await fetch("/api/admin/clear-cache", { method: "POST" }).catch(() => {});
-      window.dispatchEvent(new CustomEvent("pageSettingsChanged"));
-    } catch {
-      setError("Güncelleme sırasında hata oluştu");
-      setTimeout(() => setError(""), 3000);
+    } catch (error) {
+      console.error('Sayfalar yüklenirken hata:', error);
     } finally {
-      setSaving(false);
+      setLoading(false);
     }
   };
 
-  const reorderPages = async (pageId: string, dir: "up" | "down") => {
-    const idx = pages.findIndex(p => p.pageId === pageId);
-    if (idx < 0) return;
-    const swapWith = dir === "up" ? idx - 1 : idx + 1;
-    if (swapWith < 0 || swapWith >= pages.length) return;
-    const newArr = [...pages];
-    [newArr[idx], newArr[swapWith]] = [newArr[swapWith], newArr[idx]];
-    const reOrdered = newArr.map((p, i) => ({ ...p, order: i }));
-    setPages(reOrdered);
+  const handleStatusToggle = async (page: PageItem) => {
     try {
-      setSaving(true);
-      const res = await fetch("/api/admin/page-settings", {
-        method: "PUT",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ orders: reOrdered.map(p => ({ pageId: p.pageId, order: p.order })) }),
+      // Optimistic update
+      const newStatus = !page.isActive;
+      const updatedPages = pages.map(p =>
+        p._id === page._id ? { ...p, isActive: newStatus } : p
+      );
+      setPages(updatedPages);
+
+      const response = await fetch(`/api/admin/pages/${page._id}`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ isActive: newStatus }),
       });
-      if (!res.ok) throw new Error("Sıralama başarısız");
-      await fetch("/api/admin/clear-cache", { method: "POST" }).catch(() => {});
-      window.dispatchEvent(new CustomEvent("pageSettingsChanged"));
-    } catch {
-      setError("Sıralama kaydedilemedi");
-      setTimeout(() => setError(""), 3000);
-    } finally {
-      setSaving(false);
+
+      if (!response.ok) {
+        setPages(pages);
+        alert('Durum güncellenemedi');
+      }
+    } catch (error) {
+      console.error('Durum güncellenirken hata:', error);
+      setPages(pages);
     }
   };
 
-  const startEditing = (page: PageSetting) => {
-    setEditingPage(page.pageId);
+  const handleReorder = (newOrder: PageItem[]) => {
+    setPages(newOrder);
+    setHasReordered(true);
+  };
+
+  const saveOrder = async () => {
+    if (!hasReordered) return;
+
+    setSavingOrder(true);
+    try {
+      const updates = pages.map((page, index) => ({
+        pageId: page.pageId,
+        order: index
+      }));
+
+      const response = await fetch('/api/admin/pages', {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(updates),
+      });
+
+      if (response.ok) {
+        setHasReordered(false);
+        loadPages();
+      } else {
+        alert('Sıralama kaydedilemedi');
+      }
+    } catch (error) {
+      console.error('Sıralama kaydedilirken hata:', error);
+      alert('Sıralama kaydedilirken hata oluştu');
+    } finally {
+      setSavingOrder(false);
+    }
+  };
+
+  const handleDelete = async (pageId: string) => {
+    if (!confirm('Bu sayfayı silmek istediğinizden emin misiniz?')) return;
+
+    try {
+      const response = await fetch(`/api/admin/pages/${pageId}`, {
+        method: 'DELETE',
+      });
+
+      if (response.ok) {
+        setPages(pages.filter(page => page._id !== pageId));
+      }
+    } catch (error) {
+      console.error('Sayfa silinirken hata:', error);
+    }
+  };
+
+  const openEditModal = (page: PageItem) => {
+    setEditingPage(page);
     setEditForm({
       title: page.title,
+      path: page.path,
       description: page.description,
-      buttonText: page.buttonText || "",
-      buttonLink: page.buttonLink || "",
-      icon: page.icon || "",
-      isExternal: page.isExternal ?? false,
-      isActive: page.isActive,
-      showInNavigation: page.showInNavigation,
+      showInNavigation: page.showInNavigation
     });
+    setIsEditModalOpen(true);
   };
 
-  const saveEditing = async () => {
+  const handleEditSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
     if (!editingPage) return;
-    await updatePage(editingPage, {
-      title: editForm.title,
-      description: editForm.description,
-      buttonText: editForm.buttonText,
-      buttonLink: editForm.buttonLink,
-      icon: editForm.icon || undefined,
-      isExternal: !!editForm.isExternal,
-      isActive: editForm.isActive ?? true,
-      showInNavigation: editForm.showInNavigation ?? true,
-    });
-    setEditingPage(null);
-  };
 
-  const cancelEditing = () => {
-    setEditingPage(null);
-    setEditForm({
-      title: "",
-      description: "",
-      buttonText: "",
-      buttonLink: "",
-      icon: "",
-      isExternal: false,
-      isActive: true,
-      showInNavigation: true,
-    });
-  };
-
-  const addNewPage = async () => {
     try {
-      setSaving(true);
-      if (!newPage.pageId || !newPage.title || !newPage.path) {
-        setError("Yeni sayfa için Page ID, Başlık ve Path zorunludur");
-        setTimeout(() => setError(""), 2500);
-        return;
+      const response = await fetch(`/api/admin/pages/${editingPage._id}`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(editForm),
+      });
+
+      if (response.ok) {
+        const updatedPage = await response.json();
+        const pageData = updatedPage.data || updatedPage; // Handle potential response inconsistencies
+
+        setPages(pages.map(p => p._id === editingPage._id ? {
+          ...p,
+          ...editForm,
+        } : p));
+
+        setIsEditModalOpen(false);
+        setEditingPage(null);
+        loadPages(); // Reload to ensure sync
+      } else {
+        alert('Sayfa güncellenemedi');
       }
-      const order = pages.length;
-      const res = await fetch("/api/admin/page-settings", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          pageId: newPage.pageId,
-          title: newPage.title,
-          path: newPage.path,
-          icon: newPage.icon || undefined,
-          isExternal: !!newPage.isExternal,
-          isActive: newPage.isActive,
-          showInNavigation: newPage.showInNavigation,
-          order,
-          description: "",
-        }),
-      });
-      if (!res.ok) throw new Error("Yeni sayfa eklenemedi");
-      const created: PageSetting = await res.json();
-      setPages(prev => [...prev, created].sort((a, b) => a.order - b.order));
-      setNewPage({ pageId: "", title: "", path: "", icon: "", isExternal: false, isActive: true, showInNavigation: true });
-      setSuccess("Yeni sayfa eklendi");
-      setTimeout(() => setSuccess(""), 1500);
-      await fetch("/api/admin/clear-cache", { method: "POST" }).catch(() => {});
-      window.dispatchEvent(new CustomEvent("pageSettingsChanged"));
-    } catch {
-      setError("Yeni sayfa eklenirken bir hata oluştu");
-      setTimeout(() => setError(""), 3000);
-    } finally {
-      setSaving(false);
+    } catch (error) {
+      console.error('Güncelleme hatası:', error);
+      alert('Bir hata oluştu');
     }
   };
 
-  const deletePage = async (pageId: string) => {
-    if (!confirm("Bu sayfa silinecek. Devam edilsin mi?")) return;
-    try {
-      setSaving(true);
-      const res = await fetch("/api/admin/page-settings", {
-        method: "DELETE",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ pageId }),
-      });
-      if (!res.ok) throw new Error("Silme başarısız");
-      setPages(prev => prev.filter(p => p.pageId !== pageId).map((p, i) => ({ ...p, order: i })));
-      setSuccess("Sayfa silindi");
-      setTimeout(() => setSuccess(""), 1500);
-      await fetch("/api/admin/clear-cache", { method: "POST" }).catch(() => {});
-      window.dispatchEvent(new CustomEvent("pageSettingsChanged"));
-    } catch {
-      setError("Sayfa silinirken bir hata oluştu");
-      setTimeout(() => setError(""), 3000);
-    } finally {
-      setSaving(false);
-    }
+  const filteredPages = pages.filter(page => {
+    const matchesSearch = page.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      page.description.toLowerCase().includes(searchQuery.toLowerCase());
+    const matchesStatus = statusFilter === 'all' ||
+      (statusFilter === 'published' && page.isActive) ||
+      (statusFilter === 'draft' && !page.isActive);
+    return matchesSearch && matchesStatus;
+  });
+
+  const formatDate = (dateString: string) => {
+    return new Date(dateString).toLocaleDateString('tr-TR', {
+      month: 'short',
+      day: 'numeric',
+      year: 'numeric'
+    });
   };
 
-  if (status === "loading" || loading) {
+  const isReorderEnabled = searchQuery === '' && statusFilter === 'all';
+
+  if (status === 'loading' || loading) {
     return (
-      <div className="p-6">
-        <PageLoader />
+      <div className="flex items-center justify-center min-h-[60vh]">
+        <div className="flex flex-col items-center space-y-4">
+          <div className="relative">
+            <div className="w-16 h-16 border-4 border-indigo-200 rounded-full"></div>
+            <div className="absolute top-0 left-0 w-16 h-16 border-4 border-transparent border-t-indigo-600 rounded-full animate-spin"></div>
+          </div>
+          <p className="text-lg font-medium text-slate-600">Sayfalar yükleniyor...</p>
+        </div>
       </div>
     );
   }
 
   return (
-    <AdminLayout title="Sayfa Ayarları">
-      <div className="space-y-6">
-        <div className="bg-white rounded-xl shadow-sm border border-slate-200 p-6">
-          <div className="flex items-center justify-between">
-            <div>
-              <h2 className="text-xl font-semibold text-slate-900 flex items-center gap-2">
-                <Cog6ToothIcon className="w-5 h-5" />
-                Sayfa Ayarları
-              </h2>
-              <p className="text-slate-600">Sitenizin sayfalarını aktif/pasif yapın ve menüde gösterilecek sayfaları belirleyin</p>
+    <div className="space-y-6 relative">
+      {/* Page Header */}
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+        <div>
+          <h1 className="text-2xl font-bold text-slate-900">Sayfalar</h1>
+          <p className="text-slate-500 mt-1">Site sayfalarınızı yönetin</p>
+        </div>
+        <div className="flex gap-3">
+          {hasReordered && (
+            <button
+              onClick={saveOrder}
+              disabled={savingOrder}
+              className="inline-flex items-center px-6 py-3 bg-emerald-600 text-white font-semibold rounded-xl hover:bg-emerald-700 transition-all duration-200 disabled:opacity-50"
+            >
+              {savingOrder ? (
+                <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin mr-2" />
+              ) : (
+                <CheckCircleIcon className="w-5 h-5 mr-2" />
+              )}
+              Sıralamayı Kaydet
+            </button>
+          )}
+          <button className="inline-flex items-center px-6 py-3 bg-gradient-to-r from-indigo-500 to-violet-600 text-white font-semibold rounded-xl hover:shadow-lg hover:shadow-indigo-500/30 transition-all duration-200">
+            <PlusIcon className="w-5 h-5 mr-2" />
+            Sayfa Oluştur
+          </button>
+        </div>
+      </div>
+
+      {/* Search and Filter Bar */}
+      <div className="bg-white rounded-2xl shadow-sm border border-slate-200/60 p-4">
+        <div className="flex flex-col sm:flex-row gap-4">
+          <div className="flex-1 relative">
+            <MagnifyingGlassIcon className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-400" />
+            <input
+              type="text"
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              placeholder="Sayfa ara..."
+              className="w-full pl-12 pr-4 py-3 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all"
+            />
+          </div>
+          <div className="flex space-x-2 bg-slate-100 p-1 rounded-xl">
+            <button
+              onClick={() => setStatusFilter('all')}
+              className={`px-4 py-2 rounded-lg text-sm font-medium transition-all ${statusFilter === 'all'
+                ? 'bg-white text-indigo-600 shadow-sm'
+                : 'text-slate-600 hover:text-slate-900'
+                }`}
+            >
+              Tümü ({pages.length})
+            </button>
+            <button
+              onClick={() => setStatusFilter('published')}
+              className={`px-4 py-2 rounded-lg text-sm font-medium transition-all ${statusFilter === 'published'
+                ? 'bg-white text-indigo-600 shadow-sm'
+                : 'text-slate-600 hover:text-slate-900'
+                }`}
+            >
+              Aktif ({pages.filter(p => p.isActive).length})
+            </button>
+            <button
+              onClick={() => setStatusFilter('draft')}
+              className={`px-4 py-2 rounded-lg text-sm font-medium transition-all ${statusFilter === 'draft'
+                ? 'bg-white text-indigo-600 shadow-sm'
+                : 'text-slate-600 hover:text-slate-900'
+                }`}
+            >
+              Pasif ({pages.filter(p => !p.isActive).length})
+            </button>
+          </div>
+        </div>
+        {!isReorderEnabled && (
+          <div className="mt-2 text-xs text-amber-600 flex items-center">
+            <div className="w-1.5 h-1.5 rounded-full bg-amber-500 mr-2" />
+            Sıralama yapmak için filtreleri temizleyin (Arama yaparken sıralama devre dışıdır)
+          </div>
+        )}
+      </div>
+
+      {/* Pages List */}
+      <div className="bg-white rounded-2xl shadow-sm border border-slate-200/60 overflow-hidden">
+        {filteredPages.length > 0 ? (
+          isReorderEnabled ? (
+            <Reorder.Group axis="y" values={filteredPages} onReorder={handleReorder} className="divide-y divide-slate-200">
+              {filteredPages.map((page) => (
+                <DraggablePageItem
+                  key={page._id}
+                  page={page}
+                  onDelete={handleDelete}
+                  onEdit={openEditModal}
+                  onStatusToggle={handleStatusToggle}
+                  formatDate={formatDate}
+                />
+              ))}
+            </Reorder.Group>
+          ) : (
+            <div className="divide-y divide-slate-200">
+              {filteredPages.map((page) => (
+                <PageListItem
+                  key={page._id}
+                  page={page}
+                  onDelete={handleDelete}
+                  onEdit={openEditModal}
+                  onStatusToggle={handleStatusToggle}
+                  formatDate={formatDate}
+                  isDraggable={false}
+                />
+              ))}
             </div>
-            <div className="flex items-center space-x-2 text-sm text-slate-500">
-              <span>Toplam {pages.length} sayfa</span>
+          )
+        ) : (
+          <div className="text-center py-16">
+            <DocumentTextIcon className="w-16 h-16 text-slate-300 mx-auto mb-4" />
+            <h3 className="text-xl font-semibold text-slate-900 mb-2">Sayfa bulunamadı</h3>
+            <p className="text-slate-500">
+              {searchQuery || statusFilter !== 'all'
+                ? 'Aramanızı veya filtrenizi değiştirmeyi deneyin'
+                : 'Sayfalar Site Ayarları sayfasından yönetilir'
+              }
+            </p>
+          </div>
+        )}
+      </div>
+
+      {/* Edit Modal */}
+      {isEditModalOpen && (
+        <div className="fixed inset-0 z-50 overflow-y-auto">
+          <div className="flex min-h-full items-center justify-center p-4">
+            <div className="fixed inset-0 bg-black/30 backdrop-blur-sm" onClick={() => setIsEditModalOpen(false)} />
+            <div className="relative w-full max-w-lg rounded-2xl bg-white p-8 shadow-2xl">
+              <div className="flex items-center justify-between mb-6">
+                <h3 className="text-xl font-bold text-slate-900">Sayfa Düzenle</h3>
+                <button onClick={() => setIsEditModalOpen(false)} className="text-slate-400 hover:text-slate-600">
+                  <XMarkIcon className="w-6 h-6" />
+                </button>
+              </div>
+
+              <form onSubmit={handleEditSubmit} className="space-y-4">
+                <div>
+                  <label className="block text-sm font-medium text-slate-700 mb-1">Başlık</label>
+                  <input
+                    type="text"
+                    value={editForm.title}
+                    onChange={(e) => setEditForm({ ...editForm, title: e.target.value })}
+                    className="w-full px-4 py-2 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                    required
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-slate-700 mb-1">Yol (Path)</label>
+                  <input
+                    type="text"
+                    value={editForm.path}
+                    onChange={(e) => setEditForm({ ...editForm, path: e.target.value })}
+                    className="w-full px-4 py-2 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                    required
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-slate-700 mb-1">Açıklama</label>
+                  <textarea
+                    value={editForm.description}
+                    onChange={(e) => setEditForm({ ...editForm, description: e.target.value })}
+                    className="w-full px-4 py-2 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                    rows={3}
+                    required
+                  />
+                </div>
+                <div className="flex items-center">
+                  <input
+                    type="checkbox"
+                    id="showInNav"
+                    checked={editForm.showInNavigation}
+                    onChange={(e) => setEditForm({ ...editForm, showInNavigation: e.target.checked })}
+                    className="w-4 h-4 text-indigo-600 border-slate-300 rounded focus:ring-indigo-500"
+                  />
+                  <label htmlFor="showInNav" className="ml-2 text-sm text-slate-700">
+                    Menüde Göster
+                  </label>
+                </div>
+
+                <div className="flex justify-end gap-3 mt-6">
+                  <button
+                    type="button"
+                    onClick={() => setIsEditModalOpen(false)}
+                    className="px-4 py-2 text-slate-600 hover:bg-slate-100 rounded-lg transition-colors"
+                  >
+                    İptal
+                  </button>
+                  <button
+                    type="submit"
+                    className="px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition-colors"
+                  >
+                    Kaydet
+                  </button>
+                </div>
+              </form>
             </div>
           </div>
         </div>
+      )}
+    </div>
+  );
+}
 
-        {/* Yeni Sayfa Ekle */}
-        <div className="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden">
-          <div className="px-6 py-4 border-b border-slate-200">
-            <h3 className="text-lg font-semibold text-slate-900">Yeni Link / Sayfa Ekle</h3>
-          </div>
-          <div className="p-6 grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div>
-              <label className="block text-sm font-medium text-slate-700 mb-1">Page ID</label>
-              <input type="text" value={newPage.pageId} onChange={(e) => setNewPage(p => ({ ...p, pageId: e.target.value }))} className="w-full px-3 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-brand-primary-600 focus:border-transparent" placeholder="örn: blog veya github" />
-            </div>
-            <div>
-              <label className="block text-sm font-medium text-slate-700 mb-1">Başlık</label>
-              <input type="text" value={newPage.title} onChange={(e) => setNewPage(p => ({ ...p, title: e.target.value }))} className="w-full px-3 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-brand-primary-600 focus:border-transparent" placeholder="Menüde görünecek başlık" />
-            </div>
-            <div>
-              <label className="block text-sm font-medium text-slate-700 mb-1">Path / URL</label>
-              <input type="text" value={newPage.path} onChange={(e) => setNewPage(p => ({ ...p, path: e.target.value }))} className="w-full px-3 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-brand-primary-600 focus:border-transparent" placeholder="örn: /blog veya https://github.com/kullanici" />
-            </div>
-            <div>
-              <label className="block text-sm font-medium text-slate-700 mb-1">Icon (opsiyonel)</label>
-              <input type="text" value={newPage.icon} onChange={(e) => setNewPage(p => ({ ...p, icon: e.target.value }))} className="w-full px-3 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-brand-primary-600 focus:border-transparent" placeholder="örn: HomeIcon, UserIcon" />
-            </div>
-            <div className="flex items-center gap-4">
-              <div className="flex items-center gap-2">
-                <span className="text-sm text-slate-600">Dış Bağlantı</span>
-                <button onClick={() => setNewPage(p => ({ ...p, isExternal: !p.isExternal }))} className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors ${newPage.isExternal ? 'bg-brand-primary-700' : 'bg-slate-200'}`}>
-                  <span className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform ${newPage.isExternal ? 'translate-x-6' : 'translate-x-1'}`} />
-                </button>
-              </div>
-              <div className="flex items-center gap-2">
-                <span className="text-sm text-slate-600">Menüde Göster</span>
-                <button onClick={() => setNewPage(p => ({ ...p, showInNavigation: !p.showInNavigation }))} className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors ${newPage.showInNavigation ? 'bg-brand-primary-700' : 'bg-slate-200'}`}>
-                  <span className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform ${newPage.showInNavigation ? 'translate-x-6' : 'translate-x-1'}`} />
-                </button>
-              </div>
-              <div className="flex items-center gap-2">
-                <span className="text-sm text-slate-600">Aktif</span>
-                <button onClick={() => setNewPage(p => ({ ...p, isActive: !p.isActive }))} className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors ${newPage.isActive ? 'bg-brand-primary-700' : 'bg-slate-200'}`}>
-                  <span className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform ${newPage.isActive ? 'translate-x-6' : 'translate-x-1'}`} />
-                </button>
-              </div>
-            </div>
-          </div>
-          <div className="px-6 pb-6">
-            <button onClick={addNewPage} disabled={saving} className="px-4 py-2 bg-brand-primary-700 text-white rounded-lg hover:bg-brand-primary-800 disabled:opacity-50 transition-colors">Ekle</button>
-          </div>
-        </div>
+// Draggable Page Item with specific drag controls
+function DraggablePageItem({
+  page,
+  onDelete,
+  onEdit,
+  onStatusToggle,
+  formatDate
+}: {
+  page: PageItem,
+  onDelete: (id: string) => void,
+  onEdit: (page: PageItem) => void,
+  onStatusToggle: (page: PageItem) => void,
+  formatDate: (d: string) => string
+}) {
+  const dragControls = useDragControls();
 
-        {/* Bildirimler */}
-        {error && (
-          <div className="bg-red-50 border border-red-200 text-red-800 p-4 rounded-xl flex items-center space-x-3">
-            <ExclamationTriangleIcon className="w-5 h-5" />
-            <span>{error}</span>
+  return (
+    <Reorder.Item
+      value={page}
+      dragListener={false}
+      dragControls={dragControls}
+      className="bg-white"
+    >
+      <div className="flex items-center justify-between px-6 py-4 hover:bg-slate-50 transition-colors group">
+        <div className="flex items-center space-x-4 flex-1 min-w-0">
+          {/* Specific Drag Handle */}
+          <div
+            onPointerDown={(e) => dragControls.start(e)}
+            className="cursor-grab active:cursor-grabbing text-slate-400 hover:text-slate-600 p-1"
+          >
+            <Bars3Icon className="w-5 h-5" />
           </div>
-        )}
-        {success && (
-          <div className="bg-brand-primary-50 border border-brand-primary-200 text-brand-primary-900 p-4 rounded-xl flex items-center space-x-3">
-            <CheckIcon className="w-5 h-5" />
-            <span>{success}</span>
-          </div>
-        )}
 
-        {/* Sayfa Listesi */}
-        <div className="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden">
-          <div className="px-6 py-4 border-b border-slate-200">
-            <h3 className="text-lg font-semibold text-slate-900 flex items-center space-x-2">
-              <DocumentTextIcon className="w-5 h-5 text-brand-primary-700" />
-              <span>Sayfa Listesi</span>
+          <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-indigo-500 to-violet-600 flex items-center justify-center flex-shrink-0">
+            <DocumentTextIcon className="w-5 h-5 text-white" />
+          </div>
+          <div className="flex-1 min-w-0">
+            <h3 className="text-sm font-semibold text-slate-900 group-hover:text-indigo-600 transition-colors truncate">
+              {page.title}
             </h3>
-          </div>
-          <div className="divide-y divide-slate-200">
-            {pages.map((page) => (
-              <div key={page._id} className="p-6 hover:bg-slate-50 transition-colors">
-                {editingPage === page.pageId ? (
-                  <div className="space-y-4">
-                    <div className="flex items-center space-x-3">
-                      <div className="flex-shrink-0">
-                        <div className={`w-10 h-10 rounded-xl flex items-center justify-center ${page.isActive ? 'bg-brand-primary-100 text-brand-primary-700' : 'bg-slate-100 text-slate-400'}`}>
-                          {page.icon && <span className={`text-lg ${page.icon}`}></span>}
-                          {!page.icon && page.pageId === 'home' && <HomeIcon className="w-5 h-5" />}
-                          {!page.icon && page.pageId !== 'home' && <DocumentTextIcon className="w-5 h-5" />}
-                        </div>
-                      </div>
-                      <div className="flex-1">
-                        <div className="flex items-center space-x-2 mb-2">
-                          <span className="text-sm text-slate-500 bg-slate-100 px-2 py-1 rounded">{page.path}</span>
-                          <span className="text-sm text-slate-500">- Hero Alanı Düzenleme</span>
-                        </div>
-                      </div>
-                    </div>
-
-                    <div className="grid grid-cols-1 gap-4">
-                      <div>
-                        <label className="block text-sm font-medium text-slate-700 mb-1">Hero Başlığı</label>
-                        <input type="text" value={editForm.title} onChange={(e) => setEditForm(prev => ({ ...prev, title: e.target.value }))} className="w-full px-3 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-brand-primary-600 focus:border-transparent" placeholder="Sayfa hero başlığı" />
-                      </div>
-                      <div>
-                        <label className="block text-sm font-medium text-slate-700 mb-1">Hero Açıklaması</label>
-                        <UniversalEditor value={editForm.description} onChange={(value) => setEditForm(prev => ({ ...prev, description: value }))} placeholder="Sayfa hero açıklaması..." minHeight="150px" />
-                      </div>
-                      <div>
-                        <label className="block text-sm font-medium text-slate-700 mb-1">Buton Metni</label>
-                        <input type="text" value={editForm.buttonText} onChange={(e) => setEditForm(prev => ({ ...prev, buttonText: e.target.value }))} className="w-full px-3 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-brand-primary-600 focus:border-transparent" placeholder="Buton metni (örn: Projeleri İncele)" />
-                      </div>
-                      <div>
-                        <label className="block text-sm font-medium text-slate-700 mb-1">Buton Linki</label>
-                        <input type="text" value={editForm.buttonLink} onChange={(e) => setEditForm(prev => ({ ...prev, buttonLink: e.target.value }))} className="w-full px-3 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-brand-primary-600 focus:border-transparent" placeholder="Buton linki (örn: #projects veya /contact)" />
-                      </div>
-                      <div>
-                        <label className="block text-sm font-medium text-slate-700 mb-1">Icon</label>
-                        <input type="text" value={editForm.icon} onChange={(e) => setEditForm(prev => ({ ...prev, icon: e.target.value }))} className="w-full px-3 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-brand-primary-600 focus:border-transparent" placeholder="Icon adı" />
-                      </div>
-                      <div className="flex items-center gap-4">
-                        <div className="flex items-center gap-2">
-                          <span className="text-sm text-slate-600">Dış Bağlantı</span>
-                          <button onClick={() => setEditForm(prev => ({ ...prev, isExternal: !prev.isExternal }))} className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors ${editForm.isExternal ? 'bg-brand-primary-700' : 'bg-slate-200'}`}>
-                            <span className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform ${editForm.isExternal ? 'translate-x-6' : 'translate-x-1'}`} />
-                          </button>
-                        </div>
-                        <div className="flex items-center gap-2">
-                          <span className="text-sm text-slate-600">Menüde Göster</span>
-                          <button onClick={() => setEditForm(prev => ({ ...prev, showInNavigation: !prev.showInNavigation }))} className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors ${editForm.showInNavigation ? 'bg-brand-primary-700' : 'bg-slate-200'}`}>
-                            <span className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform ${editForm.showInNavigation ? 'translate-x-6' : 'translate-x-1'}`} />
-                          </button>
-                        </div>
-                      </div>
-                    </div>
-
-                    <div className="flex items-center space-x-3">
-                      <button onClick={saveEditing} disabled={saving} className="px-4 py-2 bg-brand-primary-700 text-white rounded-lg hover:bg-brand-primary-800 disabled:opacity-50 transition-colors flex items-center space-x-2">
-                        <CheckIcon className="w-4 h-4" />
-                        <span>Kaydet</span>
-                      </button>
-                      <button onClick={cancelEditing} disabled={saving} className="px-4 py-2 bg-slate-200 text-slate-700 rounded-lg hover:bg-slate-300 disabled:opacity-50 transition-colors flex items-center space-x-2">
-                        <XMarkIcon className="w-4 h-4" />
-                        <span>İptal</span>
-                      </button>
-                    </div>
-                  </div>
+            <div className="flex items-center space-x-3 mt-1 text-xs text-slate-500">
+              <button
+                onClick={() => onStatusToggle(page)}
+                className={`inline-flex items-center px-2 py-0.5 rounded-full font-medium transition-colors cursor-pointer ${page.isActive
+                  ? 'bg-emerald-100 text-emerald-700 hover:bg-emerald-200'
+                  : 'bg-amber-100 text-amber-700 hover:bg-amber-200'
+                  }`}
+              >
+                {page.isActive ? (
+                  <>
+                    <CheckCircleIcon className="w-3 h-3 mr-1" />
+                    Aktif
+                  </>
                 ) : (
-                  <div className="flex items-center justify-between">
-                    <div className="flex-1">
-                      <div className="flex items-center space-x-3">
-                        <div className="flex-shrink-0">
-                          <div className={`w-10 h-10 rounded-xl flex items-center justify-center ${page.isActive ? 'bg-brand-primary-100 text-brand-primary-700' : 'bg-slate-100 text-slate-400'}`}>
-                            {page.icon && <span className={`text-lg ${page.icon}`}></span>}
-                            {!page.icon && page.pageId === 'home' && <HomeIcon className="w-5 h-5" />}
-                            {!page.icon && page.pageId !== 'home' && <DocumentTextIcon className="w-5 h-5" />}
-                          </div>
-                        </div>
-                        <div className="min-w-0 flex-1">
-                          <div className="flex items-center space-x-2">
-                            <h4 className="text-lg font-semibold text-slate-900">{page.title}</h4>
-                            <span className="text-sm text-slate-500 bg-slate-100 px-2 py-1 rounded">{page.path}</span>
-                            <button onClick={() => startEditing(page)} className="p-1 text-slate-400 hover:text-brand-primary-700 transition-colors" title="Hero alanını düzenle">
-                              <PencilIcon className="w-4 h-4" />
-                            </button>
-                            <button onClick={() => deletePage(page.pageId)} className="p-1 text-slate-400 hover:text-red-600 transition-colors" title="Sayfayı sil">
-                              <XMarkIcon className="w-4 h-4" />
-                            </button>
-                          </div>
-                          <p className="text-sm text-slate-600 mt-1">{page.description}</p>
-                        </div>
-                      </div>
-                    </div>
-                    <div className="flex items-center space-x-4">
-                      <div className="flex items-center space-x-2">
-                        <span className="text-sm text-slate-600">Aktif</span>
-                        <button onClick={() => updatePage(page.pageId, { isActive: !page.isActive })} disabled={saving} className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors ${page.isActive ? 'bg-brand-primary-700' : 'bg-slate-200'}`}>
-                          <span className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform ${page.isActive ? 'translate-x-6' : 'translate-x-1'}`} />
-                        </button>
-                      </div>
-                      <div className="flex items-center space-x-2">
-                        <span className="text-sm text-slate-600">Menüde</span>
-                        <button onClick={() => updatePage(page.pageId, { showInNavigation: !page.showInNavigation })} disabled={saving} className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors ${page.showInNavigation ? 'bg-brand-primary-700' : 'bg-slate-200'}`}>
-                          <span className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform ${page.showInNavigation ? 'translate-x-6' : 'translate-x-1'}`} />
-                        </button>
-                      </div>
-                      <div className="flex items-center space-x-1">
-                        <button onClick={() => reorderPages(page.pageId, 'up')} disabled={saving || page.order === 0} className="p-2 text-slate-400 hover:text-slate-600 disabled:opacity-50 transition-colors">
-                          <ArrowUpIcon className="w-4 h-4" />
-                        </button>
-                        <button onClick={() => reorderPages(page.pageId, 'down')} disabled={saving || page.order === pages.length - 1} className="p-2 text-slate-400 hover:text-slate-600 disabled:opacity-50 transition-colors">
-                          <ArrowDownIcon className="w-4 h-4" />
-                        </button>
-                      </div>
-                    </div>
-                  </div>
+                  <>
+                    <XCircleIcon className="w-3 h-3 mr-1" />
+                    Pasif
+                  </>
                 )}
-              </div>
-            ))}
+              </button>
+              <span>{page.path}</span>
+              <span>• Sıra: {page.order}</span>
+              {!page.showInNavigation && (
+                <span className="text-amber-600">• Menüde Gizli</span>
+              )}
+            </div>
           </div>
         </div>
+        <div className="flex items-center space-x-2 opacity-0 group-hover:opacity-100 transition-opacity">
+          <span className="text-xs text-slate-500 mr-2">
+            {formatDate(page.updatedAt)}
+          </span>
+          <button
+            onClick={() => onEdit(page)}
+            className="p-2 hover:bg-indigo-100 rounded-lg transition-colors"
+          >
+            <PencilIcon className="w-4 h-4 text-slate-600" />
+          </button>
+          <button
+            onClick={() => onDelete(page._id)}
+            className="p-2 hover:bg-red-100 rounded-lg transition-colors"
+          >
+            <TrashIcon className="w-4 h-4 text-slate-600" />
+          </button>
+        </div>
+      </div>
+    </Reorder.Item>
+  );
+}
 
-        {/* Durum Açıklamaları */}
-        <div className="bg-slate-50 rounded-xl p-6 border border-slate-200">
-          <h4 className="text-sm font-semibold text-slate-900 mb-3">Durum Açıklamaları</h4>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
-            <div className="flex items-center space-x-2">
-              <CheckCircleIcon className="w-4 h-4 text-brand-primary-700" />
-              <span className="text-slate-700">Aktif: Sayfa erişilebilir</span>
-            </div>
-            <div className="flex items-center space-x-2">
-              <XCircleIcon className="w-4 h-4 text-slate-400" />
-              <span className="text-slate-700">Pasif: Sayfa 404 döndürür</span>
-            </div>
-            <div className="flex items-center space-x-2">
-              <EyeIcon className="w-4 h-4 text-brand-primary-700" />
-              <span className="text-slate-700">Menüde: Navigasyon menüsünde gösterilir</span>
-            </div>
-            <div className="flex items-center space-x-2">
-              <EyeSlashIcon className="w-4 h-4 text-slate-400" />
-              <span className="text-slate-700">Menüde değil: Navigasyon menüsünde gizli</span>
-            </div>
+// Static Page Item for non-search/filtered view
+function PageListItem({
+  page,
+  onDelete,
+  onEdit,
+  onStatusToggle,
+  formatDate,
+  isDraggable
+}: {
+  page: PageItem,
+  onDelete: (id: string) => void,
+  onEdit: (page: PageItem) => void,
+  onStatusToggle: (page: PageItem) => void,
+  formatDate: (d: string) => string,
+  isDraggable: boolean
+}) {
+  return (
+    <div className="flex items-center justify-between px-6 py-4 hover:bg-slate-50 transition-colors group">
+      <div className="flex items-center space-x-4 flex-1 min-w-0">
+        {isDraggable && (
+          <div className="text-slate-300 p-1">
+            {/* Disabled drag handle visual */}
+            <Bars3Icon className="w-5 h-5" />
+          </div>
+        )}
+        <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-indigo-500 to-violet-600 flex items-center justify-center flex-shrink-0">
+          <DocumentTextIcon className="w-5 h-5 text-white" />
+        </div>
+        <div className="flex-1 min-w-0">
+          <h3 className="text-sm font-semibold text-slate-900 group-hover:text-indigo-600 transition-colors truncate">
+            {page.title}
+          </h3>
+          <div className="flex items-center space-x-3 mt-1 text-xs text-slate-500">
+            <button
+              onClick={() => onStatusToggle(page)}
+              className={`inline-flex items-center px-2 py-0.5 rounded-full font-medium transition-colors cursor-pointer ${page.isActive
+                ? 'bg-emerald-100 text-emerald-700 hover:bg-emerald-200'
+                : 'bg-amber-100 text-amber-700 hover:bg-amber-200'
+                }`}
+            >
+              {page.isActive ? (
+                <>
+                  <CheckCircleIcon className="w-3 h-3 mr-1" />
+                  Aktif
+                </>
+              ) : (
+                <>
+                  <XCircleIcon className="w-3 h-3 mr-1" />
+                  Pasif
+                </>
+              )}
+            </button>
+            <span>{page.path}</span>
+            {isDraggable && <span>• Sıra: {page.order}</span>}
+            {!page.showInNavigation && (
+              <span className="text-amber-600">• Menüde Gizli</span>
+            )}
           </div>
         </div>
       </div>
-    </AdminLayout>
+      <div className="flex items-center space-x-2 opacity-0 group-hover:opacity-100 transition-opacity">
+        <span className="text-xs text-slate-500 mr-2">
+          {formatDate(page.updatedAt)}
+        </span>
+        <button
+          onClick={() => onEdit(page)}
+          className="p-2 hover:bg-indigo-100 rounded-lg transition-colors"
+        >
+          <PencilIcon className="w-4 h-4 text-slate-600" />
+        </button>
+        <button
+          onClick={() => onDelete(page._id)}
+          className="p-2 hover:bg-red-100 rounded-lg transition-colors"
+        >
+          <TrashIcon className="w-4 h-4 text-slate-600" />
+        </button>
+      </div>
+    </div>
   );
 }
- 

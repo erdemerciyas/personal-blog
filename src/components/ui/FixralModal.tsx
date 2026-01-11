@@ -91,16 +91,16 @@ const FixralModal: React.FC<FixralModalProps> = ({
         aria-labelledby={title ? 'fixral-modal-title' : undefined}
         aria-describedby={ariaDescribedBy}
         className={clsx(
-          'relative z-[101] w-full rounded-fixral-xl bg-white shadow-fixral-xl focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-primary-600 focus-visible:ring-offset-2',
+          'relative z-[101] w-full rounded-fixral-xl bg-white dark:bg-slate-800 shadow-fixral-xl focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-primary-600 focus-visible:ring-offset-2',
           sizeClasses[size]
         )}
         tabIndex={-1}
       >
         {/* Header */}
         {(title || showCloseButton) && (
-          <div className="flex items-center justify-between p-4 md:p-5 border-b border-slate-200">
+          <div className="flex items-center justify-between p-4 md:p-5 border-b border-slate-200 dark:border-slate-700">
             {title && (
-              <h2 id="fixral-modal-title" className="text-lg font-semibold text-slate-900">
+              <h2 id="fixral-modal-title" className="text-lg font-semibold text-slate-900 dark:text-white">
                 {title}
               </h2>
             )}
@@ -108,7 +108,7 @@ const FixralModal: React.FC<FixralModalProps> = ({
               <button
                 type="button"
                 onClick={onClose}
-                className="inline-flex h-9 w-9 items-center justify-center rounded-fixral text-slate-600 hover:bg-slate-100 hover:text-slate-900 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-primary-600 focus-visible:ring-offset-2"
+                className="inline-flex h-9 w-9 items-center justify-center rounded-fixral text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-700 hover:text-slate-900 dark:hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-primary-600 focus-visible:ring-offset-2"
                 aria-label="Close"
               >
                 <svg
@@ -128,7 +128,7 @@ const FixralModal: React.FC<FixralModalProps> = ({
         )}
 
         {/* Body */}
-        <div className="p-4 md:p-6 text-slate-800">{children}</div>
+        <div className="p-4 md:p-6 text-slate-800 dark:text-slate-200">{children}</div>
       </div>
     </div>
   );

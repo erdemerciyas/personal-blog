@@ -9,6 +9,13 @@
 
 
 :root {
+  /* Dynamic Theme Colors - Set by ActiveThemeProvider */
+  --theme-primary: #003450;
+  --theme-secondary: #3A506B;
+  --theme-accent: #003450;
+  --theme-background: #F8F9FA;
+  --theme-text: #3D3D3D;
+
   /* Fixral Design System Variables - Updated to Brand Primary */
   --fixral-night-blue: 0, 52, 80;
   /* #003450 */
@@ -31,7 +38,7 @@
   --brand-primary-600: #0284c7;
   --brand-primary-700: #0369a1;
   --brand-primary-800: #075985;
-  --brand-primary-900: #003450;
+  --brand-primary-900: var(--theme-primary);
   --brand-primary: var(--brand-primary-900);
 
   /* Semantic color mappings */
@@ -40,8 +47,8 @@
   --background-end-rgb: var(--fixral-light-gray);
   --primary-color: var(--fixral-primary);
   --primary-dark: var(--fixral-night-blue);
-  --secondary-color: var(--fixral-gray-blue);
-  --accent-color: var(--fixral-primary);
+  --secondary-color: var(--theme-secondary);
+  --accent-color: var(--theme-accent);
   --text-primary: var(--fixral-night-blue);
   --text-secondary: var(--fixral-charcoal);
   --text-muted: var(--fixral-gray-blue);
@@ -54,6 +61,22 @@
 
   /* Font variables */
   --font-inter: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+
+  /* Admin Theme Variables - Light Mode */
+  --admin-bg: #f8f9fa;
+  --admin-surface: #ffffff;
+  --admin-border: #e2e8f0;
+  --admin-text-primary: #0f172a;
+  --admin-text-secondary: #64748b;
+}
+
+/* Admin Theme Variables - Dark Mode */
+.dark {
+  --admin-bg: #0f172a;
+  --admin-surface: #1e293b;
+  --admin-border: #334155;
+  --admin-text-primary: #f1f5f9;
+  --admin-text-secondary: #94a3b8;
 }
 
 /* Dark theme variables (media-based) */
@@ -103,6 +126,19 @@ body {
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+}
+
+/* Global Text Selection */
+::selection {
+  background-color: var(--brand-primary-500);
+  color: #ffffff;
+  text-shadow: none;
+}
+
+::-moz-selection {
+  background-color: var(--brand-primary-500);
+  color: #ffffff;
+  text-shadow: none;
 }
 
 /* Fixral Typography Classes */
@@ -176,7 +212,7 @@ h6 {
 
   /* Fixral Form Elements */
   .input-field {
-    @apply w-full bg-white border border-gray-300 rounded-lg px-3 py-3 text-slate-800 placeholder-gray-400 focus-visible:ring-2 focus-visible:ring-brand-primary-600 focus-visible:border-brand-primary-600 focus-visible:outline-none focus-visible:ring-offset-2 outline-none transition-all duration-200 font-sans text-base dark:bg-slate-800 dark:border-slate-600 dark:text-slate-100 dark:placeholder-slate-400;
+    @apply w-full bg-white border border-slate-300 rounded-lg px-3 py-3 text-slate-800 placeholder-slate-400 focus-visible:ring-2 focus-visible:ring-brand-primary-600 focus-visible:border-brand-primary-600 focus-visible:outline-none focus-visible:ring-offset-2 outline-none transition-all duration-200 font-sans text-base dark:bg-slate-800 dark:border-slate-600 dark:text-slate-100 dark:placeholder-slate-500;
   }
 
   .label-text {

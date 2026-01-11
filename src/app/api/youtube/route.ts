@@ -2,6 +2,8 @@ import { NextResponse } from "next/server";
 import Video from "@/models/Video";
 import mongoose from "mongoose";
 
+export const dynamic = "force-dynamic";
+
 // Function to get videos from database only (no YouTube API)
 async function getVideosFromDatabase(queryParams: { limit?: number; type?: string; status?: string; channelId?: string } = {}) {
   // Build query for videos
@@ -12,12 +14,12 @@ async function getVideosFromDatabase(queryParams: { limit?: number; type?: strin
       { videoId: { $ne: "" } }
     ]
   };
-  
+
   // Apply additional filters
   if (queryParams.type) query.type = queryParams.type;
   if (queryParams.status) query.status = queryParams.status;
   if (queryParams.channelId) query.channelId = queryParams.channelId;
-  
+
   const limit = queryParams.limit || 12;
   const dbVideos = await Video.find(query)
     .sort({ publishedAt: -1 })
@@ -48,7 +50,7 @@ export async function GET(req: Request) {
 
     // Get videos from database only (no YouTube API)
     const data = await getVideosFromDatabase({ limit, type, status, channelId });
-    
+
     console.log(`Returning ${data.videos.length} videos from database`);
 
     return NextResponse.json({

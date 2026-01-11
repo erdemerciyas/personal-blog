@@ -31,6 +31,22 @@ interface ISiteSettings {
     phone: string;
     address: string;
   };
+  siteUrl: string;
+  timezone: string;
+  language: string;
+  favicon: string;
+  maintenanceMode: boolean;
+  allowRegistration: boolean;
+  enableComments: boolean;
+  analytics: {
+    googleAnalyticsId: string;
+    googleTagManagerId: string;
+    googleSiteVerification: string;
+    enableAnalytics: boolean;
+  };
+  system: {
+    maxUploadSize: number;
+  };
   isActive: boolean;
   createdAt?: Date;
   updatedAt?: Date;
@@ -152,6 +168,44 @@ const SiteSettingsSchema = new mongoose.Schema<ISiteSettings>({
       default: ''
     }
   },
+  // New Fields
+  siteUrl: {
+    type: String,
+    default: ''
+  },
+  timezone: {
+    type: String,
+    default: 'Europe/Istanbul'
+  },
+  language: {
+    type: String,
+    default: 'tr'
+  },
+  favicon: {
+    type: String,
+    default: ''
+  },
+  maintenanceMode: {
+    type: Boolean,
+    default: false
+  },
+  allowRegistration: {
+    type: Boolean,
+    default: true
+  },
+  enableComments: {
+    type: Boolean,
+    default: true
+  },
+  analytics: {
+    googleAnalyticsId: { type: String, default: '' },
+    googleTagManagerId: { type: String, default: '' },
+    googleSiteVerification: { type: String, default: '' },
+    enableAnalytics: { type: Boolean, default: false }
+  },
+  system: {
+    maxUploadSize: { type: Number, default: 10 }
+  },
   isActive: {
     type: Boolean,
     required: true,
@@ -162,9 +216,9 @@ const SiteSettingsSchema = new mongoose.Schema<ISiteSettings>({
 });
 
 // Tek bir site ayarı kaydı olacak (singleton pattern)
-SiteSettingsSchema.statics.getSiteSettings = async function() {
+SiteSettingsSchema.statics.getSiteSettings = async function () {
   let settings = await this.findOne({ isActive: true });
-  
+
   if (!settings) {
     // Varsayılan ayarları oluştur
     settings = await this.create({
@@ -173,24 +227,31 @@ SiteSettingsSchema.statics.getSiteSettings = async function() {
       isActive: true
     });
   }
-  
+
   return settings;
 };
 
-SiteSettingsSchema.statics.updateSiteSettings = async function(updateData: Partial<ISiteSettings>) {
-  let settings = await this.findOne({ isActive: true });
-  
-  if (!settings) {
-    settings = await this.create({ ...updateData, isActive: true });
-  } else {
-    Object.assign(settings, updateData);
-    await settings.save();
-  }
-  
+SiteSettingsSchema.statics.updateSiteSettings = async function (updateData: Partial<ISiteSettings>) {
+  // Use findOneAndUpdate with upsert option for atomic and reliable updates
+  const settings = await this.findOneAndUpdate(
+    { isActive: true },
+    { $set: updateData },
+    {
+      new: true,
+      upsert: true,
+      setDefaultsOnInsert: true,
+      runValidators: true
+    }
+  );
   return settings;
 };
 
-const SiteSettings = (mongoose.models.SiteSettings as ISiteSettingsModel) || 
+// Force model rebuild in development to apply schema changes
+if (process.env.NODE_ENV === 'development' && mongoose.models.SiteSettings) {
+  delete mongoose.models.SiteSettings;
+}
+
+const SiteSettings = (mongoose.models.SiteSettings as ISiteSettingsModel) ||
   mongoose.model<ISiteSettings, ISiteSettingsModel>('SiteSettings', SiteSettingsSchema);
 
 export default SiteSettings;

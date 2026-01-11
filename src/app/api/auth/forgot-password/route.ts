@@ -38,18 +38,29 @@ export async function POST(request: NextRequest) {
     });
 
     // Email gönderme konfigürasyonu
+    const emailUser = process.env.EMAIL_USER || process.env.GMAIL_USER;
+    const emailPass = process.env.EMAIL_PASS || process.env.GMAIL_APP_PASSWORD;
+
+    if (!emailUser || !emailPass) {
+      console.error('Email credentials missing');
+      return NextResponse.json(
+        { error: 'Email servisi yapılandırılmamış (EMAIL_USER veya GMAIL_USER eksik)' },
+        { status: 500 }
+      );
+    }
+
     const transporter = nodemailer.createTransport({
       service: 'gmail',
       auth: {
-        user: process.env.EMAIL_USER,
-        pass: process.env.EMAIL_PASS
+        user: emailUser,
+        pass: emailPass
       }
     });
 
     // Email içeriği
     const resetUrl = `${process.env.NEXTAUTH_URL}/admin/reset-password?token=${resetToken}`;
     const mailOptions = {
-      from: process.env.EMAIL_USER,
+      from: emailUser,
       to: email,
       subject: 'Şifre Sıfırlama Talebi',
       html: `
@@ -88,7 +99,7 @@ export async function POST(request: NextRequest) {
   } catch (error) {
     console.error('Forgot password error:', error);
     return NextResponse.json(
-      { error: 'Şifre sıfırlama talebinde bir hata oluştu' },
+      { error: error instanceof Error ? error.message : 'Şifre sıfırlama talebinde bir hata oluştu' },
       { status: 500 }
     );
   }

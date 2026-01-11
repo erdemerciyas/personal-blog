@@ -2,7 +2,6 @@ import { Metadata } from 'next';
 import { getServerSession } from 'next-auth';
 import { redirect } from 'next/navigation';
 import dynamic from 'next/dynamic';
-import AdminLayout from '@/components/admin/AdminLayout';
 
 const NewsForm = dynamic(() => import('@/components/admin/NewsForm'), {
   ssr: false,
@@ -26,17 +25,8 @@ export default async function CreateNewsPage() {
   }
 
   return (
-    <AdminLayout
-      title="Yeni Haber Oluştur"
-      breadcrumbs={[
-        { label: 'Dashboard', href: '/admin/dashboard' },
-        { label: 'Haber Yönetimi', href: '/admin/news' },
-        { label: 'Yeni Haber Oluştur' }
-      ]}
-    >
-      <div className="space-y-6">
+          <div className="space-y-6">
         <NewsForm />
       </div>
-    </AdminLayout>
-  );
+      );
 }

@@ -30,14 +30,10 @@ export const dynamic = 'force-dynamic';
 
 // Helper to download image (using global fetch)
 async function downloadImage(url: string): Promise<Buffer | null> {
-    try {
-        if (!url || !url.startsWith('http')) return null;
-        const res = await fetch(url);
-        if (!res.ok) return null;
-        return Buffer.from(await res.arrayBuffer());
-    } catch (e) {
-        return null;
-    }
+    if (!url || !url.startsWith('http')) return null;
+    const res = await fetch(url);
+    if (!res.ok) return null;
+    return Buffer.from(await res.arrayBuffer());
 }
 
 // Convert stream to iterator for Next.js response
@@ -185,7 +181,7 @@ export async function GET(req: NextRequest) {
                     if (buffer) {
                         try {
                             archive.append(buffer, { name: file.name });
-                        } catch (err) {
+                        } catch {
                             logger.warn('Failed to append file to zip', 'BACKUP', { file: file.name });
                         }
                     }

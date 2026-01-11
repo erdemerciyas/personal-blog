@@ -3,6 +3,7 @@ import { withSecurity, SecurityConfigs } from '@/lib/security-middleware';
 import connectDB from '@/lib/mongoose';
 import ProductReview from '@/models/ProductReview';
 import Product from '@/models/Product';
+import User from '@/models/User';
 
 // GET: list product reviews, default pending
 export const GET = withSecurity(SecurityConfigs.admin)(async (req: NextRequest) => {
@@ -12,7 +13,11 @@ export const GET = withSecurity(SecurityConfigs.admin)(async (req: NextRequest) 
   const page = Number(searchParams.get('page') || '1');
   const limit = Number(searchParams.get('limit') || '20');
 
-  const filter: Record<string, unknown> = { status };
+  const filter: Record<string, unknown> = {};
+  if (status !== 'all') {
+    filter.status = status;
+  }
+
   const items = await ProductReview.find(filter)
     .sort({ createdAt: -1 })
     .skip((page - 1) * limit)
@@ -23,10 +28,20 @@ export const GET = withSecurity(SecurityConfigs.admin)(async (req: NextRequest) 
   const productIds = Array.from(new Set(items.map(i => String(i.productId))));
   const products = await Product.find({ _id: { $in: productIds } }).select('title').lean();
   const productMap = new Map(products.map(p => [String(p._id), p]));
-  const withProduct = items.map(i => ({ ...i, product: productMap.get(String(i.productId)) || null }));
+
+  // attach minimal user info
+  const userIds = Array.from(new Set(items.map(i => String(i.userId))));
+  const users = await User.find({ _id: { $in: userIds } }).select('name email').lean();
+  const userMap = new Map(users.map(u => [String(u._id), u]));
+
+  const enrichedItems = items.map(i => ({
+    ...i,
+    product: productMap.get(String(i.productId)) || null,
+    user: userMap.get(String(i.userId)) || null
+  }));
 
   const total = await ProductReview.countDocuments(filter);
-  return NextResponse.json({ items: withProduct, total, page, limit });
+  return NextResponse.json({ items: enrichedItems, total, page, limit });
 });
 
 // PUT: update review status (approve/reject)
@@ -52,6 +67,30 @@ export const PUT = withSecurity(SecurityConfigs.admin)(async (req: NextRequest) 
   }
   if (!updated) return NextResponse.json({ error: 'Yorum bulunamadı' }, { status: 404 });
   return NextResponse.json(updated);
+});
+
+// DELETE: delete review (single)
+export const DELETE = withSecurity(SecurityConfigs.admin)(async (req: NextRequest) => {
+  await connectDB();
+  const { searchParams } = new URL(req.url);
+  const id = searchParams.get('id');
+
+  if (!id) return NextResponse.json({ error: 'ID gerekli' }, { status: 400 });
+
+  const existing = await ProductReview.findById(id);
+  if (!existing) return NextResponse.json({ error: 'Yorum bulunamadı' }, { status: 404 });
+
+  await ProductReview.findByIdAndDelete(id);
+
+  // Recalculate if it was approved
+  if (existing.status === 'approved') {
+    const approved = await ProductReview.find({ productId: existing.productId, status: 'approved' }).select('rating');
+    const ratingCount = approved.length;
+    const ratingAverage = ratingCount > 0 ? approved.reduce((s, r) => s + r.rating, 0) / ratingCount : 0;
+    await Product.findByIdAndUpdate(existing.productId, { ratingAverage, ratingCount });
+  }
+
+  return NextResponse.json({ message: 'Silindi' });
 });
 
 

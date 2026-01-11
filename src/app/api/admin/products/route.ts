@@ -10,7 +10,7 @@ export const GET = withSecurity(SecurityConfigs.admin)(async (req: NextRequest) 
   const q = searchParams.get('q') || '';
   const condition = searchParams.get('condition'); // new|used
   const category = searchParams.get('category');
-  const sort = searchParams.get('sort') as 'created'|'priceAsc'|'priceDesc'|null;
+  const sort = searchParams.get('sort') as 'created' | 'priceAsc' | 'priceDesc' | null;
   const page = Number(searchParams.get('page') || '1');
   const limit = Number(searchParams.get('limit') || '20');
 
@@ -31,7 +31,10 @@ export const GET = withSecurity(SecurityConfigs.admin)(async (req: NextRequest) 
   return NextResponse.json({ items, total, page, limit });
 });
 
-export const POST = withSecurity(SecurityConfigs.admin)(async (req: NextRequest) => {
+export const POST = withSecurity({
+  ...SecurityConfigs.admin,
+  validateInput: false // Product descriptions contain HTML, so we skip trusted admin input validation
+})(async (req: NextRequest) => {
   await connectDB();
   const body = await req.json();
   if (!body.title || !body.coverImage || !body.description)

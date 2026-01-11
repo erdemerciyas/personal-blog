@@ -9,7 +9,6 @@ import dynamicImport from 'next/dynamic';
 import connectDB from '@/lib/mongoose';
 import News from '@/models/News';
 import { NewsItem } from '@/types/news';
-import AdminLayout from '@/components/admin/AdminLayout';
 import { logger } from '@/core/lib/logger';
 
 const NewsForm = dynamicImport(() => import('@/components/admin/NewsForm'), {
@@ -49,19 +48,9 @@ export default async function EditNewsPage({ params }: PageProps) {
     }
 
     return (
-      <AdminLayout
-        title="Haberi Düzenle"
-        breadcrumbs={[
-          { label: 'Dashboard', href: '/admin/dashboard' },
-          { label: 'Haber Yönetimi', href: '/admin/news' },
-          { label: 'Haberi Düzenle' }
-        ]}
-      >
-        <div className="space-y-6">
+      <div className="space-y-6">
           <NewsForm initialData={news} />
-        </div>
-      </AdminLayout>
-    );
+        </div>);
   } catch (error) {
     logger.error('Error loading news article for editing', 'EDIT_NEWS', { error });
     notFound();

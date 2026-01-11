@@ -1,0 +1,38 @@
+'use client';
+
+import { useState } from 'react';
+import { useRouter } from 'next/navigation';
+import Image from 'next/image';
+import { notFound } from 'next/navigation';
+import { CheckCircleIcon, CubeIcon } from '@heroicons/react/24/outline'; // Importing necessary icons
+
+// We need to fetch product data here. Since it's a client component (due to form), 
+// we normally would need to fetch data on server and pass it, but for simplicity 
+// and consistency with previous layout structure, I'll make it a Server Component 
+// that wraps a Client Form, OR fetch data inside useEffect.
+// However, best practice is Server Component for data fetching.
+// Let's make this page.tsx a Server Component that fetches product, 
+// and imports a Client Component for the form.
+
+// Wait, the previous plan said "Revert products/[slug]/page.tsx".
+// Checkout page is /products/[slug]/order/page.tsx
+// I will split this into page.tsx (server) and OrderForm.tsx (client) for cleaner code.
+// BUT for speed and to keep it in one file if possible (Next.js 13 allows generic data fetching),
+// I will stick to Server Component page.tsx + Client Component form.
+
+// Actually, I'll just make the whole page client side fetching for now to reuse the `useEffect` pattern 
+// if I want transparency, OR better: Server Component Page + Client Form.
+
+// Let's implement Client Form first in a separate file, then the Page.
+
+// Re-thinking: Just make one file that is a Client Component (mocking server fetch via API or just fetch in useEffect).
+// Server fetching is better. 
+// Standard pattern:
+// 1. page.tsx (async Server Component) -> fetches product -> passes to <OrderPageClient product={product} />
+
+import { useEffect } from 'react';
+
+// But I don't have getProduct exported easily. I'll define a simple one or use API.
+// Let's assume we can fetch from API or use the existing getProduct logic pattern.
+
+// Let's create `OrderForm.tsx` first.

@@ -11,9 +11,9 @@ export const runtime = 'nodejs';
 export const GET = withSecurity(SecurityConfigs.admin)(async () => {
   try {
     await connectDB();
-    
+
     const settings = await SiteSettings.getSiteSettings();
-    
+
     return NextResponse.json(settings, { status: 200 });
   } catch (error) {
     console.error('Site ayarları getirilirken hata:', error);
@@ -28,34 +28,49 @@ export const GET = withSecurity(SecurityConfigs.admin)(async () => {
 export const PUT = withSecurity(SecurityConfigs.admin)(async (request: NextRequest) => {
   try {
     await connectDB();
-    
+
     const updateData = await request.json();
-    
+
     // Güvenlik kontrolü - sadece belirlenen alanları güncelle
     const allowedFields = [
       'logo',
-      'siteName', 
+      'siteName',
       'slogan',
       'description',
       'colors',
       'socialMedia',
       'seo',
-      'contact'
+      'contact',
+      'siteUrl',
+      'timezone',
+      'language',
+      'favicon',
+      'maintenanceMode',
+      'allowRegistration',
+      'enableComments',
+      'analytics',
+      'system'
     ];
-    
+
     const filteredData: Record<string, unknown> = {};
     for (const field of allowedFields) {
       if (updateData[field] !== undefined) {
         filteredData[field] = updateData[field];
       }
     }
-    
+
+    console.log('Admin Site Settings Update:', {
+      incoming: Object.keys(updateData),
+      filtered: Object.keys(filteredData),
+      analytics: filteredData.analytics
+    });
+
     const settings = await SiteSettings.updateSiteSettings(filteredData);
-    
+
     return NextResponse.json(
-      { 
+      {
         message: 'Site ayarları başarıyla güncellendi',
-        settings 
+        settings
       },
       { status: 200 }
     );
@@ -80,22 +95,22 @@ interface SiteSettingsRequest {
 export const POST = withSecurity(SecurityConfigs.admin)(async (request: NextRequest) => {
   try {
     await connectDB();
-    
+
     const body: SiteSettingsRequest = await request.json();
-    
+
     let settings = await SiteSettings.findOne();
     if (!settings) {
       settings = new SiteSettings(body);
     } else {
       Object.assign(settings, body);
     }
-    
+
     await settings.save();
     return NextResponse.json({ settings });
   } catch (error) {
     console.error('Site settings update error:', error);
-    return NextResponse.json({ 
-      error: 'Ayarlar güncellenirken bir hata oluştu' 
+    return NextResponse.json({
+      error: 'Ayarlar güncellenirken bir hata oluştu'
     }, { status: 500 });
   }
 });

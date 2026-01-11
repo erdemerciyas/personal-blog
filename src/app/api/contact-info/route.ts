@@ -3,32 +3,44 @@ import { getServerSession } from 'next-auth';
 import { authOptions } from '../../../lib/auth';
 import connectDB from '../../../lib/mongoose';
 import Contact from '../../../models/Contact';
+import SiteSettings from '../../../models/SiteSettings';
+import Plugin from '../../../models/Plugin';
 
 // GET /api/contact-info - İletişim bilgilerini getir
 export async function GET() {
   try {
     await connectDB();
-    
-    // Aktif olan ilk contact kaydını getir (tek kayıt olması bekleniyor)
-    let contact = await Contact.findOne({ isActive: true });
-    
-    // Eğer hiç kayıt yoksa default kayıt oluştur
-    if (!contact) {
-      contact = await Contact.create({
-        email: 'erdem.erciyas@gmail.com',
-        phone: '+90 (532) 123 45 67',
-        address: 'Altay Mahallesi Bilgi sk No: 5 Turgutlu Manisa',
-        workingHours: 'Pazartesi - Cuma: 09:00 - 18:00',
-        socialLinks: {
-          linkedin: '',
-          twitter: '@fixral',
-          instagram: '',
-          facebook: '',
-        },
-        isActive: true,
-      });
+
+    // Fetch from central SiteSettings
+    const siteSettings = await SiteSettings.getSiteSettings();
+    const socialPlugin = await Plugin.findOne({ slug: 'social-media-plugin', isActive: true });
+
+    let socialLinks = {
+      linkedin: siteSettings.socialMedia?.linkedin || '',
+      twitter: siteSettings.socialMedia?.twitter || '@fixral',
+      instagram: siteSettings.socialMedia?.instagram || '',
+      facebook: '',
+    };
+
+    if (socialPlugin && socialPlugin.config) {
+      socialLinks = {
+        linkedin: socialPlugin.config.linkedin || '',
+        twitter: socialPlugin.config.twitter || '@fixral',
+        instagram: socialPlugin.config.instagram || '',
+        facebook: socialPlugin.config.facebook || '',
+      };
     }
-    
+
+    // Map to Contact structure
+    const contact = {
+      email: siteSettings.contact?.email || 'erdem.erciyas@gmail.com',
+      phone: siteSettings.contact?.phone || '+90 (532) 123 45 67',
+      address: siteSettings.contact?.address || 'Altay Mahallesi Bilgi sk No: 5 Turgutlu Manisa',
+      workingHours: 'Pazartesi - Cuma: 09:00 - 18:00', // SiteSettings'de yoksa default
+      socialLinks: socialLinks,
+      isActive: true,
+    };
+
     return NextResponse.json(contact);
   } catch (error) {
     console.error('İletişim bilgileri getirilirken hata:', error);
@@ -75,7 +87,7 @@ export async function PUT(request: Request) {
     // Database connection with timeout
     await Promise.race([
       connectDB(),
-      new Promise((_, reject) => 
+      new Promise((_, reject) =>
         setTimeout(() => reject(new Error('Database connection timeout')), 10000)
       )
     ]);
@@ -145,7 +157,7 @@ export async function PUT(request: Request) {
     }
 
     return NextResponse.json(
-      { 
+      {
         error: 'İletişim bilgileri güncellenirken bir hata oluştu',
         details: process.env.NODE_ENV === 'development' ? error instanceof Error ? error.message : 'Unknown error' : undefined
       },

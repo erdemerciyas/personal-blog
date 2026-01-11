@@ -54,12 +54,12 @@ export const GET = withSecurity(SecurityConfigs.admin)(async (request: NextReque
         api_key: process.env.CLOUDINARY_API_KEY ? 'SET' : 'MISSING',
         api_secret: process.env.CLOUDINARY_API_SECRET ? 'SET' : 'MISSING'
       });
-      
+
       // Search API çalışmıyor, direkt Admin API kullan
       let cloudinaryResult = { total_count: 0, resources: [] };
-      
+
       console.log('🔄 Using Admin API directly...');
-      
+
       try {
         // Admin API ile görselleri çek
         const resourceOptions: { resource_type: string; max_results: number; type: string; prefix?: string } = {
@@ -81,9 +81,9 @@ export const GET = withSecurity(SecurityConfigs.admin)(async (request: NextReque
         }
 
         const adminResult = await cloudinary.api.resources(resourceOptions);
-        
+
         console.log('📋 Admin API raw response:', JSON.stringify(adminResult, null, 2));
-        
+
         if (adminResult.resources && adminResult.resources.length > 0) {
           // Admin API response'unu search API formatına çevir
           cloudinaryResult = {
@@ -98,7 +98,7 @@ export const GET = withSecurity(SecurityConfigs.admin)(async (request: NextReque
               resource_type: resource.resource_type
             }))
           };
-          
+
           console.log('📋 Admin API files found:', cloudinaryResult.total_count);
         } else {
           console.log('📋 No files found in Admin API');
@@ -120,7 +120,7 @@ export const GET = withSecurity(SecurityConfigs.admin)(async (request: NextReque
             continue;
           }
           const fileName = resource.display_name || resource.public_id.split('/').pop() || resource.public_id;
-          
+
           mediaItems.push({
             _id: resource.public_id,
             filename: fileName,
@@ -160,7 +160,7 @@ export const GET = withSecurity(SecurityConfigs.admin)(async (request: NextReque
 export const DELETE = withSecurity(SecurityConfigs.admin)(async (request: NextRequest) => {
   try {
     const { mediaIds } = await request.json();
-    
+
     if (!Array.isArray(mediaIds) || mediaIds.length === 0) {
       return NextResponse.json({ error: 'No media IDs provided' }, { status: 400 });
     }
@@ -170,9 +170,28 @@ export const DELETE = withSecurity(SecurityConfigs.admin)(async (request: NextRe
 
     for (const mediaId of mediaIds) {
       try {
-        // Only Cloudinary file deletion is supported
-        const result = await cloudinary.uploader.destroy(mediaId);
-        if (result.result === 'ok' || result.result === 'not found') {
+        // Cloudinary'den sil
+        // Try different resource types since we might not know the exact type
+        const resourceTypes = ['image', 'video', 'raw'];
+        let deletionResult: any = { result: 'not found' };
+
+        for (const type of resourceTypes) {
+          try {
+            const result = await cloudinary.uploader.destroy(mediaId, {
+              resource_type: type,
+              invalidate: true
+            });
+
+            if (result.result === 'ok') {
+              deletionResult = result;
+              break; // Stop if deleted successfully
+            }
+          } catch (innerError) {
+            console.error(`Failed to delete as ${type}:`, innerError);
+          }
+        }
+
+        if (deletionResult.result === 'ok' || deletionResult.result === 'not found') {
           deletedFiles.push(mediaId);
         } else {
           errors.push(`Failed to delete from Cloudinary: ${mediaId}`);

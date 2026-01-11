@@ -18,46 +18,46 @@ interface DesktopNavProps {
     onOpenProjectModal?: () => void;
 }
 
-export default function DesktopNav({ 
-    navLinks, 
-    pathname, 
-    isScrolled, 
+export default function DesktopNav({
+    navLinks,
+    pathname,
+    isScrolled,
     isTransparentPage,
-    onOpenProjectModal 
+    onOpenProjectModal
 }: DesktopNavProps) {
-    
+
     // Determine text color based on scroll state and page type
     const textColorClass = isScrolled
-        ? 'text-slate-700' 
+        ? 'text-slate-700'
         : isTransparentPage
-          ? 'text-white drop-shadow'
-          : 'text-slate-700';
-    
+            ? 'text-white drop-shadow'
+            : 'text-slate-700';
+
     const activeColorClass = isScrolled
         ? 'bg-brand-primary-100 text-brand-primary-900'
         : isTransparentPage
-          ? 'bg-white/20 text-white backdrop-blur-sm shadow-lg'
-          : 'bg-brand-primary-100 text-brand-primary-900';
-    
+            ? 'bg-white/20 text-white backdrop-blur-sm shadow-lg'
+            : 'bg-brand-primary-100 text-brand-primary-900';
+
     const hoverColorClass = isScrolled
         ? 'hover:bg-slate-100 hover:text-brand-primary-800'
         : isTransparentPage
-          ? 'hover:bg-white/20 hover:text-white'
-          : 'hover:bg-slate-100 hover:text-brand-primary-800';
-    
+            ? 'hover:bg-white/20 hover:text-white'
+            : 'hover:bg-slate-100 hover:text-brand-primary-800';
+
     const underlineColorClass = isScrolled
         ? 'bg-brand-primary-700'
         : isTransparentPage
-          ? 'bg-white/80'
-          : 'bg-brand-primary-700';
+            ? 'bg-white/80'
+            : 'bg-brand-primary-700';
 
     return (
-        <div className="hidden md:flex items-center gap-6 flex-1 min-w-0">
+        <div className="hidden lg:flex items-center gap-2 xl:gap-6 flex-1 justify-end ml-12 on-desktop-nav-container">
             {/* Navigation Links */}
-            <nav 
-                role="navigation" 
-                aria-label="Ana navigasyon" 
-                className="flex items-center gap-1 justify-center flex-1 min-w-0"
+            <nav
+                role="navigation"
+                aria-label="Ana navigasyon"
+                className="flex items-center gap-0.5 lg:gap-1 xl:gap-4"
             >
                 {navLinks.map((link, index) => {
                     const isActive = pathname === link.href;
@@ -65,12 +65,12 @@ export default function DesktopNav({
 
                     const baseClasses = `
                         relative overflow-hidden 
-                        px-4 py-2.5 
+                        px-2 lg:px-3 py-2 
                         rounded-lg 
-                        font-medium text-sm
+                        font-medium text-[13px] lg:text-sm
                         transition-all duration-200 
                         group 
-                        flex items-center gap-2 
+                        flex items-center gap-1.5 
                         whitespace-nowrap
                         focus-visible:outline-none 
                         focus-visible:ring-2 
@@ -88,7 +88,7 @@ export default function DesktopNav({
                                 aria-hidden="true"
                                 className={`
                                     pointer-events-none 
-                                    absolute left-4 right-4 bottom-1.5 
+                                    absolute left-3 right-3 bottom-0.5 
                                     h-0.5 
                                     origin-left 
                                     scale-x-0 
@@ -127,15 +127,15 @@ export default function DesktopNav({
                     );
                 })}
             </nav>
-            
+
             {/* Desktop CTA Button - Separate Group */}
             {onOpenProjectModal && (
                 <button
                     onClick={onOpenProjectModal}
                     className={`
-                        px-5 py-2.5 
+                        px-4 lg:px-5 py-2 lg:py-2.5 
                         rounded-lg 
-                        font-semibold text-sm
+                        font-semibold text-xs lg:text-sm
                         flex items-center gap-2
                         whitespace-nowrap
                         flex-shrink-0
@@ -144,16 +144,17 @@ export default function DesktopNav({
                         focus-visible:ring-2 
                         focus-visible:ring-brand-primary-600 
                         focus-visible:ring-offset-2
+                        ml-2
                         ${isScrolled
                             ? 'bg-brand-primary-900 text-white hover:bg-brand-primary-800 shadow-md hover:shadow-lg'
                             : isTransparentPage
-                              ? 'bg-white text-brand-primary-900 hover:bg-white/90 shadow-lg hover:shadow-xl drop-shadow'
-                              : 'bg-brand-primary-900 text-white hover:bg-brand-primary-800 shadow-md hover:shadow-lg'
+                                ? 'bg-white text-brand-primary-900 hover:bg-white/90 shadow-lg hover:shadow-xl drop-shadow'
+                                : 'bg-brand-primary-900 text-white hover:bg-brand-primary-800 shadow-md hover:shadow-lg'
                         }
                     `}
                     aria-label="Proje başvurusu formunu aç"
                 >
-                    <PaperAirplaneIcon className="w-4 h-4" aria-hidden="true" />
+                    <PaperAirplaneIcon className="w-3.5 h-3.5 lg:w-4 lg:h-4" aria-hidden="true" />
                     <span>Proje Başvurusu</span>
                 </button>
             )}

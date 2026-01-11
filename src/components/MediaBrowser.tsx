@@ -7,8 +7,13 @@ import {
   XMarkIcon,
   PhotoIcon,
   MagnifyingGlassIcon,
-  ArrowUpTrayIcon
+  ArrowUpTrayIcon,
+  TrashIcon,
+  CheckCircleIcon,
+  EyeIcon,
+  FunnelIcon
 } from '@heroicons/react/24/outline';
+import { CheckCircleIcon as CheckCircleIconSolid } from '@heroicons/react/24/solid';
 
 interface MediaItem {
   _id: string;
@@ -30,7 +35,7 @@ interface MediaBrowserProps {
   onUploadNew: () => void;
   title?: string;
   allowedTypes?: string[];
-  theme?: 'dark' | 'light';
+  theme?: 'dark' | 'light'; // Kept for compatibility, but we will enforce a specific style
   pageContext?: string;
   allowMultipleSelect?: boolean;
   variant?: 'fullscreen' | 'dialog';
@@ -43,7 +48,6 @@ const MediaBrowser: React.FC<MediaBrowserProps> = ({
   onUploadNew,
   title = 'Medya Seç',
   allowedTypes = ['image/'],
-  theme = 'dark',
   pageContext = 'general',
   allowMultipleSelect = false,
   variant = 'fullscreen'
@@ -67,30 +71,27 @@ const MediaBrowser: React.FC<MediaBrowserProps> = ({
   // Modal dışı tıklama ile kapatma
   useEffect(() => {
     if (!isOpen) return;
-    if (previewItem) return; // Önizleme modalı açıkken ana modal dışı tıklama kapatmasın
-    
+    if (previewItem) return;
+
     const handleClickOutside = (event: MouseEvent) => {
       const target = event.target as HTMLElement;
-      
-      // Eğer tıklanan element bir button ise ve "Yeni Yükle" metni içeriyorsa, modal kapatma
-      if (target.tagName === 'BUTTON' || target.closest('button')) {
-        const buttonElement = target.tagName === 'BUTTON' ? target : target.closest('button');
-        if (buttonElement?.textContent?.includes('Yeni Yükle')) {
-          return; // Modal kapatma
-        }
+
+      // "Yeni Yükle" butonuna tıklandıysa kapatma (üst bileşendeki file input tetiklenebilir)
+      if (target.closest('button')?.textContent?.includes('Yeni Yükle')) {
+        return;
       }
-      
+
       if (modalRef.current && !modalRef.current.contains(event.target as Node)) {
         onClose();
       }
     };
-    
+
     document.addEventListener('mousedown', handleClickOutside);
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, [isOpen, onClose, previewItem]);
 
-  // Seçim işlemi (useCallback ile sabit referans)
-  const handleSelect = useCallback(() => {
+  // Seçim işlemi
+  const handleConfirmSelection = useCallback(() => {
     if (allowMultipleSelect && selectedItems.length > 0) {
       const urls = selectedItems
         .map(id => mediaItems.find(item => item._id === id)?.url)
@@ -105,28 +106,26 @@ const MediaBrowser: React.FC<MediaBrowserProps> = ({
       if (item && isValidUrl(item.url)) {
         onSelect(item.url);
         onClose();
-      } else {
-        console.error('Invalid URL selected:', item?.url);
       }
     }
   }, [allowMultipleSelect, selectedItems, mediaItems, selectedItem, onSelect, onClose]);
 
-  // Klavye kısayolları: Esc ile kapat, Enter ile seç
+  // Klavye kısayolları
   useEffect(() => {
     if (!isOpen) return;
     const handleKey = (e: KeyboardEvent) => {
       if (e.key === 'Escape') {
-        onClose();
-      } else if (e.key === 'Enter') {
+        if (previewItem) setPreviewItem(null);
+        else onClose();
+      } else if (e.key === 'Enter' && !previewItem) {
         e.preventDefault();
-        handleSelect();
+        handleConfirmSelection();
       }
     };
     document.addEventListener('keydown', handleKey);
     return () => document.removeEventListener('keydown', handleKey);
-  }, [isOpen, handleSelect, onClose]);
+  }, [isOpen, handleConfirmSelection, onClose, previewItem]);
 
-  // URL validation helper
   const isValidUrl = (url: string): boolean => {
     return Boolean(url && (url.startsWith('/') || url.startsWith('http://') || url.startsWith('https://')));
   };
@@ -138,7 +137,7 @@ const MediaBrowser: React.FC<MediaBrowserProps> = ({
       if (pageFilter !== 'all') {
         params.append('pageContext', pageFilter);
       }
-      
+
       const response = await fetch(`/api/admin/media?${params.toString()}`);
       if (response.ok) {
         const data = await response.json();
@@ -151,38 +150,29 @@ const MediaBrowser: React.FC<MediaBrowserProps> = ({
     }
   }, [pageFilter]);
 
-  // Fetch media items
   useEffect(() => {
     if (isOpen) {
       fetchMediaItems();
     }
   }, [isOpen, pageFilter, fetchMediaItems]);
 
-  // Filter media items
   const getFilteredItems = () => {
     let filtered = mediaItems.filter(item => {
-      // Filter by valid URL first
       if (!isValidUrl(item.url)) return false;
-      
-      // Filter by allowed types
       const typeAllowed = allowedTypes.some(type => item.mimeType.startsWith(type));
       if (!typeAllowed) return false;
-
-      // Filter by search term
       if (searchTerm) {
         return item.originalName.toLowerCase().includes(searchTerm.toLowerCase()) ||
-               item.filename.toLowerCase().includes(searchTerm.toLowerCase());
+          item.filename.toLowerCase().includes(searchTerm.toLowerCase());
       }
-      
       return true;
     });
 
-    // Additional filters
     if (filter === 'images') {
       filtered = filtered.filter(item => item.mimeType.startsWith('image/'));
     }
 
-    return filtered.sort((a, b) => 
+    return filtered.sort((a, b) =>
       new Date(b.uploadedAt).getTime() - new Date(a.uploadedAt).getTime()
     );
   };
@@ -190,60 +180,42 @@ const MediaBrowser: React.FC<MediaBrowserProps> = ({
   const formatFileSize = (bytes: number) => {
     if (bytes === 0) return '0 Bytes';
     const k = 1024;
-    const sizes = ['Bytes', 'KB', 'MB', 'GB'];
+    const sizes = ['KB', 'MB', 'GB'];
     const i = Math.floor(Math.log(bytes) / Math.log(k));
     return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
   };
 
-  // Not: handleSelect yukarıda useCallback ile tanımlandı
-
   const handleItemClick = (itemId: string) => {
     if (allowMultipleSelect) {
-      setSelectedItems(prev => 
-        prev.includes(itemId) 
-          ? prev.filter(id => id !== itemId)
-          : [...prev, itemId]
+      setSelectedItems(prev =>
+        prev.includes(itemId)
+          ? prev.filter(id => id !== itemId) // Deselect
+          : [...prev, itemId] // Select
       );
     } else {
-      setSelectedItem(itemId);
+      setSelectedItem(prev => prev === itemId ? null : itemId);
     }
   };
 
-  const handleUploadNew = (e?: React.MouseEvent) => {
-    e?.preventDefault();
-    e?.stopPropagation();
-    console.log('Yeni Yükle butonuna tıklandı - MediaBrowser');
-    onUploadNew();
-  };
-
-  // Resim silme
   const handleDelete = async (itemId: string) => {
-    if (!confirm('Bu görseli silmek istediğinize emin misiniz?')) return;
-    
+    if (!confirm('Bu görseli kalıcı olarak silmek istediğinize emin misiniz?')) return;
+
     try {
       setLoading(true);
-      
-      // URL encode the media ID for safe transmission
       const encodedId = encodeURIComponent(itemId);
-      const response = await fetch(`/api/admin/media/${encodedId}`, { 
+      const response = await fetch(`/api/admin/media/${encodedId}`, {
         method: 'DELETE',
-        headers: {
-          'Content-Type': 'application/json',
-        }
+        headers: { 'Content-Type': 'application/json' }
       });
-      
+
       const data = await response.json();
-      
+
       if (response.ok && data.success) {
-        // Remove from local state
         setMediaItems(items => items.filter(item => item._id !== itemId));
-        setSelectedItem(prev => prev === itemId ? null : prev);
+        if (selectedItem === itemId) setSelectedItem(null);
         setSelectedItems(items => items.filter(id => id !== itemId));
-        
-        // Show success message
-        console.log('Media deleted successfully:', data.message);
+        if (previewItem?._id === itemId) setPreviewItem(null);
       } else {
-        console.error('Delete failed:', data.error || 'Unknown error');
         alert(data.error || 'Silme işlemi başarısız oldu.');
       }
     } catch (error) {
@@ -258,234 +230,193 @@ const MediaBrowser: React.FC<MediaBrowserProps> = ({
 
   const filteredItems = getFilteredItems();
 
-  // Theme-based styles
-  const themeStyles: Record<string, string> = {
-    modal: theme === 'dark' 
-      ? 'bg-slate-900 border-slate-700' 
-      : 'bg-white/10 backdrop-blur-xl border-white/20',
-    header: theme === 'dark' 
-      ? 'bg-slate-800/50 border-slate-700' 
-      : 'bg-white/5 border-white/10',
-    text: theme === 'dark' ? 'text-white' : 'text-white',
-    textSecondary: theme === 'dark' ? 'text-slate-400' : 'text-slate-300',
-    input: theme === 'dark' 
-      ? 'bg-slate-800 border-slate-600 text-white placeholder-slate-400' 
-      : 'bg-white/5 border-white/20 text-white placeholder-slate-300',
-    select: theme === 'dark' 
-      ? 'bg-slate-800 border-slate-600 text-white' 
-      : 'bg-white/5 border-white/20 text-white',
-    card: theme === 'dark' 
-      ? 'bg-slate-800 border-slate-600' 
-      : 'bg-white/5 border-white/10',
-    cardSelected: theme === 'dark' 
-      ? 'border-brand-primary-600 bg-brand-primary-600/10' 
-      : 'border-brand-primary-500 bg-brand-primary-500/20',
-    footer: theme === 'dark' 
-      ? 'bg-slate-800/50 border-slate-700' 
-      : 'bg-white/5 border-white/10'
-  };
-
   return (
-    <div className={`fixed inset-0 bg-black/60 ${variant === 'fullscreen' ? '' : 'backdrop-blur-sm'} z-[100]` }>
-      <div className={`w-full h-full flex ${variant === 'fullscreen' ? 'items-stretch justify-center' : 'items-center justify-center'} p-0 md:p-6`}>
-        {/* Modal dışı tıklama için ref */}
-        <div 
-          ref={modalRef}
-          className={
-            `${themeStyles.modal} ${variant === 'fullscreen' 
-              ? 'rounded-none md:rounded-2xl w-full h-full md:h-[92vh] md:max-w-7xl md:overflow-hidden' 
-              : 'rounded-3xl w-[92vw] max-w-6xl h-[85vh] max-h-[860px] overflow-hidden'} ` +
-            'shadow-2xl relative flex flex-col'
-          }
-        >
-        
+    <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 sm:p-6">
+      {/* Backdrop */}
+      <div
+        className="absolute inset-0 bg-slate-900/60 backdrop-blur-sm transition-opacity"
+        onClick={onClose}
+      />
+
+      {/* Modal Content */}
+      <div
+        ref={modalRef}
+        className={`
+          relative w-full bg-white rounded-2xl shadow-2xl flex flex-col overflow-hidden ring-1 ring-black/5
+          ${variant === 'fullscreen' ? 'h-[90vh] max-w-[1400px]' : 'h-[80vh] max-w-5xl'}
+        `}
+      >
         {/* Header */}
-        <div className={`${themeStyles.header} p-4 md:p-6 flex-shrink-0 sticky top-0 z-10` }>
-          <div className="flex items-center justify-between">
-            <div className="flex items-center space-x-3">
-              <div className="w-10 h-10 bg-gradient-to-r from-brand-primary-600 to-blue-500 rounded-xl flex items-center justify-center">
-                <PhotoIcon className="w-6 h-6 text-white" />
-              </div>
-              <div>
-                <h3 className={`${themeStyles.text} text-lg md:text-xl font-bold`}>{title}</h3>
-                <p className={`${themeStyles.textSecondary} text-slate-400 text-xs md:text-sm`}>Mevcut görselleri seçin veya yeni yükleyin</p>
-              </div>
+        <div className="flex-shrink-0 px-6 py-4 border-b border-slate-100 bg-white/80 backdrop-blur z-10 sticky top-0 flex flex-col md:flex-row md:items-center justify-between gap-4">
+          <div className="flex items-center gap-3">
+            <div className="w-10 h-10 bg-indigo-50 rounded-xl flex items-center justify-center border border-indigo-100">
+              <PhotoIcon className="w-5 h-5 text-indigo-600" />
             </div>
-            <button
-              onClick={onClose}
-              className="p-2 hover:bg-slate-700 rounded-xl transition-colors"
-            >
-              <XMarkIcon className="w-6 h-6 text-slate-400" />
-            </button>
+            <div>
+              <h3 className="text-lg font-bold text-slate-900 leading-tight">{title}</h3>
+              <p className="text-sm text-slate-500">Kütüphaneden seçim yapın</p>
+            </div>
           </div>
 
-          {/* Controls */}
-          <div className="flex flex-wrap items-center gap-3 md:gap-4 mt-4 md:mt-6">
+          <div className="flex items-center gap-3 flex-1 md:flex-initial md:min-w-[400px]">
             {/* Search */}
-            <div className="relative flex-1 min-w-56 md:min-w-64">
-              <MagnifyingGlassIcon className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-slate-400" />
+            <div className="relative flex-1">
+              <MagnifyingGlassIcon className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
               <input
                 type="text"
                 placeholder="Görsel ara..."
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
-                className={`${themeStyles.input} w-full rounded-xl pl-10 pr-4 py-2 md:py-2.5 focus:outline-none focus:ring-2 focus:ring-brand-primary-600`}
+                className="w-full pl-9 pr-4 py-2 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500/50 focus:border-indigo-500 transition-all placeholder:text-slate-400"
               />
             </div>
 
-            {/* Type Filter */}
-            <select
-              value={filter}
-              onChange={(e) => setFilter(e.target.value)}
-              className={`${themeStyles.select} rounded-xl px-4 py-2 md:py-2.5 focus:outline-none focus:ring-2 focus:ring-brand-primary-600`}
-            >
-              <option value="all" style={{ color: '#1e293b', backgroundColor: '#ffffff' }}>
-                Tüm Dosyalar
-              </option>
-              <option value="images" style={{ color: '#1e293b', backgroundColor: '#ffffff' }}>
-                Sadece Görseller
-              </option>
-            </select>
+            {/* Filters */}
+            <div className="relative group">
+              <button className="p-2 bg-slate-50 border border-slate-200 rounded-xl hover:bg-slate-100 transition-colors">
+                <FunnelIcon className="w-5 h-5 text-slate-500" />
+              </button>
+              <div className="absolute right-0 top-full mt-2 w-48 bg-white rounded-xl shadow-xl border border-slate-100 p-2 hidden group-hover:block z-20">
+                <label className="block text-xs font-semibold text-slate-400 px-2 py-1">DOSYA TİPİ</label>
+                <select
+                  value={filter}
+                  onChange={(e) => setFilter(e.target.value)}
+                  className="w-full text-sm p-2 rounded-lg bg-slate-50 border-transparent focus:bg-white focus:ring-0 cursor-pointer hover:bg-slate-100 mb-2"
+                >
+                  <option value="all">Tümü</option>
+                  <option value="images">Sadece Görseller</option>
+                </select>
 
-            {/* Page Filter */}
-            <select
-              value={pageFilter}
-              onChange={(e) => setPageFilter(e.target.value)}
-              className={`${themeStyles.select} rounded-xl px-4 py-2 md:py-2.5 focus:outline-none focus:ring-2 focus:ring-brand-primary-600`}
-            >
-              <option value="all" style={{ color: '#1e293b', backgroundColor: '#ffffff' }}>
-                Tüm Sayfalar
-              </option>
-              <option value="portfolio" style={{ color: '#1e293b', backgroundColor: '#ffffff' }}>
-                Portfolio
-              </option>
-              <option value="service" style={{ color: '#1e293b', backgroundColor: '#ffffff' }}>
-                Hizmetler
-              </option>
-              <option value="about" style={{ color: '#1e293b', backgroundColor: '#ffffff' }}>
-                Hakkımda
-              </option>
-              <option value="slider" style={{ color: '#1e293b', backgroundColor: '#ffffff' }}>
-                Slider
-              </option>
-              <option value="general" style={{ color: '#1e293b', backgroundColor: '#ffffff' }}>
-                Genel
-              </option>
-            </select>
+                <div className="h-px bg-slate-100 my-1" />
 
-            {/* Upload New Button */}
+                <label className="block text-xs font-semibold text-slate-400 px-2 py-1">BAĞLAM</label>
+                <select
+                  value={pageFilter}
+                  onChange={(e) => setPageFilter(e.target.value)}
+                  className="w-full text-sm p-2 rounded-lg bg-slate-50 border-transparent focus:bg-white focus:ring-0 cursor-pointer hover:bg-slate-100"
+                >
+                  <option value="all">Tüm Sayfalar</option>
+                  <option value="portfolio">Portfolio</option>
+                  <option value="service">Hizmetler</option>
+                  <option value="about">Hakkımda</option>
+                  <option value="general">Genel</option>
+                </select>
+              </div>
+            </div>
+
+            <div className="w-px h-8 bg-slate-200 mx-1 hidden md:block" />
+
+            {/* Actions */}
             <button
               onClick={(e) => {
                 e.preventDefault();
                 e.stopPropagation();
-                handleUploadNew(e);
+                onUploadNew();
               }}
-              className="flex items-center space-x-2 px-4 py-2 bg-gradient-to-r from-brand-primary-700 to-blue-600 hover:from-brand-primary-800 hover:to-blue-700 text-white rounded-xl font-medium transition-all duration-200"
+              className="flex items-center gap-2 px-4 py-2 bg-slate-900 text-white rounded-xl text-sm font-medium hover:bg-slate-800 transition-colors shadow-sm hover:shadow-md"
             >
               <ArrowUpTrayIcon className="w-4 h-4" />
-              <span>Yeni Yükle</span>
+              <span className="hidden sm:inline">Yeni Yükle</span>
+            </button>
+
+            <button
+              onClick={onClose}
+              className="p-2 hover:bg-slate-100 rounded-xl text-slate-500 transition-colors"
+            >
+              <XMarkIcon className="w-5 h-5" />
             </button>
           </div>
         </div>
 
-        {/* Content */}
-        <div className="p-4 md:p-6 overflow-y-auto flex-1">
+        {/* Content Grid */}
+        <div className="flex-1 overflow-y-auto bg-slate-50 p-6 custom-scrollbar">
           {loading ? (
-            <div className="flex items-center justify-center py-12">
-              <InlineLoader text="Medya dosyaları yükleniyor..." />
+            <div className="h-full flex flex-col items-center justify-center text-slate-400">
+              <InlineLoader text="Medya kütüphanesi yükleniyor..." />
             </div>
           ) : filteredItems.length === 0 ? (
-            <div className="text-center py-12">
-              <PhotoIcon className="w-16 h-16 text-slate-400 mx-auto mb-4" />
-              <p className="text-slate-400 mb-4">
-                {searchTerm ? 'Arama kriterlerinize uygun dosya bulunamadı' : 'Henüz yüklenmiş medya dosyası bulunmuyor'}
+            <div className="h-full flex flex-col items-center justify-center text-center">
+              <div className="w-20 h-20 bg-slate-100 rounded-full flex items-center justify-center mb-4">
+                <PhotoIcon className="w-10 h-10 text-slate-300" />
+              </div>
+              <h3 className="text-lg font-semibold text-slate-900">Dosya bulunamadı</h3>
+              <p className="text-slate-500 max-w-xs mx-auto mt-1 mb-6">
+                "{searchTerm}" aramasına uygun sonuç yok veya kütüphane boş.
               </p>
               <button
-                onClick={(e) => {
-                  e.preventDefault();
-                  e.stopPropagation();
-                  handleUploadNew(e);
-                }}
-                className="px-6 py-3 bg-gradient-to-r from-brand-primary-700 to-blue-600 hover:from-brand-primary-800 hover:to-blue-700 text-white rounded-xl font-medium transition-all duration-200"
+                onClick={onUploadNew}
+                className="px-6 py-2 bg-indigo-600 text-white rounded-xl text-sm font-medium hover:bg-indigo-700 transition-colors shadow-sm"
               >
-                İlk Görselinizi Yükleyin
+                İlk Dosyayı Yükle
               </button>
             </div>
           ) : (
-            <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-6 lg:grid-cols-8 xl:grid-cols-10 gap-3 md:gap-4">
+            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 2xl:grid-cols-8 gap-4">
               {filteredItems.map((item) => {
-                const isSelected = allowMultipleSelect 
+                const isSelected = allowMultipleSelect
                   ? selectedItems.includes(item._id)
                   : selectedItem === item._id;
-                
+
                 return (
                   <div
                     key={item._id}
-                    className={`${themeStyles.card} rounded-xl p-2 md:p-3 transition-all duration-200 hover:scale-[1.02] relative border h-28 md:h-36`}
+                    onClick={() => handleItemClick(item._id)}
+                    className={`
+                            group relative aspect-square bg-white rounded-xl overflow-hidden cursor-pointer border transition-all duration-200
+                            ${isSelected
+                        ? 'border-indigo-500 ring-2 ring-indigo-500 ring-offset-2'
+                        : 'border-slate-200 hover:border-indigo-300 hover:shadow-md'}
+                         `}
                   >
-                    {/* Sil butonu */}
-                    <button
-                      onClick={(e) => { e.stopPropagation(); handleDelete(item._id); }}
-                      className="absolute top-2 right-2 z-20 p-1 bg-red-600 hover:bg-red-700 text-white rounded-full shadow"
-                      title="Sil"
-                      tabIndex={0}
-                    >
-                      <XMarkIcon className="w-4 h-4" />
-                    </button>
-                    {/* Önizleme için tıklama */}
-                    <div
-                      onClick={() => setPreviewItem(item)}
-                      className="aspect-square mb-2 bg-slate-700 rounded-lg overflow-hidden relative cursor-zoom-in h-24 md:h-28 w-full"
-                      tabIndex={0}
-                      role="button"
-                      aria-label="Önizle"
-                    >
-                      {item.mimeType.startsWith('image/') && item.url && isValidUrl(item.url) ? (
-                        <Image
-                          src={item.url}
-                          alt={item.originalName}
-                          fill
-                          className="object-cover"
-                          loading="lazy"
-                          onError={(e) => {
-                            console.error('Image load error for:', item.url);
-                            e.currentTarget.style.display = 'none';
-                          }}
-                        />
-                      ) : (
-                        <div className="w-full h-full flex items-center justify-center text-2xl">
-                          {item.mimeType.startsWith('image/') ? '🖼️' : '📄'}
-                        </div>
-                      )}
-                    </div>
-                    {/* Seçim butonu */}
-                    <button
-                      onClick={(e) => { e.stopPropagation(); handleItemClick(item._id); }}
-                      className={`w-full mt-1 py-1.5 rounded bg-brand-primary-700 hover:bg-brand-primary-800 text-white text-xs font-semibold transition-colors ${isSelected ? 'ring-2 ring-brand-primary-500' : ''}`}
-                      tabIndex={0}
-                    >
-                      {isSelected ? 'Seçili' : 'Seç'}
-                    </button>
-                    {/* File Info */}
-                    <div className="space-y-1 mt-2">
-                      <h5 className={`${themeStyles.text} text-xs md:text-sm font-medium truncate`} title={item.originalName}>
-                        {item.originalName}
-                      </h5>
-                      <div className="flex items-center justify-between text-[10px] md:text-xs text-slate-400">
-                        <span>{formatFileSize(item.size)}</span>
-                        <div className="flex items-center space-x-1">
-                          {item.source === 'cloudinary' && (
-                            <span className="bg-gradient-to-r from-blue-500 to-purple-500 text-white px-1.5 py-0.5 rounded text-xs font-semibold">
-                              ☁️ Cloud
-                            </span>
-                          )}
-                          {item.source === 'local' && (
-                            <span className="bg-slate-600 text-slate-300 px-1.5 py-0.5 rounded text-xs">
-                              💾 Local
-                            </span>
-                          )}
-                        </div>
+                    {/* Selection Badge */}
+                    {isSelected && (
+                      <div className="absolute top-2 right-2 z-20 bg-white rounded-full text-indigo-600 shadow-sm animate-in zoom-in duration-200">
+                        <CheckCircleIconSolid className="w-6 h-6" />
                       </div>
+                    )}
+
+                    {/* Hover Actions */}
+                    <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity z-10 flex items-center justify-center gap-2">
+                      <button
+                        onClick={(e) => { e.stopPropagation(); setPreviewItem(item); }}
+                        className="p-2 bg-white/90 rounded-full text-slate-700 hover:text-indigo-600 transiton-colors shadow-sm hover:scale-110"
+                        title="Önizle"
+                      >
+                        <EyeIcon className="w-5 h-5" />
+                      </button>
+                      <button
+                        onClick={(e) => { e.stopPropagation(); handleDelete(item._id); }}
+                        className="p-2 bg-white/90 rounded-full text-slate-700 hover:text-red-600 transiton-colors shadow-sm hover:scale-110"
+                        title="Sil"
+                      >
+                        <TrashIcon className="w-5 h-5" />
+                      </button>
+                    </div>
+
+                    {/* Image/File Preview */}
+                    <div className="w-full h-full p-2">
+                      <div className="w-full h-full relative rounded-lg overflow-hidden bg-slate-100 flex items-center justify-center">
+                        {item.mimeType.startsWith('image/') && item.url ? (
+                          <img
+                            src={item.url}
+                            alt={item.originalName}
+                            className="w-full h-full object-cover"
+                            loading="lazy"
+                          />
+                        ) : (
+                          <span className="text-2xl">📄</span>
+                        )}
+                      </div>
+                    </div>
+
+                    {/* Info Overlay (Bottom) */}
+                    <div className="absolute bottom-0 left-0 right-0 p-2 bg-gradient-to-t from-black/60 to-transparent">
+                      <p className="text-white text-xs font-medium truncate drop-shadow-sm">
+                        {item.originalName}
+                      </p>
+                      <p className="text-white/80 text-[10px] truncate">
+                        {formatFileSize(item.size)}
+                      </p>
                     </div>
                   </div>
                 );
@@ -495,86 +426,80 @@ const MediaBrowser: React.FC<MediaBrowserProps> = ({
         </div>
 
         {/* Footer */}
-        {filteredItems.length > 0 && (
-          <div className={`${themeStyles.footer} p-4 md:p-6 flex-shrink-0 sticky bottom-0 z-10`}>
-            <div className="flex items-center justify-between">
-              <div className="flex flex-col space-y-1">
-                <p className={`${themeStyles.textSecondary} text-slate-400`}>
-                  {filteredItems.length} dosya bulundu
-                </p>
-                {allowMultipleSelect && selectedItems.length > 0 ? (
-                  <p className={`${themeStyles.text} font-medium text-brand-primary-400`}>
-                    {selectedItems.length} görsel seçildi
-                  </p>
-                ) : selectedItem ? (
-                  <p className={`${themeStyles.text} font-medium`}>
-                    {mediaItems.find(item => item._id === selectedItem)?.originalName} seçildi
-                  </p>
-                ) : null}
-              </div>
-              
-              <div className="flex items-center space-x-3">
-                {allowMultipleSelect && selectedItems.length > 0 && (
-                  <button
-                    onClick={() => setSelectedItems([])}
-                    className="px-4 py-2 text-slate-400 hover:text-white transition-colors"
-                  >
-                    Seçimi Temizle
-                  </button>
-                )}
-                <button
-                  onClick={onClose}
-                  className="px-6 py-2 text-slate-400 hover:text-white transition-colors"
-                >
-                  İptal
-                </button>
-                <button
-                  onClick={handleSelect}
-                  disabled={allowMultipleSelect ? selectedItems.length === 0 : !selectedItem}
-                  className={`px-6 py-2 rounded-xl font-medium transition-all duration-200 ${
-                    (allowMultipleSelect ? selectedItems.length > 0 : selectedItem)
-                      ? 'bg-gradient-to-r from-brand-primary-700 to-blue-600 hover:from-brand-primary-800 hover:to-blue-700 text-white'
-                      : 'bg-slate-700 text-slate-400 cursor-not-allowed'
-                  }`}
-                >
-                  {allowMultipleSelect && selectedItems.length > 1 
-                    ? `${selectedItems.length} Görsel Seç` 
-                    : 'Seç'}
-                </button>
-              </div>
-            </div>
+        <div className="flex-shrink-0 px-6 py-4 border-t border-slate-100 bg-white flex items-center justify-between gap-4">
+          <div className="text-sm">
+            <span className="text-slate-500">{filteredItems.length} dosya gösteriliyor</span>
+            {allowMultipleSelect && selectedItems.length > 0 && (
+              <span className="ml-2 px-2 py-0.5 bg-indigo-100 text-indigo-700 rounded-md font-medium">
+                {selectedItems.length} seçildi
+              </span>
+            )}
           </div>
-        )}
-        {/* Önizleme Modalı */}
-        {previewItem && (
-          <div className="fixed inset-0 z-[110] bg-black/70 flex items-center justify-center" onClick={() => setPreviewItem(null)}>
-            <div className="bg-white rounded-2xl shadow-2xl p-6 max-w-2xl w-full relative" onClick={e => e.stopPropagation()}>
-              <button className="absolute top-2 right-2 p-2 bg-slate-200 hover:bg-slate-300 rounded-full" onClick={() => setPreviewItem(null)}>
-                <XMarkIcon className="w-5 h-5 text-slate-600" />
-              </button>
-              <div className="flex flex-col items-center">
-                {previewItem.mimeType.startsWith('image/') && previewItem.url && isValidUrl(previewItem.url) ? (
-                  <Image
-                    src={previewItem.url}
-                    alt={previewItem.originalName}
-                    width={600}
-                    height={600}
-                    className="object-contain rounded-xl max-h-[60vh]"
-                  />
-                ) : (
-                  <div className="w-full h-64 flex items-center justify-center text-2xl">
-                    {previewItem.mimeType.startsWith('image/') ? '🖼️' : '📄'}
-                  </div>
-                )}
-                <div className="mt-4 text-center">
-                  <div className="font-semibold text-slate-800">{previewItem.originalName}</div>
-                  <div className="text-xs text-slate-500">{formatFileSize(previewItem.size)}</div>
-                </div>
-              </div>
-            </div>
+
+          <div className="flex items-center gap-3">
+            <button
+              onClick={onClose}
+              className="px-4 py-2 text-slate-600 font-medium hover:bg-slate-50 rounded-lg transition-colors"
+            >
+              İptal
+            </button>
+            <button
+              onClick={handleConfirmSelection}
+              disabled={allowMultipleSelect ? selectedItems.length === 0 : !selectedItem}
+              className={`
+                    px-6 py-2 rounded-xl text-sm font-semibold text-white shadow-sm transition-all
+                    ${(allowMultipleSelect ? selectedItems.length > 0 : selectedItem)
+                  ? 'bg-indigo-600 hover:bg-indigo-700 hover:shadow-md hover:shadow-indigo-500/20'
+                  : 'bg-slate-300 cursor-not-allowed'}
+                 `}
+            >
+              Seçimi Onayla
+            </button>
           </div>
-        )}
         </div>
+
+        {/* Preview Modal */}
+        {previewItem && (
+          <div className="absolute inset-0 z-50 bg-white/95 backdrop-blur flex flex-col items-center justify-center p-8 animate-in fade-in duration-200">
+            <button
+              onClick={() => setPreviewItem(null)}
+              className="absolute top-4 right-4 p-2 bg-slate-100 rounded-full hover:bg-slate-200 transition-colors"
+            >
+              <XMarkIcon className="w-6 h-6 text-slate-600" />
+            </button>
+
+            <div className="w-full max-w-4xl h-[70vh] flex items-center justify-center mb-6">
+              {previewItem.mimeType.startsWith('image/') ? (
+                <img
+                  src={previewItem.url}
+                  alt={previewItem.originalName}
+                  className="max-w-full max-h-full object-contain rounded-lg shadow-2xl"
+                />
+              ) : (
+                <div className="w-64 h-64 bg-slate-100 rounded-2xl flex items-center justify-center text-6xl">
+                  📄
+                </div>
+              )}
+            </div>
+
+            <div className="text-center">
+              <h4 className="text-xl font-bold text-slate-900 mb-1">{previewItem.originalName}</h4>
+              <p className="text-slate-500">
+                {formatFileSize(previewItem.size)} • {new Date(previewItem.uploadedAt).toLocaleDateString()}
+              </p>
+
+              <button
+                onClick={() => {
+                  handleItemClick(previewItem._id);
+                  setPreviewItem(null);
+                }}
+                className="mt-6 px-8 py-3 bg-indigo-600 text-white rounded-xl font-semibold hover:bg-indigo-700 shadow-lg shadow-indigo-500/20 transition-all"
+              >
+                Bu Görseli Seç
+              </button>
+            </div>
+          </div>
+        )}
       </div>
     </div>
   );

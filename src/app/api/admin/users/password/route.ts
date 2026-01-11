@@ -17,7 +17,7 @@ interface SessionUser {
 export const PUT = withSecurity(SecurityConfigs.authenticated)(async (request: Request) => {
   try {
     const session = await getServerSession(authOptions);
-    const { userId, currentPassword, newPassword, isAdmin } = await request.json();
+    const { userId, currentPassword, newPassword, isAdmin, verificationCode } = await request.json();
     const sessionUser = session?.user as SessionUser;
 
     // Admin kullanıcısı başka kullanıcının şifresini değiştirebilir
@@ -46,7 +46,7 @@ export const PUT = withSecurity(SecurityConfigs.authenticated)(async (request: R
     await connectDB();
 
     const user = await User.findById(userId);
-    
+
     if (!user) {
       return NextResponse.json(
         { error: 'Kullanıcı bulunamadı' },
@@ -63,12 +63,33 @@ export const PUT = withSecurity(SecurityConfigs.authenticated)(async (request: R
           { status: 400 }
         );
       }
+    } else if (sessionUser.role === 'admin' && !currentPassword) {
+      // Admin is resetting password, check verification code
+
+      if (!verificationCode) {
+        return NextResponse.json(
+          { error: 'Verification code is required for admin password reset' },
+          { status: 400 }
+        );
+      }
+
+      if (user.verificationCode !== verificationCode || !user.verificationCodeExpiry || user.verificationCodeExpiry < new Date()) {
+        return NextResponse.json(
+          { error: 'Invalid or expired verification code' },
+          { status: 400 }
+        );
+      }
+
+      // Clear verification code
+      await User.findByIdAndUpdate(userId, {
+        $unset: { verificationCode: 1, verificationCodeExpiry: 1 }
+      });
     }
 
     // Yeni şifreyi hashle ve kaydet
     const salt = await bcrypt.genSalt(10);
     const hashedPassword = await bcrypt.hash(newPassword, salt);
-    
+
     await User.findByIdAndUpdate(userId, { password: hashedPassword });
 
     return NextResponse.json({

@@ -44,6 +44,19 @@ const MessageSchema = new mongoose.Schema({
     enum: ['low', 'medium', 'high', 'urgent'],
     default: 'medium',
   },
+  type: {
+    type: String,
+    enum: ['contact', 'product_question', 'service_request'],
+    default: 'contact',
+  },
+  productId: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'Product',
+  },
+  productName: {
+    type: String,
+    trim: true,
+  },
   status: {
     type: String,
     enum: ['new', 'read', 'replied', 'closed'],

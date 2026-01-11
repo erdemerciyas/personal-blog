@@ -4,10 +4,9 @@ import { useState, useEffect } from 'react';
 import { useSession } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
 import Image from 'next/image';
-import AdminLayout from '../../../../components/admin/AdminLayout';
 import ImageUpload from '../../../../components/ImageUpload';
 import UniversalEditor from '../../../../components/ui/UniversalEditor';
-import { 
+import {
   PlusIcon,
   CheckIcon,
   ExclamationTriangleIcon,
@@ -92,18 +91,13 @@ export default function NewServicePage() {
 
   if (status === 'loading') {
     return (
-      <AdminLayout>
-        <div className="flex items-center justify-center min-h-[400px]">
-          <div className="flex flex-col items-center space-y-4">
-            <div className="flex flex-col items-center space-y-4">
-              <div className="text-center">
-                <p className="text-slate-600">Yükleniyor...</p>
-              </div>
-            </div>
+              <div className="flex items-center justify-center min-h-[400px]">
+          <div className="relative">
+            <div className="w-16 h-16 border-4 border-slate-200 rounded-full"></div>
+            <div className="absolute top-0 left-0 w-16 h-16 border-4 border-transparent border-t-indigo-600 rounded-full animate-spin"></div>
           </div>
         </div>
-      </AdminLayout>
-    );
+          );
   }
 
   if (!session?.user) {
@@ -111,32 +105,22 @@ export default function NewServicePage() {
   }
 
   return (
-    <AdminLayout 
-      title="Yeni Servis Ekle"
-      breadcrumbs={[
-        { label: 'Dashboard', href: '/admin/dashboard' },
-        { label: 'Servisler', href: '/admin/services' },
-        { label: 'Yeni Servis' }
-      ]}
-    >
-      <div className="p-4 sm:p-6 lg:p-8">
-        <div className="w-full space-y-6">
-        
+          <div className="space-y-6">
         {/* Header Info */}
-        <div className="mb-6">
+        <div>
           <p className="text-slate-600">Yeni servis ekleyin</p>
         </div>
 
         {/* Success/Error Messages */}
         {success && (
-          <div className="bg-brand-primary-50 border border-brand-primary-200 text-brand-primary-900 p-4 rounded-xl flex items-center space-x-3">
+          <div className="bg-emerald-50 border border-emerald-200 text-emerald-800 p-4 rounded-2xl flex items-center space-x-3">
             <CheckIcon className="w-5 h-5" />
             <span>Servis başarıyla eklendi! Yönlendiriliyorsunuz...</span>
           </div>
         )}
 
         {error && (
-          <div className="bg-red-50 border border-red-200 text-red-800 p-4 rounded-xl flex items-center space-x-3">
+          <div className="bg-red-50 border border-red-200 text-red-800 p-4 rounded-2xl flex items-center space-x-3">
             <ExclamationTriangleIcon className="w-5 h-5" />
             <span>{error}</span>
           </div>
@@ -144,32 +128,39 @@ export default function NewServicePage() {
 
         {/* Form */}
         <form onSubmit={handleSubmit} className="space-y-6">
-          
+
           {/* Basic Information */}
-          <div className="bg-white rounded-xl p-6 shadow-sm border border-slate-200">
-            <h3 className="text-lg font-semibold text-slate-900 mb-4 flex items-center space-x-2">
-              <DocumentTextIcon className="w-5 h-5 text-brand-primary-700" />
-              <span>Temel Bilgiler</span>
-            </h3>
-            
-            <div className="space-y-6">
+          <div className="bg-white rounded-2xl shadow-sm border border-slate-200/60 p-6">
+            <div className="flex items-center space-x-3 mb-6">
+              <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-indigo-500 to-violet-600 flex items-center justify-center">
+                <DocumentTextIcon className="w-6 h-6 text-white" />
+              </div>
               <div>
-                <label className="block text-sm font-medium text-slate-700 mb-2">
+                <h3 className="text-lg font-bold text-slate-900">Temel Bilgiler</h3>
+                <p className="text-sm text-slate-500">Servis temel bilgilerini girin</p>
+              </div>
+            </div>
+
+            <div className="space-y-4">
+              <div>
+                <label htmlFor="title" className="block text-sm font-medium text-slate-700 mb-2">
                   Servis Başlığı *
                 </label>
                 <input
                   type="text"
+                  id="title"
                   name="title"
                   value={serviceTitle}
                   onChange={(e) => setServiceTitle(e.target.value)}
-                  className="w-full border border-slate-300 rounded-xl px-4 py-3 text-slate-900 focus:outline-none focus:ring-2 focus:ring-brand-primary-600 focus:border-transparent"
+                  className="w-full px-4 py-3 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all"
                   placeholder="Servis başlığı giriniz"
                   required
+                  disabled={loading}
                 />
               </div>
-              
+
               <div>
-                <label className="block text-sm font-medium text-slate-700 mb-2">
+                <label htmlFor="description" className="block text-sm font-medium text-slate-700 mb-2">
                   Servis Açıklaması *
                 </label>
                 <UniversalEditor
@@ -183,12 +174,17 @@ export default function NewServicePage() {
           </div>
 
           {/* Service Image */}
-          <div className="bg-white rounded-xl p-6 shadow-sm border border-slate-200">
-            <h3 className="text-lg font-semibold text-slate-900 mb-4 flex items-center space-x-2">
-              <PhotoIcon className="w-5 h-5 text-brand-primary-700" />
-              <span>Servis Görseli</span>
-            </h3>
-            
+          <div className="bg-white rounded-2xl shadow-sm border border-slate-200/60 p-6">
+            <div className="flex items-center space-x-3 mb-6">
+              <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-violet-500 to-purple-600 flex items-center justify-center">
+                <PhotoIcon className="w-6 h-6 text-white" />
+              </div>
+              <div>
+                <h3 className="text-lg font-bold text-slate-900">Servis Görseli</h3>
+                <p className="text-sm text-slate-500">Servis görselini yükleyin</p>
+              </div>
+            </div>
+
             <ImageUpload
               label="Hizmet Görseli"
               value={serviceImage}
@@ -203,22 +199,27 @@ export default function NewServicePage() {
           </div>
 
           {/* Features */}
-          <div className="bg-white rounded-xl p-6 shadow-sm border border-slate-200">
-            <div className="flex items-center justify-between mb-4">
-              <h3 className="text-lg font-semibold text-slate-900 flex items-center space-x-2">
-                <ListBulletIcon className="w-5 h-5 text-brand-primary-700" />
-                <span>Servis Özellikleri</span>
-              </h3>
+          <div className="bg-white rounded-2xl shadow-sm border border-slate-200/60 p-6">
+            <div className="flex items-center justify-between mb-6">
+              <div className="flex items-center space-x-3">
+                <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-amber-500 to-orange-600 flex items-center justify-center">
+                  <ListBulletIcon className="w-6 h-6 text-white" />
+                </div>
+                <div>
+                  <h3 className="text-lg font-bold text-slate-900">Servis Özellikleri</h3>
+                  <p className="text-sm text-slate-500">Servis özelliklerini ekleyin</p>
+                </div>
+              </div>
               <button
                 type="button"
                 onClick={addFeature}
-                className="flex items-center space-x-2 bg-brand-primary-50 text-brand-primary-700 px-3 py-2 rounded-lg hover:bg-brand-primary-100 transition-colors"
+                className="flex items-center space-x-2 bg-indigo-50 text-indigo-700 px-3 py-2 rounded-xl hover:bg-indigo-100 transition-colors font-medium"
               >
                 <PlusIcon className="w-4 h-4" />
                 <span>Özellik Ekle</span>
               </button>
             </div>
-            
+
             <div className="space-y-3">
               {features.length === 0 ? (
                 <p className="text-slate-500 text-sm py-4 text-center">
@@ -231,8 +232,9 @@ export default function NewServicePage() {
                       type="text"
                       value={feature}
                       onChange={(e) => updateFeature(index, e.target.value)}
-                      className="flex-1 border border-slate-300 rounded-xl px-4 py-3 text-slate-900 focus:outline-none focus:ring-2 focus:ring-brand-primary-600 focus:border-transparent"
+                      className="flex-1 px-4 py-3 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all"
                       placeholder="Özellik açıklaması"
+                      disabled={loading}
                     />
                     <button
                       type="button"
@@ -248,13 +250,18 @@ export default function NewServicePage() {
           </div>
 
           {/* Preview */}
-          <div className="bg-white rounded-xl p-6 shadow-sm border border-slate-200">
-            <h3 className="text-lg font-semibold text-slate-900 mb-4 flex items-center space-x-2">
-              <WrenchScrewdriverIcon className="w-5 h-5 text-brand-primary-700" />
-              <span>Önizleme</span>
-            </h3>
-            
-            <div className="bg-slate-50 rounded-xl p-6">
+          <div className="bg-white rounded-2xl shadow-sm border border-slate-200/60 p-6">
+            <div className="flex items-center space-x-3 mb-6">
+              <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-emerald-500 to-teal-600 flex items-center justify-center">
+                <WrenchScrewdriverIcon className="w-6 h-6 text-white" />
+              </div>
+              <div>
+                <h3 className="text-lg font-bold text-slate-900">Önizleme</h3>
+                <p className="text-sm text-slate-500">Servis önizlemesi</p>
+              </div>
+            </div>
+
+            <div className="bg-slate-50 rounded-2xl p-6">
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div>
                   <h4 className="font-semibold text-slate-900 mb-2">{serviceTitle || 'Servis Başlığı'}</h4>
@@ -265,7 +272,7 @@ export default function NewServicePage() {
                       <p>Servis açıklaması buraya gelecek...</p>
                     )}
                   </div>
-                  
+
                   {features.filter(f => f.trim()).length > 0 && (
                     <div>
                       <h5 className="font-medium text-slate-800 mb-2">Özellikler:</h5>
@@ -277,7 +284,7 @@ export default function NewServicePage() {
                     </div>
                   )}
                 </div>
-                
+
                 <div>
                   <div className="w-full h-32 bg-slate-200 rounded-xl overflow-hidden flex items-center justify-center relative">
                     {serviceImage ? (
@@ -301,38 +308,34 @@ export default function NewServicePage() {
           </div>
 
           {/* Submit Buttons */}
-          <div className="bg-white rounded-xl p-6 shadow-sm border border-slate-200">
-            <div className="flex flex-col sm:flex-row gap-4">
-              <button
-                type="submit"
-                disabled={loading}
-                className="flex-1 bg-brand-primary-700 text-white px-6 py-3 rounded-xl font-medium hover:bg-brand-primary-800 disabled:opacity-50 disabled:cursor-not-allowed transition-colors flex items-center justify-center space-x-2"
-              >
-                {loading ? (
-                  <>
-                    <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-white"></div>
-                    <span>Ekleniyor...</span>
-                  </>
-                ) : (
-                  <>
-                    <CheckIcon className="w-5 h-5" />
-                    <span>Servis Ekle</span>
-                  </>
-                )}
-              </button>
-              
-              <Link
-                href="/admin/services"
-                className="flex-1 sm:flex-none bg-slate-100 text-slate-700 px-6 py-3 rounded-xl font-medium hover:bg-slate-200 transition-colors flex items-center justify-center space-x-2"
-              >
-                <ArrowLeftIcon className="w-5 h-5" />
-                <span>Geri Dön</span>
-              </Link>
-            </div>
+          <div className="flex items-center justify-between pt-6">
+            <Link
+              href="/admin/services"
+              className="flex items-center space-x-2 px-6 py-3 border border-slate-200 rounded-xl text-slate-700 hover:bg-slate-50 transition-colors font-medium"
+            >
+              <ArrowLeftIcon className="w-5 h-5" />
+              <span>Geri Dön</span>
+            </Link>
+
+            <button
+              type="submit"
+              disabled={loading}
+              className="flex items-center space-x-2 bg-gradient-to-r from-indigo-500 to-violet-600 hover:shadow-lg hover:shadow-indigo-500/30 text-white px-8 py-3 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed transition-all font-semibold"
+            >
+              {loading ? (
+                <>
+                  <div className="animate-spin rounded-full h-5 w-5 border-2 border-white border-t-transparent"></div>
+                  <span>Ekleniyor...</span>
+                </>
+              ) : (
+                <>
+                  <CheckIcon className="w-5 h-5" />
+                  <span>Servis Ekle</span>
+                </>
+              )}
+            </button>
           </div>
         </form>
-        </div>
       </div>
-    </AdminLayout>
-  );
+      );
 }

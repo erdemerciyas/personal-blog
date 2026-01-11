@@ -99,7 +99,7 @@ export async function POST(req: NextRequest) {
             try {
                 // Usually take the first/only item
                 const item = items[0];
-                const { _id, ...rest } = item;
+                const { ...rest } = item;
 
                 // We update the existing singleton or create one.
                 // Using valid singleton query if possible, or empty filter to catch 'any' doc

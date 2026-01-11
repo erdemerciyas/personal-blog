@@ -1,77 +1,72 @@
 import { NextRequest, NextResponse } from 'next/server';
-import connectDB from '../../../../lib/mongoose';
-import User from '../../../../models/User';
-import bcrypt from 'bcryptjs';
-import { withSecurity, SecurityConfigs } from '../../../../lib/security-middleware';
+import { getServerSession } from 'next-auth';
+import { authOptions } from '@/lib/auth';
+import connectDB from '@/lib/mongoose';
+import User from '@/models/User';
 
-export const GET = withSecurity(SecurityConfigs.admin)(async () => {
+/**
+ * GET /api/admin/users - List all users for admin
+ */
+export async function GET(_req: NextRequest) {
   try {
+    const session = await getServerSession(authOptions);
+
+    if (!session) {
+      return NextResponse.json(
+        { success: false, error: 'Unauthorized' },
+        { status: 401 }
+      );
+    }
+
     await connectDB();
-    const users = await User.find({})
-      .select('-password')
-      .sort({ createdAt: -1 });
+
+    const users = await User.find().sort({ createdAt: -1 });
+
     return NextResponse.json(users);
   } catch (error) {
-    console.error('Users fetch error:', error);
+    console.error('Error fetching users:', error);
     return NextResponse.json(
-      { message: 'Kullanıcılar yüklenirken hata oluştu' },
+      { success: false, error: 'Failed to fetch users' },
       { status: 500 }
     );
   }
-});
+}
 
-export const POST = withSecurity(SecurityConfigs.admin)(async (request: NextRequest) => {
+/**
+ * POST /api/admin/users - Create a new user
+ */
+export async function POST(req: NextRequest) {
   try {
-    const { name, email, password, role, isActive } = await request.json();
+    const session = await getServerSession(authOptions);
 
-    if (!name || !email || !password) {
+    if (!session) {
       return NextResponse.json(
-        { message: 'Ad, e-posta ve şifre gereklidir' },
-        { status: 400 }
+        { success: false, error: 'Unauthorized' },
+        { status: 401 }
       );
     }
 
     await connectDB();
 
-    // Check if user already exists
-    const existingUser = await User.findOne({ email });
-    if (existingUser) {
-      return NextResponse.json(
-        { message: 'Bu e-posta adresi zaten kullanılıyor' },
-        { status: 400 }
-      );
-    }
+    const body = await req.json();
 
-    // Hash password
-    const hashedPassword = await bcrypt.hash(password, 12);
-
-    // Create user
     const user = new User({
-      name,
-      email,
-      password: hashedPassword,
-      role: role || 'user',
-      isActive: isActive !== undefined ? isActive : true
+      ...body,
+      createdAt: new Date(),
+      updatedAt: new Date(),
     });
 
     await user.save();
 
-    // Return user without password
-    const userResponse = {
-      _id: user._id,
-      name: user.name,
-      email: user.email,
-      role: user.role,
-      isActive: user.isActive,
-      createdAt: user.createdAt
-    };
-
-    return NextResponse.json(userResponse, { status: 201 });
-  } catch (error) {
-    console.error('User creation error:', error);
     return NextResponse.json(
-      { message: 'Kullanıcı oluşturulurken hata oluştu' },
+      { success: true, data: user },
+      { status: 201 }
+    );
+  } catch (error) {
+    console.error('Error creating user:', error);
+    return NextResponse.json(
+      { success: false, error: 'Failed to create user' },
       { status: 500 }
     );
   }
-});
+}

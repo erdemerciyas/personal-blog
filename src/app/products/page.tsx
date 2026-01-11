@@ -1,4 +1,5 @@
 import Link from 'next/link';
+import NextImage from 'next/image';
 import { notFound } from 'next/navigation';
 import { config } from '@/core/lib/config';
 import dynamic from 'next/dynamic';
@@ -226,8 +227,7 @@ export default async function ProductsPage({ searchParams }: { searchParams: Rec
                     <FixralCard key={p._id} className="p-4" variant="default">
                       <div className="grid md:grid-cols-[180px_1fr_auto] gap-4 items-center">
                         <div className="relative">
-                          {/* eslint-disable-next-line @next/next/no-img-element */}
-                          <img src={p.coverImage} alt={p.title} loading="lazy" className="w-full h-40 object-cover rounded-md" />
+                          <NextImage src={p.coverImage} alt={p.title} fill className="object-cover rounded-md" sizes="(max-width: 768px) 100vw, 200px" />
                           {p.stock <= 0 && (
                             <span className="absolute top-2 left-2 text-xs px-2 py-0.5 rounded bg-red-600 text-white">Stokta Yok</span>
                           )}
@@ -259,8 +259,7 @@ export default async function ProductsPage({ searchParams }: { searchParams: Rec
                   <TiltHover key={p._id} className="[transform-style:preserve-3d]">
                     <FixralCard className="overflow-hidden" variant="default">
                       <Link href={`/products/${p.slug}`} className="block group relative">
-                        {/* eslint-disable-next-line @next/next/no-img-element */}
-                        <img src={p.coverImage} alt={p.title} loading="lazy" className="w-full h-56 object-cover rounded-md transition-transform group-hover:scale-[1.02]" />
+                        <NextImage src={p.coverImage} alt={p.title} fill className="object-cover rounded-md transition-transform group-hover:scale-[1.02]" sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw" />
                         {p.stock <= 0 && (
                           <span className="absolute top-2 left-2 text-xs px-2 py-0.5 rounded bg-red-600 text-white">Stokta Yok</span>
                         )}

@@ -7,17 +7,20 @@ import Product from '../../../../models/Product';
 import Service from '../../../../models/Service';
 import Message from '../../../../models/Message';
 import User from '../../../../models/User';
+import News from '../../../../models/News';
 import { withSecurity, SecurityConfigs } from '../../../../lib/security-middleware';
 
 export const GET = withSecurity(SecurityConfigs.admin)(async () => {
   try {
     await connectDB();
 
-    // Medya sayısını Cloudinary'den al
+    // Medya sayılarını Cloudinary'den al
     let mediaCount = 0;
+    let productMediaCount = 0;
+
     try {
       const cloudinary = await import('cloudinary').then(m => m.v2);
-      
+
       // Cloudinary config
       cloudinary.config({
         cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
@@ -25,29 +28,62 @@ export const GET = withSecurity(SecurityConfigs.admin)(async () => {
         api_secret: process.env.CLOUDINARY_API_SECRET,
       });
 
-      const result = await cloudinary.api.resources({
-        resource_type: 'image',
-        max_results: 500, // Maksimum sayı
-        type: 'upload'
+      // 1. Get Total Count (approximate using max_results loop or just one page for now)
+      // Note: For accurate counts we should use Search API but Admin API listed resources is okay for now
+
+      // Get Product Images Count directly by folder
+      const productResult = await cloudinary.api.resources({
+        type: 'upload',
+        prefix: 'personal-blog/products/',
+        max_results: 500
       });
-      
-      mediaCount = result.resources ? result.resources.length : 0;
+      productMediaCount = productResult.resources ? productResult.resources.length : 0;
+
+      // Get Site Images (Total - Products is a rough approximation if we grab everything)
+      // Or just get root folder content if well organized. 
+      // Current approach: Get 'all' and subtract products or filter out.
+      // Better: Just assume 'personal-blog/' prefix for everything.
+
+      const allResult = await cloudinary.api.resources({
+        type: 'upload',
+        prefix: 'personal-blog/',
+        max_results: 500
+      });
+
+      const totalCount = allResult.resources ? allResult.resources.length : 0;
+
+      // Site media is whatever is NOT in products folder
+      // Simple logic: Total - Product. 
+      // Note: This assumes all product images are correctly in that folder.
+
+      // Refined logic: Manually filter the 'allResult' to be safe if total < 500
+      if (allResult.resources) {
+        mediaCount = allResult.resources.filter((r: any) => !r.public_id.startsWith('personal-blog/products/')).length;
+      }
+
     } catch (cloudinaryError) {
       console.error('Cloudinary media count error:', cloudinaryError);
       mediaCount = 0;
+      productMediaCount = 0;
     }
 
-    // Paralel olarak tüm istatistikleri al
-    const [portfolioCount, servicesCount, messagesCount, usersCount, recentMessages, productsCount] = await Promise.all([
+    const [
+      portfolioCount, servicesCount, messagesCount, usersCount,
+      recentMessages, productsCount, newsCount, productQuestionsCount,
+      recentNews, recentPortfolio, recentServices, recentProducts
+    ] = await Promise.all([
       Portfolio.countDocuments(),
       Service.countDocuments(),
       Message.countDocuments(),
       User.countDocuments(),
-      Message.find()
-        .sort({ createdAt: -1 })
-        .limit(5)
-        .select('name email subject createdAt status'),
-      Product.countDocuments()
+      Message.find().sort({ createdAt: -1 }).limit(5).select('name email subject createdAt status'),
+      Product.countDocuments(),
+      News.countDocuments(),
+      Message.countDocuments({ type: 'product_question' }), // Product Questions Count
+      News.find().sort({ createdAt: -1 }).limit(5).select('title status createdAt views'),
+      Portfolio.find().sort({ createdAt: -1 }).limit(5).select('title status createdAt'),
+      Service.find().sort({ createdAt: -1 }).limit(5).select('title status createdAt'),
+      Product.find().sort({ createdAt: -1 }).limit(5).select('name status createdAt') // Assuming Product has name instead of title? Need to check model but usually it's title or name.
     ]);
 
     const stats = {
@@ -56,7 +92,10 @@ export const GET = withSecurity(SecurityConfigs.admin)(async () => {
       messagesCount,
       usersCount,
       mediaCount,
+      productMediaCount,
       productsCount,
+      newsCount,
+      productQuestionsCount,
       recentMessages: recentMessages.map(msg => ({
         _id: msg._id,
         name: msg.name,
@@ -64,7 +103,13 @@ export const GET = withSecurity(SecurityConfigs.admin)(async () => {
         subject: msg.subject,
         createdAt: msg.createdAt,
         status: msg.status || 'pending'
-      }))
+      })),
+      recentContent: [
+        ...recentNews.map(item => ({ ...item.toObject(), type: 'news', title: item.title })),
+        ...recentPortfolio.map(item => ({ ...item.toObject(), type: 'portfolio', title: item.title })),
+        ...recentServices.map(item => ({ ...item.toObject(), type: 'service', title: item.title })),
+        ...recentProducts.map(item => ({ ...item.toObject(), type: 'product', title: item.name || item.title })) // Handle name/title variance
+      ].sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()).slice(0, 5)
     };
 
     return NextResponse.json(stats);

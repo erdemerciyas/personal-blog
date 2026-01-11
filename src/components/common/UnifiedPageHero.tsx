@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import Link from 'next/link';
 import { ArrowRightIcon } from '@heroicons/react/24/outline';
+import { useActiveTheme } from '../../providers/ActiveThemeProvider';
 
 interface UnifiedPageHeroProps {
   title: string;
@@ -52,29 +53,53 @@ export default function UnifiedPageHero({
   buttonLink = '#content',
   secondaryButtonText,
   secondaryButtonLink,
-  backgroundGradient = 'bg-gradient-primary',
+  backgroundGradient, // No default here to check if provided
   showButton = true,
   showSecondaryButton = false,
   variant = 'default',
 }: UnifiedPageHeroProps) {
   const [mounted, setMounted] = useState(false);
+  const { theme } = useActiveTheme();
 
   useEffect(() => {
     setMounted(true);
   }, []);
 
+  // Theme config shortcuts
+  const heroConfig = theme?.hero;
+
+  // 1. Background Logic
+  // Priority: Prop > Theme Config > Default
+  const finalBg = backgroundGradient || heroConfig?.backgroundColor || 'bg-gradient-primary';
+  const isCustomBg = finalBg.startsWith('#') || finalBg.startsWith('linear-gradient') || finalBg.startsWith('url') || finalBg.includes('rgb');
+
+  // 2. Alignment Logic
+  const alignment = heroConfig?.alignment || 'center';
+  const textAlignClass = alignment === 'left' ? 'text-left' : alignment === 'right' ? 'text-right' : 'text-center';
+  const flexAlignClass = alignment === 'left' ? 'items-start' : alignment === 'right' ? 'items-end' : 'items-center';
+
+  // 3. Size Logic (Height)
+  // We can inject min-height if desired, but let's stick to padding-based sizing for now combined with theme adjustments if needed.
+  // The original component used padding classes. We can keep that or allow theme to override padding.
+  // Letting CSS variables handle it would be cleaner if the layout used them, but here we have explicit classes.
+  // For now, we will stick to the variant classes but apply theme/prop background.
+
+  // 4. Color Logic (Title, Subtitle)
+  const titleColor = heroConfig?.title?.color;
+  const subtitleColor = heroConfig?.subtitle?.color;
+
   if (!mounted) {
     return (
       <section
-        className={`${backgroundGradient} text-white ${variant === 'compact'
+        className={`text-white ${variant === 'compact'
           ? 'py-12 md:py-16'
           : 'py-32 md:py-48 lg:py-56 flex items-center justify-center'
-          }`}
+          } ${!isCustomBg ? finalBg : ''}`}
+        style={isCustomBg ? { background: finalBg } : {}}
       >
         <div className="container-content">
           <div className="text-center">
-            <div className="w-16 h-16 border-4 border-white/30 border-t-white rounded-full animate-spin mx-auto mb-4"></div>
-            <p className="text-white text-lg">Yükleniyor...</p>
+            {/* Minimal Loading State */}
           </div>
         </div>
       </section>
@@ -83,16 +108,17 @@ export default function UnifiedPageHero({
 
   return (
     <section
-      className={`relative overflow-hidden ${backgroundGradient} text-white ${variant === 'compact'
+      className={`relative overflow-hidden text-white ${variant === 'compact'
         ? 'pt-24 pb-16 md:pt-28 md:pb-20'
         : 'pt-48 pb-40 md:pt-56 md:pb-52 lg:pt-64 lg:pb-60 flex items-center justify-center'
-        }`}
+        } ${!isCustomBg ? finalBg : ''}`}
+      style={isCustomBg ? { background: finalBg } : undefined}
       role="banner"
       aria-label={`${title} - Sayfa başlığı`}
     >
       <div className="container-content">
         <motion.div
-          className="text-center"
+          className={`flex flex-col ${flexAlignClass} ${textAlignClass} w-full`}
           variants={containerVariants}
           initial="visible"
           animate="visible"
@@ -114,6 +140,7 @@ export default function UnifiedPageHero({
             variants={itemVariants}
             className={`${variant === 'compact' ? 'hero-title-compact' : 'hero-title'
               } text-gradient-hero mb-6`}
+            style={titleColor ? { color: titleColor, WebkitTextFillColor: titleColor } : undefined}
           >
             {title}
           </motion.h1>
@@ -123,6 +150,7 @@ export default function UnifiedPageHero({
             <motion.p
               variants={itemVariants}
               className="text-xl sm:text-2xl font-semibold text-brand-primary-200 mb-8"
+              style={subtitleColor ? { color: subtitleColor } : undefined}
             >
               {subtitle}
             </motion.p>
@@ -132,7 +160,8 @@ export default function UnifiedPageHero({
           {description && (
             <motion.p
               variants={itemVariants}
-              className="text-lg sm:text-xl leading-relaxed text-slate-200/90 max-w-3xl mx-auto mb-12"
+              className={`text-lg sm:text-xl leading-relaxed text-slate-200/90 max-w-3xl mb-12 ${alignment === 'center' ? 'mx-auto' : ''}`}
+              style={subtitleColor ? { color: subtitleColor } : undefined}
             >
               {description}
             </motion.p>
@@ -142,12 +171,16 @@ export default function UnifiedPageHero({
           {(showButton || showSecondaryButton) && (
             <motion.div
               variants={itemVariants}
-              className="flex flex-col sm:flex-row gap-4 sm:gap-6 justify-center items-center"
+              className={`flex flex-col sm:flex-row gap-4 sm:gap-6 ${alignment === 'center' ? 'justify-center' : (alignment === 'right' ? 'justify-end' : 'justify-start')} items-center`}
             >
               {showButton && (
                 <Link
                   href={buttonLink}
                   className="inline-flex items-center gap-2 px-8 py-4 bg-white text-brand-primary-900 font-semibold rounded-lg hover:bg-white/90 transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-offset-2 focus-visible:ring-offset-brand-primary-900 shadow-lg hover:shadow-xl"
+                  style={heroConfig?.buttons?.primary ? {
+                    backgroundColor: heroConfig.buttons.primary.backgroundColor,
+                    color: heroConfig.buttons.primary.textColor,
+                  } : undefined}
                 >
                   {buttonText}
                   <ArrowRightIcon className="w-5 h-5" aria-hidden="true" />
@@ -170,6 +203,17 @@ export default function UnifiedPageHero({
 
       {/* Decorative gradient overlay */}
       <div className="absolute inset-0 bg-gradient-to-b from-transparent via-transparent to-black/10 pointer-events-none" />
+
+      {/* Theme defined overlay */}
+      {heroConfig?.overlay?.enabled && (
+        <div
+          className="absolute inset-0 pointer-events-none"
+          style={{
+            backgroundColor: heroConfig.overlay.color || '#000000',
+            opacity: heroConfig.overlay.opacity || 0.4,
+          }}
+        />
+      )}
     </section>
   );
 }

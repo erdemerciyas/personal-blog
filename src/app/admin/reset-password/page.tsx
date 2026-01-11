@@ -1,276 +1,279 @@
 'use client';
-import { useState, useEffect, Suspense } from 'react';
+
+import { useState, Suspense } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
-import { 
+import Link from 'next/link';
+import {
   LockClosedIcon,
-  CubeTransparentIcon,
-  ExclamationTriangleIcon,
-  CheckCircleIcon,
-  EyeIcon,
-  EyeSlashIcon,
-  ArrowRightIcon
+  EnvelopeIcon,
+  ArrowLeftIcon,
+  CheckIcon,
+  XMarkIcon,
+  KeyIcon
 } from '@heroicons/react/24/outline';
 
-function ResetPasswordForm() {
+function ResetPasswordContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
-  
-  const [token, setToken] = useState<string | null>(null);
+  const token = searchParams?.get('token');
+
+  const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
-  const [showPassword, setShowPassword] = useState(false);
-  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [loading, setLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
-  const [success, setSuccess] = useState(false);
+  const [message, setMessage] = useState<{ type: 'success' | 'error'; text: string } | null>(null);
 
-  useEffect(() => {
-    const tokenParam = searchParams?.get('token');
-    if (!tokenParam) {
-      setError('Geçersiz sıfırlama bağlantısı');
-      return;
-    }
-    setToken(tokenParam);
-  }, [searchParams]);
-
-  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+  const handleRequestReset = async (e: React.FormEvent) => {
     e.preventDefault();
-
-    if (!token) {
-      setError('Geçersiz token');
-      return;
-    }
-
-    if (!password || !confirmPassword) {
-      setError('Lütfen tüm alanları doldurun');
-      return;
-    }
-
-    if (password.length < 6) {
-      setError('Şifre en az 6 karakter olmalıdır');
-      return;
-    }
-
-    if (password !== confirmPassword) {
-      setError('Şifreler eşleşmiyor');
-      return;
-    }
-
-    setError(null);
     setLoading(true);
+    setMessage(null);
 
     try {
-      const response = await fetch('/api/auth/reset-password', {
+      const response = await fetch('/api/auth/forgot-password', {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          token,
-          password,
-        }),
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email }),
       });
 
       const data = await response.json();
 
       if (response.ok) {
-        setSuccess(true);
-        setTimeout(() => {
-          router.push('/admin/login');
-        }, 3000);
+        setMessage({
+          type: 'success',
+          text: data.message || 'Password reset email sent! Please check your inbox.'
+        });
       } else {
-        setError(data.error || 'Şifre sıfırlama başarısız');
+        setMessage({ type: 'error', text: data.error || 'Failed to send reset email' });
       }
     } catch (error) {
-      console.error('Reset password error:', error);
-      setError('Bir hata oluştu. Lütfen tekrar deneyin.');
+      console.error('Reset password request error:', error);
+      setMessage({ type: 'error', text: 'An error occurred. Please try again.' });
     } finally {
       setLoading(false);
     }
   };
 
-  if (success) {
-    return (
-      <div className="min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 flex items-center justify-center px-4">
-        <div className="max-w-md w-full">
-          <div className="text-center mb-8">
-            <div className="inline-flex items-center justify-center w-16 h-16 bg-gradient-to-br from-brand-primary-600 to-brand-primary-700 rounded-2xl mb-6">
-              <CheckCircleIcon className="w-8 h-8 text-white" />
-            </div>
-            <h1 className="text-3xl font-bold text-white mb-2">Şifre Güncellendi</h1>
-            <p className="text-slate-400">Şifreniz başarıyla güncellendi</p>
-          </div>
+  const handleResetPassword = async (e: React.FormEvent) => {
+    e.preventDefault();
 
-          <div className="bg-white/10 backdrop-blur-xl rounded-3xl p-8 border border-white/20 text-center">
-            <div className="bg-brand-primary-600/10 border border-brand-primary-600/30 text-brand-primary-300 p-4 rounded-2xl mb-6">
-              <CheckCircleIcon className="w-6 h-6 mx-auto mb-2" />
-              <p className="text-sm">Şifreniz başarıyla güncellendi. Giriş sayfasına yönlendiriliyorsunuz...</p>
-            </div>
+    if (password !== confirmPassword) {
+      setMessage({ type: 'error', text: 'Passwords do not match' });
+      return;
+    }
 
-            <div className="animate-pulse">
-              <div className="flex items-center justify-center space-x-2">
-                <div className="w-6 h-6 border-4 border-brand-primary-600 rounded-full animate-spin"></div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-    );
-  }
+    setLoading(true);
+    setMessage(null);
+
+    try {
+      const response = await fetch('/api/auth/reset-password', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ token, password }),
+      });
+
+      const data = await response.json();
+
+      if (response.ok) {
+        setMessage({
+          type: 'success',
+          text: 'Password successfully updated! Redirecting to login...'
+        });
+        setTimeout(() => {
+          router.push('/admin/login');
+        }, 2000);
+      } else {
+        setMessage({ type: 'error', text: data.error || 'Failed to reset password' });
+      }
+    } catch (error) {
+      console.error('Reset password error:', error);
+      setMessage({ type: 'error', text: 'An error occurred. Please try again.' });
+    } finally {
+      setLoading(false);
+    }
+  };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 flex items-center justify-center px-4">
-      <div className="max-w-md w-full">
-        
-        {/* Logo and Title */}
-        <div className="text-center mb-8">
-          <div className="inline-flex items-center justify-center w-16 h-16 bg-gradient-to-br from-brand-primary-600 to-blue-600 rounded-2xl mb-6">
-            <CubeTransparentIcon className="w-8 h-8 text-white" />
-          </div>
-          <h1 className="text-3xl font-bold text-white mb-2">Şifre Sıfırla</h1>
-          <p className="text-slate-400">Yeni şifrenizi belirleyin</p>
-        </div>
+    <div className="min-h-screen bg-gradient-to-br from-indigo-500 via-violet-500 to-purple-600 flex items-center justify-center p-4">
+      {/* Background Pattern */}
+      <div className="absolute inset-0 overflow-hidden">
+        <div className="absolute -top-40 -right-40 w-80 h-80 bg-white/10 rounded-full blur-3xl"></div>
+        <div className="absolute -bottom-40 -left-40 w-80 h-80 bg-white/10 rounded-full blur-3xl"></div>
+      </div>
 
-        {/* Reset Password Card */}
-        <div className="bg-white/10 backdrop-blur-xl rounded-3xl p-8 border border-white/20">
-          
-          {/* Error Message */}
-          {error && (
-            <div className="mb-6">
-              <div className="bg-red-500/10 border border-red-500/30 text-red-300 p-4 rounded-2xl flex items-center space-x-3">
-                <ExclamationTriangleIcon className="w-5 h-5 text-red-400 flex-shrink-0" />
-                <span className="text-sm">{error}</span>
-              </div>
+      {/* Reset Password Card */}
+      <div className="relative w-full max-w-md">
+        <div className="bg-white/95 backdrop-blur-xl rounded-3xl shadow-2xl shadow-indigo-500/30 p-8">
+          {/* Logo */}
+          <div className="flex flex-col items-center mb-8">
+            <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-indigo-500 to-violet-600 flex items-center justify-center shadow-lg shadow-indigo-500/30 mb-4">
+              <span className="text-white font-bold text-3xl">A</span>
+            </div>
+            <h1 className="text-3xl font-bold text-slate-900 mb-2">
+              {token ? 'Set New Password' : 'Reset Password'}
+            </h1>
+            <p className="text-slate-500 text-center">
+              {token
+                ? 'Please enter your new password below'
+                : "Enter your email address and we'll send you a link to reset your password"
+              }
+            </p>
+          </div>
+
+          {/* Success/Error Message */}
+          {message && (
+            <div className={`mb-6 p-4 rounded-xl border flex items-start gap-3 ${message.type === 'success'
+              ? 'bg-emerald-50 border-emerald-200 text-emerald-800'
+              : 'bg-red-50 border-red-200 text-red-800'
+              }`}>
+              {message.type === 'success' ? (
+                <CheckIcon className="w-5 h-5 mt-0.5 flex-shrink-0" />
+              ) : (
+                <XMarkIcon className="w-5 h-5 mt-0.5 flex-shrink-0" />
+              )}
+              <span>{message.text}</span>
             </div>
           )}
 
-          {/* Reset Form */}
-          <form onSubmit={handleSubmit} className="space-y-6">
-            
-            {/* New Password Field */}
-            <div className="space-y-2">
-              <label htmlFor="password" className="block text-sm font-semibold text-slate-200">
-                Yeni Şifre
-              </label>
-              <div className="relative">
-                <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
-                  <LockClosedIcon className="h-5 w-5 text-slate-400" />
+          {/* Form */}
+          {!token ? (
+            <form onSubmit={handleRequestReset} className="space-y-6">
+              <div>
+                <label htmlFor="email" className="block text-sm font-medium text-slate-700 mb-2">
+                  Email Address
+                </label>
+                <div className="relative">
+                  <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+                    <EnvelopeIcon className="h-5 w-5 text-slate-400" />
+                  </div>
+                  <input
+                    id="email"
+                    type="email"
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
+                    required
+                    className="w-full pl-12 pr-4 py-3.5 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all"
+                    placeholder="admin@example.com"
+                  />
                 </div>
-                <input
-                  id="password"
-                  name="password"
-                  type={showPassword ? 'text' : 'password'}
-                  autoComplete="new-password"
-                  required
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                  className="w-full bg-white/5 border border-white/20 rounded-xl pl-12 pr-12 py-4 text-white placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-brand-primary-600 focus:border-transparent transition-all duration-200"
-                  placeholder="En az 6 karakter"
-                />
-                <button
-                  type="button"
-                  onClick={() => setShowPassword(!showPassword)}
-                  className="absolute inset-y-0 right-0 pr-4 flex items-center text-slate-400 hover:text-white transition-colors"
-                >
-                  {showPassword ? (
-                    <EyeSlashIcon className="h-5 w-5" />
-                  ) : (
-                    <EyeIcon className="h-5 w-5" />
-                  )}
-                </button>
               </div>
-            </div>
 
-            {/* Confirm Password Field */}
-            <div className="space-y-2">
-              <label htmlFor="confirmPassword" className="block text-sm font-semibold text-slate-200">
-                Şifre Tekrar
-              </label>
-              <div className="relative">
-                <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
-                  <LockClosedIcon className="h-5 w-5 text-slate-400" />
+              <button
+                type="submit"
+                disabled={loading}
+                className="w-full py-3.5 px-4 bg-gradient-to-r from-indigo-500 to-violet-600 text-white font-semibold rounded-xl hover:shadow-lg hover:shadow-indigo-500/30 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
+              >
+                {loading ? (
+                  <div className="flex items-center justify-center space-x-2">
+                    <div className="animate-spin rounded-full h-5 w-5 border-2 border-white"></div>
+                    <span>Sending...</span>
+                  </div>
+                ) : (
+                  <div className="flex items-center justify-center space-x-2">
+                    <EnvelopeIcon className="w-5 h-5" />
+                    <span>Send Reset Link</span>
+                  </div>
+                )}
+              </button>
+            </form>
+          ) : (
+            <form onSubmit={handleResetPassword} className="space-y-6">
+              <div>
+                <label htmlFor="password" className="block text-sm font-medium text-slate-700 mb-2">
+                  New Password
+                </label>
+                <div className="relative">
+                  <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+                    <LockClosedIcon className="h-5 w-5 text-slate-400" />
+                  </div>
+                  <input
+                    id="password"
+                    type="password"
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
+                    required
+                    minLength={6}
+                    className="w-full pl-12 pr-4 py-3.5 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all"
+                    placeholder="••••••••"
+                  />
                 </div>
-                <input
-                  id="confirmPassword"
-                  name="confirmPassword"
-                  type={showConfirmPassword ? 'text' : 'password'}
-                  autoComplete="new-password"
-                  required
-                  value={confirmPassword}
-                  onChange={(e) => setConfirmPassword(e.target.value)}
-                  className="w-full bg-white/5 border border-white/20 rounded-xl pl-12 pr-12 py-4 text-white placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-brand-primary-600 focus:border-transparent transition-all duration-200"
-                  placeholder="Şifrenizi tekrar girin"
-                />
-                <button
-                  type="button"
-                  onClick={() => setShowConfirmPassword(!showConfirmPassword)}
-                  className="absolute inset-y-0 right-0 pr-4 flex items-center text-slate-400 hover:text-white transition-colors"
-                >
-                  {showConfirmPassword ? (
-                    <EyeSlashIcon className="h-5 w-5" />
-                  ) : (
-                    <EyeIcon className="h-5 w-5" />
-                  )}
-                </button>
               </div>
-            </div>
 
-            {/* Submit Button */}
-            <button
-              type="submit"
-              disabled={loading || !token}
-              className={`w-full flex items-center justify-center space-x-3 py-4 px-6 rounded-xl font-semibold transition-all duration-200 ${
-                loading || !token
-                  ? 'bg-brand-primary-700/50 cursor-not-allowed text-brand-primary-200'
-                  : 'bg-gradient-to-r from-brand-primary-700 to-blue-600 hover:from-brand-primary-800 hover:to-blue-700 text-white hover:scale-105 hover:shadow-xl transform'
-              }`}
-            >
-              {loading ? (
-                <>
-                  <div className="w-6 h-6 border-4 border-brand-primary-600 rounded-full animate-spin"></div>
-                </>
-              ) : (
-                <>
-                  <span>Şifreyi Güncelle</span>
-                  <ArrowRightIcon className="w-5 h-5" />
-                </>
-              )}
-            </button>
-          </form>
+              <div>
+                <label htmlFor="confirmPassword" className="block text-sm font-medium text-slate-700 mb-2">
+                  Confirm Password
+                </label>
+                <div className="relative">
+                  <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+                    <LockClosedIcon className="h-5 w-5 text-slate-400" />
+                  </div>
+                  <input
+                    id="confirmPassword"
+                    type="password"
+                    value={confirmPassword}
+                    onChange={(e) => setConfirmPassword(e.target.value)}
+                    required
+                    minLength={6}
+                    className="w-full pl-12 pr-4 py-3.5 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all"
+                    placeholder="••••••••"
+                  />
+                </div>
+              </div>
+
+              <button
+                type="submit"
+                disabled={loading}
+                className="w-full py-3.5 px-4 bg-gradient-to-r from-indigo-500 to-violet-600 text-white font-semibold rounded-xl hover:shadow-lg hover:shadow-indigo-500/30 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
+              >
+                {loading ? (
+                  <div className="flex items-center justify-center space-x-2">
+                    <div className="animate-spin rounded-full h-5 w-5 border-2 border-white"></div>
+                    <span>Updating...</span>
+                  </div>
+                ) : (
+                  <div className="flex items-center justify-center space-x-2">
+                    <KeyIcon className="w-5 h-5" />
+                    <span>Reset Password</span>
+                  </div>
+                )}
+              </button>
+            </form>
+          )}
 
           {/* Back to Login */}
-          <div className="mt-6 text-center">
-            <button
-              onClick={() => router.push('/admin/login')}
-              className="text-slate-400 hover:text-white transition-colors text-sm"
+          <div className="mt-8 pt-6 border-t border-slate-200">
+            <Link
+              href="/admin/login"
+              className="flex items-center justify-center text-sm text-slate-600 hover:text-indigo-600 transition-colors"
             >
-              Giriş sayfasına dön
-            </button>
+              <ArrowLeftIcon className="w-4 h-4 mr-2" />
+              Back to Login
+            </Link>
           </div>
-        </div>
 
-        {/* Footer */}
-        <div className="text-center mt-8">
-          <p className="text-slate-400 text-sm">
-            © {new Date().getFullYear()} Erciyas Engineering. Tüm hakları saklıdır.
-          </p>
+          {/* Back to Site */}
+          <div className="mt-4">
+            <Link
+              href="/"
+              className="flex items-center justify-center text-sm text-slate-500 hover:text-slate-700 transition-colors"
+            >
+              <ArrowLeftIcon className="w-4 h-4 mr-2" />
+              Back to website
+            </Link>
+          </div>
         </div>
       </div>
     </div>
   );
 }
 
-export default function ResetPasswordPage() {
+export default function AdminResetPasswordPage() {
   return (
     <Suspense fallback={
-      <div className="min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 flex items-center justify-center">
-        <div className="text-center text-white">
-          <div className="w-16 h-16 border-4 border-white/30 border-t-white rounded-full animate-spin mx-auto mb-4"></div>
-          <p className="text-lg">Şifre sıfırlama sayfası yükleniyor...</p>
-        </div>
+      <div className="min-h-screen flex items-center justify-center bg-gray-50">
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-indigo-600"></div>
       </div>
     }>
-      <ResetPasswordForm />
+      <ResetPasswordContent />
     </Suspense>
   );
-} 
+}

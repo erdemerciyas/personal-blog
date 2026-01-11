@@ -6,7 +6,7 @@ import Link from 'next/link';
 import { ArrowRightIcon, SparklesIcon } from '@heroicons/react/24/outline';
 import Breadcrumbs from '../../components/Breadcrumbs';
 
-import PortfolioHero from '../../components/portfolio/PortfolioHero';
+import PageHero from '@/components/common/PageHero';
 import PortfolioFilters from '../../components/portfolio/PortfolioFilters';
 import ModernProjectGrid from '../../components/portfolio/ModernProjectGrid';
 import { usePortfolioFilters } from '../../hooks/usePortfolioFilters';
@@ -110,11 +110,12 @@ export default function PortfolioPage() {
   return (
     <div className="min-h-screen bg-gray-50">
       {/* Hero Section */}
-      <PortfolioHero
+      <PageHero
         title={hero.title}
         description={hero.description}
         buttonText={hero.buttonText}
         buttonLink={hero.buttonLink}
+        showButton={true}
       />
       {/* Breadcrumbs under Hero */}
       <section className="py-1">

@@ -5,18 +5,18 @@ import { useState, useEffect } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
 import dynamic from 'next/dynamic';
-const Version = dynamic(() => import('./Version'), {
-  ssr: false,
-  loading: () => <span aria-hidden className="inline-block h-5" />
-});
-
+import { useActiveTheme } from '../providers/ActiveThemeProvider';
 import {
   EnvelopeIcon,
   PhoneIcon,
   MapPinIcon,
   HeartIcon
-} from '@heroicons/react/24/outline';
-// import Logo from './Logo'; // Removed static logo usage
+} from '@heroicons/react/24/outline'; // Removed static logo usage
+
+const Version = dynamic(() => import('./Version'), {
+  ssr: false,
+  loading: () => <span aria-hidden className="inline-block h-5" />
+});
 
 interface FooterSettings {
   mainDescription: string;
@@ -71,6 +71,10 @@ const ConditionalFooter: React.FC = () => {
   const [settings, setSettings] = useState<FooterSettings | null>(null);
   const [loading, setLoading] = useState(true);
   const [site, setSite] = useState<SiteSettingsMinimal | null>(null);
+  const { theme } = useActiveTheme();
+
+  // Footer config from theme
+  const footerConfig = theme?.footer;
 
   const isAdminPage = pathname?.startsWith('/admin');
 
@@ -190,10 +194,44 @@ const ConditionalFooter: React.FC = () => {
     window.scrollTo({ top: 0, behavior: prefersReduced ? 'auto' : 'smooth' });
   };
 
+  // Dynamic Styles
+  const footerStyle = {
+    backgroundColor: footerConfig?.backgroundColor || '#0f1b26',
+    color: footerConfig?.textColor || '#94a3b8',
+  };
+
+  const headingStyle = {
+    color: footerConfig?.headingColor || '#FFFFFF',
+  };
+
+  const descStyle = {
+    color: footerConfig?.descriptionColor || '#cbd5e1',
+  };
+
+  const linkStyle = {
+    color: footerConfig?.linkColor || '#cbd5e1',
+  };
+
+  const borderStyle = {
+    borderColor: footerConfig?.borderColor || 'rgba(255,255,255,0.1)',
+  };
+
+  const accentStyle = {
+    color: footerConfig?.accentColor || '#3B82F6',
+  };
+
+  const dotStyle = {
+    backgroundColor: footerConfig?.accentColor || '#3B82F6',
+  };
+
+  const bottomStyle = {
+    backgroundColor: footerConfig?.bottomBackgroundColor || 'transparent',
+    color: footerConfig?.bottomTextColor || footerConfig?.textColor || '#94a3b8',
+    borderColor: footerConfig?.borderColor || 'rgba(255,255,255,0.1)',
+  };
+
   return (
-    <footer className="bg-[#0f1b26] text-white relative overflow-hidden" role="contentinfo">
-
-
+    <footer style={footerStyle} className="relative overflow-hidden transition-colors duration-300" role="contentinfo">
       <div className="container-main section-sm relative z-10">
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-8 md:gap-12 mb-12 md:mb-16">
           {/* About Section */}
@@ -212,14 +250,14 @@ const ConditionalFooter: React.FC = () => {
                 </div>
               )}
               {site?.siteName && (
-                <h2 className="text-2xl font-bold text-white">{site.siteName}</h2>
+                <h2 style={headingStyle} className="text-2xl font-bold transition-colors duration-300">{site.siteName}</h2>
               )}
             </div>
             <h2 id="footer-about" className="sr-only">Hakkında</h2>
-            <p className="text-slate-300 leading-relaxed text-lg mb-4">
+            <p style={descStyle} className="leading-relaxed text-lg mb-4 transition-colors duration-300">
               {settings.mainDescription}
             </p>
-            <p className="text-slate-400 text-sm">
+            <p style={{ color: footerConfig?.textColor || '#94a3b8' }} className="text-sm transition-colors duration-300">
               Modern mühendislik çözümleri ile projelerinizi hayata geçiriyoruz.
             </p>
 
@@ -234,7 +272,8 @@ const ConditionalFooter: React.FC = () => {
                         target="_blank"
                         rel="noopener noreferrer"
                         aria-label={`${item.label} sayfamız`}
-                        className="inline-flex items-center justify-center min-h-[44px] px-4 py-2 rounded-xl bg-white/5 text-slate-200 hover:text-white hover:bg-white/10 focus:outline-none focus:ring-2 focus:ring-brand-primary-500/50 transition-colors duration-200"
+                        className="inline-flex items-center justify-center min-h-[44px] px-4 py-2 rounded-xl bg-white/5 hover:bg-white/10 focus:outline-none focus:ring-2 focus:ring-brand-primary-500/50 transition-colors duration-200"
+                        style={{ color: footerConfig?.linkColor || '#cbd5e1' }}
                       >
                         <span className="sr-only">{item.label}</span>
                         <span aria-hidden className="font-medium">{item.label}</span>
@@ -249,7 +288,7 @@ const ConditionalFooter: React.FC = () => {
           {/* Quick Links */}
           {settings.visibility.showQuickLinks && settings.quickLinks.length > 0 && (
             <nav aria-label="Footer navigation" role="navigation">
-              <h3 className="text-xl font-bold mb-6 text-white border-b border-white/10 pb-3">Hızlı Bağlantılar</h3>
+              <h3 style={{ ...headingStyle, ...borderStyle }} className="text-xl font-bold mb-6 border-b pb-3 transition-colors duration-300">Hızlı Bağlantılar</h3>
               <ul className="space-y-4">
                 {settings.quickLinks.map((link, index) => (
                   <li key={index}>
@@ -258,17 +297,19 @@ const ConditionalFooter: React.FC = () => {
                         href={link.url}
                         target="_blank"
                         rel="noopener noreferrer"
-                        className="text-slate-300 hover:text-white hover:translate-x-1 transition-all duration-200 text-base focus:outline-none focus:ring-2 focus:ring-brand-primary-500/50 rounded-md px-2 py-1 inline-flex items-center group"
+                        className="hover:translate-x-1 transition-all duration-200 text-base focus:outline-none focus:ring-2 focus:ring-brand-primary-500/50 rounded-md px-2 py-1 inline-flex items-center group"
+                        style={linkStyle}
                       >
-                        <span className="w-2 h-2 bg-brand-primary-400 rounded-full mr-3 group-hover:bg-white transition-colors duration-200"></span>
+                        <span style={dotStyle} className="w-2 h-2 rounded-full mr-3 group-hover:bg-white transition-colors duration-200"></span>
                         {link.title}
                       </a>
                     ) : (
                       <Link
                         href={link.url}
-                        className="text-slate-300 hover:text-white hover:translate-x-1 transition-all duration-200 text-base focus:outline-none focus:ring-2 focus:ring-brand-primary-500/50 rounded-md px-2 py-1 inline-flex items-center group"
+                        className="hover:translate-x-1 transition-all duration-200 text-base focus:outline-none focus:ring-2 focus:ring-brand-primary-500/50 rounded-md px-2 py-1 inline-flex items-center group"
+                        style={linkStyle}
                       >
-                        <span className="w-2 h-2 bg-brand-primary-400 rounded-full mr-3 group-hover:bg-white transition-colors duration-200"></span>
+                        <span style={dotStyle} className="w-2 h-2 rounded-full mr-3 group-hover:bg-white transition-colors duration-200"></span>
                         {link.title}
                       </Link>
                     )}
@@ -281,35 +322,37 @@ const ConditionalFooter: React.FC = () => {
           {/* Contact Info */}
           {settings.visibility.showContactInfo && (
             <section aria-labelledby="footer-contact">
-              <h3 className="text-xl font-bold mb-6 text-white border-b border-white/10 pb-3">İletişim</h3>
+              <h3 style={{ ...headingStyle, ...borderStyle }} className="text-xl font-bold mb-6 border-b pb-3 transition-colors duration-300">İletişim</h3>
               <div className="space-y-5">
                 <div className="flex items-center space-x-4 group">
-                  <div className="w-10 h-10 bg-brand-primary-600/20 rounded-lg flex items-center justify-center group-hover:bg-brand-primary-600/30 transition-colors duration-200">
-                    <EnvelopeIcon className="w-5 h-5 text-brand-primary-400" />
+                  <div className="w-10 h-10 bg-white/5 rounded-lg flex items-center justify-center group-hover:bg-white/10 transition-colors duration-200">
+                    <EnvelopeIcon style={accentStyle} className="w-5 h-5 transition-colors duration-200" />
                   </div>
                   <a
                     href={`mailto:${settings.contactInfo.email}`}
-                    className="text-slate-300 hover:text-white transition-colors duration-200 text-base focus:outline-none focus:ring-2 focus:ring-brand-primary-500/50 rounded-md px-2 py-1"
+                    className="hover:text-white transition-colors duration-200 text-base focus:outline-none focus:ring-2 focus:ring-brand-primary-500/50 rounded-md px-2 py-1"
+                    style={linkStyle}
                   >
                     {settings.contactInfo.email}
                   </a>
                 </div>
                 <div className="flex items-center space-x-4 group">
-                  <div className="w-10 h-10 bg-brand-primary-600/20 rounded-lg flex items-center justify-center group-hover:bg-brand-primary-600/30 transition-colors duration-200">
-                    <PhoneIcon className="w-5 h-5 text-brand-primary-400" />
+                  <div className="w-10 h-10 bg-white/5 rounded-lg flex items-center justify-center group-hover:bg-white/10 transition-colors duration-200">
+                    <PhoneIcon style={accentStyle} className="w-5 h-5 transition-colors duration-200" />
                   </div>
                   <a
                     href={`tel:${settings.contactInfo.phone.replace(/\s/g, '')}`}
-                    className="text-slate-300 hover:text-white transition-colors duration-200 text-base focus:outline-none focus:ring-2 focus:ring-brand-primary-500/50 rounded-md px-2 py-1"
+                    className="hover:text-white transition-colors duration-200 text-base focus:outline-none focus:ring-2 focus:ring-brand-primary-500/50 rounded-md px-2 py-1"
+                    style={linkStyle}
                   >
                     {settings.contactInfo.phone}
                   </a>
                 </div>
                 <div className="flex items-start space-x-4 group">
-                  <div className="w-10 h-10 bg-brand-primary-600/20 rounded-lg flex items-center justify-center group-hover:bg-brand-primary-600/30 transition-colors duration-200 mt-1">
-                    <MapPinIcon className="w-5 h-5 text-brand-primary-400" />
+                  <div className="w-10 h-10 bg-white/5 rounded-lg flex items-center justify-center group-hover:bg-white/10 transition-colors duration-200 mt-1">
+                    <MapPinIcon style={accentStyle} className="w-5 h-5 transition-colors duration-200" />
                   </div>
-                  <span className="text-slate-300 text-base pt-2">
+                  <span className="text-base pt-2 transition-colors duration-300" style={linkStyle}>
                     {settings.contactInfo.address}
                   </span>
                 </div>
@@ -319,10 +362,10 @@ const ConditionalFooter: React.FC = () => {
         </div>
 
         {/* Bottom Section */}
-        <article className="pt-8 border-t border-white/10">
+        <article className="pt-8 border-t transition-colors duration-300" style={{ ...bottomStyle, borderTopColor: footerConfig?.borderColor || 'rgba(255,255,255,0.1)' }}>
           <div className="flex flex-col md:flex-row justify-between items-center space-y-4 md:space-y-0">
             {/* Copyright */}
-            <div className="text-slate-400 text-sm">
+            <div className="text-sm transition-colors duration-300" style={{ color: footerConfig?.bottomTextColor || footerConfig?.textColor || '#94a3b8' }}>
               <p>
                 &copy; {settings.copyrightInfo.year} {settings.copyrightInfo.companyName}.
                 {settings.copyrightInfo.additionalText}
@@ -333,7 +376,7 @@ const ConditionalFooter: React.FC = () => {
             <div className="flex items-center space-x-4">
               <Version variant="badge" />
               {settings.visibility.showDeveloperInfo && (
-                <div className="flex items-center space-x-2 text-sm text-slate-400">
+                <div className="flex items-center space-x-2 text-sm" style={{ color: footerConfig?.bottomTextColor || footerConfig?.textColor || '#94a3b8' }}>
                   <span>Geliştiren:</span>
                   <a
                     href={settings.developerInfo.website}
@@ -350,7 +393,7 @@ const ConditionalFooter: React.FC = () => {
 
           {/* Made with love */}
           <div className="mt-6 text-center">
-            <p className="text-slate-500 text-sm flex items-center justify-center space-x-2">
+            <p className="text-sm flex items-center justify-center space-x-2 transition-colors duration-300" style={{ color: footerConfig?.bottomTextColor || footerConfig?.textColor || '#94a3b8' }}>
               <span>Made with</span>
               <HeartIcon className="w-4 h-4 text-red-500" />
               <span>in Turkey</span>

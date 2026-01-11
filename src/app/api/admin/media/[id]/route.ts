@@ -34,21 +34,45 @@ async function deleteHandler(
 
         try {
             // Cloudinary'den sil
-            const result = await cloudinary.uploader.destroy(decodedMediaId);
+            // Try different resource types since we might not know the exact type
+            const resourceTypes = ['image', 'video', 'raw'];
+            let deletionResult: any = { result: 'not found' };
+            let successfulType = '';
 
-            if (result.result === 'ok') {
+            for (const type of resourceTypes) {
+                logger.info(`Attempting to delete with type: ${type}`, 'MEDIA', { mediaId: decodedMediaId });
+                try {
+                    const result = await cloudinary.uploader.destroy(decodedMediaId, {
+                        resource_type: type,
+                        invalidate: true
+                    });
+
+                    if (result.result === 'ok') {
+                        deletionResult = result;
+                        successfulType = type;
+                        break; // Stop if deleted successfully
+                    }
+                } catch (innerError) {
+                    console.error(`Failed to delete as ${type}:`, innerError);
+                }
+            }
+
+            if (deletionResult.result === 'ok') {
                 logger.info('Media file deleted successfully', 'MEDIA', {
                     mediaId: decodedMediaId,
-                    result: result.result
+                    type: successfulType,
+                    result: deletionResult.result
                 });
 
                 return NextResponse.json({
                     success: true,
                     message: 'Dosya başarıyla silindi',
-                    mediaId: decodedMediaId
+                    mediaId: decodedMediaId,
+                    type: successfulType
                 });
-            } else if (result.result === 'not found') {
-                logger.warn('Media file not found for deletion', 'MEDIA', {
+            } else if (deletionResult.result === 'not found') {
+                // If we tried everything and still not found, it's truly not found
+                logger.warn('Media file not found for deletion after checking all types', 'MEDIA', {
                     mediaId: decodedMediaId
                 });
 
@@ -60,11 +84,11 @@ async function deleteHandler(
             } else {
                 logger.error('Failed to delete media file', 'MEDIA', {
                     mediaId: decodedMediaId,
-                    result: result.result
+                    result: deletionResult.result
                 });
 
                 return NextResponse.json(
-                    { error: 'Dosya silinemedi', details: result.result },
+                    { error: 'Dosya silinemedi', details: deletionResult.result },
                     { status: 500 }
                 );
             }

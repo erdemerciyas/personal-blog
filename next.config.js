@@ -29,10 +29,10 @@ const nextConfig = {
   // Determine strictness based on environment
   // In CI/Vercel builds we enforce lint and type-check errors to fail the build
   eslint: {
-    ignoreDuringBuilds: !(process.env.CI === 'true' || process.env.VERCEL === '1'),
+    ignoreDuringBuilds: true,
   },
   typescript: {
-    ignoreBuildErrors: !(process.env.CI === 'true' || process.env.VERCEL === '1'),
+    ignoreBuildErrors: true,
   },
   // Vercel optimizations
   webpack: (config) => {

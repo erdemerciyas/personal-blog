@@ -73,7 +73,6 @@ export default async function NewsListPage({ searchParams }: PageProps) {
         <PageHero
           title="Noticias y Anuncios"
           description="Sigue las últimas noticias, anuncios de la empresa y actualizaciones del sector aquí."
-          backgroundGradient="bg-gradient-primary"
           showButton={false}
         />
         <div className="max-w-7xl mx-auto px-4 md:px-6 lg:px-8 py-8">

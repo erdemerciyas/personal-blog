@@ -13,6 +13,8 @@ import {
   SparklesIcon,
   CheckIcon,
   XMarkIcon,
+  PhotoIcon,
+  ArrowUpTrayIcon,
 } from '@heroicons/react/24/outline';
 
 interface NewsFormProps {
@@ -301,7 +303,7 @@ export default function NewsForm({ initialData, onSubmit, isLoading = false }: N
       )}
 
       {success && (
-        <div className="bg-green-50 border border-green-200 text-green-800 p-4 rounded-xl flex items-start space-x-3">
+        <div className="bg-emerald-50 border border-emerald-200 text-emerald-800 p-4 rounded-xl flex items-start space-x-3">
           <CheckIcon className="w-5 h-5 flex-shrink-0 mt-0.5" />
           <div>
             <p className="font-semibold">Başarılı</p>
@@ -311,16 +313,16 @@ export default function NewsForm({ initialData, onSubmit, isLoading = false }: N
       )}
 
       {/* Language Tabs */}
-      <div className="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden">
-        <div className="flex border-b border-slate-200">
+      <div className="bg-white dark:bg-slate-800 rounded-2xl shadow-sm border border-slate-200/60 dark:border-slate-700 overflow-hidden">
+        <div className="flex border-b border-slate-200/60">
           {(['tr', 'es'] as const).map((lang) => (
             <button
               key={lang}
               type="button"
               onClick={() => setActiveLanguage(lang)}
               className={`flex-1 px-6 py-4 text-sm font-semibold transition-all duration-200 ${activeLanguage === lang
-                  ? 'bg-brand-primary-50 text-brand-primary-800 border-b-2 border-brand-primary-700'
-                  : 'text-slate-600 hover:text-slate-900 hover:bg-slate-50'
+                ? 'bg-gradient-to-r from-indigo-500 to-violet-600 text-white'
+                : 'text-slate-600 hover:text-slate-900 hover:bg-slate-50 dark:text-slate-400 dark:hover:text-white dark:hover:bg-slate-700'
                 }`}
             >
               {lang === 'tr' ? 'Türkçe' : 'Español'}
@@ -330,12 +332,20 @@ export default function NewsForm({ initialData, onSubmit, isLoading = false }: N
       </div>
 
       {/* Featured Image */}
-      <div className="bg-white rounded-xl shadow-sm border border-slate-200 p-6">
-        <h3 className="text-lg font-semibold text-slate-900 mb-4">Öne Çıkan Resim</h3>
+      <div className="bg-white dark:bg-slate-800 rounded-2xl shadow-sm border border-slate-200/60 dark:border-slate-700 p-6">
+        <div className="flex items-center space-x-3 mb-4">
+          <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-indigo-500 to-violet-600 flex items-center justify-center">
+            <PhotoIcon className="w-5 h-5 text-white" />
+          </div>
+          <div>
+            <h3 className="text-lg font-bold text-slate-900 dark:text-white">Öne Çıkan Resim</h3>
+            <p className="text-sm text-slate-500">Haber için ana görsel seçin</p>
+          </div>
+        </div>
 
-        {formData.featuredImage.url && (
+        {formData.featuredImage.url ? (
           <div className="mb-4">
-            <div className="relative w-full h-64 rounded-xl overflow-hidden bg-slate-100">
+            <div className="relative w-full h-64 rounded-2xl overflow-hidden bg-gradient-to-br from-indigo-100 to-violet-100">
               <Image
                 src={formData.featuredImage.url}
                 alt={formData.featuredImage.altText}
@@ -344,26 +354,51 @@ export default function NewsForm({ initialData, onSubmit, isLoading = false }: N
               />
             </div>
           </div>
+        ) : (
+          <div className="mb-4">
+            <div className="w-full h-64 rounded-2xl overflow-hidden bg-gradient-to-br from-indigo-100 to-violet-100 flex items-center justify-center">
+              <PhotoIcon className="w-16 h-16 text-indigo-300" />
+            </div>
+          </div>
         )}
 
         <div className="space-y-4">
           <div>
-            <label className="block text-sm font-medium text-slate-700 mb-2">
+            <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">
               Resim Dosyası
             </label>
-            <input
-              ref={fileInputRef}
-              type="file"
-              accept="image/jpeg,image/png,image/webp"
-              onChange={handleImageUpload}
-              disabled={uploadingImage}
-              className="block w-full text-sm text-slate-500 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-semibold file:bg-brand-primary-700 file:text-white hover:file:bg-brand-primary-800 disabled:opacity-50"
-            />
+            <div className="relative">
+              <input
+                ref={fileInputRef}
+                type="file"
+                accept="image/jpeg,image/png,image/webp"
+                onChange={handleImageUpload}
+                disabled={uploadingImage}
+                className="hidden"
+                id="image-upload"
+              />
+              <label
+                htmlFor="image-upload"
+                className="flex items-center justify-center w-full px-4 py-3 border-2 border-dashed border-slate-300 rounded-xl hover:border-indigo-500 hover:bg-indigo-50 transition-all cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
+              >
+                {uploadingImage ? (
+                  <div className="flex items-center space-x-2">
+                    <div className="animate-spin rounded-full h-4 w-4 border-2 border-indigo-600 border-t-transparent"></div>
+                    <span className="text-sm font-medium text-slate-600">Yükleniyor...</span>
+                  </div>
+                ) : (
+                  <div className="flex items-center space-x-2">
+                    <ArrowUpTrayIcon className="w-5 h-5 text-slate-500" />
+                    <span className="text-sm font-medium text-slate-600">Resim Seçin</span>
+                  </div>
+                )}
+              </label>
+            </div>
             <p className="text-xs text-slate-500 mt-2">JPG, PNG veya WebP • Maksimum 5MB</p>
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-slate-700 mb-2">
+            <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">
               Alt Metin
             </label>
             <input
@@ -379,15 +414,15 @@ export default function NewsForm({ initialData, onSubmit, isLoading = false }: N
                   },
                 }))
               }
-              className="w-full px-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-brand-primary-500 focus:border-transparent"
+              className="w-full px-4 py-3 border border-slate-200 dark:border-slate-700 bg-transparent dark:bg-slate-900 text-slate-900 dark:text-white rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all"
             />
           </div>
         </div>
       </div>
 
       {/* Title */}
-      <div className="bg-white rounded-xl shadow-sm border border-slate-200 p-6">
-        <h3 className="text-lg font-semibold text-slate-900 mb-4">Başlık</h3>
+      <div className="bg-white dark:bg-slate-800 rounded-2xl shadow-sm border border-slate-200/60 dark:border-slate-700 p-6">
+        <h3 className="text-lg font-bold text-slate-900 dark:text-white mb-4">Başlık</h3>
         <div className="space-y-2">
           <input
             type="text"
@@ -406,22 +441,22 @@ export default function NewsForm({ initialData, onSubmit, isLoading = false }: N
             }
             placeholder="Makale başlığını girin"
             maxLength={200}
-            className="w-full px-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-brand-primary-500 focus:border-transparent"
+            className="w-full px-4 py-3 border border-slate-200 dark:border-slate-700 bg-transparent dark:bg-slate-900 text-slate-900 dark:text-white rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all"
           />
           <p className="text-xs text-slate-500">{translation.title.length}/200 karakter</p>
         </div>
       </div>
 
       {/* Content Editor */}
-      <div className="bg-white rounded-xl shadow-sm border border-slate-200 p-6">
-        <h3 className="text-lg font-semibold text-slate-900 mb-4">İçerik</h3>
+      <div className="bg-white dark:bg-slate-800 rounded-2xl shadow-sm border border-slate-200/60 dark:border-slate-700 p-6">
+        <h3 className="text-lg font-bold text-slate-900 dark:text-white mb-4">İçerik</h3>
 
         {/* Editor Toolbar */}
-        <div className="flex gap-2 p-3 bg-slate-100 rounded-lg border border-slate-200 mb-2">
+        <div className="flex gap-2 p-3 bg-slate-50 rounded-xl border border-slate-200/60 mb-2">
           <button
             type="button"
             onClick={() => currentEditor?.chain().focus().toggleBold().run()}
-            className="px-3 py-1 bg-white border border-slate-300 rounded hover:bg-slate-50 font-semibold text-sm"
+            className="px-3 py-1 bg-white border border-slate-200 dark:bg-slate-700 dark:border-slate-600 dark:text-white rounded-lg hover:bg-slate-50 font-semibold text-sm transition-colors"
             title="Kalın"
           >
             B
@@ -429,7 +464,7 @@ export default function NewsForm({ initialData, onSubmit, isLoading = false }: N
           <button
             type="button"
             onClick={() => currentEditor?.chain().focus().toggleItalic().run()}
-            className="px-3 py-1 bg-white border border-slate-300 rounded hover:bg-slate-50 italic text-sm"
+            className="px-3 py-1 bg-white border border-slate-200 dark:bg-slate-700 dark:border-slate-600 dark:text-white rounded-lg hover:bg-slate-50 italic text-sm transition-colors"
             title="İtalik"
           >
             I
@@ -437,7 +472,7 @@ export default function NewsForm({ initialData, onSubmit, isLoading = false }: N
           <button
             type="button"
             onClick={() => currentEditor?.chain().focus().toggleHeading({ level: 2 }).run()}
-            className="px-3 py-1 bg-white border border-slate-300 rounded hover:bg-slate-50 font-semibold text-sm"
+            className="px-3 py-1 bg-white border border-slate-200 dark:bg-slate-700 dark:border-slate-600 dark:text-white rounded-lg hover:bg-slate-50 font-semibold text-sm transition-colors"
             title="Başlık"
           >
             H2
@@ -445,7 +480,7 @@ export default function NewsForm({ initialData, onSubmit, isLoading = false }: N
           <button
             type="button"
             onClick={() => currentEditor?.chain().focus().toggleBulletList().run()}
-            className="px-3 py-1 bg-white border border-slate-300 rounded hover:bg-slate-50 text-sm"
+            className="px-3 py-1 bg-white border border-slate-200 dark:bg-slate-700 dark:border-slate-600 dark:text-white rounded-lg hover:bg-slate-50 text-sm transition-colors"
             title="Liste"
           >
             •
@@ -455,13 +490,13 @@ export default function NewsForm({ initialData, onSubmit, isLoading = false }: N
         {/* Editor */}
         <EditorContent
           editor={currentEditor}
-          className="w-full min-h-96 p-4 border border-slate-300 rounded-lg focus-within:ring-2 focus-within:ring-brand-primary-500 prose prose-sm max-w-none"
+          className="w-full min-h-96 p-4 border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 text-slate-900 dark:text-white rounded-xl focus-within:ring-2 focus-within:ring-indigo-500 focus-within:border-transparent prose prose-sm max-w-none dark:prose-invert"
         />
       </div>
 
       {/* Excerpt */}
-      <div className="bg-white rounded-xl shadow-sm border border-slate-200 p-6">
-        <h3 className="text-lg font-semibold text-slate-900 mb-4">Özet</h3>
+      <div className="bg-white dark:bg-slate-800 rounded-2xl shadow-sm border border-slate-200/60 dark:border-slate-700 p-6">
+        <h3 className="text-lg font-bold text-slate-900 dark:text-white mb-4">Özet</h3>
         <div className="space-y-2">
           <textarea
             value={translation.excerpt}
@@ -480,21 +515,29 @@ export default function NewsForm({ initialData, onSubmit, isLoading = false }: N
             placeholder="Makalenin kısa özeti"
             maxLength={150}
             rows={3}
-            className="w-full px-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-brand-primary-500 focus:border-transparent"
+            className="w-full px-4 py-3 border border-slate-200 dark:border-slate-700 bg-transparent dark:bg-slate-900 text-slate-900 dark:text-white rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all resize-none"
           />
           <p className="text-xs text-slate-500">{translation.excerpt.length}/150 karakter</p>
         </div>
       </div>
 
       {/* SEO Section */}
-      <div className="bg-white rounded-xl shadow-sm border border-slate-200 p-6">
+      <div className="bg-white dark:bg-slate-800 rounded-2xl shadow-sm border border-slate-200/60 dark:border-slate-700 p-6">
         <div className="flex items-center justify-between mb-4">
-          <h3 className="text-lg font-semibold text-slate-900">SEO Metadata</h3>
+          <div className="flex items-center space-x-3">
+            <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-violet-500 to-purple-600 flex items-center justify-center">
+              <SparklesIcon className="w-5 h-5 text-white" />
+            </div>
+            <div>
+              <h3 className="text-lg font-bold text-slate-900 dark:text-white">SEO Metadata</h3>
+              <p className="text-sm text-slate-500">AI ile otomatik oluşturun</p>
+            </div>
+          </div>
           <button
             type="button"
             onClick={handleGenerateMetadata}
             disabled={generatingMetadata || loading}
-            className="bg-purple-600 hover:bg-purple-700 disabled:bg-slate-300 text-white px-4 py-2 rounded-lg font-semibold transition-all flex items-center space-x-2"
+            className="bg-gradient-to-r from-violet-500 to-purple-600 hover:shadow-lg hover:shadow-violet-500/30 disabled:opacity-50 disabled:cursor-not-allowed text-white px-4 py-2 rounded-xl font-semibold transition-all flex items-center space-x-2"
           >
             <SparklesIcon className="w-4 h-4" />
             <span>{generatingMetadata ? 'Oluşturuluyor...' : 'AI ile Oluştur'}</span>
@@ -504,7 +547,7 @@ export default function NewsForm({ initialData, onSubmit, isLoading = false }: N
         <div className="space-y-4">
           {/* Meta Description */}
           <div className="space-y-2">
-            <label className="block text-sm font-medium text-slate-700">Meta Açıklaması</label>
+            <label className="block text-sm font-medium text-slate-700 dark:text-slate-300">Meta Açıklaması</label>
             <textarea
               value={translation.metaDescription}
               onChange={(e) =>
@@ -522,19 +565,19 @@ export default function NewsForm({ initialData, onSubmit, isLoading = false }: N
               placeholder="SEO meta açıklaması"
               maxLength={160}
               rows={2}
-              className="w-full px-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-brand-primary-500 focus:border-transparent"
+              className="w-full px-4 py-3 border border-slate-200 dark:border-slate-700 bg-transparent dark:bg-slate-900 text-slate-900 dark:text-white rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all resize-none"
             />
             <p className="text-xs text-slate-500">{translation.metaDescription.length}/160 karakter</p>
           </div>
 
           {/* Keywords */}
           <div className="space-y-2">
-            <label className="block text-sm font-medium text-slate-700">Anahtar Kelimeler</label>
+            <label className="block text-sm font-medium text-slate-700 dark:text-slate-300">Anahtar Kelimeler</label>
             <div className="flex flex-wrap gap-2 mb-2">
               {translation.keywords.map((keyword, index) => (
                 <span
                   key={index}
-                  className="px-3 py-1 bg-brand-primary-100 text-brand-primary-800 rounded-full text-sm flex items-center gap-2 border border-brand-primary-200"
+                  className="px-3 py-1 bg-indigo-100 text-indigo-800 rounded-full text-sm flex items-center gap-2 border border-indigo-200"
                 >
                   {keyword}
                   <button
@@ -551,7 +594,7 @@ export default function NewsForm({ initialData, onSubmit, isLoading = false }: N
                         },
                       }))
                     }
-                    className="hover:text-red-600"
+                    className="hover:text-red-600 transition-colors"
                   >
                     ×
                   </button>
@@ -580,7 +623,7 @@ export default function NewsForm({ initialData, onSubmit, isLoading = false }: N
                   }
                 }
               }}
-              className="w-full px-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-brand-primary-500 focus:border-transparent"
+              className="w-full px-4 py-3 border border-slate-200 dark:border-slate-700 bg-transparent dark:bg-slate-900 text-slate-900 dark:text-white rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all"
             />
             <p className="text-xs text-slate-500">{translation.keywords.length}/10 anahtar kelime</p>
           </div>
@@ -588,8 +631,8 @@ export default function NewsForm({ initialData, onSubmit, isLoading = false }: N
       </div>
 
       {/* Tags */}
-      <div className="bg-white rounded-xl shadow-sm border border-slate-200 p-6">
-        <h3 className="text-lg font-semibold text-slate-900 mb-4">Etiketler</h3>
+      <div className="bg-white dark:bg-slate-800 rounded-2xl shadow-sm border border-slate-200/60 dark:border-slate-700 p-6">
+        <h3 className="text-lg font-bold text-slate-900 dark:text-white mb-4">Etiketler</h3>
         <div className="space-y-2">
           <div className="flex flex-wrap gap-2 mb-2">
             {formData.tags.map((tag, index) => (
@@ -606,7 +649,7 @@ export default function NewsForm({ initialData, onSubmit, isLoading = false }: N
                       tags: prev.tags.filter((_, i) => i !== index),
                     }))
                   }
-                  className="hover:text-red-600"
+                  className="hover:text-red-600 transition-colors"
                 >
                   ×
                 </button>
@@ -629,14 +672,14 @@ export default function NewsForm({ initialData, onSubmit, isLoading = false }: N
                 }
               }
             }}
-            className="w-full px-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-brand-primary-500 focus:border-transparent"
+            className="w-full px-4 py-3 border border-slate-200 dark:border-slate-700 bg-transparent dark:bg-slate-900 text-slate-900 dark:text-white rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all"
           />
         </div>
       </div>
 
       {/* Status */}
-      <div className="bg-white rounded-xl shadow-sm border border-slate-200 p-6">
-        <h3 className="text-lg font-semibold text-slate-900 mb-4">Durum</h3>
+      <div className="bg-white dark:bg-slate-800 rounded-2xl shadow-sm border border-slate-200/60 dark:border-slate-700 p-6">
+        <h3 className="text-lg font-bold text-slate-900 dark:text-white mb-4">Durum</h3>
         <select
           value={formData.status}
           onChange={(e) =>
@@ -645,7 +688,7 @@ export default function NewsForm({ initialData, onSubmit, isLoading = false }: N
               status: e.target.value as 'draft' | 'published',
             }))
           }
-          className="w-full px-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-brand-primary-500 focus:border-transparent"
+          className="w-full px-4 py-3 border border-slate-200 dark:border-slate-700 bg-transparent dark:bg-slate-900 text-slate-900 dark:text-white rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all"
         >
           <option value="draft">Taslak</option>
           <option value="published">Yayınlandı</option>
@@ -657,7 +700,7 @@ export default function NewsForm({ initialData, onSubmit, isLoading = false }: N
         <button
           type="submit"
           disabled={loading || uploadingImage}
-          className="flex-1 px-6 py-3 bg-brand-primary-700 hover:bg-brand-primary-800 disabled:bg-slate-300 text-white rounded-lg transition-all font-semibold flex items-center justify-center space-x-2"
+          className="flex-1 px-6 py-3 bg-gradient-to-r from-indigo-500 to-violet-600 hover:shadow-lg hover:shadow-indigo-500/30 disabled:opacity-50 disabled:cursor-not-allowed text-white rounded-xl transition-all font-semibold flex items-center justify-center space-x-2"
         >
           <CheckIcon className="w-5 h-5" />
           <span>{loading ? 'Kaydediliyor...' : initialData ? 'Makaleyi Güncelle' : 'Makale Oluştur'}</span>
@@ -665,7 +708,7 @@ export default function NewsForm({ initialData, onSubmit, isLoading = false }: N
         <button
           type="button"
           onClick={() => router.back()}
-          className="px-6 py-3 border border-slate-300 rounded-lg hover:bg-slate-50 transition-all font-semibold flex items-center space-x-2"
+          className="px-6 py-3 border border-slate-200 rounded-xl hover:bg-slate-50 transition-all font-semibold flex items-center space-x-2"
         >
           <XMarkIcon className="w-5 h-5" />
           <span>İptal</span>

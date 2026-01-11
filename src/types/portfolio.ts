@@ -57,6 +57,8 @@ export interface PortfolioItem {
   technologies: string[];
   coverImage: string;
   images?: string[];
+  projectUrl?: string;
+  githubUrl?: string;
   // 3D Model desteği
   models3D?: Model3D[];
   featured?: boolean;

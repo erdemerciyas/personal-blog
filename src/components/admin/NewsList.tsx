@@ -12,7 +12,7 @@ interface NewsListProps {
 }
 
 /**
- * News List Component for Admin Panel
+ * News List Component for Admin Panel - Brutalist Industrial Design
  * Displays news articles with search, filters, pagination, and bulk operations
  */
 export default function NewsList({ language = 'tr', page = 1 }: NewsListProps) {
@@ -136,7 +136,7 @@ export default function NewsList({ language = 'tr', page = 1 }: NewsListProps) {
   };
 
   const handleDelete = async (id: string) => {
-    if (!confirm('Are you sure you want to delete this article?')) return;
+    if (!confirm('Bu makaleyi silmek istediğinize emin misiniz?')) return;
 
     try {
       const response = await fetch(`/api/news/${id}`, {
@@ -161,70 +161,72 @@ export default function NewsList({ language = 'tr', page = 1 }: NewsListProps) {
 
   if (loading) {
     return (
-      <div className="flex items-center justify-center py-12">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-fixral-primary"></div>
+      <div className="flex items-center justify-center py-16">
+        <div className="w-16 h-16 border-4 border-[#0a0a0a] dark:border-slate-600 border-t-[#0066ff] rounded-none animate-spin"></div>
       </div>
     );
   }
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-8">
       {/* Alerts */}
       {error && (
-        <div className="p-4 bg-red-50 border border-red-200 rounded-lg text-red-700">
+        <div className="p-6 border-4 border-[#ff0000] bg-red-50 text-red-700 font-bold">
           {error}
         </div>
       )}
 
       {/* Search and Filters */}
-      <div className="space-y-4">
-        <div className="flex gap-4">
-          <input
-            type="text"
-            placeholder="Search articles..."
-            value={search}
-            onChange={(e) => setSearch(e.target.value)}
-            className="flex-1 px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-fixral-primary"
-          />
-          <select
-            value={status}
-            onChange={(e) => setStatus(e.target.value as any)}
-            className="px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-fixral-primary"
-          >
-            <option value="all">All Status</option>
-            <option value="draft">Draft</option>
-            <option value="published">Published</option>
-          </select>
+      <div className="space-y-6">
+        <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-6">
+          <div className="flex-1 flex gap-4">
+            <input
+              type="text"
+              placeholder="Makale ara..."
+              value={search}
+              onChange={(e) => setSearch(e.target.value)}
+              className="flex-1 px-6 py-4 border-4 border-[#0a0a0a] dark:border-slate-600 bg-white dark:bg-slate-900 text-lg focus:outline-none focus:border-[#0066ff] font-medium"
+            />
+            <select
+              value={status}
+              onChange={(e) => setStatus(e.target.value as any)}
+              className="px-6 py-4 border-4 border-[#0a0a0a] dark:border-slate-600 bg-white dark:bg-slate-900 text-lg focus:outline-none focus:border-[#0066ff] font-bold"
+            >
+              <option value="all">Tüm Durumlar</option>
+              <option value="draft">Taslak</option>
+              <option value="published">Yayınlanmış</option>
+            </select>
+          </div>
           <Link
             href="/admin/news/create"
-            className="px-6 py-2 bg-fixral-primary text-white rounded-lg hover:bg-opacity-90 transition-all font-semibold"
+            className="flex items-center px-8 py-4 bg-[#0066ff] border-4 border-[#0066ff] text-white font-bold text-lg hover:bg-[#ff6b00] hover:border-[#ff6b00] transition-all duration-200"
           >
-            + New Article
+            + YENİ MAKALE
           </Link>
         </div>
 
         {/* Bulk Actions */}
         {selectedIds.size > 0 && (
-          <div className="flex gap-2 p-4 bg-blue-50 border border-blue-200 rounded-lg">
-            <span className="text-sm font-medium text-blue-900">
-              {selectedIds.size} article(s) selected
+          <div className="flex gap-4 p-6 border-4 border-[#0066ff] bg-[#0066ff]/10">
+            <span className="text-lg font-bold text-[#0a0a0a] dark:text-white">
+              {selectedIds.size} makale seçildi
             </span>
             <select
               value={bulkAction || ''}
               onChange={(e) => setBulkAction(e.target.value as any)}
-              className="px-3 py-1 border border-blue-300 rounded text-sm focus:outline-none"
+              className="px-6 py-4 border-4 border-[#0a0a0a] dark:border-slate-600 bg-white dark:bg-slate-900 text-lg focus:outline-none focus:border-[#0066ff] font-bold"
             >
-              <option value="">Select action...</option>
-              <option value="publish">Publish</option>
-              <option value="unpublish">Unpublish</option>
-              <option value="delete">Delete</option>
+              <option value="">İşlem seç...</option>
+              <option value="publish">Yayınla</option>
+              <option value="unpublish">Yayından Kaldır</option>
+              <option value="delete">Sil</option>
             </select>
             <button
               onClick={handleBulkAction}
               disabled={!bulkAction || bulkLoading}
-              className="px-4 py-1 bg-blue-600 text-white rounded text-sm hover:bg-blue-700 disabled:opacity-50 transition-all"
+              className="px-8 py-4 bg-[#0a0a0a] border-4 border-[#0a0a0a] dark:border-slate-600 text-white font-bold text-lg hover:bg-[#ff6b00] hover:border-[#ff6b00] disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200"
             >
-              {bulkLoading ? 'Processing...' : 'Apply'}
+              {bulkLoading ? 'İşleniyor...' : 'UYGULA'}
             </button>
           </div>
         )}
@@ -232,42 +234,42 @@ export default function NewsList({ language = 'tr', page = 1 }: NewsListProps) {
 
       {/* Articles Table */}
       {news.length > 0 ? (
-        <div className="overflow-x-auto">
+        <div className="overflow-x-auto border-4 border-[#0a0a0a] dark:border-slate-600">
           <table className="w-full border-collapse">
             <thead>
-              <tr className="bg-gray-100 border-b border-gray-300">
-                <th className="px-4 py-3 text-left">
+              <tr className="bg-[#0a0a0a] border-b-4 border-[#0066ff]">
+                <th className="px-6 py-4 text-left">
                   <input
                     type="checkbox"
                     checked={selectedIds.size === news.length && news.length > 0}
                     onChange={(e) => handleSelectAll(e.target.checked)}
-                    className="rounded"
+                    className="w-5 h-5"
                   />
                 </th>
-                <th className="px-4 py-3 text-left font-semibold text-gray-900">Title</th>
-                <th className="px-4 py-3 text-left font-semibold text-gray-900">Status</th>
-                <th className="px-4 py-3 text-left font-semibold text-gray-900">Published</th>
-                <th className="px-4 py-3 text-left font-semibold text-gray-900">Created</th>
-                <th className="px-4 py-3 text-left font-semibold text-gray-900">Actions</th>
+                <th className="px-6 py-4 text-left font-bold text-white text-lg">BAŞLIK</th>
+                <th className="px-6 py-4 text-left font-bold text-white text-lg">DURUM</th>
+                <th className="px-6 py-4 text-left font-bold text-white text-lg">YAYINLANMA</th>
+                <th className="px-6 py-4 text-left font-bold text-white text-lg">OLUŞTURULMA</th>
+                <th className="px-6 py-4 text-left font-bold text-white text-lg">İŞLEMLER</th>
               </tr>
             </thead>
             <tbody>
               {news.map((item) => {
                 const translation = getTranslation(item);
                 return (
-                  <tr key={item._id} className="border-b border-gray-200 hover:bg-gray-50">
-                    <td className="px-4 py-3">
+                  <tr key={item._id} className="border-b-4 border-[#0a0a0a] dark:border-slate-600 hover:bg-[#0066ff]/5">
+                    <td className="px-6 py-4">
                       <input
                         type="checkbox"
                         checked={selectedIds.has(item._id as string)}
                         onChange={(e) => handleSelectItem(item._id as string, e.target.checked)}
-                        className="rounded"
+                        className="w-5 h-5"
                       />
                     </td>
-                    <td className="px-4 py-3">
-                      <div className="flex items-center gap-3">
+                    <td className="px-6 py-4">
+                      <div className="flex items-center gap-4">
                         {item.featuredImage.url && (
-                          <div className="relative w-12 h-12 rounded overflow-hidden">
+                          <div className="relative w-16 h-16 border-2 border-[#0a0a0a] dark:border-slate-600 overflow-hidden">
                             <Image
                               src={item.featuredImage.url}
                               alt={item.featuredImage.altText}
@@ -277,44 +279,44 @@ export default function NewsList({ language = 'tr', page = 1 }: NewsListProps) {
                           </div>
                         )}
                         <div>
-                          <p className="font-medium text-gray-900 line-clamp-1">
+                          <p className="text-lg font-bold text-[#0a0a0a] dark:text-white line-clamp-1">
                             {translation.title}
                           </p>
-                          <p className="text-sm text-gray-500">{item.slug}</p>
+                          <p className="text-sm text-gray-600 dark:text-gray-400 font-medium">{item.slug}</p>
                         </div>
                       </div>
                     </td>
-                    <td className="px-4 py-3">
+                    <td className="px-6 py-4">
                       <span
-                        className={`px-3 py-1 rounded-full text-sm font-medium ${item.status === 'published'
-                            ? 'bg-green-100 text-green-800'
-                            : 'bg-yellow-100 text-yellow-800'
+                        className={`px-4 py-2 font-bold text-sm ${item.status === 'published'
+                            ? 'bg-[#0066ff] text-white'
+                            : 'bg-[#ff6b00] text-white'
                           }`}
                       >
-                        {item.status === 'published' ? 'Published' : 'Draft'}
+                        {item.status === 'published' ? 'YAYINLANMIŞ' : 'TASLAK'}
                       </span>
                     </td>
-                    <td className="px-4 py-3 text-sm text-gray-600">
+                    <td className="px-6 py-4 text-sm text-gray-700 dark:text-gray-300 font-medium">
                       {item.publishedAt
-                        ? new Date(item.publishedAt).toLocaleDateString()
+                        ? new Date(item.publishedAt).toLocaleDateString('tr-TR')
                         : '-'}
                     </td>
-                    <td className="px-4 py-3 text-sm text-gray-600">
-                      {new Date(item.createdAt).toLocaleDateString()}
+                    <td className="px-6 py-4 text-sm text-gray-700 dark:text-gray-300 font-medium">
+                      {new Date(item.createdAt).toLocaleDateString('tr-TR')}
                     </td>
-                    <td className="px-4 py-3">
-                      <div className="flex gap-2">
+                    <td className="px-6 py-4">
+                      <div className="flex gap-3">
                         <Link
                           href={`/admin/news/${item._id}/edit`}
-                          className="px-3 py-1 bg-blue-100 text-blue-700 rounded hover:bg-blue-200 transition-colors text-sm"
+                          className="px-4 py-2 border-2 border-[#0066ff] text-[#0066ff] font-bold hover:bg-[#0066ff] hover:text-white transition-colors text-sm"
                         >
-                          Edit
+                          DÜZENLE
                         </Link>
                         <button
                           onClick={() => handleDelete(item._id as string)}
-                          className="px-3 py-1 bg-red-100 text-red-700 rounded hover:bg-red-200 transition-colors text-sm"
+                          className="px-4 py-2 border-2 border-[#ff0000] text-[#ff0000] font-bold hover:bg-[#ff0000] hover:text-white transition-colors text-sm"
                         >
-                          Delete
+                          SİL
                         </button>
                       </div>
                     </td>
@@ -325,20 +327,20 @@ export default function NewsList({ language = 'tr', page = 1 }: NewsListProps) {
           </table>
         </div>
       ) : (
-        <div className="text-center py-12">
-          <p className="text-gray-600">No articles found</p>
+        <div className="text-center py-16 border-4 border-[#0a0a0a] dark:border-slate-600">
+          <p className="text-2xl font-bold text-[#0a0a0a] dark:text-white">HİÇ MAKALE BULUNAMADI</p>
         </div>
       )}
 
       {/* Pagination */}
       {pagination.totalPages > 1 && (
-        <div className="flex justify-center items-center gap-2">
+        <div className="flex justify-center items-center gap-4 mt-8">
           {pagination.page > 1 && (
             <Link
               href={`?page=${pagination.page - 1}`}
-              className="px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors"
+              className="px-6 py-3 border-4 border-[#0a0a0a] dark:border-slate-600 text-[#0a0a0a] dark:text-white font-bold hover:border-[#0066ff] hover:text-[#0066ff] transition-colors text-lg"
             >
-              Previous
+              ÖNCEKİ
             </Link>
           )}
 
@@ -346,9 +348,9 @@ export default function NewsList({ language = 'tr', page = 1 }: NewsListProps) {
             <Link
               key={p}
               href={`?page=${p}`}
-              className={`px-4 py-2 rounded-lg transition-colors ${p === pagination.page
-                  ? 'bg-fixral-primary text-white'
-                  : 'border border-gray-300 hover:bg-gray-50'
+              className={`px-6 py-3 font-bold transition-colors text-lg ${p === pagination.page
+                  ? 'bg-[#0066ff] border-4 border-[#0066ff] text-white'
+                  : 'border-4 border-[#0a0a0a] dark:border-slate-600 text-[#0a0a0a] dark:text-white hover:border-[#0066ff] hover:text-[#0066ff]'
                 }`}
             >
               {p}
@@ -358,9 +360,9 @@ export default function NewsList({ language = 'tr', page = 1 }: NewsListProps) {
           {pagination.page < pagination.totalPages && (
             <Link
               href={`?page=${pagination.page + 1}`}
-              className="px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors"
+              className="px-6 py-3 border-4 border-[#0a0a0a] dark:border-slate-600 text-[#0a0a0a] dark:text-white font-bold hover:border-[#0066ff] hover:text-[#0066ff] transition-colors text-lg"
             >
-              Next
+              SONRAKİ
             </Link>
           )}
         </div>

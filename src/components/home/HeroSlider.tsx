@@ -119,7 +119,7 @@ export default function HeroSlider({ items = [] }: HeroSliderProps) {
                             priority={index === 0}
                             sizes="(max-width: 640px) 100vw, (max-width: 1024px) 100vw, 100vw"
                         />
-                        <div className="absolute inset-0 bg-gradient-to-b from-[#0f1e2d]/70 via-[#0f1b26]/40 to-[#0b1520]/90"></div>
+                        <div className="absolute inset-0 bg-gradient-to-b from-[#0f1e2d]/90 via-[#0f1b26]/70 to-[#0b1520]/95"></div>
                     </div>
                 ))}
             </div>
@@ -183,7 +183,7 @@ export default function HeroSlider({ items = [] }: HeroSliderProps) {
                     <h1 className={`${currentSlide.title.length > 30 ? 'hero-title-compact' :
                         currentSlide.title.length > 20 ? 'hero-title-responsive' :
                             'hero-title'
-                        } text-gradient-hero mb-6 animate-slide-in-left max-w-6xl mx-auto leading-tight break-words`} style={{ animationDelay: '0.4s' }}>
+                        } text-white drop-shadow-lg mb-6 animate-slide-in-left max-w-6xl mx-auto leading-tight break-words`} style={{ animationDelay: '0.4s' }}>
                         {currentSlide.title}
                     </h1>
 

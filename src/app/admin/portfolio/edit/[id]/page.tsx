@@ -3,34 +3,31 @@
 import { useState, useEffect, useCallback } from 'react';
 import { useSession } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
-import AdminLayout from '../../../../../components/admin/AdminLayout';
 import UniversalEditor from '../../../../../components/ui/UniversalEditor';
 import PortfolioImageGallery from '../../../../../components/PortfolioImageGallery';
-import { 
-  PencilIcon,
+import {
   TagIcon,
   CheckIcon,
   XMarkIcon,
-  DocumentTextIcon,
-  StarIcon,
   HashtagIcon,
   PhotoIcon,
   ExclamationTriangleIcon,
   TrashIcon,
-  PlusIcon,
   ArrowLeftIcon,
+  PencilIcon,
   CubeIcon,
-  CloudArrowUpIcon,
-  ArrowDownTrayIcon
+  ArrowDownTrayIcon,
+  CalendarIcon,
+  UserIcon
 } from '@heroicons/react/24/outline';
 import Link from 'next/link';
 import { Category, PortfolioItem } from '../../../../../types/portfolio';
-
 import slugify from 'slugify';
+import { useToast } from '../../../../../components/ui/useToast';
 
 type EditForm = Omit<PortfolioItem, 'categoryIds' | 'categoryId' | 'category'> & {
   categoryIds: string[];
-  models3D?: Array<{
+  models3D: Array<{
     url: string;
     name: string;
     format: string;
@@ -39,17 +36,21 @@ type EditForm = Omit<PortfolioItem, 'categoryIds' | 'categoryId' | 'category'> &
     publicId: string;
     uploadedAt: string;
   }>;
+  images: string[];
+  projectUrl: string;
+  githubUrl: string;
 };
 
 export default function EditPortfolioItem({ params }: { params: { id: string } }) {
   const { data: session, status } = useSession();
   const router = useRouter();
+  const { show: showToast } = useToast();
   const [loading, setLoading] = useState(true);
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState('');
-  const [success, setSuccess] = useState(false);
   const [categories, setCategories] = useState<Category[]>([]);
   const [slugLocked, setSlugLocked] = useState(true);
+  const [fieldErrors, setFieldErrors] = useState<Record<string, string>>({});
   const [uploadingModel, setUploadingModel] = useState(false);
 
   const [formData, setFormData] = useState<EditForm>({
@@ -57,16 +58,17 @@ export default function EditPortfolioItem({ params }: { params: { id: string } }
     title: '',
     slug: '',
     description: '',
-    categoryIds: [], // Çoklu kategori desteği (string id listesi)
+    categoryIds: [],
     client: '',
     completionDate: '',
     technologies: [''],
     coverImage: '',
     images: [],
-    // 3D Model desteği
     models3D: [],
     featured: false,
     order: 0,
+    projectUrl: '',
+    githubUrl: '',
   });
 
   const handleTitleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -77,7 +79,6 @@ export default function EditPortfolioItem({ params }: { params: { id: string } }
     });
   };
 
-
   const fetchCategories = async () => {
     try {
       const response = await fetch('/api/categories');
@@ -87,8 +88,6 @@ export default function EditPortfolioItem({ params }: { params: { id: string } }
     } catch (err) {
       setError('Kategoriler yüklenirken bir hata oluştu');
       console.error(err);
-    } finally {
-      setLoading(false);
     }
   };
 
@@ -97,24 +96,22 @@ export default function EditPortfolioItem({ params }: { params: { id: string } }
       const response = await fetch(`/api/portfolio/${params.id}`);
       if (!response.ok) throw new Error('Portfolyo öğesi getirilemedi');
       const data = await response.json();
-      
-      // Tarihi YYYY-MM-DD formatına çevir
+
       const date = new Date(data.completionDate);
       const formattedDate = date.toISOString().split('T')[0];
-      
-      // Çoklu kategori desteği - mevcut veriyi uygun formata çevir
+
       let categoryIds: string[] = [];
       if (data.categoryIds && data.categoryIds.length > 0) {
         categoryIds = data.categoryIds as unknown as string[];
       } else if (data.categoryId) {
         categoryIds = [data.categoryId as unknown as string];
       }
-      
+
       setFormData({
         ...data,
         categoryIds: categoryIds,
         completionDate: formattedDate,
-        technologies: [...data.technologies, ''],
+        technologies: data.technologies.length > 0 ? [...data.technologies] : [''],
         images: data.images || [],
         models3D: data.models3D || [],
       });
@@ -139,24 +136,27 @@ export default function EditPortfolioItem({ params }: { params: { id: string } }
     e.preventDefault();
     setSubmitting(true);
     setError('');
+    setFieldErrors({});
 
     try {
-      // Validate that at least one category is selected
-      if (!formData.categoryIds || formData.categoryIds.length === 0) {
-        throw new Error('En az bir kategori seçmelisiniz');
+      const errs: Record<string, string> = {};
+      if (!formData.title.trim()) errs.title = 'Proje başlığı zorunludur';
+      if (!formData.slug.trim()) errs.slug = 'URL slug zorunludur';
+      if (!formData.client.trim()) errs.client = 'Müşteri/Şirket zorunludur';
+      if (!formData.completionDate) errs.completionDate = 'Tamamlanma tarihi zorunludur';
+      if (!formData.description.trim()) errs.description = 'Proje açıklaması zorunludur';
+      if (formData.categoryIds.length === 0) errs.categoryIds = 'En az bir kategori seçmelisiniz';
+      if (formData.images.length === 0) errs.images = 'En az bir proje görseli yüklemelisiniz';
+      if (!formData.coverImage) errs.coverImage = 'Kapak görseli seçmelisiniz';
+
+      if (Object.keys(errs).length > 0) {
+        setFieldErrors(errs);
+        const firstErr = Object.values(errs)[0];
+        setError(firstErr);
+        showToast({ variant: 'danger', title: 'Form hatası', description: firstErr });
+        return;
       }
 
-      // Validate that at least one image is uploaded
-      if (!formData.images || formData.images.length === 0) {
-        throw new Error('En az bir proje görseli yüklemelisiniz');
-      }
-
-      // Validate that cover image is set
-      if (!formData.coverImage) {
-        throw new Error('Kapak görseli seçmelisiniz');
-      }
-
-      // Prepare cleaned data
       const cleanedData = {
         ...formData,
         technologies: formData.technologies.filter(tech => tech.trim() !== ''),
@@ -176,35 +176,34 @@ export default function EditPortfolioItem({ params }: { params: { id: string } }
         throw new Error(data.error || 'Bir hata oluştu');
       }
 
-      setSuccess(true);
-      setTimeout(() => {
-        router.push('/admin/portfolio');
-      }, 1500);
+      showToast({ variant: 'success', title: 'Başarılı', description: 'Portfolyo öğesi güncellendi' });
+      router.push('/admin/portfolio');
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Bir hata oluştu');
+      const msg = err instanceof Error ? err.message : 'Bir hata oluştu';
+      setError(msg);
+      showToast({ variant: 'danger', title: 'İşlem başarısız', description: msg });
     } finally {
       setSubmitting(false);
     }
   };
 
-  // Çoklu kategori seçimi için yardımcı fonksiyonlar
   const handleCategoryToggle = (categoryId: string) => {
     setFormData(prev => ({
       ...prev,
-      categoryIds: prev.categoryIds?.includes(categoryId)
-        ? prev.categoryIds.filter((id) => id !== categoryId)
-        : [...(prev.categoryIds || []), categoryId]
+      categoryIds: prev.categoryIds.includes(categoryId)
+        ? prev.categoryIds.filter(id => id !== categoryId)
+        : [...prev.categoryIds, categoryId]
     }));
   };
 
   const handleTechnologyChange = (index: number, value: string) => {
     const newTechnologies = [...formData.technologies];
     newTechnologies[index] = value;
-    
+
     if (index === newTechnologies.length - 1 && value.trim() !== '') {
       newTechnologies.push('');
     }
-    
+
     setFormData(prev => ({
       ...prev,
       technologies: newTechnologies,
@@ -222,7 +221,6 @@ export default function EditPortfolioItem({ params }: { params: { id: string } }
     }));
   };
 
-  // Portfolio Image Gallery handlers
   const handleImagesChange = (images: string[]) => {
     setFormData(prev => ({ ...prev, images }));
   };
@@ -231,21 +229,18 @@ export default function EditPortfolioItem({ params }: { params: { id: string } }
     setFormData(prev => ({ ...prev, coverImage }));
   };
 
-  // 3D Model yönetimi fonksiyonları
   const handle3DModelUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
     if (!file) return;
 
-    // Dosya formatı kontrolü
     const allowedFormats = ['stl', 'obj', 'gltf', 'glb'];
     const fileExtension = file.name.split('.').pop()?.toLowerCase();
-    
+
     if (!fileExtension || !allowedFormats.includes(fileExtension)) {
       setError('Desteklenmeyen dosya formatı. Sadece STL, OBJ, GLTF, GLB dosyaları kabul edilir.');
       return;
     }
 
-    // Dosya boyutu kontrolü (50MB)
     const maxSize = 50 * 1024 * 1024;
     if (file.size > maxSize) {
       setError('Dosya boyutu 50MB\'dan büyük olamaz');
@@ -270,67 +265,62 @@ export default function EditPortfolioItem({ params }: { params: { id: string } }
       }
 
       const result = await response.json();
-      
-      // Form data'ya yeni modeli ekle
+
       setFormData(prev => ({
         ...prev,
-        models3D: [...(prev.models3D || []), {
-          _id: new Date().getTime().toString(), // Geçici ID
+        models3D: [...prev.models3D, {
           url: result.data.url,
           name: result.data.name,
           format: result.data.format,
           size: result.data.size,
-          downloadable: false, // Varsayılan olarak indirilebilir değil
+          downloadable: false,
           publicId: result.data.publicId,
           uploadedAt: new Date().toISOString(),
+          _id: result.data.publicId, // Frontend state requires _id, will be overwritten by DB on save if needed
         }]
       }));
 
-      // Input'u temizle
+      showToast({ variant: 'success', title: 'Başarılı', description: '3D model başarıyla yüklendi' });
       event.target.value = '';
     } catch (err) {
       const msg = err instanceof Error ? err.message : 'Yükleme sırasında bir hata oluştu';
       setError(msg);
+      showToast({ variant: 'danger', title: 'Yükleme hatası', description: msg });
     } finally {
       setUploadingModel(false);
     }
   };
 
   const remove3DModel = async (index: number) => {
-    const model = formData.models3D?.[index];
-    if (!model) return;
-    
-    if (!confirm(`"${model.name}" modelini silmek istediğinizden emin misiniz?`)) {
-      return;
-    }
+    const model = formData.models3D[index];
+    if (!confirm(`"${model.name}" modelini silmek istediğinizden emin misiniz?`)) return;
 
     try {
-      // Cloudinary'den sil
       const response = await fetch(`/api/3dmodels/delete?publicId=${encodeURIComponent(model.publicId)}`, {
         method: 'DELETE',
       });
 
-      if (!response.ok) {
-        throw new Error('Silme işlemi başarısız oldu');
-      }
+      if (!response.ok) throw new Error('Silme işlemi başarısız oldu');
 
-      // Form data'dan kaldır
       setFormData(prev => ({
         ...prev,
-        models3D: prev.models3D?.filter((_, i) => i !== index) || []
+        models3D: prev.models3D.filter((_, i) => i !== index)
       }));
+
+      showToast({ variant: 'success', title: 'Başarılı', description: '3D model silindi' });
     } catch (err) {
       const msg = err instanceof Error ? err.message : 'Silme sırasında bir hata oluştu';
       setError(msg);
+      showToast({ variant: 'danger', title: 'Silme hatası', description: msg });
     }
   };
 
   const toggle3DModelDownloadable = (index: number) => {
     setFormData(prev => ({
       ...prev,
-      models3D: prev.models3D?.map((model, i) => 
+      models3D: prev.models3D.map((model, i) =>
         i === index ? { ...model, downloadable: !model.downloadable } : model
-      ) || []
+      )
     }));
   };
 
@@ -344,515 +334,294 @@ export default function EditPortfolioItem({ params }: { params: { id: string } }
 
   if (status === 'loading' || loading) {
     return (
-      <AdminLayout>
-        <div className="flex items-center justify-center min-h-[400px]">
-          <div className="flex flex-col items-center space-y-4">
-            <div className="flex flex-col items-center space-y-4">
-              <p className="text-slate-600">Portfolio yükleniyor...</p>
-            </div>
-          </div>
+      <div className="flex items-center justify-center min-h-[60vh]">
+        <div className="text-center">
+          <div className="w-16 h-16 border-4 border-indigo-200 border-t-indigo-600 rounded-full animate-spin mx-auto mb-4"></div>
+          <p className="text-slate-500 font-medium">Portfolyo Yükleniyor...</p>
         </div>
-      </AdminLayout>
+      </div>
     );
   }
 
-  if (!session?.user || !formData._id) {
-    return null;
-  }
-
   return (
-    <AdminLayout 
-      title="Portfolio Düzenle"
-      breadcrumbs={[
-        { label: 'Dashboard', href: '/admin/dashboard' },
-        { label: 'Portfolio', href: '/admin/portfolio' },
-        { label: 'Düzenle' }
-      ]}
-    >
-      <div className="space-y-6">
-        
-        {/* Header Info */}
-        <div className="mb-6">
-          <p className="text-slate-600">{formData.title} projesini düzenleyin</p>
+    <div className="max-w-[1600px] mx-auto pb-20">
+      {/* Header */}
+      <div className="flex items-center justify-between mb-8 sticky top-0 z-20 bg-slate-50/80 backdrop-blur-sm py-4">
+        <div className="flex items-center gap-4">
+          <Link
+            href="/admin/portfolio"
+            className="p-2 hover:bg-white hover:shadow-sm rounded-xl transition-all border border-transparent hover:border-slate-200"
+          >
+            <ArrowLeftIcon className="w-5 h-5 text-slate-500" />
+          </Link>
+          <div>
+            <h1 className="text-2xl font-bold text-slate-900 tracking-tight">Projeyi Düzenle</h1>
+            <p className="text-sm text-slate-500">{formData.title}</p>
+          </div>
         </div>
-
-        {/* Success/Error Messages */}
-        {success && (
-          <div className="bg-brand-primary-50 border border-brand-primary-200 text-brand-primary-900 p-4 rounded-xl flex items-center space-x-3">
-            <CheckIcon className="w-5 h-5" />
-            <span>Portfolio başarıyla güncellendi! Yönlendiriliyorsunuz...</span>
-          </div>
-        )}
-
-        {error && (
-          <div className="bg-red-50 border border-red-200 text-red-800 p-4 rounded-xl flex items-center space-x-3">
-            <ExclamationTriangleIcon className="w-5 h-5" />
-            <span>{error}</span>
-          </div>
-        )}
-
-        {/* Form */}
-        <form onSubmit={handleSubmit} className="space-y-6">
-          
-          {/* Basic Information */}
-          <div className="bg-white rounded-xl p-6 shadow-sm border border-slate-200">
-            <h3 className="text-lg font-semibold text-slate-900 mb-4 flex items-center space-x-2">
-              <DocumentTextIcon className="w-5 h-5 text-brand-primary-700" />
-              <span>Temel Bilgiler</span>
-            </h3>
-            
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              <div>
-                <label className="block text-sm font-medium text-slate-700 mb-2">
-                  Proje Başlığı *
-                </label>
-                <input
-                  type="text"
-                  value={formData.title}
-                  onChange={handleTitleChange}
-                  className="w-full border border-slate-300 rounded-xl px-4 py-3 text-slate-900 focus:outline-none focus:ring-2 focus:ring-brand-primary-600 focus:border-transparent"
-                  placeholder="Proje başlığı giriniz"
-                  required
-                />
-              </div>
-
-              <div>
-                <label className="block text-sm font-medium text-slate-700 mb-2">
-                  URL Slug (SEO)
-                </label>
-                <div className="relative">
-                  <input
-                    type="text"
-                    value={formData.slug}
-                    onChange={(e) => setFormData(prev => ({ ...prev, slug: e.target.value }))}
-                    className={`w-full border border-slate-300 rounded-xl px-4 py-3 text-slate-900 focus:outline-none focus:ring-2 focus:ring-brand-primary-600 focus:border-transparent ${slugLocked ? 'bg-slate-100' : ''}`}
-                    placeholder="url-uyumlu-metin"
-                    required
-                    readOnly={slugLocked}
-                  />
-                  <button
-                    type="button"
-                    onClick={() => setSlugLocked(!slugLocked)}
-                    className="absolute inset-y-0 right-0 flex items-center px-3 text-slate-500 hover:text-brand-primary-700"
-                  >
-                    {slugLocked ? <PencilIcon className="w-5 h-5" /> : <CheckIcon className="w-5 h-5" />}
-                  </button>
-                </div>
-              </div>
-              
-              <div>
-                <label className="block text-sm font-medium text-slate-700 mb-2">
-                  Müşteri/Şirket *
-                </label>
-                <input
-                  type="text"
-                  value={formData.client}
-                  onChange={(e) => setFormData(prev => ({ ...prev, client: e.target.value }))}
-                  className="w-full border border-slate-300 rounded-xl px-4 py-3 text-slate-900 focus:outline-none focus:ring-2 focus:ring-brand-primary-600 focus:border-transparent"
-                  placeholder="Müşteri veya şirket adı"
-                  required
-                />
-              </div>
-              
-              <div>
-                <label className="block text-sm font-medium text-slate-700 mb-2">
-                  Tamamlanma Tarihi *
-                </label>
-                <input
-                  type="date"
-                  value={formData.completionDate}
-                  onChange={(e) => setFormData(prev => ({ ...prev, completionDate: e.target.value }))}
-                  className="w-full border border-slate-300 rounded-xl px-4 py-3 text-slate-900 focus:outline-none focus:ring-2 focus:ring-brand-primary-600 focus:border-transparent"
-                  required
-                />
-              </div>
-              
-              <div className="md:col-span-2">
-                <label className="block text-sm font-medium text-slate-700 mb-2">
-                  Proje Açıklaması *
-                </label>
-                <UniversalEditor
-                  value={formData.description}
-                  onChange={(content) => setFormData(prev => ({ ...prev, description: content }))}
-                  placeholder="Proje hakkında detaylı açıklama yazınız"
-                  minHeight="200px"
-                />
-              </div>
-            </div>
-          </div>
-
-          {/* Categories Selection */}
-          <div className="bg-white rounded-xl p-6 shadow-sm border border-slate-200">
-            <h3 className="text-lg font-semibold text-slate-900 mb-4 flex items-center space-x-2">
-              <TagIcon className="w-5 h-5 text-brand-primary-700" />
-              <span>Kategoriler *</span>
-            </h3>
-            
-            <div className="mb-4">
-              <p className="text-sm text-slate-600 mb-3">
-                Projeniz için uygun kategorileri seçin. Birden fazla kategori seçebilirsiniz.
-              </p>
-              
-              {/* Selected Categories Display */}
-              {formData.categoryIds && formData.categoryIds.length > 0 && (
-                <div className="mb-4">
-                  <p className="text-sm font-medium text-slate-700 mb-2">
-                    Seçili Kategoriler ({formData.categoryIds.length}):
-                  </p>
-                  <div className="flex flex-wrap gap-2">
-                    {formData.categoryIds.map((categoryId) => {
-                      const category = categories.find(cat => cat._id === categoryId);
-                      return category ? (
-                        <span
-                          key={categoryId}
-                          className="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-brand-primary-100 text-brand-primary-900"
-                        >
-                          {category.name}
-                          <button
-                            type="button"
-                            onClick={() => handleCategoryToggle(categoryId)}
-                            className="ml-2 hover:text-brand-primary-700"
-                          >
-                            <XMarkIcon className="h-4 w-4" />
-                          </button>
-                        </span>
-                      ) : null;
-                    })}
-                  </div>
-                </div>
-              )}
-            </div>
-            
-            {/* Category Selection Grid */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
-              {categories.map((category) => (
-                <div
-                  key={category._id}
-                  className={`relative rounded-lg border-2 transition-all cursor-pointer ${
-                    formData.categoryIds?.includes(category._id)
-                      ? 'border-brand-primary-600 bg-brand-primary-50'
-                      : 'border-slate-200 hover:border-slate-300 bg-white'
-                  }`}
-                  onClick={() => handleCategoryToggle(category._id)}
-                >
-                  <div className="p-4">
-                    <div className="flex items-center justify-between">
-                      <div className="flex items-center space-x-3">
-                        <div className={`w-4 h-4 rounded border-2 transition-all ${
-                          formData.categoryIds?.includes(category._id)
-                            ? 'border-brand-primary-600 bg-brand-primary-600'
-                            : 'border-slate-300'
-                        }`}>
-                          {formData.categoryIds?.includes(category._id) && (
-                            <CheckIcon className="w-3 h-3 text-white" />
-                          )}
-                        </div>
-                        <span className={`font-medium ${
-                          formData.categoryIds?.includes(category._id)
-                            ? 'text-brand-primary-900'
-                            : 'text-slate-700'
-                        }`}>
-                          {category.name}
-                        </span>
-                      </div>
-                    </div>
-                    {category.description && (
-                      <p className={`mt-2 text-sm ${
-                        formData.categoryIds?.includes(category._id)
-                          ? 'text-brand-primary-700'
-                          : 'text-slate-500'
-                      }`}>
-                        {category.description}
-                      </p>
-                    )}
-                  </div>
-                </div>
-              ))}
-            </div>
-            
-            {categories.length === 0 && (
-              <div className="text-center py-8">
-                <TagIcon className="w-12 h-12 text-slate-300 mx-auto mb-3" />
-                <p className="text-slate-500">
-                  Henüz kategori bulunmuyor. Önce kategori oluşturun.
-                </p>
-                <Link 
-                  href="/admin/portfolio?tab=categories"
-                  className="inline-flex items-center mt-3 text-brand-primary-700 hover:text-brand-primary-800"
-                >
-                  <PlusIcon className="w-4 h-4 mr-1" />
-                  Kategori Oluştur
-                </Link>
-              </div>
+        <div className="flex items-center gap-3">
+          <Link
+            href="/admin/portfolio"
+            className="px-4 py-2 text-sm font-medium text-slate-600 hover:text-slate-900 transition-colors"
+          >
+            İptal
+          </Link>
+          <button
+            onClick={handleSubmit}
+            disabled={submitting}
+            className="flex items-center px-6 py-2.5 bg-indigo-600 text-white font-semibold rounded-xl hover:bg-indigo-700 hover:shadow-lg hover:shadow-indigo-500/20 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+          >
+            {submitting ? (
+              <>
+                <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin mr-2"></div>
+                Güncelleniyor...
+              </>
+            ) : (
+              <>
+                <CheckIcon className="w-5 h-5 mr-2" />
+                Değişiklikleri Kaydet
+              </>
             )}
-          </div>
+          </button>
+        </div>
+      </div>
 
-          {/* Project Images Gallery */}
-          <div className="bg-white rounded-xl p-6 shadow-sm border border-slate-200">
-            <h3 className="text-lg font-semibold text-slate-900 mb-4 flex items-center space-x-2">
-              <PhotoIcon className="w-5 h-5 text-brand-primary-700" />
-              <span>Proje Görselleri *</span>
-            </h3>
-            
-            <div className="mb-4">
-              <p className="text-sm text-slate-600">
-                Projeniz için görselleri toplu olarak yükleyin ve kapak görseli seçin. 
-                Mevcut görselleri düzenleyebilir, yenilerini ekleyebilirsiniz.
-              </p>
+      {error && (
+        <div className="mb-8 bg-red-50 border border-red-200 text-red-800 p-4 rounded-xl flex items-center gap-3 animate-in fade-in slide-in-from-top-2">
+          <ExclamationTriangleIcon className="w-5 h-5 shrink-0" />
+          <span className="font-medium">{error}</span>
+        </div>
+      )}
+
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
+        {/* Left Column - Visual Media (40%) */}
+        <div className="lg:col-span-5 space-y-6">
+          {/* Image Gallery */}
+          <div className="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden">
+            <div className="p-4 border-b border-slate-100 bg-slate-50/50 flex items-center justify-between">
+              <h2 className="font-semibold text-slate-900 flex items-center gap-2">
+                <PhotoIcon className="w-5 h-5 text-indigo-500" />
+                Medya Galeri
+              </h2>
+              <span className="text-xs font-medium text-slate-500 bg-white px-2 py-1 rounded-md border border-slate-200">
+                {formData.images.length} Görsel
+              </span>
             </div>
-
-            <PortfolioImageGallery
-              images={formData.images || []}
-              coverImage={formData.coverImage}
-              onImagesChange={handleImagesChange}
-              onCoverImageChange={handleCoverImageChange}
-              disabled={submitting}
-              pageContext="portfolio"
-            />
+            <div className="p-4">
+              <PortfolioImageGallery
+                images={formData.images}
+                coverImage={formData.coverImage}
+                onImagesChange={handleImagesChange}
+                onCoverImageChange={handleCoverImageChange}
+                disabled={submitting}
+                pageContext="portfolio"
+              />
+              {fieldErrors.images && <p className="mt-2 text-xs text-red-600 font-medium">{fieldErrors.images}</p>}
+              {fieldErrors.coverImage && <p className="mt-1 text-xs text-red-600 font-medium">{fieldErrors.coverImage}</p>}
+            </div>
           </div>
 
-          {/* 3D Models Section */}
-          <div className="bg-white rounded-xl p-6 shadow-sm border border-slate-200">
-            <div className="flex items-center justify-between mb-4">
-              <h3 className="text-lg font-semibold text-slate-900 flex items-center space-x-2">
-                <CubeIcon className="w-5 h-5 text-blue-600" />
-                <span>3D Modeller</span>
-              </h3>
-              
-              <div className="flex items-center space-x-3">
+          {/* 3D Models */}
+          <div className="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden">
+            <div className="p-4 border-b border-slate-100 bg-slate-50/50 flex items-center justify-between">
+              <h2 className="font-semibold text-slate-900 flex items-center gap-2">
+                <CubeIcon className="w-5 h-5 text-blue-500" />
+                3D Varlıklar
+              </h2>
+              <label className={`cursor-pointer inline-flex items-center px-3 py-1.5 text-xs font-medium bg-blue-50 text-blue-700 hover:bg-blue-100 rounded-lg transition-colors ${uploadingModel ? 'opacity-50 cursor-not-allowed' : ''}`}>
                 <input
                   type="file"
                   accept=".stl,.obj,.gltf,.glb"
                   onChange={handle3DModelUpload}
                   className="hidden"
-                  id="model-upload-edit"
                   disabled={uploadingModel || submitting}
                 />
-                <label
-                  htmlFor="model-upload-edit"
-                  className={`flex items-center space-x-2 px-4 py-2 rounded-lg font-medium transition-colors cursor-pointer ${
-                    uploadingModel || submitting
-                      ? 'bg-blue-400 text-white cursor-not-allowed'
-                      : 'bg-blue-600 hover:bg-blue-700 text-white'
-                  }`}
-                >
-                  {uploadingModel ? (
-                    <>
-                      <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white"></div>
-                      <span>Yükleniyor...</span>
-                    </>
-                  ) : (
-                    <>
-                      <CloudArrowUpIcon className="w-4 h-4" />
-                      <span>Model Yükle</span>
-                    </>
-                  )}
-                </label>
-              </div>
-            </div>
-            
-            <div className="mb-4">
-              <p className="text-sm text-slate-600">
-                3D model dosyalarınızı yükleyin. Desteklenen formatlar: STL, OBJ, GLTF, GLB (Maksimum 50MB)
-              </p>
+                {uploadingModel ? 'Yükleniyor...' : '+ Model Ekle'}
+              </label>
             </div>
 
-            {/* 3D Models List */}
-            {formData.models3D && formData.models3D.length > 0 ? (
-              <div className="space-y-3">
-                {formData.models3D.map((model, index) => (
-                  <div key={index} className="flex items-center justify-between p-4 border border-slate-200 rounded-lg bg-slate-50">
-                    <div className="flex items-center space-x-3">
-                      <div className="w-10 h-10 bg-gradient-to-br from-blue-100 to-indigo-200 rounded-lg flex items-center justify-center">
-                        <CubeIcon className="w-6 h-6 text-blue-600" />
+            <div className="p-4 space-y-3">
+              {formData.models3D && formData.models3D.length > 0 ? (
+                formData.models3D.map((model, index) => (
+                  <div key={index} className="flex items-center justify-between p-3 border border-slate-100 rounded-xl bg-slate-50 hover:border-slate-300 transition-colors group">
+                    <div className="flex items-center gap-3 min-w-0">
+                      <div className="w-10 h-10 bg-white border border-slate-200 rounded-lg flex items-center justify-center shrink-0">
+                        <CubeIcon className="w-5 h-5 text-slate-400" />
                       </div>
-                      <div>
-                        <h4 className="font-medium text-slate-900">{model.name}</h4>
-                        <div className="flex items-center space-x-2 text-sm text-slate-500">
-                          <span className="uppercase font-medium">{model.format}</span>
-                          <span>•</span>
-                          <span>{formatFileSize(model.size)}</span>
-                          {model.downloadable && (
-                            <>
-                              <span>•</span>
-                              <span className="text-green-600 font-medium">İndirilebilir</span>
-                            </>
-                          )}
-                        </div>
+                      <div className="min-w-0">
+                        <p className="text-sm font-medium text-slate-900 truncate" title={model.name}>{model.name}</p>
+                        <p className="text-xs text-slate-500 uppercase">{model.format} • {formatFileSize(model.size)}</p>
                       </div>
                     </div>
-                    
-                    <div className="flex items-center space-x-2">
+                    <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
                       <button
                         type="button"
                         onClick={() => toggle3DModelDownloadable(index)}
-                        className={`p-2 rounded-lg transition-colors ${
-                          model.downloadable
-                            ? 'text-green-600 hover:bg-green-50'
-                            : 'text-slate-400 hover:bg-slate-100'
-                        }`}
-                        title={model.downloadable ? 'İndirmeyi kapat' : 'İndirmeye aç'}
+                        className={`p-1.5 rounded-lg transition-colors ${model.downloadable ? 'text-emerald-600 bg-emerald-50' : 'text-slate-400 hover:bg-white'}`}
+                        title={model.downloadable ? 'İndirilebilir' : 'İndirilemez'}
                       >
                         <ArrowDownTrayIcon className="w-4 h-4" />
                       </button>
-                      
                       <button
                         type="button"
                         onClick={() => remove3DModel(index)}
-                        className="p-2 text-red-500 hover:text-red-700 hover:bg-red-50 rounded-lg transition-colors"
-                        title="Modeli sil"
+                        className="p-1.5 text-slate-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors"
                       >
                         <TrashIcon className="w-4 h-4" />
                       </button>
                     </div>
                   </div>
-                ))}
-              </div>
-            ) : (
-              <div className="text-center py-8 border-2 border-dashed border-slate-300 rounded-lg">
-                <CubeIcon className="w-12 h-12 text-slate-400 mx-auto mb-3" />
-                <p className="text-slate-500 mb-2">Henüz 3D model yüklenmemiş</p>
-                <p className="text-sm text-slate-400">
-                  Yukarıdaki "Model Yükle" butonunu kullanarak 3D model ekleyebilirsiniz
-                </p>
-              </div>
-            )}
+                ))
+              ) : (
+                <div className="text-center py-8 border-2 border-dashed border-slate-100 rounded-xl">
+                  <p className="text-sm text-slate-400">Henüz 3D model eklenmemiş</p>
+                </div>
+              )}
+            </div>
+          </div>
+        </div>
 
-            {/* 3D Model Info */}
-            <div className="mt-4 p-4 bg-blue-50 border border-blue-200 rounded-lg">
-              <div className="flex items-start space-x-3">
-                <CubeIcon className="w-5 h-5 text-blue-600 mt-0.5 flex-shrink-0" />
-                <div className="text-sm text-blue-800">
-                  <p className="font-medium mb-1">3D Model Bilgileri:</p>
-                  <ul className="space-y-1 text-blue-700">
-                    <li>• GLTF/GLB formatları canlı önizleme destekler</li>
-                    <li>• STL/OBJ formatları sadece indirilebilir</li>
-                    <li>• İndirme izni model bazında ayarlanabilir</li>
-                    <li>• Maksimum dosya boyutu: 50MB</li>
-                  </ul>
+        {/* Right Column - Content (60%) */}
+        <div className="lg:col-span-7 space-y-6">
+          {/* Basic Info */}
+          <div className="bg-white rounded-2xl shadow-sm border border-slate-200 p-6 space-y-6">
+            <div>
+              <label htmlFor="title" className="block text-sm font-medium text-slate-700 mb-2">Proje Başlığı</label>
+              <input
+                type="text"
+                id="title"
+                value={formData.title}
+                onChange={handleTitleChange}
+                className={`w-full px-0 py-2 border-b-2 border-slate-200 focus:border-indigo-600 bg-transparent text-xl font-bold placeholder-slate-300 focus:outline-none transition-colors ${fieldErrors.title ? 'border-red-400' : ''}`}
+                placeholder="Projenize bir isim verin"
+              />
+              {fieldErrors.title && <p className="mt-1 text-xs text-red-600">{fieldErrors.title}</p>}
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <div>
+                <label className="block text-xs font-semibold text-slate-500 uppercase tracking-wider mb-2">URL Slug</label>
+                <div className={`flex items-center border rounded-lg bg-slate-50 px-3 py-2 transition-colors ${fieldErrors.slug ? 'border-red-300' : 'border-slate-200 focus-within:border-indigo-500 focus-within:bg-white'}`}>
+                  <span className="text-slate-400 text-sm mr-1">/portfolio/</span>
+                  <input
+                    type="text"
+                    value={formData.slug}
+                    onChange={(e) => setFormData(prev => ({ ...prev, slug: e.target.value }))}
+                    readOnly={slugLocked}
+                    className="flex-1 bg-transparent border-none text-sm text-slate-700 focus:ring-0 p-0"
+                  />
+                  <button
+                    type="button"
+                    onClick={() => setSlugLocked(!slugLocked)}
+                    className="ml-2 text-slate-400 hover:text-indigo-600 transition-colors"
+                  >
+                    {slugLocked ? <PencilIcon className="w-4 h-4" /> : <CheckIcon className="w-4 h-4" />}
+                  </button>
+                </div>
+              </div>
+
+              <div>
+                <label className="block text-xs font-semibold text-slate-500 uppercase tracking-wider mb-2">Müşteri</label>
+                <div className="relative">
+                  <UserIcon className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
+                  <input
+                    type="text"
+                    value={formData.client}
+                    onChange={(e) => setFormData(prev => ({ ...prev, client: e.target.value }))}
+                    className="w-full pl-9 pr-3 py-2 border border-slate-200 rounded-lg text-sm focus:outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 transition-all"
+                    placeholder="Şirket veya Kişi Adı"
+                  />
                 </div>
               </div>
             </div>
+
+            <div>
+              <label className="block text-sm font-medium text-slate-700 mb-2">Açıklama</label>
+              <UniversalEditor
+                value={formData.description}
+                onChange={(content) => setFormData(prev => ({ ...prev, description: content }))}
+                placeholder="Projenin hikayesini anlatın..."
+                minHeight="300px"
+              />
+              {fieldErrors.description && <p className="mt-1 text-xs text-red-600">{fieldErrors.description}</p>}
+            </div>
           </div>
 
-          {/* Technologies */}
-          <div className="bg-white rounded-xl p-6 shadow-sm border border-slate-200">
-            <div className="flex items-center justify-between mb-4">
-              <h3 className="text-lg font-semibold text-slate-900 flex items-center space-x-2">
-                <HashtagIcon className="w-5 h-5 text-brand-primary-700" />
-                <span>Teknolojiler</span>
-              </h3>
-              <button
-                type="button"
-                onClick={() => setFormData(prev => ({ ...prev, technologies: [...prev.technologies, ''] }))}
-                className="flex items-center space-x-2 bg-brand-primary-50 text-brand-primary-700 px-3 py-2 rounded-lg hover:bg-brand-primary-100 transition-colors"
-              >
-                <PlusIcon className="w-4 h-4" />
-                <span>Teknoloji Ekle</span>
-              </button>
+          {/* Metadata & Tech */}
+          <div className="bg-white rounded-2xl shadow-sm border border-slate-200 p-6 space-y-8">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+              {/* Categories */}
+              <div>
+                <h3 className="text-sm font-bold text-slate-900 mb-4 flex items-center gap-2">
+                  <TagIcon className="w-4 h-4 text-emerald-500" />
+                  Kategoriler
+                </h3>
+                <div className="flex flex-wrap gap-2">
+                  {categories.map((cat) => (
+                    <button
+                      key={cat._id}
+                      type="button"
+                      onClick={() => handleCategoryToggle(cat._id)}
+                      className={`px-3 py-1.5 rounded-full text-xs font-medium border transition-all ${formData.categoryIds.includes(cat._id)
+                        ? 'bg-emerald-50 border-emerald-200 text-emerald-700'
+                        : 'bg-white border-slate-200 text-slate-600 hover:border-emerald-200'
+                        }`}
+                    >
+                      {cat.name}
+                      {formData.categoryIds.includes(cat._id) && <CheckIcon className="w-3 h-3 inline-block ml-1" />}
+                    </button>
+                  ))}
+                </div>
+                {fieldErrors.categoryIds && <p className="mt-2 text-xs text-red-600">{fieldErrors.categoryIds}</p>}
+              </div>
+
+              {/* Date */}
+              <div>
+                <h3 className="text-sm font-bold text-slate-900 mb-4 flex items-center gap-2">
+                  <CalendarIcon className="w-4 h-4 text-amber-500" />
+                  Tamamlanma Tarihi
+                </h3>
+                <input
+                  type="date"
+                  value={formData.completionDate}
+                  onChange={(e) => setFormData(prev => ({ ...prev, completionDate: e.target.value }))}
+                  className="w-full px-3 py-2 border border-slate-200 rounded-lg text-sm focus:outline-none focus:border-indigo-500 transition-all"
+                />
+              </div>
             </div>
-            
-            <div className="space-y-3">
-              {formData.technologies.length === 0 ? (
-                <p className="text-slate-500 text-sm py-4 text-center">
-                  Henüz teknoloji eklenmedi. Yukarıdaki butonu kullanarak teknoloji ekleyebilirsiniz.
-                </p>
-              ) : (
-                formData.technologies.map((tech, index) => (
-                  <div key={index} className="flex items-center space-x-3">
+
+            {/* Technologies */}
+            <div>
+              <h3 className="text-sm font-bold text-slate-900 mb-4 flex items-center gap-2">
+                <HashtagIcon className="w-4 h-4 text-violet-500" />
+                Teknolojiler
+              </h3>
+              <div className="flex flex-wrap gap-2">
+                {formData.technologies.map((tech, index) => (
+                  <div key={index} className="relative group">
                     <input
                       type="text"
                       value={tech}
                       onChange={(e) => handleTechnologyChange(index, e.target.value)}
-                      className="flex-1 border border-slate-300 rounded-xl px-4 py-3 text-slate-900 focus:outline-none focus:ring-2 focus:ring-brand-primary-600 focus:border-transparent"
-                      placeholder="Teknoloji adı (örn: 3D Tarama, CAD Tasarım)"
+                      placeholder="+ Ekle"
+                      className="w-32 px-3 py-1.5 bg-slate-50 border border-slate-200 rounded-lg text-sm focus:w-48 focus:bg-white focus:border-violet-500 focus:ring-1 focus:ring-violet-500 transition-all"
                     />
-                    <button
-                      type="button"
-                      onClick={() => removeTechnology(index)}
-                      className="p-2 text-red-500 hover:text-red-700 hover:bg-red-50 rounded-lg transition-colors"
-                    >
-                      <TrashIcon className="w-5 h-5" />
-                    </button>
+                    {tech && (
+                      <button
+                        type="button"
+                        onClick={() => removeTechnology(index)}
+                        className="absolute -top-1 -right-1 bg-red-500 text-white rounded-full p-0.5 opacity-0 group-hover:opacity-100 transition-opacity"
+                      >
+                        <XMarkIcon className="w-3 h-3" />
+                      </button>
+                    )}
                   </div>
-                ))
-              )}
-            </div>
-          </div>
-
-          {/* Additional Options */}
-          <div className="bg-white rounded-xl p-6 shadow-sm border border-slate-200">
-            <h3 className="text-lg font-semibold text-slate-900 mb-4 flex items-center space-x-2">
-              <StarIcon className="w-5 h-5 text-brand-primary-700" />
-              <span>Ek Seçenekler</span>
-            </h3>
-            
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              <div>
-                <label className="flex items-center space-x-3 cursor-pointer">
-                  <input
-                    type="checkbox"
-                    checked={formData.featured}
-                    onChange={(e) => setFormData(prev => ({ ...prev, featured: e.target.checked }))}
-                    className="w-4 h-4 text-brand-primary-700 border-slate-300 rounded focus:ring-brand-primary-600"
-                  />
-                  <span className="text-sm font-medium text-slate-700">Öne Çıkan Proje</span>
-                </label>
-                <p className="text-sm text-slate-500 mt-1 ml-7">
-                  Ana sayfada öne çıkan projeler bölümünde gösterilir
-                </p>
-              </div>
-              
-              <div>
-                <label className="block text-sm font-medium text-slate-700 mb-2">
-                  Sıralama
-                </label>
-                <input
-                  type="number"
-                  value={formData.order}
-                  onChange={(e) => setFormData(prev => ({ ...prev, order: parseInt(e.target.value) || 0 }))}
-                  className="w-full border border-slate-300 rounded-xl px-4 py-3 text-slate-900 focus:outline-none focus:ring-2 focus:ring-brand-primary-600 focus:border-transparent"
-                  placeholder="0"
-                  min="0"
-                />
-                <p className="text-sm text-slate-500 mt-1">
-                  Düşük sayılar önce gösterilir
-                </p>
+                ))}
               </div>
             </div>
           </div>
-
-          {/* Submit Buttons */}
-          <div className="flex items-center justify-between pt-6">
-            <Link
-              href="/admin/portfolio"
-              className="flex items-center space-x-2 px-6 py-3 border border-slate-300 rounded-xl text-slate-700 hover:bg-slate-50 transition-colors"
-            >
-              <ArrowLeftIcon className="w-5 h-5" />
-              <span>Geri Dön</span>
-            </Link>
-            
-            <button
-              type="submit"
-              disabled={submitting}
-              className="flex items-center space-x-2 bg-brand-primary-700 text-white px-8 py-3 rounded-xl hover:bg-brand-primary-800 focus:outline-none focus:ring-2 focus:ring-brand-primary-600 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
-            >
-              {submitting ? (
-                <>
-                  <div className="flex flex-col items-center space-y-4">
-                    <p className="text-white">Güncelleniyor...</p>
-                  </div>
-                </>
-              ) : (
-                <>
-                  <CheckIcon className="w-5 h-5" />
-                  <span>Güncelle</span>
-                </>
-              )}
-            </button>
-          </div>
-        </form>
+        </div>
       </div>
-    </AdminLayout>
+    </div>
   );
 }

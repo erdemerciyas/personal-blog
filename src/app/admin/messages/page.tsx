@@ -1,246 +1,128 @@
 'use client';
-import { useState, useEffect, Suspense } from 'react';
-import { useSession } from 'next-auth/react';
-import { useRouter, useSearchParams } from 'next/navigation';
-import AdminLayout from '../../../components/admin/AdminLayout';
-import {
-  PhoneIcon,
-  BuildingOfficeIcon,
-  ClockIcon,
-  EyeIcon,
-  TrashIcon,
-  CheckIcon,
-  ExclamationTriangleIcon,
-  MagnifyingGlassIcon,
-  FunnelIcon,
 
-  InboxIcon,
+import { useState, useEffect } from 'react';
+import { useSession } from 'next-auth/react';
+import { useRouter } from 'next/navigation';
+import {
+  ChatBubbleLeftRightIcon,
+  MagnifyingGlassIcon,
+  TrashIcon,
   EnvelopeIcon,
-  XMarkIcon
+  CheckIcon,
+  ClockIcon
 } from '@heroicons/react/24/outline';
 
 interface Message {
   _id: string;
   name: string;
   email: string;
-  phone?: string;
-  company?: string;
   subject: string;
   message: string;
-  projectType: string;
-  budget: string;
-  urgency: string;
-  status: 'new' | 'read' | 'replied' | 'closed';
-  isRead: boolean;
-  adminNotes?: string;
+  status: 'unread' | 'read';
   createdAt: string;
-  readAt?: string;
-  repliedAt?: string;
+  type?: 'contact' | 'product_question' | 'service_request';
+  productId?: string;
+  productName?: string;
 }
 
-function AdminMessagesContent() {
+export default function AdminMessagesPage() {
   const { data: session, status } = useSession();
   const router = useRouter();
-  const searchParams = useSearchParams();
-  
-  const [messages, setMessages] = useState<Message[]>([]);
-  const [filteredMessages, setFilteredMessages] = useState<Message[]>([]);
   const [loading, setLoading] = useState(true);
-  const [selectedMessage, setSelectedMessage] = useState<Message | null>(null);
-  const [showMessageModal, setShowMessageModal] = useState(false);
-  const [success, setSuccess] = useState('');
-  const [error, setError] = useState('');
-  
-  // Filter states
-  const [searchTerm, setSearchTerm] = useState('');
-  const [statusFilter, setStatusFilter] = useState('all');
-  const [urgencyFilter, setUrgencyFilter] = useState('all');
-  const [, ] = useState(false);
+  const [messages, setMessages] = useState<Message[]>([]);
+  const [searchQuery, setSearchQuery] = useState('');
+  const [statusFilter, setStatusFilter] = useState<'all' | 'unread' | 'read'>('all');
+  const [selectedMessages, setSelectedMessages] = useState<Set<string>>(new Set());
 
-  // Auth check
   useEffect(() => {
     if (status === 'loading') return;
-    
+
     if (status === 'unauthenticated') {
       router.push('/admin/login');
-    } else if (status === 'authenticated' && session?.user?.role !== 'admin') {
-      router.push('/');
-    }
-  }, [status, session, router]);
-
-  // Fetch messages
-  useEffect(() => {
-    const fetchMessages = async () => {
-      try {
-        const response = await fetch('/api/messages');
-        if (response.ok) {
-          const data = await response.json();
-          setMessages(data);
-          setFilteredMessages(data);
-        } else {
-          throw new Error('Mesajlar yüklenirken hata oluştu');
-        }
-      } catch (error) {
-        console.error('Messages fetch error:', error);
-        setError('Mesajlar yüklenirken hata oluştu');
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    if (status === 'authenticated') {
-      fetchMessages();
-    }
-  }, [status]);
-
-  // Auto-open message from notification
-  useEffect(() => {
-    const messageId = searchParams?.get('id') ?? null;
-    if (messageId && messages.length > 0) {
-      const message = messages.find(m => m._id === messageId);
-      if (message) {
-        handleViewMessage(message);
-        // URL'den parametreyi temizle
-        router.replace('/admin/messages', { scroll: false });
-      }
-    }
-  }, [messages, searchParams, router]);
-
-  // Filter messages
-  useEffect(() => {
-    let filtered = messages;
-
-    // Search filter
-    if (searchTerm) {
-      filtered = filtered.filter(message =>
-        message.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        message.email.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        message.subject.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        message.company?.toLowerCase().includes(searchTerm.toLowerCase())
-      );
+      return;
     }
 
-    // Status filter
-    if (statusFilter !== 'all') {
-      filtered = filtered.filter(message => message.status === statusFilter);
-    }
+    loadMessages();
+  }, [status, router]);
 
-    // Urgency filter
-    if (urgencyFilter !== 'all') {
-      filtered = filtered.filter(message => message.urgency === urgencyFilter);
-    }
-
-    setFilteredMessages(filtered);
-  }, [messages, searchTerm, statusFilter, urgencyFilter]);
-
-  const handleViewMessage = async (message: Message) => {
-    setSelectedMessage(message);
-    setShowMessageModal(true);
-
-    // Mark as read if not already
-    if (!message.isRead) {
-      try {
-        const response = await fetch(`/api/messages/${message._id}`, {
-          method: 'PUT',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({
-            isRead: true,
-            status: message.status === 'new' ? 'read' : message.status,
-            wasRead: message.isRead
-          }),
-        });
-
-        if (response.ok) {
-          // Update local state
-          setMessages(prev => prev.map(m => 
-            m._id === message._id 
-              ? { ...m, isRead: true, status: m.status === 'new' ? 'read' : m.status }
-              : m
-          ));
-        }
-      } catch (error) {
-        console.error('Error marking message as read:', error);
-      }
-    }
-  };
-
-  const handleUpdateStatus = async (messageId: string, newStatus: 'new' | 'read' | 'replied' | 'closed') => {
+  const loadMessages = async () => {
     try {
-      const response = await fetch(`/api/messages/${messageId}`, {
-        method: 'PATCH',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ status: newStatus }),
-      });
-
+      const response = await fetch('/api/admin/messages');
       if (response.ok) {
-        const updatedMessage = await response.json();
-        setMessages(prev => prev.map(m => 
-          m._id === messageId ? { ...m, status: newStatus, isRead: updatedMessage.isRead } : m
-        ));
-        setSuccess('Mesaj durumu güncellendi');
-        setTimeout(() => setSuccess(''), 3000);
-        
-        // Modal'ı kapat
-        setShowMessageModal(false);
-      } else {
-        const errorData = await response.json();
-        throw new Error(errorData.error || 'Durum güncellenemedi');
+        const data = await response.json();
+        setMessages(data);
       }
     } catch (error) {
-      console.error('Status update error:', error);
-      setError(error instanceof Error ? error.message : 'Durum güncellenirken hata oluştu');
-      setTimeout(() => setError(''), 3000);
+      console.error('Error loading messages:', error);
+    } finally {
+      setLoading(false);
     }
   };
 
-  const handleDeleteMessage = async (messageId: string) => {
-    if (!confirm('Bu mesajı silmek istediğinizden emin misiniz?')) return;
+  const handleDelete = async (messageId: string) => {
+    if (!confirm('Are you sure you want to delete this message?')) return;
 
     try {
-      const response = await fetch(`/api/messages/${messageId}`, {
+      const response = await fetch(`/api/admin/messages/${messageId}`, {
         method: 'DELETE',
       });
 
       if (response.ok) {
-        setMessages(prev => prev.filter(m => m._id !== messageId));
-        setSuccess('Mesaj silindi');
-        setTimeout(() => setSuccess(''), 3000);
-      } else {
-        throw new Error('Mesaj silinemedi');
+        setMessages(messages.filter(msg => msg._id !== messageId));
       }
-    } catch {
-      setError('Mesaj silinirken hata oluştu');
+    } catch (error) {
+      console.error('Error deleting message:', error);
     }
   };
 
-  const getStatusColor = (status: string) => {
-    switch (status) {
-      case 'new': return 'bg-blue-100 text-blue-800';
-      case 'read': return 'bg-yellow-100 text-yellow-800';
-      case 'replied': return 'bg-brand-primary-100 text-brand-primary-900';
-      case 'closed': return 'bg-gray-100 text-gray-800';
-      default: return 'bg-gray-100 text-gray-800';
+  const handleBulkDelete = async () => {
+    if (!confirm(`Are you sure you want to delete ${selectedMessages.size} message(s)?`)) return;
+
+    try {
+      await Promise.all(
+        Array.from(selectedMessages).map(id =>
+          fetch(`/api/admin/messages/${id}`, { method: 'DELETE' })
+        )
+      );
+      setMessages(messages.filter(msg => !selectedMessages.has(msg._id)));
+      setSelectedMessages(new Set());
+    } catch (error) {
+      console.error('Error deleting messages:', error);
     }
   };
 
-  const getUrgencyColor = (urgency: string) => {
-    switch (urgency) {
-      case 'low': return 'bg-brand-primary-100 text-brand-primary-900';
-      case 'medium': return 'bg-yellow-100 text-yellow-800';
-      case 'high': return 'bg-red-100 text-red-800';
-      default: return 'bg-gray-100 text-gray-800';
+  const handleMarkAsRead = async (messageId: string) => {
+    try {
+      const response = await fetch(`/api/admin/messages/${messageId}/read`, {
+        method: 'POST',
+      });
+
+      if (response.ok) {
+        setMessages(messages.map(msg =>
+          msg._id === messageId ? { ...msg, status: 'read' as const } : msg
+        ));
+      }
+    } catch (error) {
+      console.error('Error marking message as read:', error);
     }
   };
+
+  const filteredMessages = messages.filter(message => {
+    // Exclude product questions from this view
+    if (message.type === 'product_question') return false;
+
+    const matchesSearch = message.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      message.email.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      message.subject.toLowerCase().includes(searchQuery.toLowerCase());
+    const matchesStatus = statusFilter === 'all' || message.status === statusFilter;
+    return matchesSearch && matchesStatus;
+  });
 
   const formatDate = (dateString: string) => {
-    return new Date(dateString).toLocaleDateString('tr-TR', {
-      year: 'numeric',
+    return new Date(dateString).toLocaleDateString('en-US', {
       month: 'short',
       day: 'numeric',
+      year: 'numeric',
       hour: '2-digit',
       minute: '2-digit'
     });
@@ -248,363 +130,185 @@ function AdminMessagesContent() {
 
   if (status === 'loading' || loading) {
     return (
-      <AdminLayout>
-        <div className="flex items-center justify-center min-h-[400px]">
-          <div className="flex flex-col items-center space-y-4">
-            <div className="flex flex-col items-center space-y-4">
-              <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-brand-primary-600"></div>
-              <p className="text-slate-600 dark:text-slate-400">Mesajlar yükleniyor...</p>
-            </div>
+      <div className="flex items-center justify-center min-h-[60vh]">
+        <div className="flex flex-col items-center space-y-4">
+          <div className="relative">
+            <div className="w-16 h-16 border-4 border-indigo-200 rounded-full"></div>
+            <div className="absolute top-0 left-0 w-16 h-16 border-4 border-transparent border-t-indigo-600 rounded-full animate-spin"></div>
           </div>
+          <p className="text-lg font-medium text-slate-600">Loading messages...</p>
         </div>
-      </AdminLayout>
+      </div>
     );
   }
 
-  if (status === 'unauthenticated') {
-    return null;
-  }
-
   return (
-    <AdminLayout 
-      title="Mesajlar"
-      breadcrumbs={[
-        { label: 'Dashboard', href: '/admin/dashboard' },
-        { label: 'Mesajlar' }
-      ]}
-    >
-      <div className="space-y-6">
-        
-        {/* Header Actions */}
-        <div className="flex items-center justify-between">
-          <div>
-            <p className="text-slate-600 dark:text-slate-400">Gelen mesajları görüntüleyin ve yönetin</p>
-            <div className="flex items-center space-x-4 text-sm text-slate-500 dark:text-slate-400 mt-2">
-              <span>Toplam: {messages.length} mesaj</span>
-              <span>•</span>
-              <span>Okunmamış: {messages.filter(m => !m.isRead).length}</span>
-              <span>•</span>
-              <span>Filtrelenen: {filteredMessages.length}</span>
-            </div>
-          </div>
+    <div className="space-y-6">
+      {/* Page Header */}
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+        <div>
+          <h1 className="text-2xl font-bold text-slate-900">Messages</h1>
+          <p className="text-slate-500 mt-1">Manage contact form messages</p>
         </div>
-
-        {/* Success/Error Messages */}
-        {success && (
-          <div className="bg-brand-primary-50 dark:bg-brand-primary-900/20 border border-brand-primary-200/60 dark:border-brand-primary-900/60 text-brand-primary-900 dark:text-brand-primary-400 p-4 rounded-xl shadow-sm">
-            {success}
-          </div>
-        )}
-
-        {error && (
-          <div className="bg-red-50 dark:bg-red-900/20 border border-red-200/60 dark:border-red-800/60 text-red-800 dark:text-red-400 p-4 rounded-xl shadow-sm">
-            {error}
-          </div>
-        )}
-
-        {/* Quick Stats */}
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
-          <div className="bg-white dark:bg-slate-800 p-6 rounded-xl shadow-sm border border-slate-200/60 dark:border-slate-700/60">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm font-medium text-slate-600 dark:text-slate-400">Toplam Mesaj</p>
-                <p className="text-2xl font-bold text-slate-900 dark:text-slate-100">{messages.length}</p>
-              </div>
-              <InboxIcon className="w-8 h-8 text-slate-400 dark:text-slate-500" />
-            </div>
-          </div>
-          
-          <div className="bg-white dark:bg-slate-800 p-6 rounded-xl shadow-sm border border-slate-200/60 dark:border-slate-700/60">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm font-medium text-slate-600 dark:text-slate-400">Okunmamış</p>
-                <p className="text-2xl font-bold text-blue-600 dark:text-blue-400">{messages.filter(m => !m.isRead).length}</p>
-              </div>
-              <EnvelopeIcon className="w-8 h-8 text-blue-400 dark:text-blue-500" />
-            </div>
-          </div>
-          
-          <div className="bg-white dark:bg-slate-800 p-6 rounded-xl shadow-sm border border-slate-200/60 dark:border-slate-700/60">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm font-medium text-slate-600 dark:text-slate-400">Yanıtlanan</p>
-                <p className="text-2xl font-bold text-brand-primary-700 dark:text-brand-primary-400">{messages.filter(m => m.status === 'replied').length}</p>
-              </div>
-              <CheckIcon className="w-8 h-8 text-brand-primary-400 dark:text-brand-primary-600" />
-            </div>
-          </div>
-          
-          <div className="bg-white dark:bg-slate-800 p-6 rounded-xl shadow-sm border border-slate-200/60 dark:border-slate-700/60">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm font-medium text-slate-600 dark:text-slate-400">Acil</p>
-                <p className="text-2xl font-bold text-red-600 dark:text-red-400">{messages.filter(m => m.urgency === 'high').length}</p>
-              </div>
-              <ExclamationTriangleIcon className="w-8 h-8 text-red-400 dark:text-red-500" />
-            </div>
-          </div>
-        </div>
-
-        {/* Filters */}
-        <div className="bg-white dark:bg-slate-800 rounded-xl p-6 shadow-sm border border-slate-200/60 dark:border-slate-700/60">
-          <div className="flex flex-col lg:flex-row gap-4">
-            
-            {/* Search */}
-            <div className="flex-1">
-              <div className="relative">
-                <MagnifyingGlassIcon className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-slate-400 dark:text-slate-500" />
-                <input
-                  type="text"
-                  placeholder="Mesaj ara..."
-                  value={searchTerm}
-                  onChange={(e) => setSearchTerm(e.target.value)}
-                  className="w-full bg-slate-50/80 dark:bg-slate-700/80 border border-slate-200/60 dark:border-slate-600/60 rounded-xl pl-10 pr-4 py-3 text-slate-900 dark:text-slate-100 placeholder-slate-500 dark:placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-brand-primary-600 focus:border-transparent transition-all duration-200"
-                />
-              </div>
-            </div>
-
-            {/* Filters */}
-            <div className="flex items-center space-x-4">
-              <div className="flex items-center space-x-2">
-                <FunnelIcon className="w-5 h-5 text-slate-500 dark:text-slate-400" />
-                <select
-                  value={statusFilter}
-                  onChange={(e) => setStatusFilter(e.target.value)}
-                  className="bg-slate-50/80 dark:bg-slate-700/80 border border-slate-200/60 dark:border-slate-600/60 rounded-xl px-4 py-3 text-slate-900 dark:text-slate-100 focus:outline-none focus:ring-2 focus:ring-brand-primary-600 focus:border-transparent transition-all duration-200"
-                >
-                  <option value="all">Tüm Durumlar</option>
-                  <option value="new">Yeni</option>
-                  <option value="read">Okunmuş</option>
-                  <option value="replied">Yanıtlanmış</option>
-                  <option value="closed">Kapalı</option>
-                </select>
-              </div>
-
-              <select
-                value={urgencyFilter}
-                onChange={(e) => setUrgencyFilter(e.target.value)}
-                className="bg-slate-50/80 dark:bg-slate-700/80 border border-slate-200/60 dark:border-slate-600/60 rounded-xl px-4 py-3 text-slate-900 dark:text-slate-100 focus:outline-none focus:ring-2 focus:ring-brand-primary-600 focus:border-transparent transition-all duration-200"
-              >
-                <option value="all">Tüm Aciliyetler</option>
-                <option value="low">Düşük</option>
-                <option value="medium">Orta</option>
-                <option value="high">Yüksek</option>
-              </select>
-            </div>
-          </div>
-        </div>
-
-        {/* Messages List */}
-        <div className="bg-white dark:bg-slate-800 rounded-xl shadow-sm border border-slate-200/60 dark:border-slate-700/60">
-          <div className="p-6 border-b border-slate-200/60 dark:border-slate-700/60">
-            <h3 className="text-lg font-semibold text-slate-900 dark:text-slate-100">Mesajlar</h3>
-          </div>
-          
-          <div className="divide-y divide-slate-200/60 dark:divide-slate-700/60">
-            {filteredMessages.length === 0 ? (
-              <div className="p-12 text-center">
-                <InboxIcon className="w-12 h-12 text-slate-400 dark:text-slate-500 mx-auto mb-4" />
-                <p className="text-slate-600 dark:text-slate-400 text-lg">Mesaj bulunamadı</p>
-                <p className="text-slate-500 dark:text-slate-500 mt-2">Farklı filtreler deneyebilirsiniz</p>
-              </div>
-            ) : (
-              filteredMessages.map((message) => (
-                <div key={message._id} className="p-6 hover:bg-slate-50/80 dark:hover:bg-slate-700/50 transition-all duration-200 group">
-                  <div className="flex items-start justify-between">
-                    <div className="flex-1 min-w-0">
-                      <div className="flex items-center space-x-3 mb-2">
-                        <h4 className={`text-lg font-semibold ${!message.isRead ? 'text-slate-900 dark:text-slate-100' : 'text-slate-700 dark:text-slate-300'}`}>
-                          {message.name}
-                        </h4>
-                        <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${getStatusColor(message.status)}`}>
-                          {message.status === 'new' && 'Yeni'}
-                          {message.status === 'read' && 'Okunmuş'}
-                          {message.status === 'replied' && 'Yanıtlanmış'}
-                          {message.status === 'closed' && 'Kapalı'}
-                        </span>
-                        <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${getUrgencyColor(message.urgency)}`}>
-                          {message.urgency === 'low' && 'Düşük'}
-                          {message.urgency === 'medium' && 'Orta'}
-                          {message.urgency === 'high' && 'Yüksek'}
-                        </span>
-                        {!message.isRead && (
-                          <span className="w-2 h-2 bg-blue-500 rounded-full"></span>
-                        )}
-                      </div>
-                      
-                      <p className="text-slate-600 dark:text-slate-400 mb-2 font-medium">{message.subject}</p>
-                      <p className="text-slate-600 dark:text-slate-400 mb-3 line-clamp-2">{message.message}</p>
-                      
-                      <div className="flex items-center space-x-4 text-sm text-slate-500 dark:text-slate-500">
-                        <span className="flex items-center space-x-1">
-                          <EnvelopeIcon className="w-4 h-4" />
-                          <span>{message.email}</span>
-                        </span>
-                        {message.phone && (
-                          <span className="flex items-center space-x-1">
-                            <PhoneIcon className="w-4 h-4" />
-                            <span>{message.phone}</span>
-                          </span>
-                        )}
-                        {message.company && (
-                          <span className="flex items-center space-x-1">
-                            <BuildingOfficeIcon className="w-4 h-4" />
-                            <span>{message.company}</span>
-                          </span>
-                        )}
-                        <span className="flex items-center space-x-1">
-                          <ClockIcon className="w-4 h-4" />
-                          <span>{formatDate(message.createdAt)}</span>
-                        </span>
-                      </div>
-                    </div>
-                    
-                    {/* Actions */}
-                    <div className="flex items-center space-x-2 ml-4">
-                      <button
-                        onClick={() => handleViewMessage(message)}
-                        className="p-2 text-slate-600 dark:text-slate-400 hover:text-blue-600 dark:hover:text-blue-400 hover:bg-blue-50 dark:hover:bg-blue-900/20 rounded-lg transition-colors"
-                        title="Görüntüle"
-                      >
-                        <EyeIcon className="w-5 h-5" />
-                      </button>
-                      <button
-                        onClick={() => handleDeleteMessage(message._id)}
-                        className="p-2 text-slate-600 dark:text-slate-400 hover:text-red-600 dark:hover:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-lg transition-colors"
-                        title="Sil"
-                      >
-                        <TrashIcon className="w-5 h-5" />
-                      </button>
-                    </div>
-                  </div>
-                </div>
-              ))
-            )}
-          </div>
+        <div className="flex items-center space-x-2">
+          <span className="text-sm text-slate-600">
+            {messages.filter(m => m.status === 'unread').length} unread
+          </span>
         </div>
       </div>
 
-      {/* Message Detail Modal */}
-      {showMessageModal && selectedMessage && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
-                      <div className="bg-white dark:bg-slate-800 rounded-xl max-w-2xl w-full max-h-[90vh] overflow-hidden shadow-2xl border border-slate-200/60 dark:border-slate-700/60">
-            <div className="p-6 border-b border-slate-200/60 dark:border-slate-700/60">
-              <div className="flex items-center justify-between">
-                <h3 className="text-lg font-semibold text-slate-900 dark:text-slate-100">Mesaj Detayı</h3>
-                <button
-                  onClick={() => setShowMessageModal(false)}
-                  className="p-2 hover:bg-slate-100 dark:hover:bg-slate-700 rounded-lg transition-colors"
-                >
-                  <XMarkIcon className="w-5 h-5 text-slate-900 dark:text-slate-100" />
-                </button>
-              </div>
-            </div>
-            
-            <div className="p-6 overflow-y-auto">
-              <div className="space-y-4">
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  <div>
-                    <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">İsim</label>
-                    <p className="text-slate-900 dark:text-slate-100">{selectedMessage.name}</p>
-                  </div>
-                  <div>
-                    <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">E-posta</label>
-                    <p className="text-slate-900 dark:text-slate-100">{selectedMessage.email}</p>
-                  </div>
-                  {selectedMessage.phone && (
-                    <div>
-                      <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">Telefon</label>
-                      <p className="text-slate-900 dark:text-slate-100">{selectedMessage.phone}</p>
-                    </div>
-                  )}
-                  {selectedMessage.company && (
-                    <div>
-                      <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">Şirket</label>
-                      <p className="text-slate-900 dark:text-slate-100">{selectedMessage.company}</p>
-                    </div>
-                  )}
-                </div>
-                
-                <div>
-                  <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">Konu</label>
-                  <p className="text-slate-900 dark:text-slate-100">{selectedMessage.subject}</p>
-                </div>
-                
-                <div>
-                  <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">Mesaj</label>
-                  <div className="bg-slate-50 dark:bg-slate-700 p-4 rounded-lg">
-                    <p className="text-slate-900 dark:text-slate-100 whitespace-pre-wrap">{selectedMessage.message}</p>
-                  </div>
-                </div>
-                
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                  <div>
-                    <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">Proje Türü</label>
-                    <p className="text-slate-900 dark:text-slate-100">{selectedMessage.projectType}</p>
-                  </div>
-                  <div>
-                    <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">Bütçe</label>
-                    <p className="text-slate-900 dark:text-slate-100">{selectedMessage.budget}</p>
-                  </div>
-                  <div>
-                    <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">Aciliyet</label>
-                    <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${getUrgencyColor(selectedMessage.urgency)}`}>
-                      {selectedMessage.urgency === 'low' && 'Düşük'}
-                      {selectedMessage.urgency === 'medium' && 'Orta'}
-                      {selectedMessage.urgency === 'high' && 'Yüksek'}
-                    </span>
-                  </div>
-                </div>
-                
-                <div>
-                  <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">Tarih</label>
-                  <p className="text-slate-900 dark:text-slate-100">{formatDate(selectedMessage.createdAt)}</p>
-                </div>
-              </div>
-            </div>
-            
-            <div className="p-6 border-t border-slate-200/60 dark:border-slate-700/60">
-              <div className="flex justify-between">
-                <div className="flex space-x-2">
-                  <button
-                    onClick={() => handleUpdateStatus(selectedMessage._id, 'replied')}
-                    className="bg-brand-primary-700 hover:bg-brand-primary-800 text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors"
-                  >
-                    Yanıtlandı Olarak İşaretle
-                  </button>
-                  <button
-                    onClick={() => handleUpdateStatus(selectedMessage._id, 'closed')}
-                    className="bg-gray-600 hover:bg-gray-700 text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors"
-                  >
-                    Kapat
-                  </button>
-                </div>
-                <button
-                  onClick={() => setShowMessageModal(false)}
-                  className="bg-slate-600 hover:bg-slate-700 text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors"
-                >
-                  Kapat
-                </button>
-              </div>
-            </div>
+      {/* Search and Filter Bar */}
+      <div className="bg-white rounded-2xl shadow-sm border border-slate-200/60 p-4">
+        <div className="flex flex-col sm:flex-row gap-4">
+          <div className="flex-1 relative">
+            <MagnifyingGlassIcon className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-400" />
+            <input
+              type="text"
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              placeholder="Search messages..."
+              className="w-full pl-12 pr-4 py-3 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all"
+            />
+          </div>
+          <div className="flex space-x-2 bg-slate-100 p-1 rounded-xl">
+            <button
+              onClick={() => setStatusFilter('all')}
+              className={`px-4 py-2 rounded-lg text-sm font-medium transition-all ${statusFilter === 'all'
+                ? 'bg-white text-indigo-600 shadow-sm'
+                : 'text-slate-600 hover:text-slate-900'
+                }`}
+            >
+              All ({messages.length})
+            </button>
+            <button
+              onClick={() => setStatusFilter('unread')}
+              className={`px-4 py-2 rounded-lg text-sm font-medium transition-all ${statusFilter === 'unread'
+                ? 'bg-white text-indigo-600 shadow-sm'
+                : 'text-slate-600 hover:text-slate-900'
+                }`}
+            >
+              Unread ({messages.filter(m => m.status === 'unread').length})
+            </button>
+            <button
+              onClick={() => setStatusFilter('read')}
+              className={`px-4 py-2 rounded-lg text-sm font-medium transition-all ${statusFilter === 'read'
+                ? 'bg-white text-indigo-600 shadow-sm'
+                : 'text-slate-600 hover:text-slate-900'
+                }`}
+            >
+              Read ({messages.filter(m => m.status === 'read').length})
+            </button>
           </div>
         </div>
-      )}
-    </AdminLayout>
+
+        {/* Bulk Actions */}
+        {selectedMessages.size > 0 && (
+          <div className="flex items-center justify-between mt-4 pt-4 border-t border-slate-200">
+            <p className="text-sm text-slate-600">
+              {selectedMessages.size} message(s) selected
+            </p>
+            <button
+              onClick={handleBulkDelete}
+              className="flex items-center px-4 py-2 bg-red-100 text-red-700 rounded-lg hover:bg-red-200 transition-colors"
+            >
+              <TrashIcon className="w-4 h-4 mr-2" />
+              Delete Selected
+            </button>
+          </div>
+        )}
+      </div>
+
+      {/* Messages List */}
+      <div className="bg-white rounded-2xl shadow-sm border border-slate-200/60 overflow-hidden">
+        {filteredMessages.length > 0 ? (
+          <div className="divide-y divide-slate-200">
+            {filteredMessages.map((message) => (
+              <div
+                key={message._id}
+                className={`p-6 hover:bg-slate-50 transition-colors cursor-pointer ${message.status === 'unread' ? 'bg-indigo-50/50' : ''
+                  }`}
+                onClick={() => handleMarkAsRead(message._id)}
+              >
+                <div className="flex items-start space-x-4">
+                  <div className="flex-shrink-0">
+                    <input
+                      type="checkbox"
+                      checked={selectedMessages.has(message._id)}
+                      onChange={(e) => {
+                        e.stopPropagation();
+                        const newSelected = new Set(selectedMessages);
+                        if (newSelected.has(message._id)) {
+                          newSelected.delete(message._id);
+                        } else {
+                          newSelected.add(message._id);
+                        }
+                        setSelectedMessages(newSelected);
+                      }}
+                      className="w-5 h-5 text-indigo-600 border-slate-300 rounded focus:ring-indigo-500"
+                    />
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <div className="flex items-start justify-between mb-2">
+                      <div className="flex items-center space-x-3">
+                        <div className="w-10 h-10 rounded-full bg-gradient-to-br from-indigo-500 to-violet-600 flex items-center justify-center text-white font-semibold">
+                          {message.name.charAt(0).toUpperCase()}
+                        </div>
+                        <div>
+                          <h3 className="text-sm font-semibold text-slate-900">
+                            {message.name}
+                          </h3>
+                          <div className="flex items-center space-x-2 text-xs text-slate-500">
+                            <EnvelopeIcon className="w-3 h-3" />
+                            <span className="truncate">{message.email}</span>
+                          </div>
+                        </div>
+                      </div>
+                      <div className="flex items-center space-x-2">
+                        {message.status === 'unread' && (
+                          <span className="w-2 h-2 rounded-full bg-indigo-600"></span>
+                        )}
+                        <div className="flex items-center space-x-1 text-xs text-slate-500">
+                          <ClockIcon className="w-3 h-3" />
+                          <span>{formatDate(message.createdAt)}</span>
+                        </div>
+                      </div>
+                    </div>
+                    <h4 className="text-sm font-medium text-slate-900 mb-2">
+                      {message.subject}
+                    </h4>
+                    <p className="text-sm text-slate-600 line-clamp-2">
+                      {message.message}
+                    </p>
+                  </div>
+                  <div className="flex-shrink-0">
+                    <button
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        handleDelete(message._id);
+                      }}
+                      className="p-2 hover:bg-red-100 rounded-lg transition-colors"
+                      title="Delete"
+                    >
+                      <TrashIcon className="w-4 h-4 text-slate-600" />
+                    </button>
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+        ) : (
+          <div className="text-center py-16">
+            <ChatBubbleLeftRightIcon className="w-16 h-16 text-slate-300 mx-auto mb-4" />
+            <h3 className="text-xl font-semibold text-slate-900 mb-2">No messages found</h3>
+            <p className="text-slate-500">
+              {searchQuery || statusFilter !== 'all'
+                ? 'Try adjusting your search or filter'
+                : 'No messages received yet'
+              }
+            </p>
+          </div>
+        )}
+      </div>
+    </div>
   );
 }
-
-export default function AdminMessagesPage() {
-  return (
-    <Suspense fallback={
-      <div className="min-h-screen bg-slate-50 dark:bg-slate-900 flex items-center justify-center">
-        <div className="text-center">
-          <div className="w-16 h-16 border-4 border-brand-primary-600/30 border-t-brand-primary-600 rounded-full animate-spin mx-auto mb-4"></div>
-          <p className="text-slate-600 dark:text-slate-400 text-lg">Mesajlar yükleniyor...</p>
-        </div>
-      </div>
-    }>
-      <AdminMessagesContent />
-    </Suspense>
-  );
-} 

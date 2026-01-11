@@ -1,681 +1,308 @@
 'use client';
+
 import { useState, useEffect } from 'react';
 import { useSession } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
-import Image from 'next/image';
-import AdminLayout from '../../../components/admin/AdminLayout';
-import ImageUpload from '../../../components/ImageUpload';
-import { 
+import {
   PhotoIcon,
-  CheckIcon,
-  ExclamationTriangleIcon,
   PlusIcon,
+  MagnifyingGlassIcon,
   PencilIcon,
   TrashIcon,
-  PlayIcon,
-  PauseIcon,
-  XMarkIcon,
-
-  ClockIcon,
-  LinkIcon,
-  ArrowsUpDownIcon
+  EyeIcon,
+  ArrowUpIcon,
+  ArrowDownIcon
 } from '@heroicons/react/24/outline';
 
-interface Slider {
+interface SliderItem {
   _id: string;
   title: string;
-  subtitle: string;
+  image: string;
+  link?: string;
   description: string;
-  buttonText: string;
-  buttonLink: string;
-  badge: string;
-  imageType: 'upload' | 'url';
-  imageUrl: string;
-  isActive: boolean;
   order: number;
-  duration: number;
+  status: 'active' | 'inactive';
   createdAt: string;
-  updatedAt: string;
 }
 
 export default function AdminSliderPage() {
   const { data: session, status } = useSession();
   const router = useRouter();
-  
-  const [sliders, setSliders] = useState<Slider[]>([]);
   const [loading, setLoading] = useState(true);
-  const [showModal, setShowModal] = useState(false);
-  const [modalMode, setModalMode] = useState<'create' | 'edit'>('create');
-  const [editingSlider, setEditingSlider] = useState<Slider | null>(null);
-  const [success, setSuccess] = useState('');
-  const [error, setError] = useState('');
-  const [submitting, setSubmitting] = useState(false);
-  
-  // Form state
-  const [formData, setFormData] = useState({
-    title: '',
-    subtitle: '',
-    description: '',
-    buttonText: 'Daha Fazla',
-    buttonLink: '/contact',
-    badge: 'Yenilik',
-    imageType: 'upload' as 'upload' | 'url',
-    imageUrl: '',
-    order: 0,
-    duration: 5000,
-    isActive: true
-  });
+  const [sliders, setSliders] = useState<SliderItem[]>([]);
+  const [searchQuery, setSearchQuery] = useState('');
+  const [statusFilter, setStatusFilter] = useState<'all' | 'active' | 'inactive'>('all');
 
-  // Auth check
   useEffect(() => {
     if (status === 'loading') return;
-    
+
     if (status === 'unauthenticated') {
       router.push('/admin/login');
-    } else if (status === 'authenticated' && session?.user?.role !== 'admin') {
-      router.push('/');
+      return;
     }
-  }, [status, session, router]);
 
-  // Fetch sliders
-  useEffect(() => {
-    const fetchSliders = async () => {
-      try {
-        const response = await fetch('/api/admin/slider');
-        if (response.ok) {
-          const data = await response.json();
-          setSliders(data);
-        } else {
-          throw new Error('Sliderlar yüklenirken hata oluştu');
-        }
-      } catch (error) {
-        console.error('Sliders fetch error:', error);
-        setError('Sliderlar yüklenirken hata oluştu');
-      } finally {
-        setLoading(false);
-      }
-    };
+    loadSliders();
+  }, [status, router]);
 
-    if (status === 'authenticated') {
-      fetchSliders();
-    }
-  }, [status]);
-
-  const resetForm = () => {
-    setFormData({
-      title: '',
-      subtitle: '',
-      description: '',
-      buttonText: 'Daha Fazla',
-      buttonLink: '/contact',
-      badge: 'Yenilik',
-      imageType: 'upload' as 'upload' | 'url',
-      imageUrl: '',
-      order: sliders.length,
-      duration: 5000,
-      isActive: true
-    });
-    setEditingSlider(null);
-  };
-
-  const openCreateModal = () => {
-    resetForm();
-    setModalMode('create');
-    setShowModal(true);
-  };
-
-  const openEditModal = (slider: Slider) => {
-    setFormData({
-      title: slider.title,
-      subtitle: slider.subtitle,
-      description: slider.description,
-      buttonText: slider.buttonText,
-      buttonLink: slider.buttonLink,
-      badge: slider.badge,
-      imageType: slider.imageType,
-      imageUrl: slider.imageUrl,
-      order: slider.order,
-      duration: slider.duration,
-      isActive: slider.isActive
-    });
-    setEditingSlider(slider);
-    setModalMode('edit');
-    setShowModal(true);
-  };
-
-  const handleFormChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
-    const { name, value, type } = e.target;
-    setFormData(prev => ({
-      ...prev,
-      [name]: type === 'checkbox' ? (e.target as HTMLInputElement).checked : 
-              type === 'number' ? parseInt(value) || 0 : value
-    }));
-  };
-
-  // Image handling functions (reserved for future use)
-  // const handleImageChange = (imageUrl: string | string[]) => {
-  //   const url = Array.isArray(imageUrl) ? imageUrl[0] : imageUrl;
-  //   setFormData(prev => ({
-  //     ...prev,
-  //     imageUrl: url,
-  //     imageType: 'upload'
-  //   }));
-  // };
-
-  // const handleImageRemove = () => {
-  //   setFormData(prev => ({
-  //     ...prev,
-  //     imageUrl: '',
-  //     imageType: 'upload'
-  //   }));
-  // };
-
-  const handleDurationChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const seconds = parseInt(e.target.value) || 5;
-    setFormData(prev => ({
-      ...prev,
-      duration: seconds * 1000
-    }));
-  };
-
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setSubmitting(true);
-    setError('');
-
+  const loadSliders = async () => {
     try {
-      const url = modalMode === 'create' ? '/api/admin/slider' : `/api/admin/slider/${editingSlider?._id}`;
-      const method = modalMode === 'create' ? 'POST' : 'PUT';
-      
-      const response = await fetch(url, {
-        method,
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(formData),
-      });
-
-      if (!response.ok) {
-        throw new Error('İşlem başarısız');
+      const response = await fetch('/api/admin/slider');
+      if (response.ok) {
+        const data = await response.json();
+        setSliders(data);
       }
-
-      const data = await response.json();
-      
-      if (modalMode === 'create') {
-        setSliders(prev => [...prev, data]);
-      } else {
-        setSliders(prev => prev.map(s => s._id === editingSlider?._id ? data : s));
-      }
-      
-      setSuccess(modalMode === 'create' ? 'Slider başarıyla eklendi!' : 'Slider başarıyla güncellendi!');
-      setShowModal(false);
-      resetForm();
-      
-      setTimeout(() => setSuccess(''), 3000);
-    } catch {
-      setError('İşlem başarısız oldu');
+    } catch (error) {
+      console.error('Error loading sliders:', error);
     } finally {
-      setSubmitting(false);
+      setLoading(false);
     }
   };
 
-  const handleDelete = async (id: string) => {
-    if (!confirm('Bu slider\'ı silmek istediğinizden emin misiniz?')) return;
+  const handleDelete = async (sliderId: string) => {
+    if (!confirm('Are you sure you want to delete this slider?')) return;
 
     try {
-      const response = await fetch(`/api/admin/slider/${id}`, {
+      const response = await fetch(`/api/admin/slider/${sliderId}`, {
         method: 'DELETE',
       });
 
-      if (!response.ok) {
-        throw new Error('Silme işlemi başarısız');
+      if (response.ok) {
+        setSliders(sliders.filter(slider => slider._id !== sliderId));
       }
-
-      setSliders(prev => prev.filter(s => s._id !== id));
-      setSuccess('Slider başarıyla silindi!');
-      setTimeout(() => setSuccess(''), 3000);
-    } catch {
-      setError('Silme işlemi başarısız oldu');
+    } catch (error) {
+      console.error('Error deleting slider:', error);
     }
   };
 
-  const toggleActive = async (slider: Slider) => {
+  const handleToggleStatus = async (sliderId: string) => {
     try {
-      const response = await fetch(`/api/admin/slider/${slider._id}`, {
-        method: 'PUT',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          ...slider,
-          isActive: !slider.isActive
-        }),
+      const slider = sliders.find(s => s._id === sliderId);
+      if (!slider) return;
+
+      const response = await fetch(`/api/admin/slider/${sliderId}`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ status: slider.status === 'active' ? 'inactive' : 'active' }),
       });
 
-      if (!response.ok) {
-        throw new Error('Güncelleme başarısız');
+      if (response.ok) {
+        setSliders(sliders.map(s =>
+          s._id === sliderId ? { ...s, status: s.status === 'active' ? 'inactive' : 'active' } : s
+        ));
       }
-
-      const data = await response.json();
-      setSliders(prev => prev.map(s => s._id === slider._id ? data : s));
-      
-    } catch {
-      setError('Durum güncellenemedi');
+    } catch (error) {
+      console.error('Error toggling slider status:', error);
     }
   };
+
+  const handleReorder = async (sliderId: string, direction: 'up' | 'down') => {
+    const index = sliders.findIndex(s => s._id === sliderId);
+    if (index === -1) return;
+
+    const newIndex = direction === 'up' ? index - 1 : index + 1;
+    if (newIndex < 0 || newIndex >= sliders.length) return;
+
+    const newSliders = [...sliders];
+    const moved = newSliders.splice(index, 1)[0];
+    newSliders.splice(newIndex, 0, moved);
+
+    try {
+      await fetch('/api/admin/slider/reorder', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ sliders: newSliders.map(s => s._id) }),
+      });
+      setSliders(newSliders);
+    } catch (error) {
+      console.error('Error reordering sliders:', error);
+    }
+  };
+
+  const filteredSliders = sliders.filter(slider => {
+    const matchesSearch = slider.title.toLowerCase().includes(searchQuery.toLowerCase());
+    const matchesStatus = statusFilter === 'all' || slider.status === statusFilter;
+    return matchesSearch && matchesStatus;
+  });
 
   if (status === 'loading' || loading) {
     return (
-      <AdminLayout>
-        <div className="flex items-center justify-center min-h-[400px]">
-          <div className="flex flex-col items-center space-y-4">
-            <div className="flex flex-col items-center space-y-4">
-              <div className="w-12 h-12 border-4 border-brand-primary-700 border-t-transparent rounded-full animate-spin"></div>
-              <p className="text-slate-600">Slider yükleniyor...</p>
-            </div>
+      <div className="flex items-center justify-center min-h-[60vh]">
+        <div className="flex flex-col items-center space-y-4">
+          <div className="relative">
+            <div className="w-16 h-16 border-4 border-indigo-200 rounded-full"></div>
+            <div className="absolute top-0 left-0 w-16 h-16 border-4 border-transparent border-t-indigo-600 rounded-full animate-spin"></div>
           </div>
+          <p className="text-lg font-medium text-slate-600">Loading sliders...</p>
         </div>
-      </AdminLayout>
+      </div>
     );
   }
 
-  if (status !== 'authenticated' || session?.user?.role !== 'admin') {
-    return null;
-  }
-
   return (
-    <AdminLayout 
-      title="Slider Yönetimi"
-      breadcrumbs={[
-        { label: 'Dashboard', href: '/admin/dashboard' },
-        { label: 'Slider Yönetimi' }
-      ]}
-    >
-      <div className="space-y-6">
-        
-        {/* Header Actions */}
-        <div className="flex items-center justify-between">
-          <div>
-            <p className="text-slate-600">Ana sayfa slider içeriklerini yönetin</p>
-          </div>
-          <button
-            onClick={openCreateModal}
-            className="flex items-center space-x-2 px-6 py-3 bg-brand-primary-700 hover:bg-brand-primary-800 text-white rounded-xl font-semibold transition-all duration-200 shadow-sm"
-          >
-            <PlusIcon className="w-4 h-4" />
-            <span>Yeni Slider</span>
-          </button>
+    <div className="space-y-6">
+      {/* Page Header */}
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+        <div>
+          <h1 className="text-2xl font-bold text-slate-900">Slider</h1>
+          <p className="text-slate-500 mt-1">Manage your homepage slider</p>
         </div>
-
-        {/* Success/Error Messages */}
-        {success && (
-          <div key="success-message" className="bg-brand-primary-50 border border-brand-primary-200 text-brand-primary-900 p-4 rounded-xl flex items-center space-x-3">
-            <CheckIcon className="w-5 h-5" />
-            <span>{success}</span>
-          </div>
-        )}
-
-        {error && (
-          <div key="error-message" className="bg-red-50 border border-red-200 text-red-800 p-4 rounded-xl flex items-center space-x-3">
-            <ExclamationTriangleIcon className="w-5 h-5" />
-            <span>{error}</span>
-          </div>
-        )}
-
-        {/* Slider Stats */}
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
-          <div key="total-sliders" className="bg-white rounded-xl p-6 shadow-sm border border-slate-200">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm font-medium text-slate-600">Toplam Slider</p>
-                <p className="text-2xl font-bold text-slate-900">{sliders.length}</p>
-              </div>
-              <PhotoIcon className="w-8 h-8 text-brand-primary-700" />
-            </div>
-          </div>
-          
-          <div key="active-sliders" className="bg-white rounded-xl p-6 shadow-sm border border-slate-200">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm font-medium text-slate-600">Aktif Slider</p>
-                <p className="text-2xl font-bold text-slate-900">{sliders.filter(s => s.isActive).length}</p>
-              </div>
-              <PlayIcon className="w-8 h-8 text-brand-primary-700" />
-            </div>
-          </div>
-          
-          <div key="inactive-sliders" className="bg-white rounded-xl p-6 shadow-sm border border-slate-200">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm font-medium text-slate-600">Pasif Slider</p>
-                <p className="text-2xl font-bold text-slate-900">{sliders.filter(s => !s.isActive).length}</p>
-              </div>
-              <PauseIcon className="w-8 h-8 text-orange-600" />
-            </div>
-          </div>
-          
-          <div key="average-duration" className="bg-white rounded-xl p-6 shadow-sm border border-slate-200">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm font-medium text-slate-600">Ortalama Süre</p>
-                <p className="text-2xl font-bold text-slate-900">
-                  {sliders.length > 0 ? Math.round(sliders.reduce((acc, s) => acc + s.duration, 0) / sliders.length / 1000) : 0}s
-                </p>
-              </div>
-              <ClockIcon className="w-8 h-8 text-blue-600" />
-            </div>
-          </div>
-        </div>
-
-        {/* Slider List */}
-        <div className="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden">
-          <div className="px-6 py-4 border-b border-slate-200">
-            <h3 className="text-lg font-semibold text-slate-900">Slider Listesi</h3>
-          </div>
-          
-          {sliders.length === 0 ? (
-            <div className="text-center py-12">
-              <PhotoIcon className="w-12 h-12 text-slate-400 mx-auto mb-4" />
-              <p className="text-slate-600">Henüz slider eklenmemiş</p>
-              <p className="text-sm text-slate-500 mt-1">İlk slider&apos;ınızı eklemek için yukarıdaki butonu kullanın</p>
-            </div>
-          ) : (
-            <div className="divide-y divide-slate-200">
-              {sliders
-                .sort((a, b) => a.order - b.order)
-                .map((slider) => (
-                <div key={slider._id} className="p-6 hover:bg-slate-50 transition-colors">
-                  <div className="flex items-start space-x-4">
-                    {/* Image */}
-                    <div className="flex-shrink-0">
-                      <div className="w-20 h-20 bg-slate-100 rounded-xl overflow-hidden">
-                        {slider.imageUrl ? (
-                          <Image
-                            src={slider.imageUrl}
-                            alt={slider.title}
-                            width={80}
-                            height={80}
-                            className="w-full h-full object-cover"
-                          />
-                        ) : (
-                          <div className="w-full h-full flex items-center justify-center">
-                            <PhotoIcon className="w-8 h-8 text-slate-400" />
-                          </div>
-                        )}
-                      </div>
-                    </div>
-                    
-                    {/* Content */}
-                    <div className="flex-1 min-w-0">
-                      <div className="flex items-start justify-between">
-                        <div className="flex-1">
-                          <div className="flex items-center space-x-2 mb-1">
-                            <h4 className="text-lg font-semibold text-slate-900">{slider.title}</h4>
-                            {slider.badge && (
-                              <span key={`badge-${slider._id}`} className="bg-brand-primary-100 text-brand-primary-900 px-2 py-1 rounded-full text-xs font-medium">
-                                {slider.badge}
-                              </span>
-                            )}
-                          </div>
-                          <p className="text-slate-600 mb-2">{slider.subtitle}</p>
-                          <p className="text-sm text-slate-500 line-clamp-2">{slider.description}</p>
-                          
-                          <div className="flex items-center space-x-4 mt-3 text-sm text-slate-500">
-                            <div key={`duration-${slider._id}`} className="flex items-center space-x-1">
-                              <ClockIcon className="w-4 h-4" />
-                              <span>{slider.duration / 1000}s</span>
-                            </div>
-                            <div key={`order-${slider._id}`} className="flex items-center space-x-1">
-                              <ArrowsUpDownIcon className="w-4 h-4" />
-                              <span>Sıra: {slider.order + 1}</span>
-                            </div>
-                            {slider.buttonLink && (
-                              <div key={`button-info-${slider._id}`} className="flex items-center space-x-1">
-                                <LinkIcon className="w-4 h-4" />
-                                <span>{slider.buttonText}</span>
-                              </div>
-                            )}
-                          </div>
-                        </div>
-                        
-                        {/* Actions */}
-                        <div className="flex items-center space-x-3">
-                          {/* Status Toggle */}
-                          <button
-                            key={`toggle-${slider._id}`}
-                            onClick={() => toggleActive(slider)}
-                            className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors ${
-                              slider.isActive ? 'bg-brand-primary-700' : 'bg-slate-200'
-                            }`}
-                          >
-                            <span
-                              className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform ${
-                                slider.isActive ? 'translate-x-6' : 'translate-x-1'
-                              }`}
-                            />
-                          </button>
-                          
-                          {/* Edit Button */}
-                          <button
-                            key={`edit-${slider._id}`}
-                            onClick={() => openEditModal(slider)}
-                            className="p-2 text-slate-500 hover:text-slate-700 transition-colors"
-                          >
-                            <PencilIcon className="w-4 h-4" />
-                          </button>
-                          
-                          {/* Delete Button */}
-                          <button
-                            key={`delete-${slider._id}`}
-                            onClick={() => handleDelete(slider._id)}
-                            className="p-2 text-red-500 hover:text-red-700 transition-colors"
-                          >
-                            <TrashIcon className="w-4 h-4" />
-                          </button>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              ))}
-            </div>
-          )}
-        </div>
-
-        {/* Modal */}
-        {showModal && (
-          <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
-            <div className="bg-white rounded-xl max-w-2xl w-full max-h-[90vh] overflow-y-auto">
-              <div className="p-6 border-b border-slate-200">
-                <div className="flex items-center justify-between">
-                  <h3 className="text-lg font-semibold text-slate-900">
-                    {modalMode === 'create' ? 'Yeni Slider Ekle' : 'Slider Düzenle'}
-                  </h3>
-                  <button
-                    onClick={() => setShowModal(false)}
-                    className="p-2 text-slate-500 hover:text-slate-700 transition-colors"
-                  >
-                    <XMarkIcon className="w-5 h-5" />
-                  </button>
-                </div>
-              </div>
-              
-              <form onSubmit={handleSubmit} className="p-6 space-y-6">
-                {/* Basic Information */}
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                  <div key="title-field">
-                    <label className="block text-sm font-medium text-slate-700 mb-2">
-                      Başlık *
-                    </label>
-                    <input
-                      type="text"
-                      name="title"
-                      value={formData.title}
-                      onChange={handleFormChange}
-                      className="w-full border border-slate-300 rounded-xl px-4 py-3 text-slate-900 focus:outline-none focus:ring-2 focus:ring-brand-primary-600 focus:border-transparent"
-                      placeholder="Slider başlığı"
-                      required
-                    />
-                  </div>
-                  
-                  <div key="subtitle-field">
-                    <label className="block text-sm font-medium text-slate-700 mb-2">
-                      Alt Başlık
-                    </label>
-                    <input
-                      type="text"
-                      name="subtitle"
-                      value={formData.subtitle}
-                      onChange={handleFormChange}
-                      className="w-full border border-slate-300 rounded-xl px-4 py-3 text-slate-900 focus:outline-none focus:ring-2 focus:ring-brand-primary-600 focus:border-transparent"
-                      placeholder="Alt başlık"
-                    />
-                  </div>
-                  
-                  <div key="badge-field">
-                    <label className="block text-sm font-medium text-slate-700 mb-2">
-                      Rozet
-                    </label>
-                    <input
-                      type="text"
-                      name="badge"
-                      value={formData.badge}
-                      onChange={handleFormChange}
-                      className="w-full border border-slate-300 rounded-xl px-4 py-3 text-slate-900 focus:outline-none focus:ring-2 focus:ring-brand-primary-600 focus:border-transparent"
-                      placeholder="Rozet metni"
-                    />
-                  </div>
-                  
-                  <div key="duration-field">
-                    <label className="block text-sm font-medium text-slate-700 mb-2">
-                      Süre (saniye)
-                    </label>
-                    <input
-                      type="number"
-                      value={formData.duration / 1000}
-                      onChange={handleDurationChange}
-                      className="w-full border border-slate-300 rounded-xl px-4 py-3 text-slate-900 focus:outline-none focus:ring-2 focus:ring-brand-primary-600 focus:border-transparent"
-                      min="1"
-                      max="60"
-                    />
-                  </div>
-                </div>
-                
-                <div>
-                  <label className="block text-sm font-medium text-slate-700 mb-2">
-                    Açıklama
-                  </label>
-                  <textarea
-                    name="description"
-                    value={formData.description}
-                    onChange={handleFormChange}
-                    rows={3}
-                    className="w-full border border-slate-300 rounded-xl px-4 py-3 text-slate-900 focus:outline-none focus:ring-2 focus:ring-brand-primary-600 focus:border-transparent"
-                    placeholder="Slider açıklaması"
-                  />
-                </div>
-                
-                {/* Button Settings */}
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                  <div key="button-text-field">
-                    <label className="block text-sm font-medium text-slate-700 mb-2">
-                      Buton Metni
-                    </label>
-                    <input
-                      type="text"
-                      name="buttonText"
-                      value={formData.buttonText}
-                      onChange={handleFormChange}
-                      className="w-full border border-slate-300 rounded-xl px-4 py-3 text-slate-900 focus:outline-none focus:ring-2 focus:ring-brand-primary-600 focus:border-transparent"
-                      placeholder="Buton metni"
-                    />
-                  </div>
-                  
-                  <div key="button-link-field">
-                    <label className="block text-sm font-medium text-slate-700 mb-2">
-                      Buton Linki
-                    </label>
-                    <input
-                      type="text"
-                      name="buttonLink"
-                      value={formData.buttonLink}
-                      onChange={handleFormChange}
-                      className="w-full border border-slate-300 rounded-xl px-4 py-3 text-slate-900 focus:outline-none focus:ring-2 focus:ring-brand-primary-600 focus:border-transparent"
-                      placeholder="/contact"
-                    />
-                  </div>
-                </div>
-                
-                {/* Image Upload */}
-                <div>
-                  <label className="block text-sm font-medium text-slate-700 mb-2">
-                    Slider Görseli
-                  </label>
-                  <ImageUpload
-                    label="Slider Görseli"
-                    value={formData.imageUrl}
-                    onChange={(url) => {
-                      const imageUrl = Array.isArray(url) ? url[0] : url;
-                      setFormData(prev => ({ ...prev, imageUrl }));
-                    }}
-                    pageContext="slider"
-                    showUrlInput={true}
-                  />
-                </div>
-                
-                {/* Settings */}
-                <div className="flex items-center space-x-3">
-                  <input
-                    type="checkbox"
-                    id="isActive"
-                    name="isActive"
-                    checked={formData.isActive}
-                    onChange={handleFormChange}
-                    className="w-5 h-5 text-brand-primary-700 border-slate-300 rounded focus:ring-brand-primary-600"
-                  />
-                  <label htmlFor="isActive" className="text-sm font-medium text-slate-700">
-                    Aktif slider
-                  </label>
-                </div>
-                
-                {/* Submit Buttons */}
-                <div className="flex items-center justify-end space-x-3 pt-6 border-t border-slate-200">
-                  <button
-                    key="cancel-button"
-                    type="button"
-                    onClick={() => setShowModal(false)}
-                    className="px-6 py-3 border border-slate-300 text-slate-700 rounded-xl hover:bg-slate-50 transition-colors"
-                  >
-                    İptal
-                  </button>
-                  <button
-                    key="submit-button"
-                    type="submit"
-                    disabled={submitting}
-                    className={`flex items-center space-x-2 px-6 py-3 rounded-xl font-semibold transition-all duration-200 ${
-                      submitting
-                        ? 'bg-slate-400 cursor-not-allowed text-white'
-                        : 'bg-brand-primary-700 hover:bg-brand-primary-800 text-white shadow-sm'
-                    }`}
-                  >
-                    {submitting ? (
-                      <>
-                        <div className="w-4 h-4 border-4 border-white border-t-transparent rounded-full animate-spin"></div>
-                        <span>Kaydediliyor...</span>
-                      </>
-                    ) : (
-                      <>
-                        <CheckIcon key="submit-icon" className="w-4 h-4" />
-                        <span key="submit-text">{modalMode === 'create' ? 'Oluştur' : 'Güncelle'}</span>
-                      </>
-                    )}
-                  </button>
-                </div>
-              </form>
-            </div>
-          </div>
-        )}
+        <button
+          onClick={() => router.push('/admin/slider/new')}
+          className="inline-flex items-center px-6 py-3 bg-gradient-to-r from-indigo-500 to-violet-600 text-white font-semibold rounded-xl hover:shadow-lg hover:shadow-indigo-500/30 transition-all duration-200"
+        >
+          <PlusIcon className="w-5 h-5 mr-2" />
+          Add Slider
+        </button>
       </div>
-    </AdminLayout>
+
+      {/* Search and Filter Bar */}
+      <div className="bg-white rounded-2xl shadow-sm border border-slate-200/60 p-4">
+        <div className="flex flex-col sm:flex-row gap-4">
+          <div className="flex-1 relative">
+            <MagnifyingGlassIcon className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-400" />
+            <input
+              type="text"
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              placeholder="Search sliders..."
+              className="w-full pl-12 pr-4 py-3 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all"
+            />
+          </div>
+          <div className="flex space-x-2 bg-slate-100 p-1 rounded-xl">
+            <button
+              onClick={() => setStatusFilter('all')}
+              className={`px-4 py-2 rounded-lg text-sm font-medium transition-all ${statusFilter === 'all'
+                  ? 'bg-white text-indigo-600 shadow-sm'
+                  : 'text-slate-600 hover:text-slate-900'
+                }`}
+            >
+              All ({sliders.length})
+            </button>
+            <button
+              onClick={() => setStatusFilter('active')}
+              className={`px-4 py-2 rounded-lg text-sm font-medium transition-all ${statusFilter === 'active'
+                  ? 'bg-white text-indigo-600 shadow-sm'
+                  : 'text-slate-600 hover:text-slate-900'
+                }`}
+            >
+              Active ({sliders.filter(s => s.status === 'active').length})
+            </button>
+            <button
+              onClick={() => setStatusFilter('inactive')}
+              className={`px-4 py-2 rounded-lg text-sm font-medium transition-all ${statusFilter === 'inactive'
+                  ? 'bg-white text-indigo-600 shadow-sm'
+                  : 'text-slate-600 hover:text-slate-900'
+                }`}
+            >
+              Inactive ({sliders.filter(s => s.status === 'inactive').length})
+            </button>
+          </div>
+        </div>
+      </div>
+
+      {/* Sliders Grid */}
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+        {filteredSliders.map((slider, index) => (
+          <div
+            key={slider._id}
+            className="bg-white rounded-2xl shadow-sm border border-slate-200/60 overflow-hidden hover:shadow-lg transition-all duration-300 group"
+          >
+            {/* Image */}
+            <div className="relative aspect-video bg-gradient-to-br from-indigo-100 to-violet-100">
+              {slider.image ? (
+                <img
+                  src={slider.image}
+                  alt={slider.title}
+                  className="w-full h-full object-cover"
+                />
+              ) : (
+                <div className="w-full h-full flex items-center justify-center">
+                  <PhotoIcon className="w-16 h-16 text-indigo-300" />
+                </div>
+              )}
+              <div className="absolute top-3 left-3">
+                <span className={`px-2 py-1 text-xs font-semibold rounded-full ${slider.status === 'active'
+                    ? 'bg-emerald-500 text-white'
+                    : 'bg-slate-500 text-white'
+                  }`}>
+                  {slider.status}
+                </span>
+              </div>
+            </div>
+
+            {/* Content */}
+            <div className="p-5">
+              <h3 className="text-lg font-bold text-slate-900 mb-2 group-hover:text-indigo-600 transition-colors">
+                {slider.title}
+              </h3>
+              <p className="text-sm text-slate-600 mb-4 line-clamp-2">
+                {slider.description}
+              </p>
+              <div className="flex items-center justify-between">
+                <span className="text-xs text-slate-500">
+                  Order: {slider.order + 1}
+                </span>
+                <div className="flex items-center space-x-2 opacity-0 group-hover:opacity-100 transition-opacity">
+                  <button
+                    onClick={() => handleReorder(slider._id, 'up')}
+                    disabled={index === 0}
+                    className="p-2 hover:bg-indigo-100 rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                    title="Move Up"
+                  >
+                    <ArrowUpIcon className="w-4 h-4 text-slate-600" />
+                  </button>
+                  <button
+                    onClick={() => handleReorder(slider._id, 'down')}
+                    disabled={index === filteredSliders.length - 1}
+                    className="p-2 hover:bg-indigo-100 rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                    title="Move Down"
+                  >
+                    <ArrowDownIcon className="w-4 h-4 text-slate-600" />
+                  </button>
+                  <button
+                    onClick={() => handleToggleStatus(slider._id)}
+                    className={`p-2 rounded-lg transition-colors ${slider.status === 'active'
+                        ? 'bg-amber-100 hover:bg-amber-200'
+                        : 'bg-emerald-100 hover:bg-emerald-200'
+                      }`}
+                    title={slider.status === 'active' ? 'Deactivate' : 'Activate'}
+                  >
+                    <EyeIcon className="w-4 h-4 text-slate-600" />
+                  </button>
+                  <button
+                    onClick={() => router.push(`/admin/slider/${slider._id}/edit`)}
+                    className="p-2 hover:bg-indigo-100 rounded-lg transition-colors"
+                    title="Edit"
+                  >
+                    <PencilIcon className="w-4 h-4 text-slate-600" />
+                  </button>
+                  <button
+                    onClick={() => handleDelete(slider._id)}
+                    className="p-2 hover:bg-red-100 rounded-lg transition-colors"
+                    title="Delete"
+                  >
+                    <TrashIcon className="w-4 h-4 text-slate-600" />
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        ))}
+      </div>
+
+      {/* Empty State */}
+      {filteredSliders.length === 0 && (
+        <div className="text-center py-16 bg-white rounded-2xl border border-slate-200/60">
+          <PhotoIcon className="w-16 h-16 text-slate-300 mx-auto mb-4" />
+          <h3 className="text-xl font-semibold text-slate-900 mb-2">No sliders found</h3>
+          <p className="text-slate-500">
+            {searchQuery || statusFilter !== 'all'
+              ? 'Try adjusting your search or filter'
+              : 'Add your first slider to showcase on homepage'
+            }
+          </p>
+        </div>
+      )}
+    </div>
   );
-} 
+}

@@ -14,28 +14,48 @@ module.exports = {
         // Fixral Design System Colors - Loaded from site.config.js
         fixral: {
           ...siteConfig.theme.colors.brand,
-          'primary': siteConfig.theme.colors.primary,
+          'primary': 'var(--theme-primary)',
         },
-        // Backward compatibility
-        primary: siteConfig.theme.colors.primary,
-        secondary: siteConfig.theme.colors.secondary,
-        accent: siteConfig.theme.colors.accent,
+        // Backward compatibility - Use CSS custom properties for dynamic theme colors
+        primary: 'var(--theme-primary)',
+        secondary: 'var(--theme-secondary)',
+        accent: 'var(--theme-accent)',
 
-        // Primary brand colors
-        'brand-primary': siteConfig.theme.colors.primaryScale,
+        // Primary brand colors - Use CSS custom property for the base color
+        'brand-primary': {
+          50: 'var(--brand-primary-50)',
+          100: 'var(--brand-primary-100)',
+          200: 'var(--brand-primary-200)',
+          300: 'var(--brand-primary-300)',
+          400: 'var(--brand-primary-400)',
+          500: 'var(--brand-primary-500)',
+          600: 'var(--brand-primary-600)',
+          700: 'var(--brand-primary-700)',
+          800: 'var(--brand-primary-800)',
+          900: 'var(--theme-primary)',
+          DEFAULT: 'var(--theme-primary)',
+        },
 
         // Accessibility-focused colors (Derived from primary scale for now, can be customized in config later)
         'accessible-brand': {
-          50: siteConfig.theme.colors.primaryScale[50],
-          100: siteConfig.theme.colors.primaryScale[100],
-          200: siteConfig.theme.colors.primaryScale[200],
-          300: siteConfig.theme.colors.primaryScale[300],
-          400: siteConfig.theme.colors.primaryScale[400],
-          500: siteConfig.theme.colors.primaryScale[500],
-          600: siteConfig.theme.colors.primaryScale[600],
-          700: siteConfig.theme.colors.primaryScale[700],
-          800: siteConfig.theme.colors.primaryScale[800],
-          900: siteConfig.theme.colors.primaryScale[900],
+          50: 'var(--brand-primary-50)',
+          100: 'var(--brand-primary-100)',
+          200: 'var(--brand-primary-200)',
+          300: 'var(--brand-primary-300)',
+          400: 'var(--brand-primary-400)',
+          500: 'var(--brand-primary-500)',
+          600: 'var(--brand-primary-600)',
+          700: 'var(--brand-primary-700)',
+          800: 'var(--brand-primary-800)',
+          900: 'var(--theme-primary)',
+        },
+        // Admin specific colors
+        admin: {
+          bg: 'var(--admin-bg)',
+          surface: 'var(--admin-surface)',
+          border: 'var(--admin-border)',
+          'text-primary': 'var(--admin-text-primary)',
+          'text-secondary': 'var(--admin-text-secondary)',
         }
       },
       fontFamily: {
@@ -118,6 +138,9 @@ module.exports = {
           '0%': { transform: 'scale(0.95)', opacity: '0' },
           '100%': { transform: 'scale(1)', opacity: '1' },
         },
+      },
+      borderColor: {
+        DEFAULT: '#cbd5e1', // slate-300
       },
     },
   },

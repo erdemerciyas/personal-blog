@@ -10,12 +10,12 @@ export async function PUT(
 ) {
   try {
     const session = await getServerSession(authOptions);
-    
+
     if (!session?.user || session.user.role !== 'admin') {
       return NextResponse.json({ message: 'Yetkisiz erişim' }, { status: 401 });
     }
 
-    const { name, email, role, isActive } = await request.json();
+    const { name, email, role, isActive, password } = await request.json();
     const { id } = params;
 
     if (!name || !email) {
@@ -36,16 +36,34 @@ export async function PUT(
       );
     }
 
-    const user = await User.findByIdAndUpdate(
-      id,
-      {
-        name,
-        email,
-        role: role || 'user',
-        isActive: isActive !== undefined ? isActive : true
-      },
-      { new: true }
-    ).select('-password');
+    const userToUpdate = await User.findById(id);
+    if (!userToUpdate) {
+      return NextResponse.json(
+        { message: 'Kullanıcı bulunamadı' },
+        { status: 404 }
+      );
+    }
+
+    userToUpdate.name = name;
+    userToUpdate.email = email;
+    userToUpdate.role = role || 'user';
+    if (isActive !== undefined) userToUpdate.isActive = isActive;
+
+    if (password && password.trim() !== '') {
+      userToUpdate.password = password; // The pre-save hook in User model should handle hashing
+    }
+
+    await userToUpdate.save();
+
+    // Re-fetch to return clean object or just construct response
+    // But we need to exclude password.
+    const user = {
+      _id: userToUpdate._id,
+      name: userToUpdate.name,
+      email: userToUpdate.email,
+      role: userToUpdate.role,
+      isActive: userToUpdate.isActive
+    };
 
     if (!user) {
       return NextResponse.json(
@@ -70,7 +88,7 @@ export async function DELETE(
 ) {
   try {
     const session = await getServerSession(authOptions);
-    
+
     if (!session?.user || session.user.role !== 'admin') {
       return NextResponse.json({ message: 'Yetkisiz erişim' }, { status: 401 });
     }

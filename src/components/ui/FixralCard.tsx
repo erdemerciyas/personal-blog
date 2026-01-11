@@ -15,13 +15,13 @@ const FixralCard: React.FC<FixralCardProps> = ({
   padding = 'md'
 }) => {
   const baseClasses = 'rounded-fixral-lg transition-all duration-300 focus-within:outline-none focus-within:ring-2 focus-within:ring-brand-primary-600 focus-within:ring-offset-2';
-  
+
   const variantClasses = {
-    default: 'bg-white border border-slate-200 shadow-fixral hover:shadow-fixral-lg',
-    glass: 'bg-white/90 backdrop-blur-sm border border-white/30 shadow-fixral hover:bg-white/95',
-    elevated: 'bg-white shadow-fixral-lg hover:shadow-xl border border-slate-100'
+    default: 'bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 shadow-fixral hover:shadow-fixral-lg dark:shadow-none',
+    glass: 'bg-white/90 dark:bg-slate-800/90 backdrop-blur-sm border border-white/30 dark:border-white/10 shadow-fixral hover:bg-white/95 dark:hover:bg-slate-800/95',
+    elevated: 'bg-white dark:bg-slate-800 shadow-fixral-lg hover:shadow-xl dark:shadow-slate-900/50 border border-slate-100 dark:border-slate-700'
   };
-  
+
   const paddingClasses = {
     sm: 'p-4',
     md: 'p-6',

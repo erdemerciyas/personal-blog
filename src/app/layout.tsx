@@ -8,7 +8,7 @@ import ConditionalFooter from '../components/ConditionalFooter'
 import Providers from '../components/Providers'
 import connectDB, { hasValidMongoUri } from '../lib/mongoose'
 import SiteSettings from '../models/SiteSettings'
-import Settings from '../models/Settings'
+import Plugin from '../models/Plugin'
 import Script from 'next/script'
 import FloatingCta from '../components/FloatingCta';
 import GlobalBreadcrumbsJsonLd from '../components/seo/GlobalBreadcrumbsJsonLd';
@@ -45,114 +45,93 @@ export async function generateMetadata(): Promise<Metadata> {
       throw new Error('DB_DISABLED');
     }
     await connectDB();
-
     const siteSettings = await SiteSettings.getSiteSettings();
-    const settingsDoc = await Settings.findOne({ isActive: true });
+    const seoPlugin = await Plugin.findOne({ slug: 'seo-plugin', isActive: true });
 
-    const title = siteSettings?.seo?.metaTitle || siteSettings?.siteName || config.app.name;
-    const description = siteSettings?.seo?.metaDescription || siteSettings?.description || 'Modern kişisel blog ve portfolio sitesi';
-    const keywords = siteSettings?.seo?.keywords || ['nextjs', 'react', 'typescript', 'portfolio', 'blog', 'engineering'];
-    const siteName = siteSettings?.siteName || config.app.name;
-    const logoUrl = siteSettings?.logo?.url;
-    const ogImage =
-      (logoUrl && (logoUrl.startsWith('http') ? logoUrl : `${config.app.url}${logoUrl}`)) ||
-      `${config.app.url}/favicon.svg`;
+    // Default SEO from Site Settings
+    let title = siteSettings.siteName || 'Personal Blog';
+    let description = siteSettings.description || 'Kişisel blog ve portfolyo sitesi';
+    let keywords = siteSettings.seo?.keywords || [];
+
+    // Override/Enhance with Plugin if active
+    if (seoPlugin && seoPlugin.config) {
+      if (seoPlugin.config.metaTitleSuffix && siteSettings.siteName) {
+        title = `${siteSettings.siteName}${seoPlugin.config.metaTitleSuffix}`;
+      }
+      if (seoPlugin.config.globalMetaDescription) {
+        description = seoPlugin.config.globalMetaDescription;
+      }
+      if (seoPlugin.config.globalKeywords && Array.isArray(seoPlugin.config.globalKeywords)) {
+        keywords = [...keywords, ...seoPlugin.config.globalKeywords];
+      }
+    } else {
+      // Fallback to old Site Settings SEO object
+      if (siteSettings.seo?.metaTitle) title = siteSettings.seo.metaTitle;
+      if (siteSettings.seo?.metaDescription) description = siteSettings.seo.metaDescription;
+    }
+
+    const baseUrl = process.env.NEXT_PUBLIC_APP_URL || 'https://fixral.com';
+    const logoUrl = typeof siteSettings.logo === 'string' ? siteSettings.logo : siteSettings.logo?.url;
+    const googleVerification = siteSettings?.analytics?.googleSiteVerification || ENV_GOOGLE_VERIFICATION;
+
+    // Analytics Verification from Plugin?
+    const analyticsPlugin = await Plugin.findOne({ slug: 'analytics-plugin', isActive: true });
+    let finalVerification = googleVerification;
+    if (analyticsPlugin && analyticsPlugin.config?.googleSiteVerification) {
+      finalVerification = analyticsPlugin.config.googleSiteVerification;
+    }
 
     return {
-      title,
-      description,
-      keywords,
-      authors: [{ name: 'Erdem Erciyas', url: 'https://www.erdemerciyas.com.tr' }],
-      creator: 'Erdem Erciyas',
-      publisher: 'FIXRAL',
+      title: title,
+      description: description,
+      keywords: keywords,
+      metadataBase: new URL(baseUrl),
       openGraph: {
-        type: 'website',
+        title: title,
+        description: description,
+        url: baseUrl,
+        siteName: siteSettings.siteName,
         locale: 'tr_TR',
-        url: config.app.url,
-        title,
-        description,
-        siteName,
-        images: [ogImage],
-      },
-      robots: {
-        index: true,
-        follow: true,
-        googleBot: {
-          index: true,
-          follow: true,
-          'max-video-preview': -1,
-          'max-image-preview': 'large',
-          'max-snippet': -1,
-        },
-      },
-      verification: {
-        google: settingsDoc?.googleSiteVerification || ENV_GOOGLE_VERIFICATION || undefined,
-      },
-      alternates: {
-        canonical: config.app.url,
+        type: 'website',
+        images: [
+          {
+            url: siteSettings.logo?.url || '/og-image.jpg',
+            width: 1200,
+            height: 630,
+            alt: title,
+          },
+        ],
       },
       twitter: {
-        card: 'summary_large_image',
-        title,
-        description,
-        images: [ogImage],
+        card: 'summary_large_image', // Could come from plugin config
+        title: title,
+        description: description,
+        images: [siteSettings.logo?.url || '/og-image.jpg'],
+      },
+      verification: {
+        google: finalVerification || undefined,
       },
       icons: {
-        icon: logoUrl || '/favicon.svg',
-        apple: logoUrl || '/favicon.svg',
+        icon: siteSettings.favicon || logoUrl || '/favicon.svg',
+        apple: siteSettings.favicon || logoUrl || '/favicon.svg',
       },
     };
   } catch (error) {
     console.error('Metadata generation error:', error);
-    // Fallback to static metadata
     return {
       title: config.app.name,
       description: 'Modern kişisel blog ve portfolio sitesi',
-      keywords: ['nextjs', 'react', 'typescript', 'portfolio', 'blog', 'engineering'],
-      authors: [{ name: 'Erdem Erciyas', url: 'https://www.erdemerciyas.com.tr' }],
-      creator: 'Erdem Erciyas',
-      publisher: 'FIXRAL',
-      openGraph: {
-        type: 'website',
-        locale: 'tr_TR',
-        url: config.app.url,
-        title: config.app.name,
-        description: 'Modern kişisel blog ve portfolio sitesi',
-        siteName: config.app.name,
-        images: [`${config.app.url}/favicon.svg`],
-      },
-      robots: {
-        index: true,
-        follow: true,
-        googleBot: {
-          index: true,
-          follow: true,
-          'max-video-preview': -1,
-          'max-image-preview': 'large',
-          'max-snippet': -1,
-        },
-      },
-      verification: {
-        google: undefined,
-      },
-      alternates: {
-        canonical: config.app.url,
-      },
-      twitter: {
-        card: 'summary_large_image',
-        title: config.app.name,
-        description: 'Modern kişisel blog ve portfolio sitesi',
-        images: [`${config.app.url}/favicon.svg`],
-      },
       icons: {
         icon: '/favicon.svg',
         apple: '/favicon.svg',
       },
+      metadataBase: new URL(config.app.url),
     };
   }
 }
 
 import { ThemeProvider } from '../context/ThemeContext';
+import { ActiveThemeProvider } from '../providers/ActiveThemeProvider';
 import { LoadingBar } from '../components';
 import { ToastProvider } from '../components/ui/useToast';
 import FixralToastViewport from '../components/ui/FixralToast';
@@ -164,23 +143,41 @@ export default async function RootLayout({
 }) {
   let gaId: string | undefined;
   let gtmId: string | undefined;
+
   if (hasValidMongoUri()) {
     try {
       await connectDB();
-      const settingsDoc = (await Settings.findOne({ isActive: true }).lean()) as ISettingsLean | null;
-      gaId = settingsDoc?.googleAnalyticsId || undefined;
-      gtmId = settingsDoc?.googleTagManagerId || undefined;
+      // Use SiteSettings single source of truth
+      const siteSettings = await SiteSettings.getSiteSettings();
+
+      // Check if analytics plugin is active
+      const analyticsPlugin = await Plugin.findOne({ slug: 'analytics-plugin', isActive: true });
+
+      if (analyticsPlugin && analyticsPlugin.config) {
+        if (analyticsPlugin.config.enablePageViewTracking) {
+          gaId = analyticsPlugin.config.googleAnalyticsId || undefined;
+          gtmId = analyticsPlugin.config.googleTagManagerId || undefined;
+        }
+      } else {
+        // Fallback to SiteSettings (Deprecated path, but kept for safety if plugin logic fails)
+        if (siteSettings?.analytics?.enableAnalytics) {
+          gaId = siteSettings.analytics.googleAnalyticsId || undefined;
+          gtmId = siteSettings.analytics.googleTagManagerId || undefined;
+        }
+      }
+
     } catch (e) {
       console.error('Layout settings load error:', e);
     }
-  } else {
-    // DB yoksa env değerlerini kullan
-    gaId = ENV_GA_ID || undefined;
-    gtmId = ENV_GTM_ID || undefined;
   }
-  // DB olsa bile boş dönerse env fallback uygula
-  gaId = gaId || ENV_GA_ID || undefined;
-  gtmId = gtmId || ENV_GTM_ID || undefined;
+
+  // Only use env fallback if DB didn't provide them AND we want to default to them?
+  // Current logic: DB overrides env if DB exists. 
+  // If DB retrieval failed or returned empty, usage of env is acceptable for dev/fallback.
+  if (!gaId) gaId = ENV_GA_ID || undefined;
+  if (!gtmId) gtmId = ENV_GTM_ID || undefined;
+
+
   return (
     <html lang="tr" className="scroll-smooth">
       <head>
@@ -289,28 +286,30 @@ export default async function RootLayout({
           İçeriğe atla
         </a>
         <ThemeProvider>
-          <ToastProvider>
-            <LoadingBar />
-            <Providers>
-              <ClientWrapper>
-                <Header />
-                <GlobalBreadcrumbsJsonLd />
-                <FloatingCta />
-                {/* Main content area with smooth transitions */}
-                <PageTransitionWrapper>
-                  <div className="relative flex-grow">
-                    <main id="main-content" className="relative z-10">
-                      <div>{children}</div>
-                    </main>
-                  </div>
-                </PageTransitionWrapper>
+          <ActiveThemeProvider>
+            <ToastProvider>
+              <LoadingBar />
+              <Providers>
+                <ClientWrapper>
+                  <Header />
+                  <GlobalBreadcrumbsJsonLd />
+                  <FloatingCta />
+                  {/* Main content area with smooth transitions */}
+                  <PageTransitionWrapper>
+                    <div className="relative flex-grow">
+                      <main id="main-content" className="relative z-10">
+                        <div>{children}</div>
+                      </main>
+                    </div>
+                  </PageTransitionWrapper>
 
-                <ConditionalFooter />
-              </ClientWrapper>
-            </Providers>
-            {/* Global toast viewport */}
-            <FixralToastViewport />
-          </ToastProvider>
+                  <ConditionalFooter />
+                </ClientWrapper>
+              </Providers>
+              {/* Global toast viewport */}
+              <FixralToastViewport />
+            </ToastProvider>
+          </ActiveThemeProvider>
         </ThemeProvider>
 
         {/* Development tools - hidden on mobile to avoid UI overlay */}
