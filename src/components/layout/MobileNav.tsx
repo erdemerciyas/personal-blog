@@ -33,11 +33,7 @@ export default function MobileNav({
     isTransparentPage = false
 }: MobileNavProps) {
     // Close menu when pathname changes
-    useEffect(() => {
-        if (isOpen) {
-            onClose();
-        }
-    }, [pathname, onClose, isOpen]);
+
 
     if (!isOpen) return null;
 
@@ -53,15 +49,15 @@ export default function MobileNav({
     };
 
     return (
-        <nav 
-            id="mobile-menu" 
-            aria-label="Mobil navigasyon" 
+        <nav
+            id="mobile-menu"
+            aria-label="Mobil navigasyon"
             className={`md:hidden absolute top-full left-0 right-0 max-h-[75vh] overflow-y-auto z-40 transition-all duration-300 ${isScrolled
                 ? 'bg-white/95 backdrop-blur-lg shadow-2xl border-t border-slate-200/50'
                 : isTransparentPage
-                  ? 'bg-white/90 backdrop-blur-lg shadow-2xl border-t border-white/20'
-                  : 'bg-white/95 backdrop-blur-lg shadow-2xl border-t border-slate-200/50'
-            }`}
+                    ? 'bg-white/90 backdrop-blur-lg shadow-2xl border-t border-white/20'
+                    : 'bg-white/95 backdrop-blur-lg shadow-2xl border-t border-slate-200/50'
+                }`}
         >
             <div className="container-main py-4">
                 <div className="space-y-1">
@@ -90,8 +86,8 @@ export default function MobileNav({
                                 <LinkIcon className="w-5 h-5 flex-shrink-0" aria-hidden="true" />
                                 <span className="flex-1">{link.label}</span>
                                 {isActive && (
-                                    <span 
-                                        className="w-2 h-2 rounded-full bg-brand-primary-600 flex-shrink-0" 
+                                    <span
+                                        className="w-2 h-2 rounded-full bg-brand-primary-600 flex-shrink-0"
                                         aria-hidden="true"
                                     />
                                 )}
