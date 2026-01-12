@@ -1,5 +1,5 @@
 
-> personal-blog@3.4.0 lint
+> personal-blog@3.5.0 lint
 > next lint
 
 Sentry not installed, skipping Sentry configuration
@@ -21,12 +21,10 @@ Bundle analyzer not installed, skipping bundle analysis
 24:17  Warning: 'session' is assigned a value but never used. Allowed unused vars must match /^_/u.  @typescript-eslint/no-unused-vars
 
 ./src/app/admin/dashboard/page.tsx
-72:6  Warning: React Hook useEffect has a missing dependency: 'loadDashboardData'. Either include it or remove the dependency array.  react-hooks/exhaustive-deps
-119:13  Error: Use "@ts-expect-error" instead of "@ts-ignore", as "@ts-ignore" will do nothing if the following line is error-free.  @typescript-eslint/ban-ts-comment
-145:13  Error: Use "@ts-expect-error" instead of "@ts-ignore", as "@ts-ignore" will do nothing if the following line is error-free.  @typescript-eslint/ban-ts-comment
-160:13  Error: Use "@ts-expect-error" instead of "@ts-ignore", as "@ts-ignore" will do nothing if the following line is error-free.  @typescript-eslint/ban-ts-comment
-167:7  Error: Use "@ts-expect-error" instead of "@ts-ignore", as "@ts-ignore" will do nothing if the following line is error-free.  @typescript-eslint/ban-ts-comment
-171:45  Warning: 'sortKey' is defined but never used. Allowed unused args must match /^_/u.  @typescript-eslint/no-unused-vars
+134:13  Error: Include a description after the "@ts-expect-error" directive to explain why the @ts-expect-error is necessary. The description must be 3 characters or longer.  @typescript-eslint/ban-ts-comment
+149:13  Error: Include a description after the "@ts-expect-error" directive to explain why the @ts-expect-error is necessary. The description must be 3 characters or longer.  @typescript-eslint/ban-ts-comment
+156:7  Error: Include a description after the "@ts-expect-error" directive to explain why the @ts-expect-error is necessary. The description must be 3 characters or longer.  @typescript-eslint/ban-ts-comment
+160:45  Warning: 'sortKey' is defined but never used. Allowed unused args must match /^_/u.  @typescript-eslint/no-unused-vars
 
 ./src/app/admin/editor/page.tsx
 8:3  Warning: 'PencilIcon' is defined but never used. Allowed unused vars must match /^_/u.  @typescript-eslint/no-unused-vars
@@ -215,9 +213,6 @@ Bundle analyzer not installed, skipping bundle analysis
 12:28  Warning: 'req' is defined but never used. Allowed unused args must match /^_/u.  @typescript-eslint/no-unused-vars
 158:30  Warning: 'req' is defined but never used. Allowed unused args must match /^_/u.  @typescript-eslint/no-unused-vars
 
-./src/app/api/admin/dashboard-stats/route.ts
-53:13  Warning: 'totalCount' is assigned a value but never used.  @typescript-eslint/no-unused-vars
-
 ./src/app/api/admin/profile/route.ts
 8:27  Warning: 'req' is defined but never used. Allowed unused args must match /^_/u.  @typescript-eslint/no-unused-vars
 
@@ -263,13 +258,6 @@ Bundle analyzer not installed, skipping bundle analysis
 6:10  Warning: 'SecurityEvents' is defined but never used. Allowed unused vars must match /^_/u.  @typescript-eslint/no-unused-vars
 16:11  Warning: 'Credentials' is defined but never used. Allowed unused vars must match /^_/u.  @typescript-eslint/no-unused-vars
 42:72  Warning: 'req' is defined but never used. Allowed unused args must match /^_/u.  @typescript-eslint/no-unused-vars
-
-./src/lib/otp.ts
-2:16  Error: A `require()` style import is forbidden.  @typescript-eslint/no-require-imports
-30:34  Error: A `require()` style import is forbidden.  @typescript-eslint/no-require-imports
-34:18  Warning: 'e' is defined but never used. Allowed unused caught errors must match /^_/u.  @typescript-eslint/no-unused-vars
-44:30  Error: A `require()` style import is forbidden.  @typescript-eslint/no-require-imports
-45:18  Warning: 'e' is defined but never used. Allowed unused caught errors must match /^_/u.  @typescript-eslint/no-unused-vars
 
 ./src/lib/sitemap-service.ts
 2:8  Warning: 'mongoose' is defined but never used. Allowed unused vars must match /^_/u.  @typescript-eslint/no-unused-vars

@@ -131,7 +131,7 @@ export default function AdminDashboard() {
             item: content.title || content.name,
             time: formatDate(content.createdAt),
             type: type,
-            // @ts-expect-error
+            // @ts-expect-error - Adding sortKey for sorting
             sortKey: new Date(content.createdAt).getTime()
           });
         });
@@ -146,18 +146,18 @@ export default function AdminDashboard() {
             item: user.name || user.email,
             time: formatDate(user.createdAt),
             type: 'warning', // Using warning color (orange/amber) for users
-            // @ts-expect-error
+            // @ts-expect-error - Adding sortKey for sorting
             sortKey: new Date(user.createdAt).getTime()
           });
         });
       }
 
       // Sort by date desc and take top 10
-      // @ts-expect-error
+      // @ts-expect-error - sortKey exists on objects but not on type
       const sortedActivities = allActivities.sort((a, b) => b.sortKey - a.sortKey).slice(0, 8);
 
-      // Clean up sortKey before setting state if strictly typed, but interface doesn't have it so it's fine or we map it out
-      setActivities(sortedActivities.map(({ sortKey, ...rest }: any) => rest));
+      // Clean up sortKey before setting state
+      setActivities(sortedActivities.map(({ sortKey: _sortKey, ...rest }: any) => rest));
 
     } catch (error) {
       console.error('Veriler yüklenirken hata:', error);

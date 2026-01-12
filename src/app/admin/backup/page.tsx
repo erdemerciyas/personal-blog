@@ -19,7 +19,7 @@ interface Backup {
 }
 
 export default function AdminBackupPage() {
-  const { data: session, status } = useSession();
+  const { status } = useSession();
   const router = useRouter();
   const [loading, setLoading] = useState(true);
   const [backups, setBackups] = useState<Backup[]>([]);
@@ -149,7 +149,7 @@ export default function AdminBackupPage() {
           <div>
             <h3 className="text-lg font-semibold text-slate-900 mb-2">About Backups</h3>
             <p className="text-sm text-slate-600">
-              Backups allow you to save snapshots of your site data. You can create manual backups or restore from existing backups. 
+              Backups allow you to save snapshots of your site data. You can create manual backups or restore from existing backups.
               Keep your backups secure and consider downloading them for offline storage.
             </p>
           </div>
