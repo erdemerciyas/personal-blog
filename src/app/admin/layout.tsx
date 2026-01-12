@@ -86,6 +86,7 @@ const navigation = [
       { name: 'Eklentiler', href: '/admin/plugins' },
       { name: 'Kullanıcılar', href: '/admin/users' },
       { name: 'Site Ayarları', href: '/admin/site-settings' },
+      { name: 'Sitemap', href: '/admin/sitemap' },
       { name: 'Güncellemeler', href: '/admin/updates' },
     ]
   },
