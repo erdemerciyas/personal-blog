@@ -17,6 +17,7 @@ const base32Plugin = new ScureBase32Plugin();
 const baseAuthenticator = new TOTP({
     step: 30,
     digits: 6,
+    window: 2,
     crypto: cryptoPlugin,
     base32: base32Plugin
 } as any);
@@ -26,43 +27,14 @@ const authenticator: OTPAuthenticator = {
         return baseAuthenticator.generateSecret();
     },
 
-    // Robust manual check using epoch validation to bypass library verification issues
+    // Use standard library check which handles windowing correctly
     check: async (token: string, secret: string) => {
         try {
             if (!token || !secret) return false;
-
-            // Sanitize token
+            // Clean token of any non-numeric characters
             const cleanToken = String(token).replace(/\D/g, '');
-
-            const now = Date.now();
-            const step = 30;
-            const window = 2; // +/- 2 steps (approx 1 min tolerance)
-
-            // Check current, previous, and next windows
-            for (let i = -window; i <= window; i++) {
-                const epoch = now + (i * step * 1000);
-
-                // Instantiate a lightweight validator for this specific time
-                const validator = new TOTP({
-                    step,
-                    digits: 6,
-                    crypto: cryptoPlugin,
-                    base32: base32Plugin,
-                    epoch
-                } as any);
-
-                try {
-                    // Generate token for this window
-                    const generated = await (validator as any).generate({ secret });
-                    if (generated === cleanToken) {
-                        return true;
-                    }
-                } catch (e) {
-                    // Ignore generation errors for specific windows
-                }
-            }
-
-            return false;
+            const isValid = (baseAuthenticator as any).verify({ token: cleanToken, secret });
+            return !!isValid;
         } catch (error) {
             console.error('OTP check error:', error);
             return false;
