@@ -1,7 +1,7 @@
 # FIXRAL - Enterprise Personal CMS
 
 ![Status](https://img.shields.io/badge/status-production--ready-success)
-![Version](https://img.shields.io/badge/version-3.4.0-blue)
+![Version](https://img.shields.io/badge/version-3.5.0-blue)
 ![Next.js](https://img.shields.io/badge/Next.js-14.2-black)
 ![TypeScript](https://img.shields.io/badge/TypeScript-5.0-blue)
 ![License](https://img.shields.io/badge/license-MIT-green)
@@ -19,7 +19,8 @@
 - **Middleware Security**: Custom middleware for intelligent rate limiting, admin route protection, and suspicious activity blocking.
 
 ### 📦 Content Management (Admin Panel)
-- **Dashboard Analytics**: Real-time overview of site performance and content stats.
+- **Dashboard Analytics**: Real-time overview with **Dynamic Activity Feeds** (New Users, Messages, Content updates).
+- **Theme Engine**: Advanced customization including **Typography Colors**, Fonts, and Spacing via the admin panel.
 - **Dynamic Modules**:
     - **Products**: Complete e-commerce catalog with categories, reviews, and order management.
     - **Portfolio**: Showcase projects with rich media support (Images, Videos, 3D Models).

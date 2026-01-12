@@ -190,7 +190,7 @@ export async function POST(request: NextRequest) {
 
     // Validate page context
     // Only site-wide contexts allowed here. Product uploads use /api/admin/product-upload
-    const allowedContexts = ['general', 'portfolio', 'services', 'slider', 'about', 'logo', 'news'];
+    const allowedContexts = ['general', 'portfolio', 'services', 'slider', 'about', 'logo', 'news', 'profile'];
     if (!allowedContexts.includes(pageContext)) {
       return NextResponse.json(
         { error: 'Geçersiz sayfa bağlamı' },

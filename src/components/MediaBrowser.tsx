@@ -39,6 +39,7 @@ interface MediaBrowserProps {
   pageContext?: string;
   allowMultipleSelect?: boolean;
   variant?: 'fullscreen' | 'dialog';
+  enableInlineUpload?: boolean;
 }
 
 const MediaBrowser: React.FC<MediaBrowserProps> = ({
@@ -50,7 +51,8 @@ const MediaBrowser: React.FC<MediaBrowserProps> = ({
   allowedTypes = ['image/'],
   pageContext = 'general',
   allowMultipleSelect = false,
-  variant = 'fullscreen'
+  variant = 'fullscreen',
+  enableInlineUpload = false
 }) => {
   const [mediaItems, setMediaItems] = useState<MediaItem[]>([]);
   const [loading, setLoading] = useState(false);
@@ -62,6 +64,7 @@ const MediaBrowser: React.FC<MediaBrowserProps> = ({
   const [isMounted, setIsMounted] = useState(false);
   const [previewItem, setPreviewItem] = useState<MediaItem | null>(null);
   const modalRef = useRef<HTMLDivElement>(null);
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   // Mount flag
   useEffect(() => {
@@ -76,8 +79,8 @@ const MediaBrowser: React.FC<MediaBrowserProps> = ({
     const handleClickOutside = (event: MouseEvent) => {
       const target = event.target as HTMLElement;
 
-      // "Yeni Yükle" butonuna tıklandıysa kapatma (üst bileşendeki file input tetiklenebilir)
-      if (target.closest('button')?.textContent?.includes('Yeni Yükle')) {
+      // "Yeni Yükle" butonuna tıklandıysa kapatma
+      if (target.closest('.upload-btn')) {
         return;
       }
 
@@ -156,6 +159,55 @@ const MediaBrowser: React.FC<MediaBrowserProps> = ({
     }
   }, [isOpen, pageFilter, fetchMediaItems]);
 
+  const handleFileUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    const formData = new FormData();
+    formData.append('file', file);
+    // Use current page filter as context if specific, else 'general'
+    const uploadContext = (pageFilter !== 'all' && pageFilter) ? pageFilter : 'general';
+    formData.append('pageContext', uploadContext);
+
+    setLoading(true);
+    try {
+      const res = await fetch('/api/admin/upload', {
+        method: 'POST',
+        body: formData
+      });
+      const data = await res.json();
+
+      if (res.ok) {
+        const newItem: MediaItem = {
+          _id: data.publicId || data.fileName,
+          filename: data.fileName,
+          originalName: data.originalName,
+          url: data.url,
+          size: data.size,
+          mimeType: data.type,
+          uploadedAt: new Date(data.uploadedAt),
+          source: 'cloudinary',
+          publicId: data.publicId
+        };
+
+        setMediaItems(prev => [newItem, ...prev]);
+
+        // Auto select
+        if (!allowMultipleSelect) {
+          setSelectedItem(newItem._id);
+        }
+      } else {
+        alert(data.error || 'Dosya yüklenemedi.');
+      }
+    } catch (error) {
+      console.error('Upload error:', error);
+      alert('Dosya yüklenirken bir hata oluştu.');
+    } finally {
+      setLoading(false);
+      if (fileInputRef.current) fileInputRef.current.value = '';
+    }
+  };
+
   const getFilteredItems = () => {
     let filtered = mediaItems.filter(item => {
       if (!isValidUrl(item.url)) return false;
@@ -189,8 +241,8 @@ const MediaBrowser: React.FC<MediaBrowserProps> = ({
     if (allowMultipleSelect) {
       setSelectedItems(prev =>
         prev.includes(itemId)
-          ? prev.filter(id => id !== itemId) // Deselect
-          : [...prev, itemId] // Select
+          ? prev.filter(id => id !== itemId)
+          : [...prev, itemId]
       );
     } else {
       setSelectedItem(prev => prev === itemId ? null : itemId);
@@ -236,6 +288,14 @@ const MediaBrowser: React.FC<MediaBrowserProps> = ({
       <div
         className="absolute inset-0 bg-slate-900/60 backdrop-blur-sm transition-opacity"
         onClick={onClose}
+      />
+
+      <input
+        type="file"
+        ref={fileInputRef}
+        onChange={handleFileUpload}
+        className="hidden"
+        accept={allowedTypes.map(t => t.endsWith('/') ? t + '*' : t).join(',')}
       />
 
       {/* Modal Content */}
@@ -296,6 +356,7 @@ const MediaBrowser: React.FC<MediaBrowserProps> = ({
                   className="w-full text-sm p-2 rounded-lg bg-slate-50 border-transparent focus:bg-white focus:ring-0 cursor-pointer hover:bg-slate-100"
                 >
                   <option value="all">Tüm Sayfalar</option>
+                  <option value="profile">Profil</option>
                   <option value="portfolio">Portfolio</option>
                   <option value="service">Hizmetler</option>
                   <option value="about">Hakkımda</option>
@@ -311,9 +372,13 @@ const MediaBrowser: React.FC<MediaBrowserProps> = ({
               onClick={(e) => {
                 e.preventDefault();
                 e.stopPropagation();
-                onUploadNew();
+                if (enableInlineUpload) {
+                  fileInputRef.current?.click();
+                } else {
+                  onUploadNew();
+                }
               }}
-              className="flex items-center gap-2 px-4 py-2 bg-slate-900 text-white rounded-xl text-sm font-medium hover:bg-slate-800 transition-colors shadow-sm hover:shadow-md"
+              className="upload-btn flex items-center gap-2 px-4 py-2 bg-slate-900 text-white rounded-xl text-sm font-medium hover:bg-slate-800 transition-colors shadow-sm hover:shadow-md"
             >
               <ArrowUpTrayIcon className="w-4 h-4" />
               <span className="hidden sm:inline">Yeni Yükle</span>
@@ -344,7 +409,7 @@ const MediaBrowser: React.FC<MediaBrowserProps> = ({
                 "{searchTerm}" aramasına uygun sonuç yok veya kütüphane boş.
               </p>
               <button
-                onClick={onUploadNew}
+                onClick={() => enableInlineUpload ? fileInputRef.current?.click() : onUploadNew()}
                 className="px-6 py-2 bg-indigo-600 text-white rounded-xl text-sm font-medium hover:bg-indigo-700 transition-colors shadow-sm"
               >
                 İlk Dosyayı Yükle
@@ -424,6 +489,7 @@ const MediaBrowser: React.FC<MediaBrowserProps> = ({
             </div>
           )}
         </div>
+
 
         {/* Footer */}
         <div className="flex-shrink-0 px-6 py-4 border-t border-slate-100 bg-white flex items-center justify-between gap-4">

@@ -50,6 +50,10 @@ export interface IThemeConfig {
       relaxed?: string;
       loose?: string;
     };
+    colors?: {
+      heading?: string;
+      body?: string;
+    };
   };
 
   // Hero Section Customization
@@ -543,6 +547,16 @@ const ThemeSchema = new mongoose.Schema<ITheme>(
           loose: {
             type: String,
             default: '2',
+          },
+        },
+        colors: {
+          heading: {
+            type: String,
+            default: '', // Inherit by default
+          },
+          body: {
+            type: String,
+            default: '', // Inherit by default
           },
         },
       },

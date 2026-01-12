@@ -649,8 +649,30 @@ export function ActiveThemeProvider({ children }: { children: ReactNode }) {
     await fetchActiveTheme();
   };
 
+  const headingColor = theme?.typography?.colors?.heading;
+  const bodyColor = theme?.typography?.colors?.body;
+
   return (
     <ActiveThemeContext.Provider value={{ theme, loading, refreshTheme }}>
+      {headingColor && (
+        <style dangerouslySetInnerHTML={{
+          __html: `
+          h1, h2, h3, h4, h5, h6, .hero-title, .page-title, .section-title {
+            color: ${headingColor} !important;
+          }
+        `}} />
+      )}
+      {bodyColor && (
+        <style dangerouslySetInnerHTML={{
+          __html: `
+          body {
+            color: ${bodyColor} !important;
+          }
+          .text-body, .text-small {
+            color: ${bodyColor};
+          }
+        `}} />
+      )}
       {children}
     </ActiveThemeContext.Provider>
   );

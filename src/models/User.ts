@@ -14,6 +14,10 @@ export interface IUser {
   resetTokenExpiry?: Date;
   createdAt: Date;
   updatedAt: Date;
+  twoFactorSecret?: string;
+  isTwoFactorEnabled?: boolean;
+  twoFactorBackupCodes?: string[];
+  avatar?: string;
 }
 
 const userSchema = new mongoose.Schema<IUser>(
@@ -57,6 +61,24 @@ const userSchema = new mongoose.Schema<IUser>(
     },
     resetTokenExpiry: {
       type: Date,
+      required: false,
+    },
+    twoFactorSecret: {
+      type: String,
+      required: false,
+      select: false, // Include only when explicitly selected
+    },
+    isTwoFactorEnabled: {
+      type: Boolean,
+      default: false,
+    },
+    twoFactorBackupCodes: {
+      type: [String],
+      required: false,
+      select: false,
+    },
+    avatar: {
+      type: String,
       required: false,
     },
   },

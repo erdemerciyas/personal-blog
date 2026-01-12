@@ -50,7 +50,7 @@ export const GET = withSecurity(SecurityConfigs.admin)(async () => {
         max_results: 500
       });
 
-      const totalCount = allResult.resources ? allResult.resources.length : 0;
+
 
       // Site media is whatever is NOT in products folder
       // Simple logic: Total - Product. 
@@ -70,7 +70,7 @@ export const GET = withSecurity(SecurityConfigs.admin)(async () => {
     const [
       portfolioCount, servicesCount, messagesCount, usersCount,
       recentMessages, productsCount, newsCount, productQuestionsCount,
-      recentNews, recentPortfolio, recentServices, recentProducts
+      recentNews, recentPortfolio, recentServices, recentProducts, recentUsers
     ] = await Promise.all([
       Portfolio.countDocuments(),
       Service.countDocuments(),
@@ -83,7 +83,8 @@ export const GET = withSecurity(SecurityConfigs.admin)(async () => {
       News.find().sort({ createdAt: -1 }).limit(5).select('title status createdAt views'),
       Portfolio.find().sort({ createdAt: -1 }).limit(5).select('title status createdAt'),
       Service.find().sort({ createdAt: -1 }).limit(5).select('title status createdAt'),
-      Product.find().sort({ createdAt: -1 }).limit(5).select('name status createdAt') // Assuming Product has name instead of title? Need to check model but usually it's title or name.
+      Product.find().sort({ createdAt: -1 }).limit(5).select('name status createdAt'),
+      User.find().sort({ createdAt: -1 }).limit(5).select('name email role createdAt')
     ]);
 
     const stats = {
@@ -102,13 +103,22 @@ export const GET = withSecurity(SecurityConfigs.admin)(async () => {
         email: msg.email,
         subject: msg.subject,
         createdAt: msg.createdAt,
-        status: msg.status || 'pending'
+        type: 'message',
+        status: msg.status || 'unread'
+      })),
+      recentUsers: recentUsers.map(user => ({
+        _id: user._id,
+        name: user.name,
+        email: user.email,
+        role: user.role,
+        createdAt: user.createdAt,
+        type: 'user'
       })),
       recentContent: [
         ...recentNews.map(item => ({ ...item.toObject(), type: 'news', title: item.title })),
         ...recentPortfolio.map(item => ({ ...item.toObject(), type: 'portfolio', title: item.title })),
         ...recentServices.map(item => ({ ...item.toObject(), type: 'service', title: item.title })),
-        ...recentProducts.map(item => ({ ...item.toObject(), type: 'product', title: item.name || item.title })) // Handle name/title variance
+        ...recentProducts.map(item => ({ ...item.toObject(), type: 'product', title: item.name || item.title }))
       ].sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()).slice(0, 5)
     };
 

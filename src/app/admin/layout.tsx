@@ -338,6 +338,29 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
             </nav>
 
 
+            {/* Secondary Navigation (Profile) */}
+            <div className="px-4 py-2 mt-auto">
+              <nav className="space-y-1">
+                {secondaryNavigation.map((item) => (
+                  <Link
+                    key={item.name}
+                    href={item.href}
+                    onClick={() => setSidebarOpen(false)}
+                    className={`group flex items-center px-3 py-2.5 text-sm font-semibold rounded-xl transition-all duration-200 ${isActive(item.href)
+                      ? 'bg-indigo-600 text-white shadow-md shadow-indigo-600/20'
+                      : 'text-[var(--admin-text-secondary)] hover:bg-[var(--admin-bg)] hover:text-[var(--admin-text-primary)] dark:text-slate-400 dark:hover:text-slate-200 dark:hover:bg-slate-800'
+                      }`}
+                  >
+                    <item.icon
+                      className={`flex-shrink-0 w-5 h-5 mr-3 transition-colors ${isActive(item.href) ? 'text-white' : 'text-slate-400 dark:text-slate-500 group-hover:text-slate-600 dark:group-hover:text-slate-300'
+                        }`}
+                    />
+                    {item.name}
+                  </Link>
+                ))}
+              </nav>
+            </div>
+
             {/* Logout Button */}
             <div className="p-4 border-t border-[var(--admin-border)]">
               <button
@@ -391,7 +414,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
 
                 {/* User Menu */}
                 {session?.user && (
-                  <div className="flex items-center space-x-3 pl-4 border-l border-[var(--admin-border)]">
+                  <Link href="/admin/profile" className="flex items-center space-x-3 pl-4 border-l border-[var(--admin-border)] hover:bg-slate-50 dark:hover:bg-slate-800/50 p-2 rounded-lg transition-colors">
                     <div className="hidden sm:block text-right">
                       <p className="text-sm font-medium text-[var(--admin-text-primary)]">
                         {session.user.name}
@@ -400,10 +423,14 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
                         {session.user.role === 'admin' ? 'Yönetici' : 'Editör'}
                       </p>
                     </div>
-                    <div className="w-10 h-10 rounded-full bg-gradient-to-br from-indigo-400 to-violet-500 flex items-center justify-center text-white font-semibold shadow-lg shadow-indigo-500/30">
-                      {session.user.name?.charAt(0).toUpperCase() || 'K'}
+                    <div className="w-10 h-10 rounded-full bg-gradient-to-br from-indigo-400 to-violet-500 flex items-center justify-center text-white font-semibold shadow-lg shadow-indigo-500/30 overflow-hidden">
+                      {session.user.image ? (
+                        <img src={session.user.image} alt={session.user.name || 'User'} className="w-full h-full object-cover" />
+                      ) : (
+                        session.user.name?.charAt(0).toUpperCase() || 'K'
+                      )}
                     </div>
-                  </div>
+                  </Link>
                 )}
               </div>
             </div>

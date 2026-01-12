@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { useSession } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
@@ -13,11 +13,9 @@ import {
   ArrowTrendingUpIcon,
   ClockIcon,
   CheckCircleIcon,
-  ExclamationCircleIcon,
   PlusIcon,
   EyeIcon,
-  PencilIcon,
-  TrashIcon
+  PencilIcon
 } from '@heroicons/react/24/outline';
 
 interface StatCard {
@@ -38,33 +36,31 @@ interface RecentItem {
   views: number;
 }
 
+interface ActivityItem {
+  id: string;
+  action: string;
+  item: string;
+  time: string;
+  type: 'success' | 'info' | 'warning' | 'error' | 'message';
+}
+
 export default function AdminDashboard() {
   const { data: session, status } = useSession();
   const router = useRouter();
   const [loading, setLoading] = useState(true);
   const [recentItems, setRecentItems] = useState<RecentItem[]>([]);
+  const [activities, setActivities] = useState<ActivityItem[]>([]);
   const [dashboardStats, setDashboardStats] = useState({
     newsCount: 0,
     portfolioCount: 0,
     servicesCount: 0,
     productsCount: 0,
     usersCount: 0,
-    videosCount: 0,
+    videosCount: 0, // videosCount -> mediaCount in API response, need to handle
     messagesCount: 0,
   });
 
-  useEffect(() => {
-    if (status === 'loading') return;
-
-    if (status === 'unauthenticated') {
-      router.push('/admin/login');
-      return;
-    }
-
-    loadDashboardData();
-  }, [status, router]);
-
-  const loadDashboardData = async () => {
+  const loadDashboardData = useCallback(async () => {
     try {
       const res = await fetch('/api/admin/dashboard-stats');
 
@@ -81,7 +77,7 @@ export default function AdminDashboard() {
         servicesCount: data.servicesCount || 0,
         productsCount: data.productsCount || 0,
         usersCount: data.usersCount || 0,
-        videosCount: data.mediaCount || 0, // Mapping mediaCount to videosCount for now, or assume checking media folder
+        videosCount: data.mediaCount || 0,
         messagesCount: data.messagesCount || 0,
       });
 
@@ -97,12 +93,89 @@ export default function AdminDashboard() {
         })));
       }
 
+      // Process Activities
+      const allActivities: ActivityItem[] = [];
+
+      // Add recent messages
+      if (data.recentMessages) {
+        data.recentMessages.forEach((msg: any) => {
+          allActivities.push({
+            id: `msg-${msg._id}`,
+            action: 'Yeni mesaj alındı',
+            item: msg.subject || 'Konu yok',
+            time: formatDate(msg.createdAt),
+            type: 'message',
+            // @ts-expect-error - Adding sortKey for sorting
+            sortKey: new Date(msg.createdAt).getTime()
+          });
+        });
+      }
+
+      // Add recent content as "Created" or "Published" activity
+      if (data.recentContent) {
+        data.recentContent.forEach((content: any) => {
+          let actionText = '';
+          let type: ActivityItem['type'] = 'success';
+
+          switch (content.type) {
+            case 'news': actionText = 'Yeni haber eklendi'; break;
+            case 'portfolio': actionText = 'Portfolyo güncellendi'; type = 'info'; break;
+            case 'service': actionText = 'Yeni hizmet eklendi'; break;
+            case 'product': actionText = 'Yeni ürün eklendi'; break;
+            default: actionText = 'İçerik güncellendi';
+          }
+
+          allActivities.push({
+            id: `content-${content._id}`,
+            action: actionText,
+            item: content.title || content.name,
+            time: formatDate(content.createdAt),
+            type: type,
+            // @ts-expect-error
+            sortKey: new Date(content.createdAt).getTime()
+          });
+        });
+      }
+
+      // Add recent users
+      if (data.recentUsers) {
+        data.recentUsers.forEach((user: any) => {
+          allActivities.push({
+            id: `user-${user._id}`,
+            action: 'Yeni kullanıcı',
+            item: user.name || user.email,
+            time: formatDate(user.createdAt),
+            type: 'warning', // Using warning color (orange/amber) for users
+            // @ts-expect-error
+            sortKey: new Date(user.createdAt).getTime()
+          });
+        });
+      }
+
+      // Sort by date desc and take top 10
+      // @ts-expect-error
+      const sortedActivities = allActivities.sort((a, b) => b.sortKey - a.sortKey).slice(0, 8);
+
+      // Clean up sortKey before setting state if strictly typed, but interface doesn't have it so it's fine or we map it out
+      setActivities(sortedActivities.map(({ sortKey, ...rest }: any) => rest));
+
     } catch (error) {
       console.error('Veriler yüklenirken hata:', error);
     } finally {
       setLoading(false);
     }
-  };
+  }, []);
+
+  useEffect(() => {
+    if (status === 'loading') return;
+
+    if (status === 'unauthenticated') {
+      router.push('/admin/login');
+      return;
+    }
+
+    loadDashboardData();
+  }, [status, router, loadDashboardData]);
 
   const formatDate = (dateString: string) => {
     const date = new Date(dateString);
@@ -112,6 +185,7 @@ export default function AdminDashboard() {
     const diffHours = Math.floor(diffMs / 3600000);
     const diffDays = Math.floor(diffMs / 86400000);
 
+    if (diffMins < 1) return 'Az önce';
     if (diffMins < 60) return `${diffMins} dakika önce`;
     if (diffHours < 24) return `${diffHours} saat önce`;
     if (diffDays < 7) return `${diffDays} gün önce`;
@@ -134,13 +208,8 @@ export default function AdminDashboard() {
     { name: 'Ürün Ekle', href: '/admin/products/new', icon: CubeIcon, color: 'bg-rose-500' },
   ];
 
-  const activities = [
-    // These might be dynamic eventually, translating static ones for now
-    { id: 1, action: 'Yeni makale yayınlandı', item: 'Yeni Ürün Lansmanı', time: '2 saat önce', type: 'success' },
-    { id: 2, action: 'Portfolyo güncellendi', item: 'Web Geliştirme Projesi', time: '5 saat önce', type: 'info' },
-    { id: 3, action: 'Yeni mesaj alındı', item: 'İletişim Formu #123', time: '1 gün önce', type: 'message' },
-    { id: 4, action: 'Yeni kullanıcı eklendi', item: 'John Doe', time: '2 gün önce', type: 'success' },
-  ];
+  // Activities are now dynamic state
+  // const activities = [...] (removed)
 
   const systemStatus = [
     { name: 'Sunucu Durumu', status: 'operational', uptime: '%99.9' },
@@ -169,7 +238,7 @@ export default function AdminDashboard() {
       <div className="bg-gradient-to-r from-indigo-500 via-violet-500 to-purple-600 rounded-2xl p-8 text-white shadow-xl shadow-indigo-500/30">
         <div className="flex items-start justify-between">
           <div>
-            <h1 className="text-3xl font-bold mb-2">
+            <h1 className="text-3xl font-bold mb-2 text-white">
               Hoş geldin, {session?.user?.name || 'Yönetici'}!
             </h1>
             <p className="text-indigo-100 text-lg">
@@ -290,6 +359,9 @@ export default function AdminDashboard() {
                 </div>
               </div>
             ))}
+            {recentItems.length === 0 && (
+              <p className="text-center text-slate-500 py-4">Henüz içerik bulunmuyor.</p>
+            )}
           </div>
         </div>
 
@@ -297,27 +369,32 @@ export default function AdminDashboard() {
         <div className="bg-white rounded-2xl p-6 shadow-sm border border-slate-200/60">
           <h2 className="text-xl font-bold text-slate-900 mb-6">Son Aktiviteler</h2>
           <div className="space-y-4">
-            {activities.map((activity) => (
-              <div key={activity.id} className="flex items-start space-x-4">
-                <div className={`w-10 h-10 rounded-full flex items-center justify-center flex-shrink-0 ${activity.type === 'success' ? 'bg-emerald-100 text-emerald-600' :
-                  activity.type === 'info' ? 'bg-indigo-100 text-indigo-600' :
-                    activity.type === 'message' ? 'bg-amber-100 text-amber-600' :
-                      'bg-slate-100 text-slate-600'
-                  }`}>
-                  {activity.type === 'success' && <CheckCircleIcon className="w-5 h-5" />}
-                  {activity.type === 'info' && <ClockIcon className="w-5 h-5" />}
-                  {activity.type === 'message' && <ChatBubbleLeftRightIcon className="w-5 h-5" />}
-                  {activity.type === 'warning' && <ExclamationCircleIcon className="w-5 h-5" />}
+            {activities.length > 0 ? (
+              activities.map((activity) => (
+                <div key={activity.id} className="flex items-start space-x-4">
+                  <div className={`w-10 h-10 rounded-full flex items-center justify-center flex-shrink-0 ${activity.type === 'success' ? 'bg-emerald-100 text-emerald-600' :
+                    activity.type === 'info' ? 'bg-indigo-100 text-indigo-600' :
+                      activity.type === 'message' ? 'bg-amber-100 text-amber-600' :
+                        activity.type === 'warning' ? 'bg-orange-100 text-orange-600' :
+                          'bg-slate-100 text-slate-600'
+                    }`}>
+                    {activity.type === 'success' && <CheckCircleIcon className="w-5 h-5" />}
+                    {activity.type === 'info' && <ClockIcon className="w-5 h-5" />}
+                    {activity.type === 'message' && <ChatBubbleLeftRightIcon className="w-5 h-5" />}
+                    {activity.type === 'warning' && <UserGroupIcon className="w-5 h-5" />} {/* User icon for new users */}
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <p className="text-sm text-slate-600">
+                      <span className="font-medium text-slate-900">{activity.action}</span>
+                    </p>
+                    <p className="text-sm text-slate-500 truncate">{activity.item}</p>
+                    <p className="text-xs text-slate-400 mt-1">{activity.time}</p>
+                  </div>
                 </div>
-                <div className="flex-1 min-w-0">
-                  <p className="text-sm text-slate-600">
-                    <span className="font-medium text-slate-900">{activity.action}</span>
-                  </p>
-                  <p className="text-sm text-slate-500 truncate">{activity.item}</p>
-                  <p className="text-xs text-slate-400 mt-1">{activity.time}</p>
-                </div>
-              </div>
-            ))}
+              ))
+            ) : (
+              <p className="text-center text-slate-500 py-4">Henüz aktivite bulunmuyor.</p>
+            )}
           </div>
         </div>
       </div>

@@ -70,6 +70,10 @@ interface ThemeConfig {
       relaxed?: string;
       loose?: string;
     };
+    colors?: {
+      heading?: string;
+      body?: string;
+    };
   };
   hero?: {
     enabled?: boolean;
@@ -220,6 +224,10 @@ export default function ThemeCustomizePage({ params }: { params: { id: string } 
         normal: '1.5',
         relaxed: '1.75',
         loose: '2',
+      },
+      colors: {
+        heading: '',
+        body: '',
       },
     },
     hero: {},
@@ -509,6 +517,54 @@ export default function ThemeCustomizePage({ params }: { params: { id: string } 
                           <option key={font} value={font}>{font}</option>
                         ))}
                       </select>
+                    </div>
+                  </div>
+                </section>
+
+                <section className="bg-white rounded-xl shadow-sm border border-slate-200 p-6">
+                  <h3 className="text-lg font-semibold text-slate-900 mb-4 pb-2 border-b border-slate-100">Font Renkleri</h3>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div>
+                      <label className="block text-sm font-medium text-slate-700 mb-2">Başlık Rengi</label>
+                      <div className="flex items-center gap-2">
+                        <div className="relative w-10 h-10 rounded-lg overflow-hidden border border-slate-200 shadow-sm ring-inset">
+                          <input
+                            type="color"
+                            value={config.typography?.colors?.heading || config.colors.primary}
+                            onChange={(e) => handleConfigChange('typography', 'colors', 'heading', e.target.value)}
+                            className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-[150%] h-[150%] p-0 cursor-pointer border-none"
+                          />
+                        </div>
+                        <input
+                          type="text"
+                          value={config.typography?.colors?.heading || ''}
+                          placeholder="Varsayılan (Primary)"
+                          onChange={(e) => handleConfigChange('typography', 'colors', 'heading', e.target.value)}
+                          className="flex-1 px-3 py-2 border border-slate-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 uppercase"
+                        />
+                      </div>
+                      <p className="mt-1 text-xs text-slate-500">Bırakılırsa birincil renk kullanılır.</p>
+                    </div>
+                    <div>
+                      <label className="block text-sm font-medium text-slate-700 mb-2">Gövde Rengi</label>
+                      <div className="flex items-center gap-2">
+                        <div className="relative w-10 h-10 rounded-lg overflow-hidden border border-slate-200 shadow-sm ring-inset">
+                          <input
+                            type="color"
+                            value={config.typography?.colors?.body || config.colors.text}
+                            onChange={(e) => handleConfigChange('typography', 'colors', 'body', e.target.value)}
+                            className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-[150%] h-[150%] p-0 cursor-pointer border-none"
+                          />
+                        </div>
+                        <input
+                          type="text"
+                          value={config.typography?.colors?.body || ''}
+                          placeholder="Varsayılan (Text)"
+                          onChange={(e) => handleConfigChange('typography', 'colors', 'body', e.target.value)}
+                          className="flex-1 px-3 py-2 border border-slate-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 uppercase"
+                        />
+                      </div>
+                      <p className="mt-1 text-xs text-slate-500">Bırakılırsa genel metin rengi kullanılır.</p>
                     </div>
                   </div>
                 </section>
