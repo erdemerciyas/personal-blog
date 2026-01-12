@@ -7,6 +7,7 @@ export interface OTPAuthenticator {
     check(token: string, secret: string): Promise<boolean>;
     verify(options: { token: string; secret: string }): Promise<boolean>;
     keyuri(user: string, service: string, secret: string): string;
+    generate(secret: string): string;
 }
 
 // Create the underlying instance with required plugins
@@ -59,6 +60,11 @@ const authenticator: OTPAuthenticator = {
             label,
             issuer: service
         });
+    },
+
+    // Expose generate directly
+    generate: (secret: string) => {
+        return (baseAuthenticator as any).generate(secret) as string;
     }
 };
 

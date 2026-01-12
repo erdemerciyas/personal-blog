@@ -114,8 +114,18 @@ export async function PUT(req: Request) {
         }
 
         console.log('Verifying token...');
+        console.log('Secret (masked):', user.twoFactorSecret ? user.twoFactorSecret.substring(0, 4) + '***' : 'MISSING');
+
         let isValid = false;
         try {
+            // Debugging: Generate what the server thinks the token should be
+            try {
+                const expectedToken = authenticator.generate(user.twoFactorSecret);
+                console.log(`DEBUG: Received Token: [${token}], Expected Token: [${expectedToken}]`);
+            } catch (genErr) {
+                console.error('DEBUG: Could not generate expected token for log:', genErr);
+            }
+
             // Check token using the unified async check method
             isValid = await authenticator.check(token, user.twoFactorSecret);
             console.log('Token validation result:', isValid);
