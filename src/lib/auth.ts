@@ -81,7 +81,7 @@ export const authOptions: NextAuthOptions = {
             throw new Error('2FA Setup Error. Contact admin.');
           }
 
-          const isValid = authenticator.check(code, user.twoFactorSecret);
+          const isValid = await authenticator.check(code, user.twoFactorSecret);
           if (!isValid) {
             throw new Error('INVALID_2FA');
           }

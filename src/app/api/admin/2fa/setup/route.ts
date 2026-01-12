@@ -116,20 +116,11 @@ export async function PUT(req: Request) {
         console.log('Verifying token...');
         let isValid = false;
         try {
-            // Our lib/otp polyfills check if verify is the one available, or vice versa
-            isValid = authenticator.check(token, user.twoFactorSecret);
+            // Check token using the unified async check method
+            isValid = await authenticator.check(token, user.twoFactorSecret);
             console.log('Token validation result:', isValid);
         } catch (e: any) {
             console.log('Error during token check:', e);
-            // Try fallback if method name mismatch logic failed in lib/otp (unlikely but safe)
-            try {
-                if (authenticator.verify) {
-                    isValid = authenticator.verify({ token, secret: user.twoFactorSecret });
-                    console.log('Token validation result (fallback verify):', isValid);
-                }
-            } catch (e2) {
-                console.error('Fallback verify also failed:', e2);
-            }
         }
 
         if (!isValid) {
