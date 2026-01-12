@@ -14,7 +14,7 @@ export interface OTPAuthenticator {
 // but at runtime we know these plugins are required.
 const baseAuthenticator = new TOTP({
     step: 30,
-    window: 1,
+    window: 2, // 2 windows = +/- 60 seconds tolerance to fix time drift issues
     digits: 6,
     crypto: new NobleCryptoPlugin(),
     base32: new ScureBase32Plugin()
@@ -29,9 +29,14 @@ const authenticator: OTPAuthenticator = {
     // Legacy check method -> async verify
     check: async (token: string, secret: string) => {
         try {
+            if (!token || !secret) return false;
+
+            // Sanitize token: remove spaces, dashes, ensuring only digits
+            const cleanToken = String(token).replace(/\D/g, '');
+
             // Force boolean return and bypass type checks for argument structure
             // verifying against runtime behavior that expects object or similar
-            const result = await (baseAuthenticator.verify as any)({ token, secret });
+            const result = await (baseAuthenticator.verify as any)({ token: cleanToken, secret });
             return !!result;
         } catch (error) {
             console.error('OTP check error:', error);
