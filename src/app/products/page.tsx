@@ -226,8 +226,8 @@ export default async function ProductsPage({ searchParams }: { searchParams: Rec
                   return (
                     <FixralCard key={p._id} className="p-4" variant="default">
                       <div className="grid md:grid-cols-[180px_1fr_auto] gap-4 items-center">
-                        <div className="relative">
-                          <NextImage src={p.coverImage} alt={p.title} fill className="object-cover rounded-md" sizes="(max-width: 768px) 100vw, 200px" />
+                        <div className="relative h-40 w-full rounded-md overflow-hidden">
+                          <NextImage src={p.coverImage} alt={p.title} fill className="object-cover" sizes="(max-width: 768px) 100vw, 200px" />
                           {p.stock <= 0 && (
                             <span className="absolute top-2 left-2 text-xs px-2 py-0.5 rounded bg-red-600 text-white">Stokta Yok</span>
                           )}
@@ -258,11 +258,13 @@ export default async function ProductsPage({ searchParams }: { searchParams: Rec
                 return (
                   <TiltHover key={p._id} className="[transform-style:preserve-3d]">
                     <FixralCard className="overflow-hidden" variant="default">
-                      <Link href={`/products/${p.slug}`} className="block group relative">
-                        <NextImage src={p.coverImage} alt={p.title} fill className="object-cover rounded-md transition-transform group-hover:scale-[1.02]" sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw" />
-                        {p.stock <= 0 && (
-                          <span className="absolute top-2 left-2 text-xs px-2 py-0.5 rounded bg-red-600 text-white">Stokta Yok</span>
-                        )}
+                      <Link href={`/products/${p.slug}`} className="block group">
+                        <div className="relative h-48 w-full bg-gray-100 overflow-hidden rounded-t-lg">
+                          <NextImage src={p.coverImage} alt={p.title} fill className="object-cover transition-transform group-hover:scale-[1.02]" sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw" />
+                          {p.stock <= 0 && (
+                            <span className="absolute top-2 left-2 text-xs px-2 py-0.5 rounded bg-red-600 text-white z-10">Stokta Yok</span>
+                          )}
+                        </div>
                         <div className="mt-3 font-medium text-slate-900 line-clamp-2 min-h-[2.75rem]">{p.title}</div>
                         <div className="mt-1 flex items-center justify-between text-xs text-slate-600">
                           <span className={`inline-flex items-center px-2 py-0.5 rounded-full ${p.condition === 'new' ? 'bg-emerald-50 text-emerald-700' : 'bg-amber-50 text-amber-700'}`}>{p.condition === 'new' ? 'Sıfır' : 'İkinci El'}</span>

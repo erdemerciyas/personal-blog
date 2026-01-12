@@ -297,7 +297,7 @@ export default async function RootLayout({
                   {/* Main content area with smooth transitions */}
                   <PageTransitionWrapper>
                     <div className="relative flex-grow">
-                      <main id="main-content" className="relative z-10">
+                      <main id="main-content" className="relative z-100">
                         <div>{children}</div>
                       </main>
                     </div>

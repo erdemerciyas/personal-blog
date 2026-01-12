@@ -4,7 +4,7 @@ import { useState, useEffect, useMemo } from 'react';
 import { createPortal } from 'react-dom';
 import Image from 'next/image';
 import { motion } from 'framer-motion';
-import { 
+import {
   MagnifyingGlassIcon,
   XMarkIcon,
   ChevronLeftIcon,
@@ -18,10 +18,10 @@ interface PortfolioImageGalleryProps {
   coverImage?: string;
 }
 
-export default function PortfolioImageGallery({ 
-  images, 
-  title, 
-  coverImage 
+export default function PortfolioImageGallery({
+  images,
+  title,
+  coverImage
 }: PortfolioImageGalleryProps) {
   const [selectedImage, setSelectedImage] = useState<string | null>(null);
   const [lightboxOpen, setLightboxOpen] = useState(false);
@@ -34,7 +34,7 @@ export default function PortfolioImageGallery({
     if (!images || images.length === 0) {
       return coverImage ? [coverImage] : [];
     }
-    
+
     // images array'i varsa, coverImage'ı kontrol et
     if (coverImage) {
       // coverImage zaten images array'inde varsa, images'ı döndür
@@ -44,7 +44,7 @@ export default function PortfolioImageGallery({
       // coverImage images'da yoksa, başına ekle
       return [coverImage, ...images];
     }
-    
+
     // coverImage yoksa sadece images'ı döndür
     return images;
   }, [coverImage, images]);
@@ -62,7 +62,7 @@ export default function PortfolioImageGallery({
   useEffect(() => {
     const handleKeyPress = (e: KeyboardEvent) => {
       if (!lightboxOpen) return;
-      
+
       switch (e.key) {
         case 'Escape':
           setLightboxOpen(false);
@@ -121,7 +121,7 @@ export default function PortfolioImageGallery({
     <div>
       <div className="space-y-6">
         {/* Main Image */}
-        <motion.div 
+        <motion.div
           key={`main-image-${selectedImage || 'loading'}`}
           initial={{ opacity: 0, scale: 0.95 }}
           animate={{ opacity: 1, scale: 1 }}
@@ -148,7 +148,7 @@ export default function PortfolioImageGallery({
               />
               {/* Hover overlay */}
               <div className="absolute inset-0 bg-black/0 group-hover:bg-black/20 transition-all duration-300 flex items-center justify-center">
-                <motion.div 
+                <motion.div
                   initial={{ opacity: 0, scale: 0.8 }}
                   whileHover={{ opacity: 1, scale: 1 }}
                   className="opacity-0 group-hover:opacity-100 transition-opacity duration-300"
@@ -168,10 +168,10 @@ export default function PortfolioImageGallery({
             </div>
           )}
         </motion.div>
-        
+
         {/* Thumbnail Gallery */}
         {allImages.length > 1 && (
-          <motion.div 
+          <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6, delay: 0.3 }}
@@ -181,7 +181,7 @@ export default function PortfolioImageGallery({
               <PhotoIcon className="w-6 h-6 mr-3 text-brand-primary-700" />
               Proje Görselleri ({allImages.length})
             </h3>
-            
+
             <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-3">
               {allImages.map((image, index) => (
                 <motion.button
@@ -193,11 +193,10 @@ export default function PortfolioImageGallery({
                     e.stopPropagation();
                     setSelectedImage(image);
                   }}
-                  className={`relative aspect-square w-full h-20 sm:h-24 md:h-28 lg:h-32 xl:h-36 rounded-xl overflow-hidden border-2 transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-brand-primary-600 focus:ring-offset-2 ${
-                    selectedImage === image
-                      ? 'border-brand-primary-600 shadow-lg ring-4 ring-brand-primary-200 scale-105'
-                      : 'border-slate-200 hover:border-brand-primary-300 hover:shadow-md'
-                  }`}
+                  className={`relative aspect-square w-full h-20 sm:h-24 md:h-28 lg:h-32 xl:h-36 rounded-xl overflow-hidden border-2 transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-brand-primary-600 focus:ring-offset-2 ${selectedImage === image
+                    ? 'border-brand-primary-600 shadow-lg ring-4 ring-brand-primary-200 scale-105'
+                    : 'border-slate-200 hover:border-brand-primary-300 hover:shadow-md'
+                    }`}
                   type="button"
                 >
                   <Image
@@ -212,7 +211,7 @@ export default function PortfolioImageGallery({
                       <div className="w-4 h-4 bg-white rounded-full shadow-lg"></div>
                     </div>
                   )}
-                  
+
                   {/* Image number overlay */}
                   <div className="absolute top-1 right-1 bg-black/50 text-white text-xs px-2 py-1 rounded-full pointer-events-none">
                     {index + 1}
@@ -226,147 +225,146 @@ export default function PortfolioImageGallery({
 
       {/* Lightbox Modal */}
       {mounted && lightboxOpen && createPortal(
-        <motion.div 
+        <motion.div
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}
           className="fixed inset-0 bg-black/95 backdrop-blur-sm flex items-center justify-center"
-          style={{ 
-            position: 'fixed', 
-            top: 0, 
-            left: 0, 
-            right: 0, 
-            bottom: 0, 
+          style={{
+            position: 'fixed',
+            top: 0,
+            left: 0,
+            right: 0,
+            bottom: 0,
             zIndex: 99999,
             width: '100vw',
             height: '100vh'
           }}
         >
-            <div className="relative w-screen h-screen flex items-center justify-center p-4" style={{ width: '100vw', height: '100vh' }}>
-              
-              {/* Close Button */}
+          <div className="relative w-screen h-screen flex items-center justify-center p-4" style={{ width: '100vw', height: '100vh' }}>
+
+            {/* Close Button */}
+            <motion.button
+              initial={{ opacity: 0, scale: 0.8 }}
+              animate={{ opacity: 1, scale: 1 }}
+              transition={{ delay: 0.2 }}
+              onClick={() => setLightboxOpen(false)}
+              className="absolute top-6 right-6 z-10 bg-black/50 hover:bg-black/70 text-white rounded-full p-4 transition-all duration-200 hover:scale-110"
+              title="Kapat (ESC)"
+            >
+              <XMarkIcon className="w-6 h-6" />
+            </motion.button>
+
+            {/* Image Counter */}
+            <motion.div
+              initial={{ opacity: 0, y: -20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.3 }}
+              className="absolute top-6 left-6 z-10 bg-black/50 text-white px-6 py-3 rounded-full text-lg font-medium"
+            >
+              {lightboxImageIndex + 1} / {allImages.length}
+            </motion.div>
+
+            {/* Previous Button */}
+            {allImages.length > 1 && (
               <motion.button
-                initial={{ opacity: 0, scale: 0.8 }}
-                animate={{ opacity: 1, scale: 1 }}
-                transition={{ delay: 0.2 }}
-                onClick={() => setLightboxOpen(false)}
-                className="absolute top-6 right-6 z-10 bg-black/50 hover:bg-black/70 text-white rounded-full p-4 transition-all duration-200 hover:scale-110"
-                title="Kapat (ESC)"
+                initial={{ opacity: 0, x: -20 }}
+                animate={{ opacity: 1, x: 0 }}
+                transition={{ delay: 0.4 }}
+                onClick={() => navigateLightbox('prev')}
+                className="absolute left-6 top-1/2 transform -translate-y-1/2 z-10 bg-black/50 hover:bg-black/70 text-white rounded-full p-4 transition-all duration-200 hover:scale-110"
+                title="Önceki (←)"
               >
-                <XMarkIcon className="w-6 h-6" />
+                <ChevronLeftIcon className="w-8 h-8" />
               </motion.button>
-              
-              {/* Image Counter */}
-              <motion.div 
-                initial={{ opacity: 0, y: -20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.3 }}
-                className="absolute top-6 left-6 z-10 bg-black/50 text-white px-6 py-3 rounded-full text-lg font-medium"
+            )}
+
+            {/* Main Image Container */}
+            <motion.div
+              initial={{ opacity: 0, scale: 0.9 }}
+              animate={{ opacity: 1, scale: 1 }}
+              transition={{ duration: 0.5 }}
+              className="relative w-full h-full max-w-7xl max-h-full"
+            >
+              <Image
+                src={allImages[lightboxImageIndex]}
+                alt={`${title} - Görsel ${lightboxImageIndex + 1}`}
+                fill
+                className="object-contain"
+                quality={100}
+                sizes="100vw"
+                priority
+              />
+            </motion.div>
+
+            {/* Next Button */}
+            {allImages.length > 1 && (
+              <motion.button
+                initial={{ opacity: 0, x: 20 }}
+                animate={{ opacity: 1, x: 0 }}
+                transition={{ delay: 0.4 }}
+                onClick={() => navigateLightbox('next')}
+                className="absolute right-6 top-1/2 transform -translate-y-1/2 z-10 bg-black/50 hover:bg-black/70 text-white rounded-full p-4 transition-all duration-200 hover:scale-110"
+                title="Sonraki (→)"
               >
-                {lightboxImageIndex + 1} / {allImages.length}
-              </motion.div>
-              
-              {/* Previous Button */}
-              {allImages.length > 1 && (
-                <motion.button
-                  initial={{ opacity: 0, x: -20 }}
-                  animate={{ opacity: 1, x: 0 }}
-                  transition={{ delay: 0.4 }}
-                  onClick={() => navigateLightbox('prev')}
-                  className="absolute left-6 top-1/2 transform -translate-y-1/2 z-10 bg-black/50 hover:bg-black/70 text-white rounded-full p-4 transition-all duration-200 hover:scale-110"
-                  title="Önceki (←)"
-                >
-                  <ChevronLeftIcon className="w-8 h-8" />
-                </motion.button>
-              )}
-              
-              {/* Main Image Container */}
-              <motion.div 
-                initial={{ opacity: 0, scale: 0.9 }}
-                animate={{ opacity: 1, scale: 1 }}
-                transition={{ duration: 0.5 }}
-                className="relative w-full h-full max-w-7xl max-h-full"
-              >
-                <Image
-                  src={allImages[lightboxImageIndex]}
-                  alt={`${title} - Görsel ${lightboxImageIndex + 1}`}
-                  fill
-                  className="object-contain"
-                  quality={100}
-                  sizes="100vw"
-                  priority
-                />
-              </motion.div>
-              
-              {/* Next Button */}
-              {allImages.length > 1 && (
-                <motion.button
-                  initial={{ opacity: 0, x: 20 }}
-                  animate={{ opacity: 1, x: 0 }}
-                  transition={{ delay: 0.4 }}
-                  onClick={() => navigateLightbox('next')}
-                  className="absolute right-6 top-1/2 transform -translate-y-1/2 z-10 bg-black/50 hover:bg-black/70 text-white rounded-full p-4 transition-all duration-200 hover:scale-110"
-                  title="Sonraki (→)"
-                >
-                  <ChevronRightIcon className="w-8 h-8" />
-                </motion.button>
-              )}
-              
-              {/* Image Title */}
-              <motion.div 
+                <ChevronRightIcon className="w-8 h-8" />
+              </motion.button>
+            )}
+
+            {/* Image Title */}
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.5 }}
+              className="absolute bottom-6 left-1/2 transform -translate-x-1/2 z-10 bg-black/50 text-white px-8 py-4 rounded-2xl text-center max-w-2xl"
+            >
+              <h3 className="font-bold text-xl mb-2 text-white">{title}</h3>
+              <p className="text-sm text-gray-300">Görsel {lightboxImageIndex + 1} / {allImages.length}</p>
+            </motion.div>
+
+            {/* Thumbnail Strip */}
+            {allImages.length > 1 && (
+              <motion.div
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.5 }}
-                className="absolute bottom-6 left-1/2 transform -translate-x-1/2 z-10 bg-black/50 text-white px-8 py-4 rounded-2xl text-center max-w-2xl"
+                transition={{ delay: 0.6 }}
+                className="absolute bottom-24 left-1/2 transform -translate-x-1/2 z-10 bg-black/50 backdrop-blur-sm rounded-3xl p-4 max-w-6xl overflow-x-auto"
               >
-                <h3 className="font-bold text-xl mb-2">{title}</h3>
-                <p className="text-sm text-gray-300">Görsel {lightboxImageIndex + 1} / {allImages.length}</p>
-              </motion.div>
-              
-              {/* Thumbnail Strip */}
-              {allImages.length > 1 && (
-                <motion.div 
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: 0.6 }}
-                  className="absolute bottom-24 left-1/2 transform -translate-x-1/2 z-10 bg-black/50 backdrop-blur-sm rounded-3xl p-4 max-w-6xl overflow-x-auto"
-                >
-                  <div className="flex space-x-3">
-                    {allImages.map((image, index) => (
-                      <button
-                        key={index}
-                        onClick={() => setLightboxImageIndex(index)}
-                        className={`relative flex-shrink-0 w-20 h-20 rounded-xl overflow-hidden border-3 transition-all duration-200 hover:scale-105 ${
-                          lightboxImageIndex === index
-                            ? 'border-brand-primary-500 shadow-lg shadow-brand-primary-500/50'
-                            : 'border-white/30 hover:border-white/60'
+                <div className="flex space-x-3">
+                  {allImages.map((image, index) => (
+                    <button
+                      key={index}
+                      onClick={() => setLightboxImageIndex(index)}
+                      className={`relative flex-shrink-0 w-20 h-20 rounded-xl overflow-hidden border-3 transition-all duration-200 hover:scale-105 ${lightboxImageIndex === index
+                        ? 'border-brand-primary-500 shadow-lg shadow-brand-primary-500/50'
+                        : 'border-white/30 hover:border-white/60'
                         }`}
-                      >
-                        <Image
-                          src={image}
-                          alt={`Küçük görsel ${index + 1}`}
-                          fill
-                          className="object-cover"
-                          sizes="80px"
-                        />
-                        {lightboxImageIndex === index && (
-                          <div className="absolute inset-0 bg-brand-primary-500/20 flex items-center justify-center">
-                            <div className="w-3 h-3 bg-white rounded-full"></div>
-                          </div>
-                        )}
-                      </button>
-                    ))}
-                  </div>
-                </motion.div>
-              )}
-              
-              {/* Click outside to close */}
-              <div 
-                className="absolute inset-0 -z-10" 
-                onClick={() => setLightboxOpen(false)}
-              />
-            </div>
-          </motion.div>,
+                    >
+                      <Image
+                        src={image}
+                        alt={`Küçük görsel ${index + 1}`}
+                        fill
+                        className="object-cover"
+                        sizes="80px"
+                      />
+                      {lightboxImageIndex === index && (
+                        <div className="absolute inset-0 bg-brand-primary-500/20 flex items-center justify-center">
+                          <div className="w-3 h-3 bg-white rounded-full"></div>
+                        </div>
+                      )}
+                    </button>
+                  ))}
+                </div>
+              </motion.div>
+            )}
+
+            {/* Click outside to close */}
+            <div
+              className="absolute inset-0 -z-10"
+              onClick={() => setLightboxOpen(false)}
+            />
+          </div>
+        </motion.div>,
         document.body
       )}
     </div>

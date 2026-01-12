@@ -4,7 +4,7 @@ import { useState, useEffect, useMemo } from 'react';
 import { createPortal } from 'react-dom';
 import Image from 'next/image';
 import { motion } from 'framer-motion';
-import { 
+import {
   MagnifyingGlassIcon,
   XMarkIcon,
   ChevronLeftIcon,
@@ -33,11 +33,11 @@ interface PortfolioMediaGalleryProps {
   coverImage?: string;
 }
 
-export default function PortfolioMediaGallery({ 
-  images, 
+export default function PortfolioMediaGallery({
+  images,
   models3D = [],
-  title, 
-  coverImage 
+  title,
+  coverImage
 }: PortfolioMediaGalleryProps) {
   const [selectedItem, setSelectedItem] = useState<MediaItem | null>(null);
   const [lightboxOpen, setLightboxOpen] = useState(false);
@@ -47,19 +47,19 @@ export default function PortfolioMediaGallery({
   // Combine images and 3D models into a unified media array
   const allMediaItems = useMemo(() => {
     const mediaItems: MediaItem[] = [];
-    
+
     // Add images
-    const imageList = coverImage && !images.includes(coverImage) 
-      ? [coverImage, ...images] 
+    const imageList = coverImage && !images.includes(coverImage)
+      ? [coverImage, ...images]
       : images.length > 0 ? images : (coverImage ? [coverImage] : []);
-    
+
     imageList.forEach(image => {
       mediaItems.push({
         type: 'image',
         url: image
       });
     });
-    
+
     // Add 3D models
     models3D.forEach(model => {
       mediaItems.push({
@@ -72,7 +72,7 @@ export default function PortfolioMediaGallery({
         publicId: model.publicId
       });
     });
-    
+
     return mediaItems;
   }, [coverImage, images, models3D]);
 
@@ -87,7 +87,7 @@ export default function PortfolioMediaGallery({
   useEffect(() => {
     const handleKeyPress = (e: KeyboardEvent) => {
       if (!lightboxOpen) return;
-      
+
       switch (e.key) {
         case 'Escape':
           setLightboxOpen(false);
@@ -134,7 +134,7 @@ export default function PortfolioMediaGallery({
 
     try {
       const response = await fetch(`/api/3dmodels/download?url=${encodeURIComponent(model.url)}&filename=${encodeURIComponent(model.name)}`);
-      
+
       if (!response.ok) {
         throw new Error('İndirme başarısız');
       }
@@ -179,7 +179,7 @@ export default function PortfolioMediaGallery({
     <div>
       <div className="space-y-6">
         {/* Main Media Display */}
-        <motion.div 
+        <motion.div
           key={`main-media-${selectedItem?.url || 'loading'}`}
           initial={{ opacity: 0, scale: 0.95 }}
           animate={{ opacity: 1, scale: 1 }}
@@ -208,7 +208,7 @@ export default function PortfolioMediaGallery({
                   />
                   {/* Hover overlay for images */}
                   <div className="absolute inset-0 bg-black/0 group-hover:bg-black/20 transition-all duration-300 flex items-center justify-center">
-                    <motion.div 
+                    <motion.div
                       initial={{ opacity: 0, scale: 0.8 }}
                       whileHover={{ opacity: 1, scale: 1 }}
                       className="opacity-0 group-hover:opacity-100 transition-opacity duration-300"
@@ -224,8 +224,8 @@ export default function PortfolioMediaGallery({
                   {/* 3D Model Preview - Mini viewer */}
                   <div className="w-full h-full relative">
                     <div className="w-full h-full bg-gradient-to-br from-slate-100 to-slate-200">
-                      <ModelViewer 
-                        modelUrl={selectedItem.url} 
+                      <ModelViewer
+                        modelUrl={selectedItem.url}
                         format={selectedItem.format || 'gltf'}
                         className="w-full h-full"
                       />
@@ -244,7 +244,7 @@ export default function PortfolioMediaGallery({
                   </div>
                   {/* Hover overlay for 3D models */}
                   <div className="absolute inset-0 bg-black/0 group-hover:bg-black/20 transition-all duration-300 flex items-center justify-center">
-                    <motion.div 
+                    <motion.div
                       initial={{ opacity: 0, scale: 0.8 }}
                       whileHover={{ opacity: 1, scale: 1 }}
                       className="opacity-0 group-hover:opacity-100 transition-opacity duration-300"
@@ -266,10 +266,10 @@ export default function PortfolioMediaGallery({
             </div>
           )}
         </motion.div>
-        
+
         {/* Media Thumbnail Gallery */}
         {allMediaItems.length > 1 && (
-          <motion.div 
+          <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6, delay: 0.3 }}
@@ -284,7 +284,7 @@ export default function PortfolioMediaGallery({
                 </span>
               )}
             </h3>
-            
+
             <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-3">
               {allMediaItems.map((item, index) => (
                 <motion.button
@@ -296,11 +296,10 @@ export default function PortfolioMediaGallery({
                     e.stopPropagation();
                     setSelectedItem(item);
                   }}
-                  className={`relative aspect-square w-full h-20 sm:h-24 md:h-28 lg:h-32 xl:h-36 rounded-xl overflow-hidden border-2 transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-brand-primary-600 focus:ring-offset-2 ${
-                    selectedItem?.url === item.url
+                  className={`relative aspect-square w-full h-20 sm:h-24 md:h-28 lg:h-32 xl:h-36 rounded-xl overflow-hidden border-2 transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-brand-primary-600 focus:ring-offset-2 ${selectedItem?.url === item.url
                       ? 'border-brand-primary-600 shadow-lg ring-4 ring-brand-primary-200 scale-105'
                       : 'border-slate-200 hover:border-brand-primary-300 hover:shadow-md'
-                  }`}
+                    }`}
                   type="button"
                 >
                   {item.type === 'image' ? (
@@ -316,13 +315,13 @@ export default function PortfolioMediaGallery({
                       <CubeIcon className="w-8 h-8 text-blue-600" />
                     </div>
                   )}
-                  
+
                   {selectedItem?.url === item.url && (
                     <div className="absolute inset-0 bg-brand-primary-600/20 flex items-center justify-center pointer-events-none">
                       <div className="w-4 h-4 bg-white rounded-full shadow-lg"></div>
                     </div>
                   )}
-                  
+
                   {/* Media type indicator */}
                   <div className="absolute top-1 left-1 bg-black/50 text-white text-xs px-2 py-1 rounded-full pointer-events-none flex items-center space-x-1">
                     {item.type === 'image' ? (
@@ -331,7 +330,7 @@ export default function PortfolioMediaGallery({
                       <CubeIcon className="w-3 h-3" />
                     )}
                   </div>
-                  
+
                   {/* Media number overlay */}
                   <div className="absolute top-1 right-1 bg-black/50 text-white text-xs px-2 py-1 rounded-full pointer-events-none">
                     {index + 1}
@@ -345,24 +344,24 @@ export default function PortfolioMediaGallery({
 
       {/* Lightbox Modal */}
       {mounted && lightboxOpen && createPortal(
-        <motion.div 
+        <motion.div
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}
           className="fixed inset-0 bg-black/95 backdrop-blur-sm flex items-center justify-center"
-          style={{ 
-            position: 'fixed', 
-            top: 0, 
-            left: 0, 
-            right: 0, 
-            bottom: 0, 
+          style={{
+            position: 'fixed',
+            top: 0,
+            left: 0,
+            right: 0,
+            bottom: 0,
             zIndex: 99999,
             width: '100vw',
             height: '100vh'
           }}
         >
           <div className="relative w-screen h-screen flex items-center justify-center p-4" style={{ width: '100vw', height: '100vh' }}>
-            
+
             {/* Close Button */}
             <motion.button
               initial={{ opacity: 0, scale: 0.8 }}
@@ -374,9 +373,9 @@ export default function PortfolioMediaGallery({
             >
               <XMarkIcon className="w-6 h-6" />
             </motion.button>
-            
+
             {/* Media Counter */}
-            <motion.div 
+            <motion.div
               initial={{ opacity: 0, y: -20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.3 }}
@@ -389,7 +388,7 @@ export default function PortfolioMediaGallery({
               )}
               <span>{lightboxItemIndex + 1} / {allMediaItems.length}</span>
             </motion.div>
-            
+
             {/* Download Button for 3D Models */}
             {allMediaItems[lightboxItemIndex]?.type === '3d-model' && allMediaItems[lightboxItemIndex]?.downloadable && (
               <motion.button
@@ -404,7 +403,7 @@ export default function PortfolioMediaGallery({
                 <span>İndir</span>
               </motion.button>
             )}
-            
+
             {/* Previous Button */}
             {allMediaItems.length > 1 && (
               <motion.button
@@ -418,9 +417,9 @@ export default function PortfolioMediaGallery({
                 <ChevronLeftIcon className="w-8 h-8" />
               </motion.button>
             )}
-            
+
             {/* Main Media Container */}
-            <motion.div 
+            <motion.div
               initial={{ opacity: 0, scale: 0.9 }}
               animate={{ opacity: 1, scale: 1 }}
               transition={{ duration: 0.5 }}
@@ -439,8 +438,8 @@ export default function PortfolioMediaGallery({
               ) : (
                 <div className="w-full h-full flex items-center justify-center">
                   <div className="w-full max-w-4xl h-96 bg-white rounded-lg overflow-hidden">
-                    <ModelViewer 
-                      modelUrl={allMediaItems[lightboxItemIndex].url} 
+                    <ModelViewer
+                      modelUrl={allMediaItems[lightboxItemIndex].url}
                       format={allMediaItems[lightboxItemIndex].format || 'gltf'}
                       className="w-full h-full"
                     />
@@ -448,7 +447,7 @@ export default function PortfolioMediaGallery({
                 </div>
               )}
             </motion.div>
-            
+
             {/* Next Button */}
             {allMediaItems.length > 1 && (
               <motion.button
@@ -462,15 +461,15 @@ export default function PortfolioMediaGallery({
                 <ChevronRightIcon className="w-8 h-8" />
               </motion.button>
             )}
-            
+
             {/* Media Title and Info */}
-            <motion.div 
+            <motion.div
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.5 }}
               className="absolute bottom-6 left-1/2 transform -translate-x-1/2 z-10 bg-black/50 text-white px-8 py-4 rounded-2xl text-center max-w-2xl"
             >
-              <h3 className="font-bold text-xl mb-2">{title}</h3>
+              <h3 className="font-bold text-xl mb-2 text-white">{title}</h3>
               <div className="flex items-center justify-center space-x-4 text-sm text-gray-300">
                 <span>
                   {allMediaItems[lightboxItemIndex]?.type === '3d-model' ? '3D Model' : 'Görsel'} {lightboxItemIndex + 1} / {allMediaItems.length}
@@ -489,10 +488,10 @@ export default function PortfolioMediaGallery({
                 )}
               </div>
             </motion.div>
-            
+
             {/* Click outside to close */}
-            <div 
-              className="absolute inset-0 -z-10" 
+            <div
+              className="absolute inset-0 -z-10"
               onClick={() => setLightboxOpen(false)}
             />
           </div>

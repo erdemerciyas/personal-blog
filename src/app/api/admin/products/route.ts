@@ -52,8 +52,43 @@ export const POST = withSecurity({
   if (!body.slug && body.title) {
     body.slug = slugify(body.title, { lower: true, strict: true });
   }
-  const product = await Product.create(body);
-  return NextResponse.json({ product }, { status: 201 });
+
+  // Sanitize numeric fields to prevent CastErrors
+  if (body.price === '' || body.price === null) delete body.price;
+
+  try {
+    const product = await Product.create(body);
+    return NextResponse.json({ product }, { status: 201 });
+  } catch (error: any) {
+    console.error('Product create error:', error);
+
+    // Duplicate Key Error
+    if (error.code === 11000) {
+      return NextResponse.json(
+        { error: 'Bu isimde veya URL\'de bir ürün zaten mevcut. Lütfen başlığı değiştirin.' },
+        { status: 409 }
+      );
+    }
+
+    // Validation Error
+    if (error.name === 'ValidationError') {
+      const messages = Object.values(error.errors).map((val: any) => val.message);
+      return NextResponse.json(
+        { error: `Doğrulama hatası: ${messages.join(', ')}` },
+        { status: 400 }
+      );
+    }
+
+    // Cast Error (Invalid ID or Number)
+    if (error.name === 'CastError') {
+      return NextResponse.json(
+        { error: `Geçersiz veri formatı: ${error.path} alanı hatalı.` },
+        { status: 400 }
+      );
+    }
+
+    return NextResponse.json({ error: 'Ürün oluşturulurken beklenmedik bir hata oluştu.' }, { status: 500 });
+  }
 });
 
 

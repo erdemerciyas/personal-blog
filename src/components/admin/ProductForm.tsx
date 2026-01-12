@@ -16,9 +16,11 @@ import {
     SwatchIcon,
     CurrencyDollarIcon,
     QueueListIcon,
-    PlusIcon
+    PlusIcon,
+    FolderIcon
 } from '@heroicons/react/24/outline';
 import { StarIcon as StarSolidIcon } from '@heroicons/react/24/solid';
+import MediaBrowser from '@/components/MediaBrowser';
 
 interface ProductFormProps {
     initialData?: any;
@@ -36,6 +38,7 @@ export default function ProductForm({ initialData, isEditing = false }: ProductF
     const [error, setError] = useState<string | null>(null);
     const [success, setSuccess] = useState(false);
     const [categories, setCategories] = useState<CategoryItem[]>([]);
+    const [mediaBrowserOpen, setMediaBrowserOpen] = useState(false);
 
     // Validation State
     const [touched, setTouched] = useState<Record<string, boolean>>({});
@@ -141,6 +144,17 @@ export default function ProductForm({ initialData, isEditing = false }: ProductF
         } finally {
             setUploading(false);
         }
+    };
+
+    const handleMediaSelect = (urls: string | string[]) => {
+        const selectedUrls = Array.isArray(urls) ? urls : [urls];
+        if (selectedUrls.length === 0) return;
+
+        setForm(prev => ({
+            ...prev,
+            images: [...prev.images, ...selectedUrls],
+            coverImage: prev.coverImage || selectedUrls[0]
+        }));
     };
 
     const handleSubmit = async () => {
@@ -283,6 +297,14 @@ export default function ProductForm({ initialData, isEditing = false }: ProductF
                                     </div>
                                 </div>
                             </div>
+
+                            <button
+                                onClick={() => setMediaBrowserOpen(true)}
+                                className="w-full mt-3 py-3 border-2 border-dashed border-slate-200 rounded-xl flex items-center justify-center gap-2 text-slate-500 hover:text-indigo-600 hover:border-indigo-300 hover:bg-indigo-50 transition-all font-medium"
+                            >
+                                <FolderIcon className="w-5 h-5" />
+                                <span>Kütüphaneden Seç</span>
+                            </button>
 
                             {/* Image Grid */}
                             {form.images.length > 0 && (
@@ -609,6 +631,19 @@ export default function ProductForm({ initialData, isEditing = false }: ProductF
 
                 </div>
             </div>
+
+            <MediaBrowser
+                isOpen={mediaBrowserOpen}
+                onClose={() => setMediaBrowserOpen(false)}
+                onSelect={handleMediaSelect}
+                onUploadNew={() => {
+                    setMediaBrowserOpen(false);
+                    imageInputRef.current?.click();
+                }}
+                allowMultipleSelect={true}
+                pageContext="products"
+                title="Ürün Görselleri Seç"
+            />
         </div>
     );
 
