@@ -1,59 +1,81 @@
 
 import { TOTP, NobleCryptoPlugin, ScureBase32Plugin } from 'otplib';
 
-// Define the shape of our compatible authenticator
 export interface OTPAuthenticator {
     generateSecret(): string;
     check(token: string, secret: string): Promise<boolean>;
     verify(options: { token: string; secret: string }): Promise<boolean>;
     keyuri(user: string, service: string, secret: string): string;
-    generate(secret: string): string;
+    generate(secret: string): Promise<string>;
 }
 
-// Create the underlying instance with required plugins
-// 'any' cast is used because the exact typing of TOTP constructor might vary between versions/installs
-// but at runtime we know these plugins are required.
+// Reusable plugins
+const cryptoPlugin = new NobleCryptoPlugin();
+const base32Plugin = new ScureBase32Plugin();
+
+// Base config for generation (not for verification loop)
 const baseAuthenticator = new TOTP({
     step: 30,
-    window: 2, // 2 windows = +/- 60 seconds tolerance to fix time drift issues
     digits: 6,
-    crypto: new NobleCryptoPlugin(),
-    base32: new ScureBase32Plugin()
+    crypto: cryptoPlugin,
+    base32: base32Plugin
 } as any);
 
-// Create a wrapper to provide backward compatibility and handle new object-based API
 const authenticator: OTPAuthenticator = {
     generateSecret: () => {
         return baseAuthenticator.generateSecret();
     },
 
-    // Legacy check method -> async verify
+    // Robust manual check using epoch validation to bypass library verification issues
     check: async (token: string, secret: string) => {
         try {
             if (!token || !secret) return false;
 
-            // Sanitize token: remove spaces, dashes, ensuring only digits
+            // Sanitize token
             const cleanToken = String(token).replace(/\D/g, '');
 
-            // Force boolean return and bypass type checks for argument structure
-            // verifying against runtime behavior that expects object or similar
-            const result = await (baseAuthenticator.verify as any)({ token: cleanToken, secret });
-            return !!result;
+            const now = Date.now();
+            const step = 30;
+            const window = 2; // +/- 2 steps (approx 1 min tolerance)
+
+            // Check current, previous, and next windows
+            for (let i = -window; i <= window; i++) {
+                const epoch = now + (i * step * 1000);
+
+                // Instantiate a lightweight validator for this specific time
+                const validator = new TOTP({
+                    step,
+                    digits: 6,
+                    crypto: cryptoPlugin,
+                    base32: base32Plugin,
+                    epoch
+                } as any);
+
+                try {
+                    // Generate token for this window
+                    const generated = await (validator as any).generate({ secret });
+                    if (generated === cleanToken) {
+                        return true;
+                    }
+                } catch (e) {
+                    // Ignore generation errors for specific windows
+                }
+            }
+
+            return false;
         } catch (error) {
             console.error('OTP check error:', error);
             return false;
         }
     },
 
-    // Expose verify directly for newer usages
+    // Map verify to check for consistency
     verify: async (options) => {
-        const result = await (baseAuthenticator.verify as any)(options);
-        return !!result;
+        return authenticator.check(options.token, options.secret);
     },
 
     // Legacy keyuri method -> toURI
     keyuri: (user: string, service: string, secret: string) => {
-        // Construct label as standard "Issuer:Account"
         const label = `${service}:${user}`;
         return baseAuthenticator.toURI({
             secret,
@@ -62,9 +84,9 @@ const authenticator: OTPAuthenticator = {
         });
     },
 
-    // Expose generate directly
-    generate: (secret: string) => {
-        return (baseAuthenticator as any).generate(secret) as string;
+    // Expose generate directly (corrected signature)
+    generate: async (secret: string) => {
+        return await (baseAuthenticator as any).generate({ secret });
     }
 };
 
