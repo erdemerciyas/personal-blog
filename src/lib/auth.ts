@@ -3,7 +3,6 @@ import CredentialsProvider from 'next-auth/providers/credentials';
 import connectDB from './mongoose';
 import UserModel from '../models/User';
 import bcrypt from 'bcryptjs';
-import { SecurityEvents } from './security-audit';
 
 interface AuthUser {
   id: string;
@@ -11,11 +10,6 @@ interface AuthUser {
   name: string;
   role?: string;
   image?: string;
-}
-
-interface Credentials {
-  email?: string;
-  password?: string;
 }
 
 // Vercel'de `VERCEL_URL` varsa onu kullan, yoksa env'den al.
@@ -39,7 +33,7 @@ export const authOptions: NextAuthOptions = {
         password: { label: 'Password', type: 'password' },
         code: { label: '2FA Code', type: 'text' }
       },
-      async authorize(credentials: Record<string, string> | undefined, req: { headers?: Record<string, string | string[] | undefined>; connection?: { remoteAddress?: string } } | undefined): Promise<AuthUser | null> {
+      async authorize(credentials: Record<string, string> | undefined, _req: { headers?: Record<string, string | string[] | undefined>; connection?: { remoteAddress?: string } } | undefined): Promise<AuthUser | null> {
         if (!credentials?.email || !credentials?.password) {
           throw new Error('Email ve şifre gereklidir.');
         }

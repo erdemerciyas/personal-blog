@@ -1,12 +1,9 @@
 
-import mongoose from 'mongoose';
 import { connectToDatabase } from '@/lib/mongoose';
 import SiteSettings from '@/models/SiteSettings';
 import News from '@/models/News';
 import Product from '@/models/Product';
 import Portfolio from '@/models/Portfolio';
-import Service from '@/models/Service';
-import Category from '@/models/Category';
 import fs from 'fs';
 import path from 'path';
 

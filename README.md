@@ -1,7 +1,7 @@
 # FIXRAL - Enterprise Personal CMS
 
 ![Status](https://img.shields.io/badge/status-production--ready-success)
-![Version](https://img.shields.io/badge/version-3.5.1-blue)
+![Version](https://img.shields.io/badge/version-3.5.2-blue)
 ![Next.js](https://img.shields.io/badge/Next.js-14.2-black)
 ![TypeScript](https://img.shields.io/badge/TypeScript-5.0-blue)
 ![License](https://img.shields.io/badge/license-MIT-green)

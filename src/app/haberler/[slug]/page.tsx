@@ -131,7 +131,6 @@ async function findNewsWithRetry(slug: string) {
             await connectDB();
 
             // Try exact slug
-            // @ts-ignore
             news = await News.findOne({ slug })
                 .populate('relatedPortfolioIds', 'title slug coverImage')
                 .populate('relatedNewsIds', 'slug translations featuredImage')
@@ -141,7 +140,6 @@ async function findNewsWithRetry(slug: string) {
             if (!news) {
                 const decodedSlug = decodeURIComponent(slug);
                 if (decodedSlug !== slug) {
-                    // @ts-ignore
                     news = await News.findOne({ slug: decodedSlug })
                         .populate('relatedPortfolioIds', 'title slug coverImage')
                         .populate('relatedNewsIds', 'slug translations featuredImage')
