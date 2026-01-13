@@ -4,6 +4,7 @@ import Image from 'next/image';
 import Link from 'next/link';
 import connectDB from '@/lib/mongoose';
 import News from '@/models/News';
+import '@/models/Portfolio'; // Ensure Portfolio model is registered for population
 import { NewsItem } from '@/types/news';
 import { logger } from '@/core/lib/logger';
 import PageHero from '@/components/common/PageHero';
@@ -22,7 +23,14 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
   try {
     await connectDB();
 
-    const news = (await News.findOne({ slug: params.slug }).lean()) as unknown as NewsItem | null;
+    let news = (await News.findOne({ slug: params.slug }).lean()) as unknown as NewsItem | null;
+
+    if (!news) {
+      const decodedSlug = decodeURIComponent(params.slug);
+      if (decodedSlug !== params.slug) {
+        news = (await News.findOne({ slug: decodedSlug }).lean()) as unknown as NewsItem | null;
+      }
+    }
 
     if (!news) {
       return {
@@ -116,17 +124,65 @@ export const dynamicParams = true;
 /**
  * News Detail Page Component
  */
+// Helper function to find news with retries and fallback
+async function findNewsWithRetry(slug: string) {
+  let news = null;
+  let attempts = 0;
+  const maxAttempts = 3;
+
+  while (attempts < maxAttempts) {
+    attempts++;
+    try {
+      await connectDB();
+
+      // Try exact slug
+      // @ts-ignore
+      news = await News.findOne({ slug })
+        .populate('relatedPortfolioIds', 'title slug coverImage')
+        .populate('relatedNewsIds', 'slug translations featuredImage')
+        .lean() as NewsItem | null;
+
+      // If not found, try decoded slug if it's different
+      if (!news) {
+        const decodedSlug = decodeURIComponent(slug);
+        if (decodedSlug !== slug) {
+          // @ts-ignore
+          news = await News.findOne({ slug: decodedSlug })
+            .populate('relatedPortfolioIds', 'title slug coverImage')
+            .populate('relatedNewsIds', 'slug translations featuredImage')
+            .lean() as NewsItem | null;
+        }
+      }
+
+      if (news) return news;
+
+      // If no result but no error, it might be a true 404, or a consistency issue.
+      // We wait a bit and retry just in case of replication lag (unlikely but possible)
+      if (attempts < maxAttempts) {
+        await new Promise(resolve => setTimeout(resolve, 500));
+      }
+    } catch (error) {
+      logger.warn(`News lookup attempt ${attempts} failed`, 'NEWS_DETAIL', { slug, error: (error as Error).message });
+      if (attempts < maxAttempts) {
+        await new Promise(resolve => setTimeout(resolve, 1000));
+      }
+    }
+  }
+  return null;
+}
+
+/**
+ * News Detail Page Component
+ */
 export default async function NewsDetailPage({ params }: PageProps) {
   try {
-    await connectDB();
-
-    const news = (await News.findOne({ slug: params.slug })
-      .populate('relatedPortfolioIds', 'title slug coverImage')
-      .populate('relatedNewsIds', 'slug translations featuredImage')
-      .lean()) as NewsItem | null;
+    const news = await findNewsWithRetry(params.slug);
 
     if (!news) {
-      logger.warn('News article not found', 'NEWS_DETAIL', { slug: params.slug });
+      logger.warn('News article not found after retries', 'NEWS_DETAIL', {
+        slug: params.slug,
+        decodedSlug: decodeURIComponent(params.slug)
+      });
       notFound();
     }
 

@@ -1,7 +1,7 @@
 # FIXRAL - Enterprise Personal CMS
 
 ![Status](https://img.shields.io/badge/status-production--ready-success)
-![Version](https://img.shields.io/badge/version-3.5.0-blue)
+![Version](https://img.shields.io/badge/version-3.5.1-blue)
 ![Next.js](https://img.shields.io/badge/Next.js-14.2-black)
 ![TypeScript](https://img.shields.io/badge/TypeScript-5.0-blue)
 ![License](https://img.shields.io/badge/license-MIT-green)
@@ -24,9 +24,9 @@
 - **Dynamic Modules**:
     - **Products**: Complete e-commerce catalog with categories, reviews, and order management.
     - **Portfolio**: Showcase projects with rich media support (Images, Videos, 3D Models).
-    - **News/Blog**: Full-featured blog engine with categories and rich text editing.
+    - **News/Blog**: Full-featured blog engine with categories and rich text editing. **(Hotfix v3.5.1: Enhanced reliability with smart retry logic and encoding fallbacks)**.
     - **Services**: Service listing management.
-- **Media Library**: Integrated Cloudinary support for optimizing and managing assets.
+- **Media Library**: Integrated Cloudinary support for optimizing and managing assets. **Improved stability with localized content population**.
 - **3D Model Viewer**: Native support for **GLB, GLTF, and STL** files, perfect for industrial or creative portfolios.
 
 ### ⚙️ System & DevOps

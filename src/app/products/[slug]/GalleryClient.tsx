@@ -69,9 +69,9 @@ export default function ProductGallery({ cover, images = [], title }: Props) {
               <div
                 key={`${u}-${idx}`}
                 onClick={() => setActive(idx)}
-                className={`relative aspect-square rounded-lg overflow-hidden cursor-pointer border-2 transition-all ${active === idx
+                className={`relative aspect-square rounded-lg overflow-hidden cursor-pointer border-2 transition-all h-24 ${active === idx
                   ? 'border-brand-primary-500 ring-2 ring-brand-primary-200 ring-offset-1'
-                  : 'border-transparent hover:border-gray-300 opacity-70 hover:opacity-100'
+                  : 'border-transparent hover:border-gray-300 opacity-70 hover:opacity-100 h-24'
                   }`}
               >
                 <NextImage src={u} alt={`${title} ${idx + 1}`} fill className="object-cover" sizes="100px" />
