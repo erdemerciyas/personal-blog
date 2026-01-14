@@ -229,8 +229,8 @@ const Header: React.FC = () => {
           ? 'bg-gradient-to-b from-black/20 to-transparent backdrop-blur-sm'
           : 'bg-white/95 backdrop-blur-md shadow-lg border-b border-slate-200/40'
         }`} role="banner">
-        <div className="container-main">
-          <div className="flex items-center justify-between h-16 sm:h-20">
+        <div className="container mx-auto px-6">
+          <div className="flex items-center justify-between h-20 sm:h-24">
             {/* Logo - Home Link */}
             <Link href="/" className="flex items-center space-x-3 group shrink-0 -ml-2 sm:-ml-4 lg:-ml-6 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-primary-600 focus-visible:ring-offset-2 rounded-xl" aria-label="Anasayfaya git">
               {siteSettings?.logo?.url && (
@@ -245,9 +245,9 @@ const Header: React.FC = () => {
                   />
                 </div>
               )}
-              <div className="hidden sm:block lg:hidden xl:block">
+              <div className="hidden sm:flex lg:hidden xl:flex flex-col justify-center h-12 sm:h-14">
                 {siteSettings?.siteName && (
-                  <h1 className={`text-xl font-bold tracking-tight transition-colors duration-300 ${isScrolled
+                  <h1 className={`text-lg sm:text-lg font-bold tracking-tight leading-none mb-1 transition-colors duration-300 ${isScrolled
                     ? 'text-slate-900'
                     : isTransparentPage
                       ? 'text-white drop-shadow-lg'
@@ -257,7 +257,7 @@ const Header: React.FC = () => {
                   </h1>
                 )}
                 {siteSettings?.slogan && (
-                  <p className={`text-sm opacity-90 transition-colors duration-300 ${isScrolled
+                  <p className={`text-xs sm:text-[13px] font-medium leading-none opacity-90 transition-colors duration-300 ${isScrolled
                     ? 'text-slate-600'
                     : isTransparentPage
                       ? 'text-white/90 drop-shadow'

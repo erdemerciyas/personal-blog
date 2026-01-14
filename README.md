@@ -1,4 +1,4 @@
-# FIXRAL - Enterprise Personal CMS
+# FIXRAL - Advanced Personal CMS & Portfolio Platform
 
 ![Status](https://img.shields.io/badge/status-production--ready-success)
 ![Version](https://img.shields.io/badge/version-3.5.2-blue)
@@ -6,64 +6,65 @@
 ![TypeScript](https://img.shields.io/badge/TypeScript-5.0-blue)
 ![License](https://img.shields.io/badge/license-MIT-green)
 
-**FIXRAL** is an advanced, production-grade Content Management System (CMS) tailored for personal branding, portfolios, and e-commerce. Built with the latest **Next.js 14** stack, it offers a robust admin dashboard, extensive content modeling, and a high-performance frontend.
+**Fixral** is a state-of-the-art, production-ready Content Management System (CMS) designed specifically for personal branding, professional portfolios, and integrated e-commerce. Built on the robust **Next.js 14** framework, it delivers high performance, exceptional SEO, and a seamless user experience.
+
+This platform is not just a template; it is a fully extensible application engine featuring a powerful admin dashboard, a dynamic plugin system, and a flexible theme engine, making it suitable for developers, designers, and creators who need a professional online presence.
 
 ---
 
 ## 🌟 Key Features
 
 ### 🏢 Core Architecture
-- **Next.js 14 App Router**: Utilizing the latest React Server Components (RSC) for superior performance and SEO.
-- **Plugin System**: Modular architecture allowing feature extension via `src/plugins` (Includes SEO plugin by default).
-- **Theme Engine**: Support for multiple themes with a built-in "Fixral" and "Default" theme system.
-- **Middleware Security**: Custom middleware for intelligent rate limiting, admin route protection, and suspicious activity blocking.
+*   **Next.js 14 App Router**: Leverages React Server Components (RSC) for lightning-fast page loads and optimal SEO performance.
+*   **Modular Plugin Architecture**: Easily extend functionality through a structured `src/plugins` system. Includes built-in plugins for advanced SEO and analytics.
+*   **Dynamic Theme Engine**: Switch and customize themes instantly. The system supports full UI customization (colors, typography, spacing) directly from the admin panel without touching code.
+*   **Middleware Security**: Intelligent edge-based security handling rate limiting, request validation, and route protection.
 
 ### 📦 Content Management (Admin Panel)
-- **Dashboard Analytics**: Real-time overview with **Dynamic Activity Feeds** (New Users, Messages, Content updates).
-- **Theme Engine**: Advanced customization including **Typography Colors**, Fonts, and Spacing via the admin panel.
-- **Dynamic Modules**:
-    - **Products**: Complete e-commerce catalog with categories, reviews, and order management.
-    - **Portfolio**: Showcase projects with rich media support (Images, Videos, 3D Models).
-    - **News/Blog**: Full-featured blog engine with categories and rich text editing. **(Hotfix v3.5.1: Enhanced reliability with smart retry logic and encoding fallbacks)**.
-    - **Services**: Service listing management.
-- **Media Library**: Integrated Cloudinary support for optimizing and managing assets. **Improved stability with localized content population**.
-- **3D Model Viewer**: Native support for **GLB, GLTF, and STL** files, perfect for industrial or creative portfolios.
+The heart of Fixral is its comprehensive Admin Dashboard, designed for ease of use and power:
+
+*   **Dashboard Analytics**: Visual usage statistics, recent activity feeds, and system health monitoring.
+*   **E-Commerce Capabilities**:
+    *   **Product Management**: Full catalog control with categories, variants, and inventory tracking.
+    *   **Order System**: Manage orders, customer details, and status workflows.
+    *   **Reviews**: Moderation system for user-generated product reviews.
+*   **Portfolio Engine**: specialized showcase for projects with support for high-resolution images, videos, and **interactive 3D models (GLB/GLTF/STL)**.
+*   **Content Modules**:
+    *   **Blog/News**: robust rich-text editor, categorization, and tagging.
+    *   **Services**: Structured service listings.
+    *   **Pages**: Dynamic page creation and management.
+*   **Media Library**: Integrated **Cloudinary** media management for optimized asset delivery, handling uploads, transformations, and organization.
 
 ### ⚙️ System & DevOps
-- **Backup & Restore**: Enterprise-level backup system capable of exporting all 24+ data models and media assets to a portable ZIP file.
-- **GitHub Updates**: Integrated efficient system updates directly from the admin panel connected to GitHub.
-- **SEO Optimization**: Automatic sitemap generation, structured data (JSON-LD), and dynamic meta tags.
+*   **Enterprise Backup**: One-click full system backup (Database + Media) to portable archives.
+*   **Security First**: Built-in protection against common web vulnerabilities, secure authentication via NextAuth.js, and rigorous input validation.
+*   **GitHub Integration**: (Optional) Admin panel integration for triggering updates or managing repository state.
+*   **Automated SEO**: Dynamic sitemap generation, structured data (JSON-LD) injection, and meta-tag management.
 
 ---
 
-## 🏗️ Project Structure
+## 🛠 Technology Stack
 
-The project follows a scalable feature-first architecture:
-
-```
-src/
-├── app/                 # Next.js 14 App Router
-│   ├── (public)/        # Public facing pages (Products, Portfolio, Blog)
-│   ├── admin/           # Secured Admin Dashboard
-│   └── api/             # Backend API Routes (REST)
-├── components/          # React Components
-│   ├── admin/           # Dashboard specific components
-│   └── ui/              # Reusable UI kit
-├── core/                # Core engines (Theme, Plugin systems)
-├── lib/                 # Utilities (DB, Auth, Helpers)
-├── models/              # Mongoose Data Models (24+ Schemas)
-├── plugins/             # Plugin modules
-└── themes/              # Theme definitions (Fixral, Default)
-```
+*   **Framework**: [Next.js 14](https://nextjs.org/) (React 18)
+*   **Language**: TypeScript
+*   **Styling**: Tailwind CSS, Framer Motion (Animations)
+*   **Database**: MongoDB (Mongoose ODM)
+*   **Authentication**: NextAuth.js
+*   **State Management**: React Context + Custom Hooks
+*   **Media**: Cloudinary
+*   **Validation**: Zod / Validator.js
+*   **Icons**: Heroicons, React Icons
 
 ---
 
 ## 🚀 Getting Started
 
+Follow these steps to set up the project locally.
+
 ### Prerequisites
-- **Node.js**: v18.17 or higher
-- **MongoDB**: A running instance (Local or Atlas)
-- **Cloudinary**: API keys for media management
+*   **Node.js**: v18.17 or higher
+*   **MongoDB**: Local instance or MongoDB Atlas URI
+*   **Cloudinary Account**: For media storage
 
 ### 1. Installation
 
@@ -71,7 +72,7 @@ src/
 # Clone the repository
 git clone https://github.com/erdemerciyas/personal-blog.git
 
-# Navigate to project
+# Navigate to directory
 cd personal-blog
 
 # Install dependencies
@@ -80,69 +81,71 @@ npm install
 
 ### 2. Configuration
 
-Create a `.env.local` file in the root directory:
+Create a `.env.local` file in the root directory with the following variables:
 
 ```env
-# Database
+# Database Connection
 MONGODB_URI=mongodb://localhost:27017/fixral-cms
 
-# Authentication (NextAuth.js)
+# Authentication Credentials (NextAuth)
 NEXTAUTH_URL=http://localhost:3000
-NEXTAUTH_SECRET=your-super-secret-key-change-this
+NEXTAUTH_SECRET=your-generated-secure-secret-key
 
-# Cloudinary (Media)
-NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME=your-cloud-name
-NEXT_PUBLIC_CLOUDINARY_API_KEY=your-api-key
-CLOUDINARY_API_SECRET=your-api-secret
+# Cloudinary (Media Assets)
+NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME=your_cloud_name
+NEXT_PUBLIC_CLOUDINARY_API_KEY=your_api_key
+CLOUDINARY_API_SECRET=your_api_secret
 
-# Email (SMTP)
+# Email Service (SMTP)
 SMTP_HOST=smtp.example.com
 SMTP_PORT=587
-SMTP_USER=user@example.com
-SMTP_PASS=password
+SMTP_USER=your_email_user
+SMTP_PASS=your_email_password
 ```
 
-### 3. Running the App
+### 3. Running the Application
 
 ```bash
-# Development Server
+# Start Development Server
 npm run dev
+# Access at http://localhost:3000
 
-# Production Build
+# Build for Production
 npm run build
+
+# Start Production Server
 npm start
 ```
 
 ---
 
-## 🛠️ Usage Scripts
+## 🏗️ Project Structure
 
-We provide several utility scripts for maintenance and testing:
+The codebase is organized for scalability:
 
-| Command | Description |
-| :--- | :--- |
-| `npm run dev` | Starts the development server with auto-cleanup |
-| `npm run build` | Compiles the application for production |
-| `npm run start` | Runs the compiled production build |
-| `npm run clean` | Removes `.next` and `out` directories |
-| `npm run lint` | Runs ESLint for code quality |
-| `npm run type-check` | Runs TypeScript validation |
-| `npm audit` | Checks for security vulnerabilities |
-
----
-
-## 🤝 Contributing & Extension
-
-**Fixral CMS** is designed to be extensible.
-
-- **Adding Plugins**: Create a new directory in `src/plugins/` and implement the `Plugin` interface.
-- **Creating Themes**: Define a new theme config in `src/themes/` and register it in the admin panel.
+```
+src/
+├── app/                 # Next.js 14 App Router (Pages & API)
+│   ├── (public)/        # Public website routes
+│   ├── admin/           # Admin dashboard routes
+│   └── api/             # Backend API endpoints
+├── components/          # React Components
+│   ├── admin/           # Admin-specific UI components
+│   └── ui/              # Shared Design System components
+├── core/                # Core Application Logic
+│   ├── plugins/         # Plugin system loader
+│   └── theme/           # Theme engine logic
+├── lib/                 # Shared Utilities (DB, Auth, Helpers)
+├── models/              # MongoDB Data Schemas (Mongoose)
+├── hooks/               # Custom React Hooks
+└── types/               # TypeScript Definitions
+```
 
 ---
 
 ## 📜 License
 
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+This project is licensed under the MIT License. See the `LICENSE` file for more details.
 
 ---
 

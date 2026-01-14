@@ -1,16 +1,9 @@
 
-> personal-blog@3.5.0 lint
+> personal-blog@3.5.2 lint
 > next lint
 
 Sentry not installed, skipping Sentry configuration
 Bundle analyzer not installed, skipping bundle analysis
-
-./src/app/admin/backup/page.tsx
-22:17  Warning: 'session' is assigned a value but never used. Allowed unused vars must match /^_/u.  @typescript-eslint/no-unused-vars
-
-./src/app/admin/categories/page.tsx
-6:8  Warning: 'Link' is defined but never used. Allowed unused vars must match /^_/u.  @typescript-eslint/no-unused-vars
-25:17  Warning: 'session' is assigned a value but never used. Allowed unused vars must match /^_/u.  @typescript-eslint/no-unused-vars
 
 ./src/app/admin/contact/page.tsx
 7:3  Warning: 'ChatBubbleLeftRightIcon' is defined but never used. Allowed unused vars must match /^_/u.  @typescript-eslint/no-unused-vars
@@ -19,12 +12,6 @@ Bundle analyzer not installed, skipping bundle analysis
 
 ./src/app/admin/content/page.tsx
 24:17  Warning: 'session' is assigned a value but never used. Allowed unused vars must match /^_/u.  @typescript-eslint/no-unused-vars
-
-./src/app/admin/dashboard/page.tsx
-134:13  Error: Include a description after the "@ts-expect-error" directive to explain why the @ts-expect-error is necessary. The description must be 3 characters or longer.  @typescript-eslint/ban-ts-comment
-149:13  Error: Include a description after the "@ts-expect-error" directive to explain why the @ts-expect-error is necessary. The description must be 3 characters or longer.  @typescript-eslint/ban-ts-comment
-156:7  Error: Include a description after the "@ts-expect-error" directive to explain why the @ts-expect-error is necessary. The description must be 3 characters or longer.  @typescript-eslint/ban-ts-comment
-160:45  Warning: 'sortKey' is defined but never used. Allowed unused args must match /^_/u.  @typescript-eslint/no-unused-vars
 
 ./src/app/admin/editor/page.tsx
 8:3  Warning: 'PencilIcon' is defined but never used. Allowed unused vars must match /^_/u.  @typescript-eslint/no-unused-vars
@@ -44,9 +31,11 @@ Bundle analyzer not installed, skipping bundle analysis
 18:3  Warning: 'ShoppingCartIcon' is defined but never used. Allowed unused vars must match /^_/u.  @typescript-eslint/no-unused-vars
 20:3  Warning: 'ArchiveBoxIcon' is defined but never used. Allowed unused vars must match /^_/u.  @typescript-eslint/no-unused-vars
 21:3  Warning: 'ShieldCheckIcon' is defined but never used. Allowed unused vars must match /^_/u.  @typescript-eslint/no-unused-vars
-140:6  Warning: React Hook useEffect has a missing dependency: 'pathname'. Either include it or remove the dependency array.  react-hooks/exhaustive-deps
-228:23  Warning: Using `<img>` could result in slower LCP and higher bandwidth. Consider using `<Image />` from `next/image` to automatically optimize images. This may incur additional usage or cost from your provider. See: https://nextjs.org/docs/messages/no-img-element  @next/next/no-img-element
-428:25  Warning: Using `<img>` could result in slower LCP and higher bandwidth. Consider using `<Image />` from `next/image` to automatically optimize images. This may incur additional usage or cost from your provider. See: https://nextjs.org/docs/messages/no-img-element  @next/next/no-img-element
+142:6  Warning: React Hook useEffect has a missing dependency: 'pathname'. Either include it or remove the dependency array.  react-hooks/exhaustive-deps
+230:23  Warning: Using `<img>` could result in slower LCP and higher bandwidth. Consider using `<Image />` from `next/image` to automatically optimize images. This may incur additional usage or cost from your provider. See: https://nextjs.org/docs/messages/no-img-element  @next/next/no-img-element
+282:29  Error: Use "@ts-expect-error" instead of "@ts-ignore", as "@ts-ignore" will do nothing if the following line is error-free.  @typescript-eslint/ban-ts-comment
+314:17  Error: Use "@ts-expect-error" instead of "@ts-ignore", as "@ts-ignore" will do nothing if the following line is error-free.  @typescript-eslint/ban-ts-comment
+432:25  Warning: Using `<img>` could result in slower LCP and higher bandwidth. Consider using `<Image />` from `next/image` to automatically optimize images. This may incur additional usage or cost from your provider. See: https://nextjs.org/docs/messages/no-img-element  @next/next/no-img-element
 
 ./src/app/admin/login/page.tsx
 55:14  Warning: 'error' is defined but never used. Allowed unused caught errors must match /^_/u.  @typescript-eslint/no-unused-vars
@@ -110,7 +99,11 @@ Bundle analyzer not installed, skipping bundle analysis
 402:33  Warning: Using `<img>` could result in slower LCP and higher bandwidth. Consider using `<Image />` from `next/image` to automatically optimize images. This may incur additional usage or cost from your provider. See: https://nextjs.org/docs/messages/no-img-element  @next/next/no-img-element
 
 ./src/app/admin/product-categories/page.tsx
-27:17  Warning: 'session' is assigned a value but never used. Allowed unused vars must match /^_/u.  @typescript-eslint/no-unused-vars
+9:3  Warning: 'MagnifyingGlassIcon' is defined but never used. Allowed unused vars must match /^_/u.  @typescript-eslint/no-unused-vars
+28:17  Warning: 'session' is assigned a value but never used. Allowed unused vars must match /^_/u.  @typescript-eslint/no-unused-vars
+32:23  Warning: 'setSearchQuery' is assigned a value but never used. Allowed unused vars must match /^_/u.  @typescript-eslint/no-unused-vars
+147:9  Warning: 'filteredCategories' is assigned a value but never used. Allowed unused vars must match /^_/u.  @typescript-eslint/no-unused-vars
+218:23  Warning: 'isExpanded' is assigned a value but never used. Allowed unused vars must match /^_/u.  @typescript-eslint/no-unused-vars
 
 ./src/app/admin/product-media/page.tsx
 11:5  Warning: 'FunnelIcon' is defined but never used. Allowed unused vars must match /^_/u.  @typescript-eslint/no-unused-vars
@@ -130,8 +123,10 @@ Bundle analyzer not installed, skipping bundle analysis
 23:6  Warning: React Hook useEffect has a missing dependency: 'fetchProduct'. Either include it or remove the dependency array.  react-hooks/exhaustive-deps
 
 ./src/app/admin/products/page.tsx
-302:23  Warning: Using `<img>` could result in slower LCP and higher bandwidth. Consider using `<Image />` from `next/image` to automatically optimize images. This may incur additional usage or cost from your provider. See: https://nextjs.org/docs/messages/no-img-element  @next/next/no-img-element
-411:31  Warning: Using `<img>` could result in slower LCP and higher bandwidth. Consider using `<Image />` from `next/image` to automatically optimize images. This may incur additional usage or cost from your provider. See: https://nextjs.org/docs/messages/no-img-element  @next/next/no-img-element
+73:6  Warning: React Hook useEffect has a missing dependency: 'loadProducts'. Either include it or remove the dependency array.  react-hooks/exhaustive-deps
+82:6  Warning: React Hook useEffect has missing dependencies: 'loadProducts' and 'page'. Either include them or remove the dependency array.  react-hooks/exhaustive-deps
+315:23  Warning: Using `<img>` could result in slower LCP and higher bandwidth. Consider using `<Image />` from `next/image` to automatically optimize images. This may incur additional usage or cost from your provider. See: https://nextjs.org/docs/messages/no-img-element  @next/next/no-img-element
+424:31  Warning: Using `<img>` could result in slower LCP and higher bandwidth. Consider using `<Image />` from `next/image` to automatically optimize images. This may incur additional usage or cost from your provider. See: https://nextjs.org/docs/messages/no-img-element  @next/next/no-img-element
 
 ./src/app/admin/products/questions/page.tsx
 12:5  Warning: 'CheckIcon' is defined but never used. Allowed unused vars must match /^_/u.  @typescript-eslint/no-unused-vars
@@ -211,7 +206,7 @@ Bundle analyzer not installed, skipping bundle analysis
 
 ./src/app/api/admin/2fa/setup/route.ts
 12:28  Warning: 'req' is defined but never used. Allowed unused args must match /^_/u.  @typescript-eslint/no-unused-vars
-158:30  Warning: 'req' is defined but never used. Allowed unused args must match /^_/u.  @typescript-eslint/no-unused-vars
+159:30  Warning: 'req' is defined but never used. Allowed unused args must match /^_/u.  @typescript-eslint/no-unused-vars
 
 ./src/app/api/admin/profile/route.ts
 8:27  Warning: 'req' is defined but never used. Allowed unused args must match /^_/u.  @typescript-eslint/no-unused-vars
@@ -230,6 +225,16 @@ Bundle analyzer not installed, skipping bundle analysis
 ./src/app/layout.tsx
 36:11  Warning: 'ISettingsLean' is defined but never used. Allowed unused vars must match /^_/u.  @typescript-eslint/no-unused-vars
 
+./src/app/products/page.tsx
+9:10  Warning: 'Squares2X2Icon' is defined but never used. Allowed unused vars must match /^_/u.  @typescript-eslint/no-unused-vars
+9:26  Warning: 'AdjustmentsHorizontalIcon' is defined but never used. Allowed unused vars must match /^_/u.  @typescript-eslint/no-unused-vars
+9:63  Warning: 'CurrencyDollarIcon' is defined but never used. Allowed unused vars must match /^_/u.  @typescript-eslint/no-unused-vars
+9:83  Warning: 'CheckCircleIcon' is defined but never used. Allowed unused vars must match /^_/u.  @typescript-eslint/no-unused-vars
+9:100  Warning: 'MagnifyingGlassIcon' is defined but never used. Allowed unused vars must match /^_/u.  @typescript-eslint/no-unused-vars
+16:8  Warning: 'PriceRangeFilter' is defined but never used. Allowed unused vars must match /^_/u.  @typescript-eslint/no-unused-vars
+99:7  Error: Use "@ts-expect-error" instead of "@ts-ignore", as "@ts-ignore" will do nothing if the following line is error-free.  @typescript-eslint/ban-ts-comment
+232:38  Error: Comments inside children section of tag should be placed inside braces  react/jsx-no-comment-textnodes
+
 ./src/app/products/[slug]/page.tsx
 8:7  Warning: 'PageHero' is assigned a value but never used. Allowed unused vars must match /^_/u.  @typescript-eslint/no-unused-vars
 60:9  Warning: 'buttonText' is assigned a value but never used. Allowed unused vars must match /^_/u.  @typescript-eslint/no-unused-vars
@@ -240,10 +245,10 @@ Bundle analyzer not installed, skipping bundle analysis
 
 ./src/components/admin/ProductForm.tsx
 13:5  Warning: 'ArrowLeftIcon' is defined but never used. Allowed unused vars must match /^_/u.  @typescript-eslint/no-unused-vars
-44:12  Warning: 'touched' is assigned a value but never used. Allowed unused vars must match /^_/u.  @typescript-eslint/no-unused-vars
-114:18  Warning: 'err' is defined but never used. Allowed unused caught errors must match /^_/u.  @typescript-eslint/no-unused-vars
-142:18  Warning: 'err' is defined but never used. Allowed unused caught errors must match /^_/u.  @typescript-eslint/no-unused-vars
-314:45  Warning: Using `<img>` could result in slower LCP and higher bandwidth. Consider using `<Image />` from `next/image` to automatically optimize images. This may incur additional usage or cost from your provider. See: https://nextjs.org/docs/messages/no-img-element  @next/next/no-img-element
+45:12  Warning: 'touched' is assigned a value but never used. Allowed unused vars must match /^_/u.  @typescript-eslint/no-unused-vars
+115:18  Warning: 'err' is defined but never used. Allowed unused caught errors must match /^_/u.  @typescript-eslint/no-unused-vars
+143:18  Warning: 'err' is defined but never used. Allowed unused caught errors must match /^_/u.  @typescript-eslint/no-unused-vars
+315:45  Warning: Using `<img>` could result in slower LCP and higher bandwidth. Consider using `<Image />` from `next/image` to automatically optimize images. This may incur additional usage or cost from your provider. See: https://nextjs.org/docs/messages/no-img-element  @next/next/no-img-element
 
 ./src/components/layout/MobileNav.tsx
 3:10  Warning: 'useEffect' is defined but never used. Allowed unused vars must match /^_/u.  @typescript-eslint/no-unused-vars
@@ -254,14 +259,10 @@ Bundle analyzer not installed, skipping bundle analysis
 465:27  Warning: Using `<img>` could result in slower LCP and higher bandwidth. Consider using `<Image />` from `next/image` to automatically optimize images. This may incur additional usage or cost from your provider. See: https://nextjs.org/docs/messages/no-img-element  @next/next/no-img-element
 539:17  Warning: Using `<img>` could result in slower LCP and higher bandwidth. Consider using `<Image />` from `next/image` to automatically optimize images. This may incur additional usage or cost from your provider. See: https://nextjs.org/docs/messages/no-img-element  @next/next/no-img-element
 
-./src/lib/auth.ts
-6:10  Warning: 'SecurityEvents' is defined but never used. Allowed unused vars must match /^_/u.  @typescript-eslint/no-unused-vars
-16:11  Warning: 'Credentials' is defined but never used. Allowed unused vars must match /^_/u.  @typescript-eslint/no-unused-vars
-42:72  Warning: 'req' is defined but never used. Allowed unused args must match /^_/u.  @typescript-eslint/no-unused-vars
-
-./src/lib/sitemap-service.ts
-2:8  Warning: 'mongoose' is defined but never used. Allowed unused vars must match /^_/u.  @typescript-eslint/no-unused-vars
-8:8  Warning: 'Service' is defined but never used. Allowed unused vars must match /^_/u.  @typescript-eslint/no-unused-vars
-9:8  Warning: 'Category' is defined but never used. Allowed unused vars must match /^_/u.  @typescript-eslint/no-unused-vars
+./src/components/products/ProductSidebar.tsx
+9:5  Warning: 'XMarkIcon' is defined but never used. Allowed unused vars must match /^_/u.  @typescript-eslint/no-unused-vars
+21:11  Warning: 'CategoryNode' is defined but never used. Allowed unused vars must match /^_/u.  @typescript-eslint/no-unused-vars
+41:5  Warning: 'priceMin' is defined but never used. Allowed unused args must match /^_/u.  @typescript-eslint/no-unused-vars
+42:5  Warning: 'priceMax' is defined but never used. Allowed unused args must match /^_/u.  @typescript-eslint/no-unused-vars
 
 info  - Need to disable some ESLint rules? Learn more here: https://nextjs.org/docs/basic-features/eslint#disabling-rules

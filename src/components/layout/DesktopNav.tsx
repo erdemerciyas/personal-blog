@@ -65,12 +65,13 @@ export default function DesktopNav({
 
                     const baseClasses = `
                         relative overflow-hidden 
-                        px-2 lg:px-3 py-2 
-                        rounded-lg 
-                        font-medium text-[13px] lg:text-sm
+                        h-10 lg:h-11
+                        px-3 lg:px-4
+                        rounded-full
+                        font-medium text-sm
                         transition-all duration-200 
                         group 
-                        flex items-center gap-1.5 
+                        flex items-center justify-center gap-2 
                         whitespace-nowrap
                         focus-visible:outline-none 
                         focus-visible:ring-2 
@@ -81,20 +82,21 @@ export default function DesktopNav({
 
                     const content = (
                         <>
-                            <LinkIcon className="w-4 h-4 flex-shrink-0" aria-hidden="true" />
+                            <LinkIcon className={`w-4 h-4 flex-shrink-0 ${isActive ? '' : 'opacity-70 group-hover:opacity-100'}`} aria-hidden="true" />
                             <span>{link.label}</span>
                             {/* Animated underline indicator */}
                             <span
                                 aria-hidden="true"
                                 className={`
                                     pointer-events-none 
-                                    absolute left-3 right-3 bottom-0.5 
+                                    absolute left-4 right-4 bottom-2
                                     h-0.5 
-                                    origin-left 
+                                    origin-center
                                     scale-x-0 
+                                    rounded-full
                                     transition-transform duration-300 ease-out
                                     ${underlineColorClass}
-                                    ${isActive ? 'scale-x-100' : 'group-hover:scale-x-100'}
+                                    ${isActive ? 'scale-x-100' : 'group-hover:scale-x-50'}
                                 `}
                             />
                         </>
@@ -133,28 +135,29 @@ export default function DesktopNav({
                 <button
                     onClick={onOpenProjectModal}
                     className={`
-                        px-4 lg:px-5 py-2 lg:py-2.5 
-                        rounded-lg 
+                        h-10 lg:h-11
+                        px-4 lg:px-6
+                        rounded-full
                         font-semibold text-xs lg:text-sm
                         flex items-center gap-2
                         whitespace-nowrap
                         flex-shrink-0
-                        transition-all duration-200
+                        transition-all duration-300
                         focus-visible:outline-none 
                         focus-visible:ring-2 
                         focus-visible:ring-brand-primary-600 
                         focus-visible:ring-offset-2
-                        ml-2
+                        ml-4
                         ${isScrolled
-                            ? 'bg-brand-primary-900 text-white hover:bg-brand-primary-800 shadow-md hover:shadow-lg'
+                            ? 'bg-slate-900 text-white hover:bg-slate-800 shadow-md hover:shadow-lg hover:-translate-y-0.5'
                             : isTransparentPage
-                                ? 'bg-white text-brand-primary-900 hover:bg-white/90 shadow-lg hover:shadow-xl drop-shadow'
-                                : 'bg-brand-primary-900 text-white hover:bg-brand-primary-800 shadow-md hover:shadow-lg'
+                                ? 'bg-white text-slate-900 hover:bg-slate-50 shadow-lg hover:shadow-xl drop-shadow hover:-translate-y-0.5'
+                                : 'bg-slate-900 text-white hover:bg-slate-800 shadow-md hover:shadow-lg hover:-translate-y-0.5'
                         }
                     `}
                     aria-label="Proje başvurusu formunu aç"
                 >
-                    <PaperAirplaneIcon className="w-3.5 h-3.5 lg:w-4 lg:h-4" aria-hidden="true" />
+                    <PaperAirplaneIcon className="w-4 h-4" aria-hidden="true" />
                     <span>Proje Başvurusu</span>
                 </button>
             )}

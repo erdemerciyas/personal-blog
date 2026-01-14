@@ -65,6 +65,47 @@ export default async function ProductDetail({ params }: { params: { slug: string
   const related = await getRelatedProducts(firstCategorySlug, product.slug as string);
   const baseUrl = (config.app.url || process.env.NEXTAUTH_URL || '').replace(/\/$/, '');
 
+  // Fetch all categories to build tree
+  let allCats: any[] = [];
+  try {
+    const cRes = await fetch(`${baseUrl}/api/product-categories`, { next: { revalidate: 300 } });
+    if (cRes.ok) {
+      const cData = await cRes.json();
+      allCats = Array.isArray(cData.items) ? cData.items : [];
+    }
+  } catch (e) { console.error(e); }
+
+  let breadcrumbItems = [
+    { label: 'Anasayfa', href: '/' },
+    { label: 'Ürünler', href: '/products' }
+  ];
+
+  if (product.categoryIds && product.categoryIds.length > 0) {
+    // Assuming categoryIds[0] is the main leaf category
+    // Note: product.categoryIds elements might be just objects from product fetch, containing name/slug but maybe not parent (if not deeply populated)
+    // But we have 'allCats' which has parent info.
+    // Let's find the current category in allCats using ID
+    const leafId = typeof product.categoryIds[0] === 'string' ? product.categoryIds[0] : product.categoryIds[0]._id;
+
+    const path: { label: string; href: string }[] = [];
+    let curr = allCats.find(c => String(c._id) === String(leafId));
+
+    // Fallback if not found in allCats (maybe inactive?) but present in product
+    if (!curr && typeof product.categoryIds[0] === 'object') {
+      const c = product.categoryIds[0];
+      path.push({ label: c.name, href: `/products?categorySlug=${c.slug}` });
+    } else {
+      while (curr) {
+        path.unshift({ label: curr.name, href: `/products?category=${curr._id}` });
+        if (!curr.parent) break;
+        curr = allCats.find(c => String(c._id) === String(curr.parent));
+      }
+    }
+    breadcrumbItems = [...breadcrumbItems, ...path];
+  }
+
+  breadcrumbItems.push({ label: product.title, href: `/products/${product.slug}` });
+
   return (
     <ProductClientWrapper product={{ _id: product._id as string, name: product.title, slug: product.slug as string }}>
       <main className="min-h-screen bg-gray-50 pb-20">
@@ -83,18 +124,14 @@ export default async function ProductDetail({ params }: { params: { slug: string
         <section className="mt-8 relative z-10 px-4">
           <div className="container-main">
             <div className="bg-white/80 backdrop-blur-md rounded-xl shadow-sm border border-white/20 px-4 py-2 inline-block">
-              <Breadcrumbs />
+              <Breadcrumbs items={breadcrumbItems} />
             </div>
           </div>
         </section>
 
         {/* JSON-LD: Breadcrumbs */}
         <BreadcrumbsJsonLd
-          items={[
-            { name: 'Anasayfa', item: '/' },
-            { name: 'Ürünler', item: '/products' },
-            { name: product.title, item: `/products/${params.slug}` },
-          ]}
+          items={breadcrumbItems.map(item => ({ name: item.label, item: item.href }))}
         />
         {/* JSON-LD: Product */}
         <ProductJsonLd

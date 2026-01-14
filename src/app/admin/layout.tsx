@@ -125,15 +125,17 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
       .then(res => res.json())
       .then(data => {
         setCounts({
-          'Haberler': data.newsCount || 0,
-          'Portfolyo': data.portfolioCount || 0,
-          'Hizmetler': data.servicesCount || 0,
-          'Ürünler': data.productsCount || 0,
-          'Kullanıcılar': data.usersCount || 0,
-          'Mesajlar': data.messagesCount || 0,
-          'Kütüphane': data.mediaCount || 0,
-          'Ürün Medyası': data.productMediaCount || 0,
-          'Ürün Mesajları': data.productQuestionsCount || 0,
+          '/admin/news': data.newsCount || 0,
+          '/admin/portfolio': data.portfolioCount || 0,
+          '/admin/services': data.servicesCount || 0,
+          '/admin/products': data.productsCount || 0,
+          '/admin/product-categories': data.productCategoriesCount || 0,
+          '/admin/users': data.usersCount || 0,
+          '/admin/messages': data.messagesCount || 0,
+          '/admin/media': data.mediaCount || 0,
+          '/admin/product-media': data.productMediaCount || 0,
+          '/admin/products/questions': data.productQuestionsCount || 0,
+          '/admin/orders': data.ordersCount || 0,
         });
       })
       .catch(err => console.error('Failed to load sidebar counts', err));
@@ -277,7 +279,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
                         <div className="mt-1 ml-4 pl-4 border-l-2 border-[var(--admin-border)] space-y-1">
                           {item.children.map((child) => {
                             const active = isActive(child.href);
-                            const count = counts[child.name];
+                            const count = child.href ? counts[child.href] : 0;
                             return (
                               <Link
                                 key={child.name}
@@ -289,7 +291,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
                                   }`}
                               >
                                 <span>{child.name}</span>
-                                {count !== undefined && (
+                                {count !== undefined && count > 0 && (
                                   <span className={`ml-2 px-2 py-0.5 text-xs rounded-full ${active
                                     ? 'bg-indigo-100 text-indigo-700 dark:bg-indigo-900/50 dark:text-indigo-300'
                                     : 'bg-[var(--admin-bg)] text-slate-600 dark:bg-slate-800 dark:text-slate-400'
@@ -308,7 +310,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
 
                 // Handle Single Item
                 const active = isActive(item.href || '');
-                const count = counts[item.name];
+                const count = item.href ? counts[item.href] : 0;
                 return (
                   <Link
                     key={item.name}
@@ -324,7 +326,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
                         }`}
                     />
                     <span className="flex-1">{item.name}</span>
-                    {count !== undefined && (
+                    {count !== undefined && count > 0 && (
                       <span className={`ml-2 px-2 py-0.5 text-xs rounded-full ${active
                         ? 'bg-white/20 text-white'
                         : 'bg-[var(--admin-bg)] text-slate-600 group-hover:bg-slate-200 dark:bg-slate-800 dark:text-slate-400 dark:group-hover:bg-slate-700'

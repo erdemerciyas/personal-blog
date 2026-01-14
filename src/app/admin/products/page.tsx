@@ -47,9 +47,12 @@ export default function AdminProductsPage() {
   const router = useRouter();
   const [loading, setLoading] = useState(true);
   const [products, setProducts] = useState<ProductItem[]>([]);
+  const [total, setTotal] = useState(0);
+  const [page, setPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(1);
 
   // States
-  const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid');
+  const [viewMode, setViewMode] = useState<'grid' | 'list'>('list');
   const [searchQuery, setSearchQuery] = useState('');
   const [statusFilter, setStatusFilter] = useState('all');
   const [stockFilter, setStockFilter] = useState('all');
@@ -67,16 +70,34 @@ export default function AdminProductsPage() {
       return;
     }
     loadProducts();
-  }, [status, router]);
+  }, [status, router, page, statusFilter, stockFilter]);
+
+  // Debounced Search
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      if (page !== 1) setPage(1);
+      else loadProducts();
+    }, 500);
+    return () => clearTimeout(timer);
+  }, [searchQuery]);
 
   const loadProducts = async () => {
+    setLoading(true);
     try {
-      const response = await fetch('/api/admin/products');
+      const params = new URLSearchParams();
+      params.append('page', page.toString());
+      params.append('limit', '20');
+      if (searchQuery) params.append('q', searchQuery);
+      if (statusFilter !== 'all') params.append('status', statusFilter);
+      if (stockFilter !== 'all') params.append('stock', stockFilter);
+
+      const response = await fetch(`/api/admin/products?${params.toString()}`);
       if (response.ok) {
         const data = await response.json();
-        // Ensure data is array
         const list = Array.isArray(data.items) ? data.items : [];
-        setProducts(list.sort((a: any, b: any) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()));
+        setProducts(list);
+        setTotal(data.total || 0);
+        setTotalPages(data.totalPages || 1);
       }
     } catch (error) {
       console.error('Ürünler yüklenirken hata:', error);
@@ -143,23 +164,11 @@ export default function AdminProductsPage() {
   };
 
   const handleSelectAll = (checked: boolean) => {
-    if (checked) setSelectedItems(new Set(filteredProducts.map(p => p._id)));
+    if (checked) setSelectedItems(new Set(products.map(p => p._id)));
     else setSelectedItems(new Set());
   };
 
-  // Filter Logic
-  const filteredProducts = products.filter(product => {
-    const matchesSearch = (product.title || '').toLowerCase().includes(searchQuery.toLowerCase());
-    const matchesStatus = statusFilter === 'all' ||
-      (statusFilter === 'published' && product.isActive) ||
-      (statusFilter === 'draft' && !product.isActive);
-    const matchesStock = stockFilter === 'all' ||
-      (stockFilter === 'in_stock' && product.stock > 0) ||
-      (stockFilter === 'out_of_stock' && product.stock <= 0);
-
-    return matchesSearch && matchesStatus && matchesStock;
-  });
-
+  // Server-side filtering now used
   const formatPrice = (price: number, currency: string) => {
     return new Intl.NumberFormat('tr-TR', { style: 'currency', currency: currency || 'TRY' }).format(price || 0);
   };
@@ -190,7 +199,7 @@ export default function AdminProductsPage() {
       </div>
 
       {/* Toolbar */}
-      <div className="bg-white rounded-2xl shadow-sm border border-slate-200 p-2 sm:p-3 sticky top-24 z-10 transition-all duration-300">
+      <div className="bg-white rounded-2xl shadow-sm border border-slate-200 p-2 sm:p-3 sticky top-24 z-30 transition-all duration-300">
         <div className="flex flex-col lg:flex-row gap-4 items-center justify-between">
 
           {/* Search & Filters */}
@@ -201,7 +210,9 @@ export default function AdminProductsPage() {
                 type="text"
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                placeholder="Ürün adı, kod..."
+                onKeyDown={(e) => e.key === 'Enter' && setPage(1)} // Trigger search on Enter
+                onBlur={() => setPage(1)} // Trigger search on blur
+                placeholder="Ürün adı..."
                 className="w-full pl-10 pr-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500/50 focus:border-indigo-500 focus:bg-white transition-all shadow-sm"
               />
             </div>
@@ -209,7 +220,7 @@ export default function AdminProductsPage() {
             <div className="flex items-center gap-2 overflow-x-auto pb-1 sm:pb-0">
               <select
                 value={statusFilter}
-                onChange={(e) => setStatusFilter(e.target.value)}
+                onChange={(e) => { setStatusFilter(e.target.value); setPage(1); }}
                 className="px-3 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm font-medium text-slate-600 focus:outline-none focus:ring-2 focus:ring-indigo-500/50"
               >
                 <option value="all">Tüm Durumlar</option>
@@ -219,7 +230,7 @@ export default function AdminProductsPage() {
 
               <select
                 value={stockFilter}
-                onChange={(e) => setStockFilter(e.target.value)}
+                onChange={(e) => { setStockFilter(e.target.value); setPage(1); }}
                 className="px-3 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm font-medium text-slate-600 focus:outline-none focus:ring-2 focus:ring-indigo-500/50"
               >
                 <option value="all">Stok Durumu</option>
@@ -231,6 +242,8 @@ export default function AdminProductsPage() {
 
           {/* View Toggle & Bulk Actions */}
           <div className="flex items-center justify-between sm:justify-end gap-3 w-full lg:w-auto">
+
+
             {selectedItems.size > 0 && (
               <div className="flex items-center gap-3 animate-in fade-in slide-in-from-right-4 duration-200">
                 <span className="text-sm font-medium text-slate-600 hidden sm:inline">
@@ -265,7 +278,7 @@ export default function AdminProductsPage() {
       </div>
 
       {/* Content */}
-      {filteredProducts.length === 0 ? (
+      {products.length === 0 ? (
         <div className="bg-white rounded-2xl shadow-sm border border-slate-200 border-dashed p-12 text-center">
           <div className="w-16 h-16 bg-slate-50 rounded-full flex items-center justify-center mx-auto mb-4">
             <ShoppingBagIcon className="w-8 h-8 text-slate-400" />
@@ -289,7 +302,7 @@ export default function AdminProductsPage() {
         <>
           {viewMode === 'grid' ? (
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-              {filteredProducts.map(product => (
+              {products.map(product => (
                 <div
                   key={product._id}
                   className={`group relative bg-white rounded-2xl border transition-all duration-300 hover:shadow-xl overflow-hidden flex flex-col
@@ -381,7 +394,7 @@ export default function AdminProductsPage() {
                     <th className="px-6 py-4 w-12">
                       <input
                         type="checkbox"
-                        checked={selectedItems.size === filteredProducts.length}
+                        checked={selectedItems.size === products.length && products.length > 0}
                         onChange={(e) => handleSelectAll(e.target.checked)}
                         className="rounded border-slate-300 text-indigo-600 focus:ring-indigo-500"
                       />
@@ -394,7 +407,7 @@ export default function AdminProductsPage() {
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-slate-100">
-                  {filteredProducts.map(product => (
+                  {products.map(product => (
                     <tr key={product._id} className={`group ${selectedItems.has(product._id) ? 'bg-indigo-50/50' : 'hover:bg-slate-50'}`}>
                       <td className="px-6 py-4">
                         <input
@@ -468,6 +481,51 @@ export default function AdminProductsPage() {
             </div>
           )}
         </>
+      )}
+
+      {/* Bottom Pagination */}
+      {products.length > 0 && (
+        <div className="flex items-center justify-between border-t border-slate-200 pt-4">
+          <div className="text-sm text-slate-500">
+            Toplam <strong>{total}</strong> üründen <strong>{(page - 1) * 20 + 1}</strong> - <strong>{Math.min(page * 20, total)}</strong> arası gösteriliyor
+          </div>
+          <div className="flex items-center gap-2">
+            <button
+              onClick={() => setPage(p => Math.max(1, p - 1))}
+              disabled={page <= 1}
+              className="px-4 py-2 border border-slate-200 rounded-xl text-sm font-medium text-slate-600 hover:bg-slate-50 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+            >
+              Önceki
+            </button>
+            <div className="flex items-center gap-1">
+              {Array.from({ length: Math.min(5, totalPages) }, (_, i) => {
+                let p = i + 1;
+                if (totalPages > 5 && page > 3) {
+                  p = page - 3 + i + 1;
+                  if (p > totalPages) p = totalPages - (4 - i);
+                }
+                return (
+                  <button
+                    key={p}
+                    onClick={() => setPage(p)}
+                    className={`w-10 h-10 rounded-xl text-sm font-medium transition-colors
+                      ${page === p ? 'bg-indigo-600 text-white shadow-lg shadow-indigo-200' : 'text-slate-600 hover:bg-slate-50'}
+                    `}
+                  >
+                    {p}
+                  </button>
+                );
+              })}
+            </div>
+            <button
+              onClick={() => setPage(p => Math.min(totalPages, p + 1))}
+              disabled={page >= totalPages}
+              className="px-4 py-2 border border-slate-200 rounded-xl text-sm font-medium text-slate-600 hover:bg-slate-50 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+            >
+              Sonraki
+            </button>
+          </div>
+        </div>
       )}
 
       {/* Messages Sidebar / Modal */}

@@ -6,6 +6,7 @@ export interface IProductCategory {
   name: string;
   slug: string;
   description?: string;
+  parent?: mongoose.Types.ObjectId | null;
   order: number;
   isActive: boolean;
   createdAt: Date;
@@ -16,15 +17,15 @@ const productCategorySchema = new mongoose.Schema<IProductCategory>({
   name: { type: String, required: true, trim: true, unique: true },
   slug: { type: String, required: true, trim: true, unique: true, index: true },
   description: { type: String },
+  parent: { type: mongoose.Schema.Types.ObjectId, ref: 'ProductCategory', default: null },
   order: { type: Number, default: 0 },
   isActive: { type: Boolean, default: true },
 }, { timestamps: true });
 
-productCategorySchema.pre('save', function preSave(this: Document & Partial<IProductCategory>, next) {
+productCategorySchema.pre('save', async function (this: Document & Partial<IProductCategory>) {
   if (this.isModified('name') || !this.slug) {
     this.slug = slugify(String(this.name), { lower: true, strict: true });
   }
-  next();
 });
 
 // Indexes for faster lookups

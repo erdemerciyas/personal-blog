@@ -30,6 +30,7 @@ interface ProductFormProps {
 interface CategoryItem {
     _id: string;
     name: string;
+    parent?: string | null;
 }
 
 export default function ProductForm({ initialData, isEditing = false }: ProductFormProps) {
@@ -574,20 +575,43 @@ export default function ProductForm({ initialData, isEditing = false }: ProductF
                             {categories.length === 0 ? (
                                 <p className="text-sm text-slate-500 italic">Kategori bulunamadı.</p>
                             ) : (
-                                categories.map(cat => (
-                                    <label key={cat._id} className="flex items-center p-3 rounded-xl border border-slate-100 hover:bg-slate-50 cursor-pointer transition-colors">
-                                        <input
-                                            type="checkbox"
-                                            checked={form.categoryIds.includes(cat._id)}
-                                            onChange={e => {
-                                                if (e.target.checked) setForm(p => ({ ...p, categoryIds: [...p.categoryIds, cat._id] }));
-                                                else setForm(p => ({ ...p, categoryIds: p.categoryIds.filter((id: string) => id !== cat._id) }));
-                                            }}
-                                            className="w-4 h-4 text-indigo-600 rounded border-slate-300 focus:ring-indigo-500"
-                                        />
-                                        <span className="ml-3 text-sm font-medium text-slate-700 dark:text-slate-300">{cat.name}</span>
-                                    </label>
-                                ))
+                                (() => {
+                                    const roots = categories.filter(c => !c.parent);
+                                    const byParent: Record<string, CategoryItem[]> = {};
+                                    categories.forEach(c => {
+                                        if (c.parent) {
+                                            if (!byParent[c.parent]) byParent[c.parent] = [];
+                                            byParent[c.parent].push(c);
+                                        }
+                                    });
+
+                                    const renderNode = (cat: CategoryItem, depth = 0) => {
+                                        const children = byParent[cat._id] || [];
+                                        return (
+                                            <div key={cat._id} style={{ marginLeft: depth * 20 }}>
+                                                <label className="flex items-center p-2 rounded-lg hover:bg-slate-50 cursor-pointer transition-colors">
+                                                    <input
+                                                        type="checkbox"
+                                                        checked={form.categoryIds.includes(cat._id)}
+                                                        onChange={e => {
+                                                            if (e.target.checked) setForm(p => ({ ...p, categoryIds: [...p.categoryIds, cat._id] }));
+                                                            else setForm(p => ({ ...p, categoryIds: p.categoryIds.filter((id: string) => id !== cat._id) }));
+                                                        }}
+                                                        className="w-4 h-4 text-indigo-600 rounded border-slate-300 focus:ring-indigo-500"
+                                                    />
+                                                    <span className="ml-3 text-sm font-medium text-slate-700 dark:text-slate-300">{cat.name}</span>
+                                                </label>
+                                                {children.length > 0 && (
+                                                    <div className="border-l-2 border-slate-100 ml-3">
+                                                        {children.map(child => renderNode(child, depth + 1))}
+                                                    </div>
+                                                )}
+                                            </div>
+                                        );
+                                    };
+
+                                    return roots.map(root => renderNode(root));
+                                })()
                             )}
                         </div>
                     </div>

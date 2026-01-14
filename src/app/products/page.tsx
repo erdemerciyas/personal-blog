@@ -9,6 +9,11 @@ const PageHero = dynamic(() => import('@/components/common/PageHero'), { ssr: fa
 import { Squares2X2Icon, AdjustmentsHorizontalIcon, StarIcon, CurrencyDollarIcon, CheckCircleIcon, MagnifyingGlassIcon } from '@heroicons/react/24/outline';
 import BreadcrumbsJsonLd from '@/components/seo/BreadcrumbsJsonLd';
 import Breadcrumbs from '@/components/Breadcrumbs';
+import Pagination from '@/components/ui/Pagination';
+import ProductSidebar from '@/components/products/ProductSidebar';
+import SearchInput from '@/components/ui/SearchInput';
+import SortSelect from '@/components/ui/SortSelect';
+import PriceRangeFilter from '@/components/ui/PriceRangeFilter';
 
 async function getData(searchParams: Record<string, string>) {
   const qs = new URLSearchParams(searchParams as Record<string, string>).toString();
@@ -62,6 +67,14 @@ export default async function ProductsPage({ searchParams }: { searchParams: Rec
   const view = (searchParams?.view || 'grid') as 'grid' | 'list';
   const data = await getData({ page: String(page), condition, category, q, sort, priceMin, priceMax, ratingMin, inStock, freeShipping });
   const { items = [], total = 0, limit = 12 } = data || {};
+
+  // Fetch recommended products if no items found
+  let recommendedItems: any[] = [];
+  if (items.length === 0) {
+    const recData = await getData({ limit: '4', sort: 'priceDesc' });
+    recommendedItems = recData?.items || [];
+  }
+
   const totalPages = Math.max(1, Math.ceil(total / limit));
   const pageSettings = await getPageSettings('products');
   const pageIsActive = pageSettings?.isActive !== false;
@@ -70,6 +83,66 @@ export default async function ProductsPage({ searchParams }: { searchParams: Rec
   const heroDesc = pageSettings?.description || 'Sıfır ve ikinci el ürünlerimizi keşfedin. Özellik, stok ve fiyat bilgileriyle filtreleyerek size uygun ürünü bulun.';
   const heroButtonText = pageSettings?.buttonText || 'Ürünlere Göz At';
   const heroButtonLink = pageSettings?.buttonLink || '#product-list';
+
+  // Build Breadcrumbs
+  let breadcrumbItems = [
+    { label: 'Anasayfa', href: '/' },
+    { label: 'Ürünler', href: '/products' }
+  ];
+
+  if (category && cats.length > 0) {
+    const path: { label: string; href: string }[] = [];
+    let curr = cats.find(c => String(c._id) === category);
+    while (curr) {
+      path.unshift({ label: curr.name, href: `/products?category=${curr._id}` });
+      // Find parent
+      // @ts-expect-error
+      const parentId = curr.parent;
+      if (!parentId) break;
+      curr = cats.find(c => String(c._id) === String(parentId));
+    }
+    breadcrumbItems = [...breadcrumbItems, ...path];
+  }
+
+  // Pre-define renderProductCard to reuse it
+  const renderProductCard = (p: any, isRecommended = false) => {
+    const hasFreeShipping = typeof p.price === 'number' && p.price >= (config.app.freeShippingThreshold || 1500);
+    return (
+      <TiltHover key={p._id} className="[transform-style:preserve-3d]">
+        <FixralCard className={`overflow-hidden ${isRecommended ? 'border-amber-200 ring-1 ring-amber-100' : ''}`} variant="default">
+          <Link href={`/products/${p.slug}`} className="block group">
+            <div className="relative h-48 w-full bg-gray-100 overflow-hidden rounded-t-lg">
+              <NextImage src={p.coverImage} alt={p.title} fill className="object-cover transition-transform group-hover:scale-[1.02]" sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw" />
+              {p.stock <= 0 && (
+                <span className="absolute top-2 left-2 text-xs px-2 py-0.5 rounded bg-red-600 text-white z-10">Stokta Yok</span>
+              )}
+              {isRecommended && (
+                <span className="absolute top-2 right-2 text-[10px] uppercase font-bold px-2 py-0.5 rounded bg-amber-400 text-white shadow-sm z-10">Önerilen</span>
+              )}
+            </div>
+            <div className="mt-3 font-medium text-slate-900 line-clamp-2 min-h-[2.75rem]">{p.title}</div>
+            <div className="mt-1 flex items-center justify-between text-xs text-slate-600">
+              <span className={`inline-flex items-center px-2 py-0.5 rounded-full ${p.condition === 'new' ? 'bg-emerald-50 text-emerald-700' : 'bg-amber-50 text-amber-700'}`}>{p.condition === 'new' ? 'Sıfır' : 'İkinci El'}</span>
+              {typeof p.ratingAverage === 'number' && p.ratingCount ? (
+                <span className="text-slate-500">{p.ratingAverage.toFixed(1)} / 5 • {p.ratingCount}</span>
+              ) : (
+                <span className="text-slate-400">Yeni</span>
+              )}
+            </div>
+            <div className="mt-2 flex items-center justify-between">
+              {typeof p.price === 'number' ? (
+                <div className="text-emerald-700 font-semibold">{p.price} {p.currency}</div>
+              ) : <span />}
+              {hasFreeShipping && <span className="text-[11px] px-2 py-0.5 rounded-full bg-emerald-50 text-emerald-700">Ücretsiz Kargo</span>}
+            </div>
+            <div className="mt-3">
+              <span className="inline-flex items-center justify-center h-9 px-4 rounded-md border text-sm text-slate-700 group-hover:border-emerald-600 group-hover:text-emerald-700">Detaya Git</span>
+            </div>
+          </Link>
+        </FixralCard>
+      </TiltHover>
+    );
+  };
 
   return (
     <main className="space-y-6" id="main-content">
@@ -82,127 +155,43 @@ export default async function ProductsPage({ searchParams }: { searchParams: Rec
       />
       {/* Breadcrumbs under Hero */}
       <section className="py-1">
-        <div className="container mx-auto px-4">
-          <Breadcrumbs />
+        <div className="container mx-auto px-6">
+          <Breadcrumbs items={breadcrumbItems} />
         </div>
       </section>
       {/* JSON-LD: Breadcrumbs for Products list */}
       <BreadcrumbsJsonLd
-        items={[
-          { name: 'Anasayfa', item: '/' },
-          { name: 'Ürünler', item: '/products' },
-        ]}
+        items={breadcrumbItems.map(b => ({ name: b.label, item: b.href }))}
       />
       <div className="container mx-auto p-6 space-y-6">
         {/* Filters */}
-        <form className="rounded-xl border bg-white shadow-sm p-3 md:p-4 flex items-center gap-3">
-          <div className="relative flex-1">
-            <MagnifyingGlassIcon className="w-5 h-5 text-slate-400 absolute left-3 top-1/2 -translate-y-1/2" />
-            <input name="q" defaultValue={q} placeholder="Ürün ara..." className="input-field w-full pl-10" />
-          </div>
-          {/* Seçili filtreleri koru */}
-          <input type="hidden" name="condition" value={condition} />
-          <input type="hidden" name="category" value={category} />
-          <input type="hidden" name="sort" value={sort} />
-          <input type="hidden" name="priceMin" value={priceMin} />
-          <input type="hidden" name="priceMax" value={priceMax} />
-          <input type="hidden" name="ratingMin" value={ratingMin} />
-          <input type="hidden" name="inStock" value={inStock} />
-          <input type="hidden" name="freeShipping" value={freeShipping} />
-          <input type="hidden" name="view" value={view} />
-          <button type="submit" className="btn-primary inline-flex items-center gap-2 h-10 px-4 rounded-md whitespace-nowrap">
-            <MagnifyingGlassIcon className="w-5 h-5" />
-            Ara
-          </button>
-        </form>
+        <div className="rounded-xl border bg-white shadow-sm p-3 md:p-4 flex items-center gap-3">
+          <SearchInput />
+        </div>
 
         {/* Content */}
         <div className="grid gap-6 md:grid-cols-[260px_1fr]" id="product-list">
           {/* Sidebar filters (links) */}
           <aside className="hidden md:block">
-            <div className="rounded-xl border bg-white p-4 space-y-5 sticky top-24">
-              <div>
-                <div className="text-sm font-semibold mb-2 flex items-center gap-2"><Squares2X2Icon className="w-4 h-4 text-emerald-600" /> Kategoriler</div>
-                <div className="space-y-1 text-sm">
-                  {(() => {
-                    const base = { q, condition, sort, priceMin, priceMax, view } as Record<string, string>;
-                    return [
-                      <Link key="all" href={`/products?${new URLSearchParams({ ...base, page: '1' }).toString()}`} className={`block px-2 py-1 rounded ${!category ? 'bg-slate-100 text-slate-900' : 'text-slate-700 hover:bg-slate-50'}`}>Tümü</Link>,
-                      ...cats.map((c: { _id?: string; name: string }) => {
-                        const sp = new URLSearchParams({ ...base, category: String(c._id || ''), page: '1' });
-                        const active = category === String(c._id || '');
-                        return <Link key={String(c._id)} href={`/products?${sp.toString()}`} className={`block px-2 py-1 rounded ${active ? 'bg-slate-100 text-slate-900' : 'text-slate-700 hover:bg-slate-50'}`}>{c.name}</Link>;
-                      })
-                    ];
-                  })()}
-                </div>
-              </div>
-              <div>
-                <div className="text-sm font-semibold mb-2 flex items-center gap-2"><AdjustmentsHorizontalIcon className="w-4 h-4 text-emerald-600" /> Durum</div>
-                <div className="space-y-1 text-sm">
-                  {(() => {
-                    const base = { q, category, sort, priceMin, priceMax, view } as Record<string, string>;
-                    const all = new URLSearchParams({ ...base, condition: '', page: '1' }).toString();
-                    const nw = new URLSearchParams({ ...base, condition: 'new', page: '1' }).toString();
-                    const usd = new URLSearchParams({ ...base, condition: 'used', page: '1' }).toString();
-                    return (
-                      <>
-                        <Link href={`/products?${all}`} className={`block px-2 py-1 rounded ${!condition ? 'bg-slate-100 text-slate-900' : 'text-slate-700 hover:bg-slate-50'}`}>Hepsi</Link>
-                        <Link href={`/products?${nw}`} className={`block px-2 py-1 rounded ${condition === 'new' ? 'bg-slate-100 text-slate-900' : 'text-slate-700 hover:bg-slate-50'}`}>Sıfır</Link>
-                        <Link href={`/products?${usd}`} className={`block px-2 py-1 rounded ${condition === 'used' ? 'bg-slate-100 text-slate-900' : 'text-slate-700 hover:bg-slate-50'}`}>İkinci El</Link>
-                      </>
-                    );
-                  })()}
-                </div>
-              </div>
-              <div>
-                <div className="text-sm font-semibold mb-2 flex items-center gap-2"><CurrencyDollarIcon className="w-4 h-4 text-emerald-600" /> Hızlı Fiyat</div>
-                <div className="grid grid-cols-2 gap-2 text-sm">
-                  {[
-                    { min: '0', max: '500' },
-                    { min: '500', max: '1000' },
-                    { min: '1000', max: '5000' },
-                    { min: '5000', max: '' },
-                  ].map((r) => {
-                    const sp = new URLSearchParams({ q, condition, category, sort, priceMin: r.min, priceMax: r.max, ratingMin, inStock, freeShipping, view, page: '1' });
-                    const label = r.max ? `${r.min}-${r.max}` : `${r.min}+`;
-                    return <Link key={`${r.min}-${r.max || 'up'}`} href={`/products?${sp.toString()}`} className="px-2 py-1 rounded border text-center hover:bg-slate-50">{label}</Link>;
-                  })}
-                </div>
-              </div>
-              <div>
-                <div className="text-sm font-semibold mb-2 flex items-center gap-2"><StarIcon className="w-4 h-4 text-emerald-600" /> Puan</div>
-                <div className="flex flex-wrap gap-2 text-sm">
-                  {[4, 3, 2, 1].map((r) => {
-                    const sp = new URLSearchParams({ q, condition, category, sort, priceMin, priceMax, ratingMin: String(r), inStock, freeShipping, view, page: '1' });
-                    const active = ratingMin === String(r);
-                    return <Link key={r} href={`/products?${sp.toString()}`} className={`px-2 py-1 rounded border ${active ? 'bg-amber-50 text-amber-800 border-amber-200' : 'hover:bg-slate-50'}`}>{r}+</Link>;
-                  })}
-                </div>
-              </div>
-              <div>
-                <div className="text-sm font-semibold mb-2 flex items-center gap-2"><CheckCircleIcon className="w-4 h-4 text-emerald-600" /> Hızlı Filtre</div>
-                <div className="flex flex-wrap gap-2 text-sm">
-                  {(() => {
-                    const base = { q, condition, category, sort, priceMin, priceMax, ratingMin, view, page: '1' } as Record<string, string>;
-                    const stockSp = new URLSearchParams({ ...base, inStock: inStock === 'true' ? '' : 'true' });
-                    const freeSp = new URLSearchParams({ ...base, freeShipping: freeShipping === 'true' ? '' : 'true' });
-                    return (
-                      <>
-                        <Link href={`/products?${stockSp.toString()}`} className={`px-2 py-1 rounded border ${inStock === 'true' ? 'bg-emerald-50 text-emerald-700 border-emerald-200' : 'hover:bg-slate-50'}`}>Stokta Olan</Link>
-                        <Link href={`/products?${freeSp.toString()}`} className={`px-2 py-1 rounded border ${freeShipping === 'true' ? 'bg-emerald-50 text-emerald-700 border-emerald-200' : 'hover:bg-slate-50'}`}>Ücretsiz Kargo</Link>
-                      </>
-                    );
-                  })()}
-                </div>
-              </div>
-            </div>
+            <ProductSidebar
+              categories={cats}
+              currentCategory={category}
+              currentCondition={condition}
+              priceMin={priceMin}
+              priceMax={priceMax}
+              baseUrl="/products"
+              searchParams={{ q, sort, view }}
+            />
+
           </aside>
 
           {/* Results */}
           <div>
             <div className="flex items-center justify-between text-sm text-slate-600">
-              <div>Toplam {total} ürün bulundu</div>
+              <div className="flex items-center gap-4">
+                <span>Toplam {total} ürün bulundu</span>
+                <SortSelect />
+              </div>
               <div className="flex items-center gap-2">
                 {(() => {
                   const baseParams = new URLSearchParams({ q, condition, category, sort, priceMin, priceMax, page: String(page) });
@@ -219,8 +208,7 @@ export default async function ProductsPage({ searchParams }: { searchParams: Rec
             </div>
 
             <div className={view === 'grid' ? 'mt-4 grid gap-6 md:grid-cols-3' : 'mt-4 space-y-4'}>
-              {items.map((p: { _id: string; slug: string; coverImage: string; title: string; condition: 'new' | 'used'; stock: number; price?: number; currency?: string; ratingAverage?: number; ratingCount?: number }) => {
-                const hasFreeShipping = typeof p.price === 'number' && p.price >= (config.app.freeShippingThreshold || 1500);
+              {items.map((p: any) => {
                 if (view === 'list') {
                   const sp = new URLSearchParams({ q, condition, category, sort, priceMin, priceMax, ratingMin, inStock, freeShipping, view });
                   return (
@@ -242,7 +230,7 @@ export default async function ProductsPage({ searchParams }: { searchParams: Rec
                             {typeof p.ratingAverage === 'number' && p.ratingCount ? (
                               <span className="text-slate-500">{p.ratingAverage.toFixed(1)} / 5 • {p.ratingCount}</span>
                             ) : null}
-                            {hasFreeShipping && <span className="inline-flex items-center px-2 py-0.5 rounded-full bg-emerald-50 text-emerald-700">Ücretsiz Kargo</span>}
+                            {typeof p.price === 'number' && p.price >= (config.app.freeShippingThreshold || 1500) && <span className="inline-flex items-center px-2 py-0.5 rounded-full bg-emerald-50 text-emerald-700">Ücretsiz Kargo</span>}
                           </div>
                         </div>
                         <div className="text-right">
@@ -255,60 +243,59 @@ export default async function ProductsPage({ searchParams }: { searchParams: Rec
                     </FixralCard>
                   );
                 }
-                return (
-                  <TiltHover key={p._id} className="[transform-style:preserve-3d]">
-                    <FixralCard className="overflow-hidden" variant="default">
-                      <Link href={`/products/${p.slug}`} className="block group">
-                        <div className="relative h-48 w-full bg-gray-100 overflow-hidden rounded-t-lg">
-                          <NextImage src={p.coverImage} alt={p.title} fill className="object-cover transition-transform group-hover:scale-[1.02]" sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw" />
-                          {p.stock <= 0 && (
-                            <span className="absolute top-2 left-2 text-xs px-2 py-0.5 rounded bg-red-600 text-white z-10">Stokta Yok</span>
-                          )}
-                        </div>
-                        <div className="mt-3 font-medium text-slate-900 line-clamp-2 min-h-[2.75rem]">{p.title}</div>
-                        <div className="mt-1 flex items-center justify-between text-xs text-slate-600">
-                          <span className={`inline-flex items-center px-2 py-0.5 rounded-full ${p.condition === 'new' ? 'bg-emerald-50 text-emerald-700' : 'bg-amber-50 text-amber-700'}`}>{p.condition === 'new' ? 'Sıfır' : 'İkinci El'}</span>
-                          {typeof p.ratingAverage === 'number' && p.ratingCount ? (
-                            <span className="text-slate-500">{p.ratingAverage.toFixed(1)} / 5 • {p.ratingCount}</span>
-                          ) : (
-                            <span className="text-slate-400">Yeni</span>
-                          )}
-                        </div>
-                        <div className="mt-2 flex items-center justify-between">
-                          {typeof p.price === 'number' ? (
-                            <div className="text-emerald-700 font-semibold">{p.price} {p.currency}</div>
-                          ) : <span />}
-                          {hasFreeShipping && <span className="text-[11px] px-2 py-0.5 rounded-full bg-emerald-50 text-emerald-700">Ücretsiz Kargo</span>}
-                        </div>
-                        <div className="mt-3">
-                          <span className="inline-flex items-center justify-center h-9 px-4 rounded-md border text-sm text-slate-700 group-hover:border-emerald-600 group-hover:text-emerald-700">Detaya Git</span>
-                        </div>
-                      </Link>
-                    </FixralCard>
-                  </TiltHover>
-                );
+                return renderProductCard(p);
               })}
-              {items.length === 0 && <div className="text-sm text-gray-500">Kayıt bulunamadı</div>}
-            </div>
+              {items.length === 0 && (
+                <div className="col-span-12 py-12 text-center">
+                  <div className="w-16 h-16 mx-auto bg-slate-50 rounded-full flex items-center justify-center mb-4 text-4xl">🤷‍♂️</div>
+                  <h3 className="text-lg font-bold text-slate-900 mb-2">Aradığınız kriterlere uygun ürün bulunamadı.</h3>
+                  <p className="text-slate-500 max-w-md mx-auto mb-8">Farklı anahtar kelimeler deneyebilir veya filtreleri temizleyebilirsiniz.</p>
 
+                  <Link href="/products" className="inline-flex items-center px-4 py-2 bg-emerald-600 text-white rounded-lg hover:bg-emerald-700 transition mb-12">
+                    Filtreleri Temizle
+                  </Link>
+
+                  {recommendedItems.length > 0 && (
+                    <div className="mt-8 border-t border-slate-100 pt-8">
+                      <h4 className="text-xl font-bold text-slate-900 mb-6 text-left flex items-center gap-2">
+                        <StarIcon className="w-6 h-6 text-amber-500" />
+                        Sizin İçin Seçtiklerimiz
+                      </h4>
+                      <div className="grid gap-6 md:grid-cols-3 text-left">
+                        {recommendedItems.map(rp => renderProductCard(rp, true))}
+                      </div>
+                    </div>
+                  )}
+                </div>
+              )}
+            </div>
             {/* Pagination */}
-            {totalPages > 1 && (
-              <div className="flex justify-center gap-2">
-                {Array.from({ length: totalPages }).map((_, i) => {
-                  const p = i + 1;
-                  const sp = new URLSearchParams({ page: String(p), condition, category, q, sort, priceMin, priceMax, view });
-                  return (
-                    <Link key={p} href={`/products?${sp.toString()}`} className={`px-3 py-2 rounded border ${p === page ? 'bg-emerald-600 text-white border-emerald-600' : 'bg-white text-gray-700'}`}>
-                      {p}
-                    </Link>
-                  );
-                })}
-              </div>
-            )}
+            <div className="mt-8">
+              <Pagination
+                currentPage={page}
+                totalPages={totalPages}
+                createPageUrl={(p) => {
+                  const sp = new URLSearchParams({
+                    page: String(p),
+                    condition,
+                    category,
+                    q,
+                    sort,
+                    priceMin,
+                    priceMax,
+                    view,
+                    ratingMin,
+                    inStock,
+                    freeShipping
+                  });
+                  return `/products?${sp.toString()}`;
+                }}
+              />
+            </div>
           </div>
         </div>
       </div>
-    </main>
+    </main >
   );
 }
 

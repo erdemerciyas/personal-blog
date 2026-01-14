@@ -8,6 +8,8 @@ import Service from '../../../../models/Service';
 import Message from '../../../../models/Message';
 import User from '../../../../models/User';
 import News from '../../../../models/News';
+import Order from '../../../../models/Order';
+import ProductCategory from '../../../../models/ProductCategory';
 import { withSecurity, SecurityConfigs } from '../../../../lib/security-middleware';
 
 export const GET = withSecurity(SecurityConfigs.admin)(async () => {
@@ -70,13 +72,14 @@ export const GET = withSecurity(SecurityConfigs.admin)(async () => {
     const [
       portfolioCount, servicesCount, messagesCount, usersCount,
       recentMessages, productsCount, newsCount, productQuestionsCount,
-      recentNews, recentPortfolio, recentServices, recentProducts, recentUsers
+      recentNews, recentPortfolio, recentServices, recentProducts, recentUsers,
+      ordersCount, productCategoriesCount
     ] = await Promise.all([
       Portfolio.countDocuments(),
       Service.countDocuments(),
-      Message.countDocuments(),
+      Message.countDocuments({ type: { $ne: 'product_question' } }), // General messages only
       User.countDocuments(),
-      Message.find().sort({ createdAt: -1 }).limit(5).select('name email subject createdAt status'),
+      Message.find({ type: { $ne: 'product_question' } }).sort({ createdAt: -1 }).limit(5).select('name email subject createdAt status'),
       Product.countDocuments(),
       News.countDocuments(),
       Message.countDocuments({ type: 'product_question' }), // Product Questions Count
@@ -84,7 +87,9 @@ export const GET = withSecurity(SecurityConfigs.admin)(async () => {
       Portfolio.find().sort({ createdAt: -1 }).limit(5).select('title status createdAt'),
       Service.find().sort({ createdAt: -1 }).limit(5).select('title status createdAt'),
       Product.find().sort({ createdAt: -1 }).limit(5).select('name status createdAt'),
-      User.find().sort({ createdAt: -1 }).limit(5).select('name email role createdAt')
+      User.find().sort({ createdAt: -1 }).limit(5).select('name email role createdAt'),
+      Order.countDocuments(),
+      ProductCategory.countDocuments()
     ]);
 
     const stats = {
@@ -97,6 +102,8 @@ export const GET = withSecurity(SecurityConfigs.admin)(async () => {
       productsCount,
       newsCount,
       productQuestionsCount,
+      ordersCount,
+      productCategoriesCount,
       recentMessages: recentMessages.map(msg => ({
         _id: msg._id,
         name: msg.name,

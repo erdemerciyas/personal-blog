@@ -10,31 +10,40 @@ interface BreadcrumbItem {
   href: string;
 }
 
-const Breadcrumbs: React.FC = () => {
+interface BreadcrumbsProps {
+  items?: BreadcrumbItem[];
+}
+
+const Breadcrumbs: React.FC<BreadcrumbsProps> = ({ items }) => {
   const pathname = usePathname();
   const safePath = pathname ?? '';
-  const pathSegments = safePath.split('/').filter(segment => segment !== '');
 
-  const breadcrumbs: BreadcrumbItem[] = [];
-  let currentPath = '';
+  let breadcrumbs: BreadcrumbItem[] = [];
 
-  // Add Home breadcrumb
-  breadcrumbs.push({ label: 'Anasayfa', href: '/' });
+  if (items) {
+    breadcrumbs = items;
+  } else {
+    const pathSegments = safePath.split('/').filter(segment => segment !== '');
+    let currentPath = '';
 
-  pathSegments.forEach((segment) => {
-    currentPath += `/${segment}`;
+    // Add Home breadcrumb
+    breadcrumbs.push({ label: 'Anasayfa', href: '/' });
 
-    // Basic title mapping (can be expanded for more complex cases)
-    let label = segment.replace(/-/g, ' ');
-    if (label === 'portfolio') label = 'Portfolyo';
-    if (label === 'services') label = 'Hizmetler';
-    if (label === 'about') label = 'Hakkımda';
-    if (label === 'contact') label = 'İletişim';
-    if (label === 'products') label = 'Ürünler';
-    if (label === 'admin') label = 'Yönetim Paneli';
+    pathSegments.forEach((segment) => {
+      currentPath += `/${segment}`;
 
-    breadcrumbs.push({ label: capitalizeFirstLetter(label), href: currentPath });
-  });
+      // Basic title mapping (can be expanded for more complex cases)
+      let label = segment.replace(/-/g, ' ');
+      if (label === 'portfolio') label = 'Portfolyo';
+      if (label === 'services') label = 'Hizmetler';
+      if (label === 'about') label = 'Hakkımda';
+      if (label === 'contact') label = 'İletişim';
+      if (label === 'products') label = 'Ürünler';
+      if (label === 'admin') label = 'Yönetim Paneli';
+
+      breadcrumbs.push({ label: capitalizeFirstLetter(label), href: currentPath });
+    });
+  }
 
   // Helper function to capitalize the first letter of each word
   function capitalizeFirstLetter(str: string) {

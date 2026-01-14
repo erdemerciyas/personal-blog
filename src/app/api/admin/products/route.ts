@@ -14,9 +14,24 @@ export const GET = withSecurity(SecurityConfigs.admin)(async (req: NextRequest) 
   const page = Number(searchParams.get('page') || '1');
   const limit = Number(searchParams.get('limit') || '20');
 
-  const filter: Record<string, unknown> = q ? { $text: { $search: q } } : {};
-  if (condition) (filter as Record<string, unknown>).condition = condition;
-  if (category) (filter as Record<string, unknown>).categoryIds = category;
+  const status = searchParams.get('status');
+  const stock = searchParams.get('stock');
+
+  // Regex search for title instead of text search for better partial matching
+  const filter: Record<string, unknown> = q
+    ? { title: { $regex: q, $options: 'i' } }
+    : {};
+
+  if (condition) (filter as any).condition = condition;
+  if (category) (filter as any).categoryIds = category;
+
+  // Status Filter
+  if (status === 'published') (filter as any).isActive = true;
+  if (status === 'draft') (filter as any).isActive = false;
+
+  // Stock Filter
+  if (stock === 'in_stock') (filter as any).stock = { $gt: 0 };
+  if (stock === 'out_of_stock') (filter as any).stock = { $lte: 0 };
 
   let sortSpec: Record<string, 1 | -1>;
   if (!sort || sort === 'created') {
@@ -28,7 +43,7 @@ export const GET = withSecurity(SecurityConfigs.admin)(async (req: NextRequest) 
   }
   const items = await Product.find(filter).sort(sortSpec).skip((page - 1) * limit).limit(limit);
   const total = await Product.countDocuments(filter);
-  return NextResponse.json({ items, total, page, limit });
+  return NextResponse.json({ items, total, page, limit, totalPages: Math.ceil(total / limit) });
 });
 
 export const POST = withSecurity({

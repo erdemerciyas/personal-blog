@@ -75,11 +75,10 @@ const productSchema = new mongoose.Schema<IProduct>({
   isActive: { type: Boolean, default: true },
 }, { timestamps: true });
 
-productSchema.pre('validate', function preValidate(this: Document & Partial<IProduct>, next) {
+productSchema.pre('validate', async function (this: Document & Partial<IProduct>) {
   if (this.isModified('title') || !this.slug) {
     this.slug = slugify(String(this.title), { lower: true, strict: true });
   }
-  next();
 });
 
 productSchema.index({ title: 'text', description: 'text' });

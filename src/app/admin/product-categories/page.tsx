@@ -20,6 +20,7 @@ interface ProductCategory {
   productCount: number;
   order?: number;
   isActive?: boolean;
+  parent?: string | null;
   createdAt: string;
 }
 
@@ -83,10 +84,10 @@ export default function AdminProductCategoriesPage() {
   const openModal = (category?: ProductCategory) => {
     if (category) {
       setEditingCategory(category);
-      setFormData({ name: category.name, description: category.description || '' });
+      setFormData({ name: category.name, description: category.description || '', parent: category.parent || null } as any);
     } else {
       setEditingCategory(null);
-      setFormData({ name: '', description: '' });
+      setFormData({ name: '', description: '', parent: null } as any);
     }
     setIsModalOpen(true);
   };
@@ -131,7 +132,8 @@ export default function AdminProductCategoriesPage() {
           setCategories([...categories, created]);
           closeModal();
         } else {
-          alert('Kategori oluşturulamadı');
+          const data = await response.json();
+          alert(data.details || data.error || 'Kategori oluşturulamadı');
         }
       }
     } catch (error) {
@@ -177,77 +179,129 @@ export default function AdminProductCategoriesPage() {
         </button>
       </div>
 
-      {/* Search Bar */}
-      <div className="bg-white rounded-2xl shadow-sm border border-slate-200/60 p-4">
-        <div className="relative">
-          <MagnifyingGlassIcon className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-400" />
-          <input
-            type="text"
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-            placeholder="Kategori ara..."
-            className="w-full pl-12 pr-4 py-3 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all"
-          />
+      {/* Categories Content */}
+      <div className="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden">
+        {/* Header */}
+        <div className="grid grid-cols-12 gap-4 px-6 py-3 border-b border-slate-100 bg-slate-50 text-xs font-semibold text-slate-500 uppercase tracking-wider">
+          <div className="col-span-6">Kategori Adı</div>
+          <div className="col-span-2">Slug</div>
+          <div className="col-span-2 text-center">Ürün Sayısı</div>
+          <div className="col-span-2 text-right">İşlemler</div>
         </div>
-      </div>
 
-      {/* Categories Grid */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        {filteredCategories.map((category) => (
-          <div
-            key={category._id}
-            className="bg-white rounded-2xl shadow-sm border border-slate-200/60 p-6 hover:shadow-lg transition-all duration-300 group"
-          >
-            <div className="flex items-start justify-between mb-4">
-              <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-rose-500 to-pink-600 flex items-center justify-center">
-                <TagIcon className="w-6 h-6 text-white" />
-              </div>
-              <div className="flex items-center space-x-2 opacity-0 group-hover:opacity-100 transition-opacity">
-                <button
-                  onClick={() => openModal(category)}
-                  className="p-2 hover:bg-indigo-100 rounded-lg transition-colors"
-                >
-                  <PencilIcon className="w-4 h-4 text-slate-600" />
-                </button>
-                <button
-                  onClick={() => handleDelete(category._id)}
-                  className="p-2 hover:bg-red-100 rounded-lg transition-colors"
-                >
-                  <TrashIcon className="w-4 h-4 text-slate-600" />
-                </button>
-              </div>
+        {/* Tree List */}
+        {categories.length === 0 ? (
+          <div className="text-center py-12 px-4">
+            <div className="inline-flex items-center justify-center w-12 h-12 rounded-full bg-slate-100 mb-3">
+              <TagIcon className="w-6 h-6 text-slate-400" />
             </div>
-            <h3 className="text-lg font-bold text-slate-900 mb-2 group-hover:text-indigo-600 transition-colors">
-              {category.name}
-            </h3>
-            <p className="text-sm text-slate-600 mb-4 line-clamp-2">
-              {category.description || 'Açıklama yok'}
-            </p>
-            <div className="flex items-center justify-between">
-              <span className="text-sm text-slate-500 bg-slate-100 px-2 py-1 rounded-lg">
-                {category.productCount || 0} ürün
-              </span>
-              <span className="text-xs text-slate-400">
-                /{category.slug}
-              </span>
-            </div>
+            <h3 className="text-lg font-medium text-slate-900">Henüz kategori yok</h3>
+            <p className="text-slate-500 mt-1 max-w-sm mx-auto">Kategoriler oluşturarak ürünlerinizi düzenlemeye başlayın.</p>
           </div>
-        ))}
-      </div>
+        ) : (
+          <div className="divide-y divide-slate-50">
+            {(() => {
+              // Prepare Tree Data
+              const roots = categories.filter(c => !c.parent);
+              const byParent: Record<string, ProductCategory[]> = {};
+              categories.forEach(c => {
+                if (c.parent) {
+                  if (!byParent[c.parent]) byParent[c.parent] = [];
+                  byParent[c.parent].push(c);
+                }
+              });
 
-      {/* Empty State */}
-      {filteredCategories.length === 0 && (
-        <div className="text-center py-16 bg-white rounded-2xl border border-slate-200/60">
-          <TagIcon className="w-16 h-16 text-slate-300 mx-auto mb-4" />
-          <h3 className="text-xl font-semibold text-slate-900 mb-2">Ürün kategorisi bulunamadı</h3>
-          <p className="text-slate-500">
-            {searchQuery
-              ? 'Aramanızı değiştirmeyi deneyin'
-              : 'Ürünlerinizi düzenlemek için ilk kategorinizi oluşturun'
-            }
-          </p>
-        </div>
-      )}
+              // Recursive Render
+              const renderRow = (category: ProductCategory, depth = 0) => {
+                const children = byParent[category._id] || [];
+                const hasChildren = children.length > 0;
+                const isExpanded = true; // Default expanded for better visibility, can add state later if needed
+
+                return (
+                  <div key={category._id}>
+                    <div className={`grid grid-cols-12 gap-4 px-6 py-4 items-center hover:bg-slate-50 transition-colors ${depth === 0 ? 'bg-white' : 'bg-slate-50/30'}`}>
+                      {/* Name Column */}
+                      <div className="col-span-6 flex items-center">
+                        <div style={{ width: depth * 24 }} className="shrink-0" /> {/* Inderntation */}
+
+                        {hasChildren ? (
+                          <span className="text-slate-400 mr-2 w-4 flex justify-center">
+                            {/* Can add collapse toggle here later */}
+                            <div className="w-1.5 h-1.5 rounded-full bg-slate-300" />
+                          </span>
+                        ) : (
+                          <span className="w-6 mr-2" />
+                        )}
+
+                        <div className="flex flex-col">
+                          <span className={`text-sm ${depth === 0 ? 'font-bold text-slate-900' : 'font-medium text-slate-700'}`}>
+                            {category.name}
+                          </span>
+                          {category.description && <span className="text-xs text-slate-400 line-clamp-1 mt-0.5">{category.description}</span>}
+                        </div>
+                      </div>
+
+                      {/* Slug Column */}
+                      <div className="col-span-2 text-sm text-slate-500 font-mono text-xs">
+                        {category.slug}
+                      </div>
+
+                      {/* Count Column */}
+                      <div className="col-span-2 text-center">
+                        <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-slate-100 text-slate-800">
+                          {category.productCount || 0}
+                        </span>
+                      </div>
+
+                      {/* Actions Column */}
+                      <div className="col-span-2 flex items-center justify-end gap-2">
+                        {depth === 0 && (
+                          <button
+                            onClick={() => {
+                              setEditingCategory(null);
+                              setFormData({ name: '', description: '', parent: category._id } as any);
+                              setIsModalOpen(true);
+                            }}
+                            className="p-1.5 text-slate-400 hover:text-emerald-600 hover:bg-emerald-50 rounded-lg transition-colors"
+                            title="Alt Kategori Ekle"
+                          >
+                            <PlusIcon className="w-4 h-4" />
+                          </button>
+                        )}
+                        <button
+                          onClick={() => openModal(category)}
+                          className="p-1.5 text-slate-400 hover:text-indigo-600 hover:bg-indigo-50 rounded-lg transition-colors"
+                          title="Düzenle"
+                        >
+                          <PencilIcon className="w-4 h-4" />
+                        </button>
+                        <button
+                          onClick={() => handleDelete(category._id)}
+                          className="p-1.5 text-slate-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors"
+                          title="Sil"
+                        >
+                          <TrashIcon className="w-4 h-4" />
+                        </button>
+                      </div>
+                    </div>
+
+                    {/* Render Children */}
+                    {hasChildren && (
+                      <div className="relative">
+                        {/* Tree connector line */}
+                        <div className="absolute left-[27px] top-0 bottom-4 w-px bg-slate-200" style={{ left: `${(depth * 24) + 27}px` }} />
+                        {children.map(child => renderRow(child, depth + 1))}
+                      </div>
+                    )}
+                  </div>
+                );
+              };
+
+              return roots.map(root => renderRow(root));
+            })()}
+          </div>
+        )}
+      </div>
 
       {/* Edit/Add Modal */}
       {isModalOpen && (
@@ -279,6 +333,7 @@ export default function AdminProductCategoriesPage() {
                   placeholder="örn. Elektronik"
                 />
               </div>
+
               <div>
                 <label className="block text-sm font-medium text-slate-700 mb-1">
                   Açıklama
@@ -286,10 +341,50 @@ export default function AdminProductCategoriesPage() {
                 <textarea
                   value={formData.description}
                   onChange={(e) => setFormData({ ...formData, description: e.target.value })}
-                  rows={3}
-                  className="w-full px-4 py-2 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500 resize-none"
+                  className="w-full px-4 py-2 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500"
                   placeholder="Kategori açıklaması..."
+                  rows={3}
                 />
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-slate-700 mb-1">
+                  Üst Kategori (Opsiyonel)
+                </label>
+                <select
+                  value={(formData as any).parent || ''}
+                  onChange={(e) => setFormData({ ...formData, parent: e.target.value || null } as any)}
+                  className="w-full px-4 py-2 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500 bg-white"
+                >
+                  <option value="">-- Ana Kategori --</option>
+                  {(() => {
+                    const roots = categories.filter(c => !c.parent);
+                    const byParent: Record<string, ProductCategory[]> = {};
+                    categories.forEach(c => {
+                      if (c.parent) {
+                        if (!byParent[c.parent]) byParent[c.parent] = [];
+                        byParent[c.parent].push(c);
+                      }
+                    });
+
+                    const renderOptions = (cats: ProductCategory[], depth: number): React.ReactNode[] => {
+                      return cats.flatMap(c => {
+                        // Prevent selecting itself or its own children (to avoid cycles) when editing
+                        // Simple cycle check: just checking self for now as per minimal requirement
+                        if (editingCategory && c._id === editingCategory._id) return [];
+
+                        return [
+                          <option key={c._id} value={c._id}>
+                            {Array(depth).fill('\u00A0\u00A0\u00A0').join('')}{depth > 0 ? '↳ ' : ''}{c.name}
+                          </option>,
+                          ...renderOptions(byParent[c._id] || [], depth + 1)
+                        ];
+                      });
+                    };
+
+                    return renderOptions(roots, 0);
+                  })()}
+                </select>
               </div>
 
               <div className="flex justify-end gap-3 pt-4">
