@@ -6,7 +6,7 @@ import dynamic from 'next/dynamic';
 import FixralCard from '@/components/ui/FixralCard';
 import TiltHover from '@/components/TiltHover';
 const PageHero = dynamic(() => import('@/components/common/PageHero'), { ssr: false });
-import { Squares2X2Icon, AdjustmentsHorizontalIcon, StarIcon, CurrencyDollarIcon, CheckCircleIcon, MagnifyingGlassIcon } from '@heroicons/react/24/outline';
+import { StarIcon } from '@heroicons/react/24/outline';
 import BreadcrumbsJsonLd from '@/components/seo/BreadcrumbsJsonLd';
 import Breadcrumbs from '@/components/Breadcrumbs';
 import Pagination from '@/components/ui/Pagination';
@@ -96,7 +96,7 @@ export default async function ProductsPage({ searchParams }: { searchParams: Rec
     while (curr) {
       path.unshift({ label: curr.name, href: `/products?category=${curr._id}` });
       // Find parent
-      // @ts-expect-error
+      // @ts-expect-error -- Parent ID might be ObjectId or string
       const parentId = curr.parent;
       if (!parentId) break;
       curr = cats.find(c => String(c._id) === String(parentId));

@@ -2,6 +2,7 @@
 
 import { usePathname, useRouter } from 'next/navigation';
 import Link from 'next/link';
+import Image from 'next/image';
 import { useState, useEffect } from 'react';
 import {
   HomeIcon,
@@ -10,16 +11,8 @@ import {
   CubeIcon,
   CogIcon,
   PaintBrushIcon,
-  PuzzlePieceIcon,
-  ChartBarIcon,
-  UserGroupIcon,
-  VideoCameraIcon,
-  TagIcon,
-  ShoppingCartIcon,
-  ChatBubbleLeftRightIcon,
-  ArchiveBoxIcon,
-  ShieldCheckIcon,
   ArrowLeftOnRectangleIcon,
+  ChatBubbleLeftRightIcon,
   Bars3Icon,
   XMarkIcon,
   ChevronRightIcon,
@@ -227,7 +220,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
                 <div className="flex items-center space-x-3">
                   <div className="w-10 h-10 rounded-full bg-white dark:bg-slate-800 border-2 border-white dark:border-slate-700 shadow-md flex items-center justify-center text-indigo-600 font-bold text-lg overflow-hidden">
                     {session.user.image ? (
-                      <img src={session.user.image} alt={session.user.name || 'Kullanıcı'} className="w-full h-full object-cover" />
+                      <Image src={session.user.image} alt={session.user.name || 'Kullanıcı'} width={40} height={40} className="w-full h-full object-cover" />
                     ) : (
                       session.user.name?.charAt(0).toUpperCase() || 'K'
                     )}
@@ -427,7 +420,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
                     </div>
                     <div className="w-10 h-10 rounded-full bg-gradient-to-br from-indigo-400 to-violet-500 flex items-center justify-center text-white font-semibold shadow-lg shadow-indigo-500/30 overflow-hidden">
                       {session.user.image ? (
-                        <img src={session.user.image} alt={session.user.name || 'User'} className="w-full h-full object-cover" />
+                        <Image src={session.user.image} alt={session.user.name || 'User'} width={40} height={40} className="w-full h-full object-cover" />
                       ) : (
                         session.user.name?.charAt(0).toUpperCase() || 'K'
                       )}
