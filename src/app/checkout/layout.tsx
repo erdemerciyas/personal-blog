@@ -22,64 +22,72 @@ export default function CheckoutLayout({ children }: { children: React.ReactNode
     const currentStepIndex = getCurrentStepIndex();
 
     return (
-        <div className="min-h-screen bg-slate-50">
-            {/* Simplified Header */}
-            <header className="bg-white border-b border-slate-200">
-                <div className="container-main h-20 flex items-center justify-between">
-                    <Link href="/" className="font-bold text-2xl text-slate-900">
-                        FIXRAL
-                    </Link>
-                    <div className="text-sm font-medium text-slate-500">
-                        Güvenli Ödeme
-                    </div>
-                </div>
-            </header>
+        <main className="min-h-screen bg-slate-50 pt-28 pb-20">
+            {/* Hero Section */}
+            <div className="bg-slate-900 pb-20 pt-10">
+                <div className="container-main">
+                    {!pathname?.includes('/success') ? (
+                        <div className="flex flex-col items-center">
+                            <h1 className="text-2xl font-bold text-white mb-8">Güvenli Ödeme</h1>
 
-            {/* Steps Progress */}
-            {!pathname?.includes('/success') && (
-                <div className="bg-white border-b border-slate-200 py-6">
-                    <div className="container-main">
-                        <div className="flex justify-center items-center gap-4 md:gap-12">
-                            {steps.map((step, index) => {
-                                const isCompleted = index < currentStepIndex;
-                                const isCurrent = index === currentStepIndex;
+                            {/* Steps Progress */}
+                            <div className="w-full max-w-3xl">
+                                <div className="flex justify-between items-center relative px-4 sm:px-12">
+                                    {/* Connector Line Background */}
+                                    <div className="absolute left-6 right-6 top-5 h-0.5 bg-white/10 -z-0 sm:left-14 sm:right-14" />
 
-                                return (
-                                    <div key={step.id} className="flex flex-col items-center relative">
-                                        <div className={`
-                                            w-10 h-10 rounded-full flex items-center justify-center font-bold text-sm mb-2 transition-colors
-                                            ${isCompleted || isCurrent ? 'bg-brand-primary-900 text-white' : 'bg-slate-100 text-slate-400'}
-                                        `}>
-                                            {isCompleted ? <CheckIcon className="w-5 h-5" /> : index + 1}
-                                        </div>
-                                        <span className={`
-                                            text-xs font-medium uppercase tracking-wider
-                                            ${isCompleted || isCurrent ? 'text-brand-primary-900' : 'text-slate-400'}
-                                        `}>
-                                            {step.label}
-                                        </span>
+                                    {steps.map((step, index) => {
+                                        const isCompleted = index < currentStepIndex;
+                                        const isCurrent = index === currentStepIndex;
 
-                                        {/* Connector Line */}
-                                        {index < steps.length - 1 && (
-                                            <div className={`
-                                                hidden md:block absolute top-5 left-1/2 w-[calc(100%+3rem)] h-0.5 -z-10
-                                                ${index < currentStepIndex ? 'bg-brand-primary-900' : 'bg-slate-100'}
-                                            `} style={{ left: '50%' }} />
-                                        )}
-                                    </div>
-                                );
-                            })}
+                                        return (
+                                            <div key={step.id} className="relative z-10 flex flex-col items-center group">
+                                                <div
+                                                    className={`
+                                                        w-10 h-10 rounded-full flex items-center justify-center font-bold text-sm mb-3 transition-all duration-300 ring-4
+                                                        ${isCompleted
+                                                            ? 'bg-emerald-500 text-white ring-slate-900 shadow-lg shadow-emerald-500/30'
+                                                            : isCurrent
+                                                                ? 'bg-brand-primary-400 text-slate-900 ring-slate-900 shadow-lg shadow-brand-primary-400/50 scale-110'
+                                                                : 'bg-slate-800 text-slate-400 ring-slate-900 border border-slate-700'
+                                                        }
+                                                    `}
+                                                >
+                                                    {isCompleted ? <CheckIcon className="w-6 h-6" /> : index + 1}
+                                                </div>
+                                                <span className={`
+                                                    text-xs font-bold uppercase tracking-wider transition-colors duration-300
+                                                    ${isCompleted
+                                                        ? 'text-emerald-400'
+                                                        : isCurrent
+                                                            ? 'text-white'
+                                                            : 'text-slate-500'
+                                                    }
+                                                `}>
+                                                    {step.label}
+                                                </span>
+                                            </div>
+                                        );
+                                    })}
+                                </div>
+                            </div>
                         </div>
-                    </div>
-                </div>
-            )}
-
-            {/* Content */}
-            <div className="py-10">
-                <div className="container-main max-w-5xl">
-                    {children}
+                    ) : (
+                        <div className="text-center">
+                            <div className="w-16 h-16 bg-emerald-500/20 text-emerald-400 rounded-full flex items-center justify-center mx-auto mb-4 backdrop-blur-sm border border-emerald-500/30">
+                                <CheckIcon className="w-8 h-8" />
+                            </div>
+                            <h1 className="text-3xl font-bold text-white mb-2">Siparişiniz Alındı</h1>
+                            <p className="text-slate-400">Teşekkür ederiz, siparişiniz başarıyla oluşturuldu.</p>
+                        </div>
+                    )}
                 </div>
             </div>
-        </div>
+
+            {/* Content Area - Overlapping */}
+            <div className="container-main -mt-10 relative z-20">
+                {children}
+            </div>
+        </main>
     );
 }
