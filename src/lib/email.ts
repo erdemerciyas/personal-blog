@@ -52,9 +52,12 @@ interface SendOrderEmailProps {
 }
 
 export async function sendOrderEmail({ to, subject, order, isAdmin = false, isStatusUpdate = false, adminNote }: SendOrderEmailProps) {
-  const productUrl = `${process.env.NEXTAUTH_URL}/products/${order.productSlug}`;
+  // Handle productSlug safely - for multi-item orders it might be on the first item or root
+  const slug = order.productSlug || (order.items && order.items.length > 0 ? order.items[0].productSlug : '');
+  const productUrl = slug ? `${process.env.NEXTAUTH_URL}/products/${slug}` : process.env.NEXTAUTH_URL;
+
   const orderDate = new Date(order.createdAt).toLocaleDateString('tr-TR');
-  const orderId = order._id.toString().slice(-6).toUpperCase();
+  const orderId = order._id ? order._id.toString().slice(-6).toUpperCase() : 'UNKNOWN';
 
   // Format options string
   const optionsHtml = order.selectedOptions && order.selectedOptions.length > 0

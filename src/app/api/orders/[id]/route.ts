@@ -58,11 +58,14 @@ export async function PUT(
         console.log(`Order Update Debug: ID=${params.id}, OldStatus=${oldStatus}, NewStatus=${status}, Email=${order.customerEmail}`);
 
         // Check if we should send email
-        const statusChanged = status && status !== oldStatus && ['shipped', 'completed', 'cancelled', 'preparing', 'new', 'paid'].includes(status);
+        const statusChanged = status && status !== oldStatus;
         const noteChanged = adminNotes !== undefined && adminNotes !== order.adminNotes;
-        const shouldSendEmail = notifyCustomer || statusChanged || (noteChanged && adminNotes);
 
-        console.log(`Email Logic Check: ExplicitNotify=${notifyCustomer}, StatusChanged=${statusChanged} (New: ${status}, Old: ${oldStatus}), NoteChanged=${noteChanged}`);
+        // Default notifyCustomer to true if status changed, unless explicitly set to false
+        const shouldNotify = notifyCustomer !== undefined ? notifyCustomer : statusChanged;
+        const shouldSendEmail = shouldNotify || (noteChanged && adminNotes);
+
+        console.log(`Email Logic Check: ExplicitNotify=${notifyCustomer}, StatusChanged=${statusChanged} (New: ${status}, Old: ${oldStatus}), NoteChanged=${noteChanged}, ShouldSend=${shouldSendEmail}`);
 
         if (shouldSendEmail) {
             console.log(`[Email Trigger] Attempting to send status email. To: ${order.customerEmail}`);

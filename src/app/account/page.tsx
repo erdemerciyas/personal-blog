@@ -904,67 +904,91 @@ export default function AccountPage() {
     }
 
     return (
-        <main className="min-h-screen pt-32 pb-20 bg-slate-50">
-            <div className="container-main">
+        <main className="min-h-screen pt-28 pb-20 bg-slate-50">
+            {/* Header / Hero Section */}
+            <div className="bg-slate-900 pb-20 pt-10">
+                <div className="container-main">
+                    <div className="flex flex-col md:flex-row items-center gap-6">
+                        <div className="w-20 h-20 rounded-full bg-white/10 flex items-center justify-center backdrop-blur-sm border border-white/20 text-white font-bold text-3xl shadow-xl">
+                            {session?.user?.name?.[0]?.toUpperCase() || 'U'}
+                        </div>
+                        <div className="text-center md:text-left">
+                            <h1 className="text-3xl font-bold text-white mb-2">
+                                Merhaba, {session?.user?.name}
+                            </h1>
+                            <p className="text-slate-400">
+                                Hesap durumunuzu yönetin, siparişlerinizi takip edin.
+                            </p>
+                        </div>
+                        <div className="md:ml-auto flex gap-6 text-center">
+                            <div className="bg-white/5 rounded-xl p-4 px-6 border border-white/10 backdrop-blur-sm">
+                                <div className="text-2xl font-bold text-white mb-1">{orders.length}</div>
+                                <div className="text-xs text-slate-400 font-medium uppercase tracking-wider">Sipariş</div>
+                            </div>
+                            <div className="bg-white/5 rounded-xl p-4 px-6 border border-white/10 backdrop-blur-sm">
+                                <div className="text-2xl font-bold text-white mb-1">{unreadCount}</div>
+                                <div className="text-xs text-slate-400 font-medium uppercase tracking-wider">Mesaj</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
 
-                <div className="grid lg:grid-cols-12 gap-8">
+            <div className="container-main -mt-10">
+                <div className="grid lg:grid-cols-12 gap-8 items-start">
                     {/* Sidebar / Menu */}
                     <div className="lg:col-span-3">
-                        <div className="bg-white rounded-2xl shadow-sm border border-slate-200 sticky top-24 overflow-hidden">
-                            <div className="p-6 bg-slate-900 text-white">
-                                <div className="flex items-center gap-4">
-                                    <div className="w-12 h-12 bg-white/10 rounded-full flex items-center justify-center font-bold text-xl backdrop-blur-sm border border-white/20">
-                                        {session?.user?.name?.[0] || 'U'}
-                                    </div>
-                                    <div>
-                                        <div className="font-bold">{session?.user?.name}</div>
-                                        <div className="text-xs text-slate-400 truncate max-w-[150px]">{session?.user?.email}</div>
-                                    </div>
-                                </div>
-                            </div>
-
+                        <div className="bg-white rounded-2xl shadow-xl shadow-slate-200/50 border border-slate-100 sticky top-24 overflow-hidden">
                             <nav className="p-2 space-y-1">
                                 <button
                                     onClick={() => setActiveTab('orders')}
-                                    className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl transition-colors text-left ${activeTab === 'orders' ? 'bg-brand-primary-50 text-brand-primary-900 font-bold' : 'text-slate-600 hover:bg-slate-50'}`}
+                                    className={`w-full flex items-center gap-3 px-4 py-3.5 rounded-xl transition-all duration-200 text-left font-medium ${activeTab === 'orders'
+                                        ? 'bg-brand-primary-900 text-white shadow-lg shadow-brand-primary-900/30'
+                                        : 'text-slate-600 hover:bg-slate-50 hover:text-slate-900'}`}
                                 >
-                                    <ShoppingBagIcon className="w-5 h-5" />
+                                    <ShoppingBagIcon className={`w-5 h-5 ${activeTab === 'orders' ? 'text-white' : 'text-slate-400'}`} />
                                     Siparişlerim
                                 </button>
                                 <button
                                     onClick={() => setActiveTab('addresses')}
-                                    className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl transition-colors text-left ${activeTab === 'addresses' ? 'bg-brand-primary-50 text-brand-primary-900 font-bold' : 'text-slate-600 hover:bg-slate-50'}`}
+                                    className={`w-full flex items-center gap-3 px-4 py-3.5 rounded-xl transition-all duration-200 text-left font-medium ${activeTab === 'addresses'
+                                        ? 'bg-brand-primary-900 text-white shadow-lg shadow-brand-primary-900/30'
+                                        : 'text-slate-600 hover:bg-slate-50 hover:text-slate-900'}`}
                                 >
-                                    <MapPinIcon className="w-5 h-5" />
+                                    <MapPinIcon className={`w-5 h-5 ${activeTab === 'addresses' ? 'text-white' : 'text-slate-400'}`} />
                                     Adreslerim
                                 </button>
                                 <button
                                     onClick={() => setActiveTab('messages')}
-                                    className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl transition-colors text-left ${activeTab === 'messages' ? 'bg-brand-primary-50 text-brand-primary-900 font-bold' : 'text-slate-600 hover:bg-slate-50'}`}
+                                    className={`w-full flex items-center gap-3 px-4 py-3.5 rounded-xl transition-all duration-200 text-left font-medium ${activeTab === 'messages'
+                                        ? 'bg-brand-primary-900 text-white shadow-lg shadow-brand-primary-900/30'
+                                        : 'text-slate-600 hover:bg-slate-50 hover:text-slate-900'}`}
                                 >
                                     <div className="flex-1 flex items-center gap-3">
-                                        <EnvelopeIcon className="w-5 h-5" />
+                                        <EnvelopeIcon className={`w-5 h-5 ${activeTab === 'messages' ? 'text-white' : 'text-slate-400'}`} />
                                         Mesajlarım
                                     </div>
                                     {unreadCount > 0 && (
-                                        <span className="bg-red-500 text-white text-xs font-bold px-2 py-0.5 rounded-full">
+                                        <span className={`text-[10px] font-bold px-2 py-0.5 rounded-full ${activeTab === 'messages' ? 'bg-white text-brand-primary-900' : 'bg-red-500 text-white'}`}>
                                             {unreadCount}
                                         </span>
                                     )}
                                 </button>
                                 <button
                                     onClick={() => setActiveTab('profile')}
-                                    className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl transition-colors text-left ${activeTab === 'profile' ? 'bg-brand-primary-50 text-brand-primary-900 font-bold' : 'text-slate-600 hover:bg-slate-50'}`}
+                                    className={`w-full flex items-center gap-3 px-4 py-3.5 rounded-xl transition-all duration-200 text-left font-medium ${activeTab === 'profile'
+                                        ? 'bg-brand-primary-900 text-white shadow-lg shadow-brand-primary-900/30'
+                                        : 'text-slate-600 hover:bg-slate-50 hover:text-slate-900'}`}
                                 >
-                                    <UserIcon className="w-5 h-5" />
+                                    <UserIcon className={`w-5 h-5 ${activeTab === 'profile' ? 'text-white' : 'text-slate-400'}`} />
                                     Hesap Bilgilerim
                                 </button>
                                 <div className="my-2 border-t border-slate-100"></div>
                                 <button
                                     onClick={() => signOut({ callbackUrl: '/' })}
-                                    className="w-full flex items-center gap-3 px-4 py-3 rounded-xl transition-colors text-left text-red-600 hover:bg-red-50 font-medium"
+                                    className="w-full flex items-center gap-3 px-4 py-3.5 rounded-xl transition-colors text-left text-red-600 hover:bg-red-50 font-medium group"
                                 >
-                                    <ArrowRightOnRectangleIcon className="w-5 h-5" />
+                                    <ArrowRightOnRectangleIcon className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
                                     Çıkış Yap
                                 </button>
                             </nav>
@@ -973,7 +997,7 @@ export default function AccountPage() {
 
                     {/* Content Area */}
                     <div className="lg:col-span-9">
-                        <div className="bg-white p-8 rounded-2xl shadow-sm border border-slate-200 min-h-[500px]">
+                        <div className="bg-white p-8 rounded-2xl shadow-xl shadow-slate-200/50 border border-slate-100 min-h-[500px]">
                             {renderContent()}
                         </div>
                     </div>
