@@ -253,13 +253,15 @@ export default function AdminOrdersPage() {
     const getStatusBadge = (status: string) => {
         const styles: Record<string, string> = {
             new: 'bg-blue-100 text-blue-800 border-blue-200',
-            processing: 'bg-yellow-100 text-yellow-800 border-yellow-200',
+            preparing: 'bg-yellow-100 text-yellow-800 border-yellow-200', // Matches dropdown value
+            processing: 'bg-yellow-100 text-yellow-800 border-yellow-200', // Backward compatibility
             shipped: 'bg-indigo-100 text-indigo-800 border-indigo-200',
             completed: 'bg-green-100 text-green-800 border-green-200',
             cancelled: 'bg-red-100 text-red-800 border-red-200',
         };
         const labels: Record<string, string> = {
             new: 'Yeni',
+            preparing: 'Hazırlanıyor',
             processing: 'İşleniyor',
             shipped: 'Kargolandı',
             completed: 'Tamamlandı',

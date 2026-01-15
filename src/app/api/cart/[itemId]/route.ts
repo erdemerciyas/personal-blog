@@ -36,7 +36,7 @@ export async function PATCH(
         // or we search by matching subdocument _id if frontend sends that.
 
         // Case 1: itemId is Product ID (simpler URL: /api/cart/product_id_123)
-        let itemIndex = cart.items.findIndex((item: any) => item.product.toString() === itemId);
+        const itemIndex = cart.items.findIndex((item: any) => item.product.toString() === itemId);
 
         // Case 2: itemId is Subdocument ID
         if (itemIndex === -1) {

@@ -6,15 +6,13 @@ import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import {
   CubeIcon,
-  PlusIcon,
   MagnifyingGlassIcon,
   TrashIcon,
   CalendarIcon,
   Squares2X2Icon,
   ListBulletIcon,
   CheckCircleIcon,
-  ArrowDownTrayIcon,
-  DocumentIcon
+  ArrowDownTrayIcon
 } from '@heroicons/react/24/outline';
 import toast from 'react-hot-toast';
 import Swal from 'sweetalert2';

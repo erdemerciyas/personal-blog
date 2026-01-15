@@ -1,6 +1,6 @@
 {
   "name": "personal-blog",
-  "version": "3.5.2",
+  "version": "3.6.0",
   "private": true,
   "scripts": {
     "predev": "node scripts/cleanup.js",

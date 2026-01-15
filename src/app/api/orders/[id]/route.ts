@@ -4,6 +4,7 @@ import { authOptions } from '@/lib/auth';
 import connectDB from '@/lib/mongoose';
 import Order from '@/models/Order';
 import Product from '@/models/Product';
+import { sendOrderEmail } from '@/lib/email';
 
 export async function PUT(
     req: NextRequest,
