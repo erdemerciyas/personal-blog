@@ -9,8 +9,11 @@ import {
   PencilIcon,
   TrashIcon,
   EnvelopeIcon,
-  PlusIcon
+  PlusIcon,
+  MapPinIcon
 } from '@heroicons/react/24/outline';
+import toast from 'react-hot-toast';
+import Swal from 'sweetalert2';
 
 interface User {
   _id: string;
@@ -20,6 +23,17 @@ interface User {
   status: 'active' | 'inactive';
   createdAt: string;
   lastLogin?: string;
+  addresses?: {
+    title: string;
+    fullName: string;
+    phone: string;
+    country: string;
+    city: string;
+    district: string;
+    address: string;
+    zipCode: string;
+    isPrimary: boolean;
+  }[];
 }
 
 export default function AdminUsersPage() {
@@ -145,9 +159,10 @@ export default function AdminUsersPage() {
           role: newUser.data.role as 'admin' | 'editor' | 'user'
         }, ...users]);
         setIsAddUserOpen(false);
+        toast.success('User created successfully');
       } else {
         const error = await response.json();
-        alert(error.error || 'Failed to create user');
+        toast.error(error.error || 'Failed to create user');
       }
     } catch (error) {
       console.error('Error creating user:', error);
@@ -165,14 +180,14 @@ export default function AdminUsersPage() {
       });
 
       if (response.ok) {
-        alert('Verification code sent to user email');
+        toast.success('Verification code sent to user email');
       } else {
         const error = await response.json();
-        alert(error.error || 'Failed to send verification code');
+        toast.error(error.error || 'Failed to send verification code');
       }
     } catch (error) {
       console.error('Error sending verification code:', error);
-      alert('Failed to send verification code');
+      toast.error('Failed to send verification code');
     }
   };
 
@@ -181,12 +196,12 @@ export default function AdminUsersPage() {
     if (!passwordModalUser) return;
 
     if (passwordData.newPassword !== passwordData.confirmPassword) {
-      alert('Passwords do not match');
+      toast.error('Passwords do not match');
       return;
     }
 
     if (!passwordData.verificationCode) {
-      alert('Please enter the verification code sent to the user');
+      toast.error('Please enter the verification code sent to the user');
       return;
     }
 
@@ -205,10 +220,10 @@ export default function AdminUsersPage() {
       if (response.ok) {
         setPasswordModalUser(null);
         setPasswordData({ newPassword: '', confirmPassword: '', verificationCode: '' });
-        alert('Password updated successfully');
+        toast.success('Password updated successfully');
       } else {
         const error = await response.json();
-        alert(error.error || 'Failed to update password');
+        toast.error(error.error || 'Failed to update password');
       }
     } catch (error) {
       console.error('Error updating password:', error);
@@ -216,7 +231,17 @@ export default function AdminUsersPage() {
   };
 
   const handleDelete = async (userId: string) => {
-    if (!confirm('Are you sure you want to delete this user?')) return;
+    const result = await Swal.fire({
+      title: 'Are you sure?',
+      text: "You won't be able to revert this!",
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonColor: '#3085d6',
+      cancelButtonColor: '#d33',
+      confirmButtonText: 'Yes, delete it!'
+    });
+
+    if (!result.isConfirmed) return;
 
     try {
       const response = await fetch(`/api/admin/users/${userId}`, {
@@ -225,9 +250,10 @@ export default function AdminUsersPage() {
 
       if (response.ok) {
         setUsers(users.filter(user => user._id !== userId));
+        toast.success('User deleted successfully');
       } else {
         const data = await response.json();
-        alert(data.message || 'Error deleting user');
+        toast.error(data.message || 'Error deleting user');
       }
     } catch (error) {
       console.error('Error deleting user:', error);
@@ -454,6 +480,33 @@ export default function AdminUsersPage() {
                   <option value="inactive">Inactive</option>
                 </select>
               </div>
+
+              {/* Saved Addresses Section */}
+              {editingUser.addresses && editingUser.addresses.length > 0 && (
+                <div className="pt-4 border-t border-slate-100">
+                  <h4 className="text-sm font-semibold text-slate-800 mb-3 flex items-center gap-2">
+                    <MapPinIcon className="w-4 h-4 text-indigo-500" />
+                    Saved Addresses ({editingUser.addresses.length})
+                  </h4>
+                  <div className="space-y-3 max-h-48 overflow-y-auto pr-1">
+                    {editingUser.addresses.map((addr, idx) => (
+                      <div key={idx} className="bg-slate-50 p-3 rounded-lg border border-slate-200 text-sm">
+                        <div className="flex items-center justify-between mb-1">
+                          <span className="font-semibold text-slate-700">{addr.title}</span>
+                          {addr.isPrimary && (
+                            <span className="px-1.5 py-0.5 bg-indigo-100 text-indigo-700 text-[10px] rounded-md font-medium">Primary</span>
+                          )}
+                        </div>
+                        <div className="text-slate-600 text-xs space-y-0.5">
+                          <div>{addr.fullName} • {addr.phone}</div>
+                          <div>{addr.address}</div>
+                          <div>{addr.district}, {addr.city} / {addr.country}</div>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
               <div className="flex gap-2 justify-end pt-4">
                 <button
                   type="button"

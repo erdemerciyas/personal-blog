@@ -3,6 +3,8 @@ import { getServerSession } from 'next-auth';
 import Message from '@/models/Message';
 import connectDB from '@/lib/mongoose';
 
+export const dynamic = 'force-dynamic';
+
 /**
  * GET /api/admin/messages - List all messages for admin
  */
@@ -19,9 +21,18 @@ export async function GET(_req: NextRequest) {
 
     await connectDB();
 
-    const messages = await Message.find()
+    const { searchParams } = new URL(_req.url);
+    const scope = searchParams.get('scope');
+
+    let query = {};
+    if (scope === 'general') {
+      // Exclude e-commerce related messages
+      query = { type: { $nin: ['product_question', 'order_question'] } };
+    }
+
+    const messages = await Message.find(query)
       .sort({ createdAt: -1 })
-      .select('_id name email subject message status type productId productName createdAt updatedAt');
+      .select('_id name email subject message status type productId productName orderId createdAt updatedAt conversation adminReply');
 
     return NextResponse.json(messages);
   } catch (error) {

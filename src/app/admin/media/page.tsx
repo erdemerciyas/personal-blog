@@ -17,6 +17,8 @@ import {
   Squares2X2Icon,
   ListBulletIcon
 } from '@heroicons/react/24/outline';
+import toast from 'react-hot-toast';
+import Swal from 'sweetalert2';
 
 interface MediaItem {
   _id: string;
@@ -121,7 +123,18 @@ export default function AdminMediaPage() {
   };
 
   const handleDelete = async (itemIds: string[]) => {
-    if (!confirm(`${itemIds.length} öğeyi silmek istediğinizden emin misiniz?`)) return;
+    const result = await Swal.fire({
+      title: 'Emin misiniz?',
+      text: `${itemIds.length} öğeyi silmek istediğinizden emin misiniz?`,
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonColor: '#3085d6',
+      cancelButtonColor: '#d33',
+      confirmButtonText: 'Evet, sil!',
+      cancelButtonText: 'Vazgeç'
+    });
+
+    if (!result.isConfirmed) return;
 
     try {
       setLoading(true);
@@ -140,14 +153,15 @@ export default function AdminMediaPage() {
           setShowPreviewModal(false);
           setPreviewItem(null);
         }
+        toast.success('Başarıyla silindi');
       } else {
         const errorData = await response.json();
         console.error('Delete failed:', errorData);
-        alert('Silme işlemi başarısız oldu: ' + (errorData.error || 'Bilinmeyen hata'));
+        toast.error('Silme işlemi başarısız oldu: ' + (errorData.error || 'Bilinmeyen hata'));
       }
     } catch (error) {
       console.error('Medya silinirken hata:', error);
-      alert('Bir hata oluştu.');
+      toast.error('Bir hata oluştu.');
     } finally {
       setLoading(false);
     }
@@ -650,9 +664,7 @@ export default function AdminMediaPage() {
               <div className="p-4 bg-slate-50 border-t border-slate-100">
                 <button
                   onClick={() => {
-                    if (confirm('Silmek istediğinize emin misiniz?')) {
-                      handleDelete([previewItem._id]);
-                    }
+                    handleDelete([previewItem._id]);
                   }}
                   className="w-full flex items-center justify-center px-4 py-2.5 bg-red-50 text-red-600 font-medium rounded-xl hover:bg-red-100 transition-colors"
                 >

@@ -16,6 +16,8 @@ import {
   ChatBubbleLeftRightIcon,
   XMarkIcon
 } from '@heroicons/react/24/outline';
+import toast from 'react-hot-toast';
+import Swal from 'sweetalert2';
 
 interface ProductItem {
   _id: string;
@@ -107,7 +109,18 @@ export default function AdminProductsPage() {
   };
 
   const handleDelete = async (productId: string) => {
-    if (!confirm('Bu ürünü silmek istediğinizden emin misiniz?')) return;
+    const result = await Swal.fire({
+      title: 'Emin misiniz?',
+      text: "Bu ürünü silmek istediğinizden emin misiniz?",
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonColor: '#3085d6',
+      cancelButtonColor: '#d33',
+      confirmButtonText: 'Evet, sil!',
+      cancelButtonText: 'Vazgeç'
+    });
+
+    if (!result.isConfirmed) return;
 
     try {
       const response = await fetch(`/api/admin/products/${productId}`, { method: 'DELETE' });
@@ -118,14 +131,27 @@ export default function AdminProductsPage() {
           newSet.delete(productId);
           setSelectedItems(newSet);
         }
+        toast.success('Ürün silindi');
       }
     } catch (error) {
       console.error('Silme hatası:', error);
+      toast.error('Silme işlemi başarısız');
     }
   };
 
   const handleBulkDelete = async () => {
-    if (!confirm(`${selectedItems.size} ürünü silmek istediğinizden emin misiniz?`)) return;
+    const result = await Swal.fire({
+      title: 'Toplu Silme',
+      text: `${selectedItems.size} ürünü silmek istediğinizden emin misiniz?`,
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonColor: '#d33',
+      cancelButtonColor: '#3085d6',
+      confirmButtonText: 'Evet, Hepsini Sil!',
+      cancelButtonText: 'Vazgeç'
+    });
+
+    if (!result.isConfirmed) return;
 
     try {
       await Promise.all(
@@ -133,8 +159,10 @@ export default function AdminProductsPage() {
       );
       setProducts(prev => prev.filter(p => !selectedItems.has(p._id)));
       setSelectedItems(new Set());
+      toast.success('Seçilen ürünler silindi');
     } catch (error) {
       console.error('Toplu silme hatası:', error);
+      toast.error('Toplu silme işlemi sırasında hata oluştu');
     }
   };
 

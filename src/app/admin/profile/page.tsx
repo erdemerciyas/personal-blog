@@ -16,6 +16,8 @@ import {
 import Image from 'next/image';
 import MediaBrowser from '@/components/MediaBrowser';
 import { InlineLoader } from '@/components/AdminLoader';
+import toast from 'react-hot-toast';
+import Swal from 'sweetalert2';
 
 export default function ProfilePage() {
     const router = useRouter();
@@ -185,7 +187,18 @@ export default function ProfilePage() {
     };
 
     const disable2FA = async () => {
-        if (!confirm('2FA\'yı devre dışı bırakmak istediğinize emin misiniz? Hesabınızın güvenliği azalacaktır.')) return;
+        const result = await Swal.fire({
+            title: 'Emin misiniz?',
+            text: '2FA\'yı devre dışı bırakmak istediğinize emin misiniz? Hesabınızın güvenliği azalacaktır.',
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#3085d6',
+            cancelButtonColor: '#d33',
+            confirmButtonText: 'Evet, devre dışı bırak!',
+            cancelButtonText: 'Vazgeç'
+        });
+
+        if (!result.isConfirmed) return;
 
         setLoading(true);
         setMessage(null);
@@ -194,12 +207,15 @@ export default function ProfilePage() {
             if (res.ok) {
                 setMessage({ type: 'success', text: 'İki Aşamalı Doğrulama devre dışı bırakıldı.' });
                 setBackupCodes(null);
+                toast.success('2FA devre dışı bırakıldı');
             } else {
                 const data = await res.json();
                 setMessage({ type: 'error', text: data.error || 'Devre dışı bırakılamadı' });
+                toast.error(data.error || 'Devre dışı bırakılamadı');
             }
         } catch (error) {
             setMessage({ type: 'error', text: 'Bir hata oluştu' });
+            toast.error('Bir hata oluştu');
         } finally {
             setLoading(false);
         }

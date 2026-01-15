@@ -13,6 +13,8 @@ import {
   ArrowUpIcon,
   ArrowDownIcon
 } from '@heroicons/react/24/outline';
+import toast from 'react-hot-toast';
+import Swal from 'sweetalert2';
 
 interface SliderItem {
   _id: string;
@@ -59,7 +61,17 @@ export default function AdminSliderPage() {
   };
 
   const handleDelete = async (sliderId: string) => {
-    if (!confirm('Are you sure you want to delete this slider?')) return;
+    const result = await Swal.fire({
+      title: 'Are you sure?',
+      text: "Are you sure you want to delete this slider?",
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonColor: '#3085d6',
+      cancelButtonColor: '#d33',
+      confirmButtonText: 'Yes, delete it!'
+    });
+
+    if (!result.isConfirmed) return;
 
     try {
       const response = await fetch(`/api/admin/slider/${sliderId}`, {
@@ -68,9 +80,13 @@ export default function AdminSliderPage() {
 
       if (response.ok) {
         setSliders(sliders.filter(slider => slider._id !== sliderId));
+        toast.success('Slider deleted successfully');
+      } else {
+        toast.error('Failed to delete slider');
       }
     } catch (error) {
       console.error('Error deleting slider:', error);
+      toast.error('Error deleting slider');
     }
   };
 
@@ -172,8 +188,8 @@ export default function AdminSliderPage() {
             <button
               onClick={() => setStatusFilter('all')}
               className={`px-4 py-2 rounded-lg text-sm font-medium transition-all ${statusFilter === 'all'
-                  ? 'bg-white text-indigo-600 shadow-sm'
-                  : 'text-slate-600 hover:text-slate-900'
+                ? 'bg-white text-indigo-600 shadow-sm'
+                : 'text-slate-600 hover:text-slate-900'
                 }`}
             >
               All ({sliders.length})
@@ -181,8 +197,8 @@ export default function AdminSliderPage() {
             <button
               onClick={() => setStatusFilter('active')}
               className={`px-4 py-2 rounded-lg text-sm font-medium transition-all ${statusFilter === 'active'
-                  ? 'bg-white text-indigo-600 shadow-sm'
-                  : 'text-slate-600 hover:text-slate-900'
+                ? 'bg-white text-indigo-600 shadow-sm'
+                : 'text-slate-600 hover:text-slate-900'
                 }`}
             >
               Active ({sliders.filter(s => s.status === 'active').length})
@@ -190,8 +206,8 @@ export default function AdminSliderPage() {
             <button
               onClick={() => setStatusFilter('inactive')}
               className={`px-4 py-2 rounded-lg text-sm font-medium transition-all ${statusFilter === 'inactive'
-                  ? 'bg-white text-indigo-600 shadow-sm'
-                  : 'text-slate-600 hover:text-slate-900'
+                ? 'bg-white text-indigo-600 shadow-sm'
+                : 'text-slate-600 hover:text-slate-900'
                 }`}
             >
               Inactive ({sliders.filter(s => s.status === 'inactive').length})
@@ -222,8 +238,8 @@ export default function AdminSliderPage() {
               )}
               <div className="absolute top-3 left-3">
                 <span className={`px-2 py-1 text-xs font-semibold rounded-full ${slider.status === 'active'
-                    ? 'bg-emerald-500 text-white'
-                    : 'bg-slate-500 text-white'
+                  ? 'bg-emerald-500 text-white'
+                  : 'bg-slate-500 text-white'
                   }`}>
                   {slider.status}
                 </span>
@@ -262,8 +278,8 @@ export default function AdminSliderPage() {
                   <button
                     onClick={() => handleToggleStatus(slider._id)}
                     className={`p-2 rounded-lg transition-colors ${slider.status === 'active'
-                        ? 'bg-amber-100 hover:bg-amber-200'
-                        : 'bg-emerald-100 hover:bg-emerald-200'
+                      ? 'bg-amber-100 hover:bg-amber-200'
+                      : 'bg-emerald-100 hover:bg-emerald-200'
                       }`}
                     title={slider.status === 'active' ? 'Deactivate' : 'Activate'}
                   >

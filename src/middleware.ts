@@ -4,6 +4,7 @@
 
 import { NextResponse } from 'next/server';
 import type { NextRequest } from 'next/server';
+import { getToken } from 'next-auth/jwt';
 
 // Cache for page settings (short TTL)
 let pageSettingsCache: { data: any[]; timestamp: number } | null = null;
@@ -138,11 +139,17 @@ export async function middleware(request: NextRequest) {
 
   // 2) Admin route authentication check
   if (pathname.startsWith('/admin') && pathname !== '/admin/login' && !pathname.startsWith('/admin/reset-password')) {
-    const sessionToken = request.cookies.get('next-auth.session-token') || request.cookies.get('__Secure-next-auth.session-token');
+    const token = await getToken({ req: request, secret: process.env.NEXTAUTH_SECRET });
 
-    if (!sessionToken) {
+    // Not logged in -> Redirect to Admin Login
+    if (!token) {
       const loginUrl = new URL('/admin/login', request.url);
       return NextResponse.redirect(loginUrl);
+    }
+
+    // Logged in but NOT Admin -> Redirect to Home
+    if (token.role !== 'admin') {
+      return NextResponse.redirect(new URL('/', request.url));
     }
   }
 

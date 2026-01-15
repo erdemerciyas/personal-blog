@@ -1,19 +1,32 @@
 import mongoose from 'mongoose';
 
 const OrderSchema = new mongoose.Schema({
+    // Legacy Single Product Fields (Optional now)
     product: {
         type: mongoose.Schema.Types.ObjectId,
         ref: 'Product',
-        required: true,
+        required: false,
     },
-    productName: { // Storing name for redundancy
-        type: String,
+    productName: { type: String, required: false }, // Legacy
+    productSlug: { type: String, required: false }, // Legacy
+    quantity: { type: Number, required: false, default: 1 }, // Legacy
+    price: { type: Number, required: false, default: 0 }, // Legacy
+
+    // New Multi-Item Support
+    items: [{
+        product: { type: mongoose.Schema.Types.ObjectId, ref: 'Product', required: true },
+        productName: String,
+        productSlug: String,
+        quantity: { type: Number, required: true },
+        price: { type: Number, required: true }, // Snapshotted Unit Price
+        attributes: mongoose.Schema.Types.Mixed
+    }],
+    totalPrice: {
+        type: Number,
         required: true,
+        default: 0
     },
-    productSlug: {
-        type: String,
-        required: true,
-    },
+
     customerName: {
         type: String,
         required: true,
@@ -35,32 +48,47 @@ const OrderSchema = new mongoose.Schema({
         required: true,
         trim: true,
     },
+    userId: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'User',
+        required: false
+    },
     note: {
         type: String,
         trim: true,
     },
-    quantity: {
-        type: Number,
-        required: true,
-        default: 1,
-    },
-    price: {
-        type: Number,
-        required: true,
-        default: 0,
-    },
+
     selectedOptions: [{
         group: String,
         option: String
     }],
+    guestId: {
+        type: String, // For guest checkout tracking
+        index: true,
+    },
+    paymentId: {
+        type: String,
+    },
+    paymentProvider: {
+        type: String, // e.g., 'iyzico', 'stripe', 'mock'
+    },
     status: {
         type: String,
-        enum: ['new', 'processing', 'shipped', 'completed', 'cancelled'],
-        default: 'new',
+        enum: ['new', 'pending', 'paid', 'preparing', 'shipped', 'completed', 'cancelled', 'refunded'],
+        default: 'pending',
     },
     adminNotes: {
         type: String,
     },
+    cargoCarrier: { type: String }, // e.g., 'Yurtiçi Kargo'
+    isUserVisible: {
+        type: Boolean,
+        default: true
+    },
+    deletedAt: {
+        type: Date,
+        index: true, // For faster cleanup queries
+    }
 }, {
     timestamps: true,
 });

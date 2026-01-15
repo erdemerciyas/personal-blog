@@ -11,6 +11,8 @@ import {
   TrashIcon,
   XMarkIcon
 } from '@heroicons/react/24/outline';
+import toast from 'react-hot-toast';
+import Swal from 'sweetalert2';
 
 interface ProductCategory {
   _id: string;
@@ -63,7 +65,18 @@ export default function AdminProductCategoriesPage() {
   };
 
   const handleDelete = async (categoryId: string) => {
-    if (!confirm('Bu kategoriyi silmek istediğinizden emin misiniz?')) return;
+    const result = await Swal.fire({
+      title: 'Emin misiniz?',
+      text: "Bu kategoriyi silmek istediğinizden emin misiniz?",
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonColor: '#3085d6',
+      cancelButtonColor: '#d33',
+      confirmButtonText: 'Evet, sil!',
+      cancelButtonText: 'Vazgeç'
+    });
+
+    if (!result.isConfirmed) return;
 
     try {
       const response = await fetch(`/api/admin/product-categories/${categoryId}`, {
@@ -72,12 +85,13 @@ export default function AdminProductCategoriesPage() {
 
       if (response.ok) {
         setCategories(categories.filter(category => category._id !== categoryId));
+        toast.success('Kategori silindi');
       } else {
-        alert('Kategori silinirken hata oluştu');
+        toast.error('Kategori silinirken hata oluştu');
       }
     } catch (error) {
       console.error('Kategori silinirken hata:', error);
-      alert('Kategori silinirken hata oluştu');
+      toast.error('Kategori silinirken hata oluştu');
     }
   };
 
@@ -116,8 +130,9 @@ export default function AdminProductCategoriesPage() {
           const updated = await response.json();
           setCategories(categories.map(c => c._id === updated._id ? { ...c, ...updated } : c));
           closeModal();
+          toast.success('Kategori güncellendi');
         } else {
-          alert('Kategori güncellenemedi');
+          toast.error('Kategori güncellenemedi');
         }
       } else {
         // Create
@@ -131,14 +146,15 @@ export default function AdminProductCategoriesPage() {
           const created = await response.json();
           setCategories([...categories, created]);
           closeModal();
+          toast.success('Kategori oluşturuldu');
         } else {
           const data = await response.json();
-          alert(data.details || data.error || 'Kategori oluşturulamadı');
+          toast.error(data.details || data.error || 'Kategori oluşturulamadı');
         }
       }
     } catch (error) {
       console.error('Kategori kaydedilirken hata:', error);
-      alert('Kategori kaydedilirken hata oluştu');
+      toast.error('Kategori kaydedilirken hata oluştu');
     } finally {
       setSaving(false);
     }

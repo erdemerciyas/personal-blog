@@ -114,24 +114,37 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
     if (pathname === '/admin/login' || pathname === '/admin/reset-password') return;
 
     // Fetch counts for sidebar badges
-    fetch('/api/admin/dashboard-stats')
-      .then(res => res.json())
-      .then(data => {
-        setCounts({
-          '/admin/news': data.newsCount || 0,
-          '/admin/portfolio': data.portfolioCount || 0,
-          '/admin/services': data.servicesCount || 0,
-          '/admin/products': data.productsCount || 0,
-          '/admin/product-categories': data.productCategoriesCount || 0,
-          '/admin/users': data.usersCount || 0,
-          '/admin/messages': data.messagesCount || 0,
-          '/admin/media': data.mediaCount || 0,
-          '/admin/product-media': data.productMediaCount || 0,
-          '/admin/products/questions': data.productQuestionsCount || 0,
-          '/admin/orders': data.ordersCount || 0,
-        });
-      })
-      .catch(err => console.error('Failed to load sidebar counts', err));
+    const fetchStats = () => {
+      fetch('/api/admin/dashboard-stats')
+        .then(res => res.json())
+        .then(data => {
+          setCounts({
+            // Info Counts (Totals) - Neutral Colors
+            '/admin/news': data.newsCount || 0,
+            '/admin/portfolio': data.portfolioCount || 0,
+            '/admin/services': data.servicesCount || 0,
+            '/admin/products': data.productsCount || 0,
+            '/admin/product-categories': data.productCategoriesCount || 0,
+            '/admin/users': data.usersCount || 0,
+            '/admin/media': data.mediaCount || 0,
+            '/admin/product-media': data.productMediaCount || 0,
+
+            // Notification Counts (Action Items) - Red Colors
+            '/admin/messages': data.unreadMessagesCount || 0,
+            '/admin/products/questions': data.unreadProductQuestionsCount || 0,
+            '/admin/orders': data.newOrdersCount || 0,
+          });
+        })
+        .catch(err => console.error('Failed to load sidebar counts', err));
+    };
+
+    // Initial fetch
+    fetchStats();
+
+    // Poll every 30 seconds
+    const intervalId = setInterval(fetchStats, 30000);
+
+    return () => clearInterval(intervalId);
   }, []);
 
   const toggleSubmenu = (name: string) => {
@@ -174,6 +187,10 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
 
   const isGroupActive = (children: { href: string }[]) => {
     return children.some(child => isActive(child.href));
+  };
+
+  const isAlertPath = (href: string) => {
+    return ['/admin/orders', '/admin/messages', '/admin/products/questions'].includes(href);
   };
 
   return (
@@ -273,6 +290,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
                           {item.children.map((child) => {
                             const active = isActive(child.href);
                             const count = child.href ? counts[child.href] : 0;
+                            const isAlert = isAlertPath(child.href);
                             return (
                               <Link
                                 key={child.name}
@@ -285,9 +303,11 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
                               >
                                 <span>{child.name}</span>
                                 {count !== undefined && count > 0 && (
-                                  <span className={`ml-2 px-2 py-0.5 text-xs rounded-full ${active
-                                    ? 'bg-indigo-100 text-indigo-700 dark:bg-indigo-900/50 dark:text-indigo-300'
-                                    : 'bg-[var(--admin-bg)] text-slate-600 dark:bg-slate-800 dark:text-slate-400'
+                                  <span className={`ml-2 px-2 py-0.5 text-xs rounded-full ${isAlert
+                                    ? 'bg-red-500 text-white font-bold animate-pulse'
+                                    : active
+                                      ? 'bg-indigo-100 text-indigo-700 dark:bg-indigo-900/50 dark:text-indigo-300'
+                                      : 'bg-[var(--admin-bg)] text-slate-600 dark:bg-slate-800 dark:text-slate-400'
                                     }`}>
                                     {count}
                                   </span>
@@ -304,6 +324,8 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
                 // Handle Single Item
                 const active = isActive(item.href || '');
                 const count = item.href ? counts[item.href] : 0;
+                const isAlert = item.href ? isAlertPath(item.href) : false;
+
                 return (
                   <Link
                     key={item.name}
@@ -320,9 +342,11 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
                     />
                     <span className="flex-1">{item.name}</span>
                     {count !== undefined && count > 0 && (
-                      <span className={`ml-2 px-2 py-0.5 text-xs rounded-full ${active
-                        ? 'bg-white/20 text-white'
-                        : 'bg-[var(--admin-bg)] text-slate-600 group-hover:bg-slate-200 dark:bg-slate-800 dark:text-slate-400 dark:group-hover:bg-slate-700'
+                      <span className={`ml-2 px-2 py-0.5 text-xs rounded-full ${isAlert
+                        ? 'bg-red-500 text-white font-bold animate-pulse'
+                        : active
+                          ? 'bg-white/20 text-white'
+                          : 'bg-[var(--admin-bg)] text-slate-600 group-hover:bg-slate-200 dark:bg-slate-800 dark:text-slate-400 dark:group-hover:bg-slate-700'
                         }`}>
                         {count}
                       </span>

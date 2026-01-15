@@ -19,6 +19,8 @@ import {
   EyeIcon,
   UserIcon
 } from '@heroicons/react/24/outline';
+import toast from 'react-hot-toast';
+import Swal from 'sweetalert2';
 
 interface NewsItem {
   _id: string;
@@ -88,7 +90,18 @@ export default function AdminNewsPage() {
   };
 
   const handleDelete = async (itemId: string) => {
-    if (!confirm('Bu haberi silmek istediğinizden emin misiniz?')) return;
+    const result = await Swal.fire({
+      title: 'Emin misiniz?',
+      text: "Bu haberi silmek istediğinizden emin misiniz?",
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonColor: '#3085d6',
+      cancelButtonColor: '#d33',
+      confirmButtonText: 'Evet, sil!',
+      cancelButtonText: 'Vazgeç'
+    });
+
+    if (!result.isConfirmed) return;
 
     try {
       const response = await fetch(`/api/admin/news/${itemId}`, {
@@ -102,14 +115,27 @@ export default function AdminNewsPage() {
           newSelected.delete(itemId);
           setSelectedItems(newSelected);
         }
+        toast.success('Haber silindi');
       }
     } catch (error) {
       console.error('Haber silinirken hata:', error);
+      toast.error('Silme işlemi başarısız');
     }
   };
 
   const handleBulkDelete = async () => {
-    if (!confirm(`${selectedItems.size} haberi silmek istediğinizden emin misiniz?`)) return;
+    const result = await Swal.fire({
+      title: 'Toplu Silme',
+      text: `${selectedItems.size} haberi silmek istediğinizden emin misiniz?`,
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonColor: '#d33',
+      cancelButtonColor: '#3085d6',
+      confirmButtonText: 'Evet, Hepsini Sil!',
+      cancelButtonText: 'Vazgeç'
+    });
+
+    if (!result.isConfirmed) return;
 
     try {
       await Promise.all(
@@ -119,8 +145,10 @@ export default function AdminNewsPage() {
       );
       setNewsItems(newsItems.filter(item => !selectedItems.has(item._id)));
       setSelectedItems(new Set());
+      toast.success('Seçilen haberler silindi');
     } catch (error) {
       console.error('Haberler silinirken hata:', error);
+      toast.error('Toplu silme işlemi sırasında hata oluştu');
     }
   };
 

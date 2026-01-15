@@ -12,6 +12,8 @@ import {
   PlayIcon,
   ClockIcon
 } from '@heroicons/react/24/outline';
+import toast from 'react-hot-toast';
+import Swal from 'sweetalert2';
 
 interface Video {
   _id: string;
@@ -59,7 +61,17 @@ export default function AdminVideosPage() {
   };
 
   const handleDelete = async (videoId: string) => {
-    if (!confirm('Are you sure you want to delete this video?')) return;
+    const result = await Swal.fire({
+      title: 'Are you sure?',
+      text: "Are you sure you want to delete this video?",
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonColor: '#3085d6',
+      cancelButtonColor: '#d33',
+      confirmButtonText: 'Yes, delete it!'
+    });
+
+    if (!result.isConfirmed) return;
 
     try {
       const response = await fetch(`/api/admin/videos/${videoId}`, {
@@ -68,9 +80,13 @@ export default function AdminVideosPage() {
 
       if (response.ok) {
         setVideos(videos.filter(video => video._id !== videoId));
+        toast.success('Video deleted successfully');
+      } else {
+        toast.error('Failed to delete video');
       }
     } catch (error) {
       console.error('Error deleting video:', error);
+      toast.error('Error deleting video');
     }
   };
 

@@ -10,6 +10,8 @@ import {
   ClockIcon,
   DocumentIcon
 } from '@heroicons/react/24/outline';
+import toast from 'react-hot-toast';
+import Swal from 'sweetalert2';
 
 interface Backup {
   _id: string;
@@ -59,16 +61,30 @@ export default function AdminBackupPage() {
 
       if (response.ok) {
         loadBackups();
+        toast.success('Backup created successfully');
+      } else {
+        toast.error('Failed to create backup');
       }
     } catch (error) {
       console.error('Error creating backup:', error);
+      toast.error('Error creating backup');
     } finally {
       setCreatingBackup(false);
     }
   };
 
   const handleDelete = async (backupId: string) => {
-    if (!confirm('Are you sure you want to delete this backup?')) return;
+    const result = await Swal.fire({
+      title: 'Are you sure?',
+      text: "Are you sure you want to delete this backup?",
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonColor: '#3085d6',
+      cancelButtonColor: '#d33',
+      confirmButtonText: 'Yes, delete it!'
+    });
+
+    if (!result.isConfirmed) return;
 
     try {
       const response = await fetch(`/api/admin/backup/${backupId}`, {
@@ -77,9 +93,13 @@ export default function AdminBackupPage() {
 
       if (response.ok) {
         setBackups(backups.filter(backup => backup._id !== backupId));
+        toast.success('Backup deleted successfully');
+      } else {
+        toast.error('Failed to delete backup');
       }
     } catch (error) {
       console.error('Error deleting backup:', error);
+      toast.error('Error deleting backup');
     }
   };
 

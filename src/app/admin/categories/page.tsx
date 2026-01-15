@@ -10,6 +10,8 @@ import {
   PencilIcon,
   TrashIcon
 } from '@heroicons/react/24/outline';
+import toast from 'react-hot-toast';
+import Swal from 'sweetalert2';
 
 interface Category {
   _id: string;
@@ -57,7 +59,17 @@ export default function AdminCategoriesPage() {
   };
 
   const handleDelete = async (categoryId: string) => {
-    if (!confirm('Are you sure you want to delete this category?')) return;
+    const result = await Swal.fire({
+      title: 'Are you sure?',
+      text: "Are you sure you want to delete this category?",
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonColor: '#3085d6',
+      cancelButtonColor: '#d33',
+      confirmButtonText: 'Yes, delete it!'
+    });
+
+    if (!result.isConfirmed) return;
 
     try {
       const response = await fetch(`/api/admin/categories/${categoryId}`, {
@@ -66,9 +78,13 @@ export default function AdminCategoriesPage() {
 
       if (response.ok) {
         setCategories(categories.filter(category => category._id !== categoryId));
+        toast.success('Category deleted successfully');
+      } else {
+        toast.error('Failed to delete category');
       }
     } catch (error) {
       console.error('Error deleting category:', error);
+      toast.error('Error deleting category');
     }
   };
 

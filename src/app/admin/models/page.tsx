@@ -16,6 +16,8 @@ import {
   ArrowDownTrayIcon,
   DocumentIcon
 } from '@heroicons/react/24/outline';
+import toast from 'react-hot-toast';
+import Swal from 'sweetalert2';
 
 interface Model3D {
   _id: string;
@@ -77,7 +79,18 @@ export default function AdminModelsPage() {
   };
 
   const handleDelete = async (modelId: string) => {
-    if (!confirm('Bu 3D modeli silmek istediğinizden emin misiniz?')) return;
+    const result = await Swal.fire({
+      title: 'Emin misiniz?',
+      text: "Bu 3D modeli silmek istediğinizden emin misiniz?",
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonColor: '#3085d6',
+      cancelButtonColor: '#d33',
+      confirmButtonText: 'Evet, sil!',
+      cancelButtonText: 'Vazgeç'
+    });
+
+    if (!result.isConfirmed) return;
 
     try {
       const response = await fetch(`/api/admin/models/${modelId}`, {
@@ -91,14 +104,29 @@ export default function AdminModelsPage() {
           newSelected.delete(modelId);
           setSelectedItems(newSelected);
         }
+        toast.success('Model silindi');
+      } else {
+        toast.error('Silme başarısız');
       }
     } catch (error) {
       console.error('Model silinirken hata:', error);
+      toast.error('Hata oluştu');
     }
   };
 
   const handleBulkDelete = async () => {
-    if (!confirm(`${selectedItems.size} modeli silmek istediğinizden emin misiniz?`)) return;
+    const result = await Swal.fire({
+      title: 'Emin misiniz?',
+      text: `${selectedItems.size} modeli silmek istediğinizden emin misiniz?`,
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonColor: '#3085d6',
+      cancelButtonColor: '#d33',
+      confirmButtonText: 'Evet, sil!',
+      cancelButtonText: 'Vazgeç'
+    });
+
+    if (!result.isConfirmed) return;
 
     try {
       await Promise.all(
@@ -108,8 +136,10 @@ export default function AdminModelsPage() {
       );
       setModels(models.filter(model => !selectedItems.has(model._id)));
       setSelectedItems(new Set());
+      toast.success('Seçilen modeller silindi');
     } catch (error) {
       console.error('Modeller silinirken hata:', error);
+      toast.error('Hata oluştu');
     }
   };
 

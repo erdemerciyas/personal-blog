@@ -1,7 +1,9 @@
 'use client';
 
 import PrefetchLink from '../PrefetchLink';
-import { PaperAirplaneIcon } from '@heroicons/react/24/outline';
+import Link from 'next/link';
+import { PaperAirplaneIcon, ShoppingCartIcon, UserIcon } from '@heroicons/react/24/outline';
+import { useCart } from '@/context/CartContext';
 
 interface NavLink {
     href: string;
@@ -25,6 +27,8 @@ export default function DesktopNav({
     isTransparentPage,
     onOpenProjectModal
 }: DesktopNavProps) {
+    const { cartCount } = useCart();
+
 
     // Determine text color based on scroll state and page type
     const textColorClass = isScrolled
@@ -129,6 +133,53 @@ export default function DesktopNav({
                     );
                 })}
             </nav>
+
+            {/* Cart Button */}
+            <div className="flex items-center mx-2 gap-2">
+                {/* User Menu */}
+                <Link
+                    href={'/account'}
+                    className={`
+                        relative
+                        p-2
+                        rounded-full
+                        transition-all duration-200
+                        ${isScrolled
+                            ? 'text-slate-700 hover:bg-slate-100'
+                            : isTransparentPage
+                                ? 'text-white hover:bg-white/20'
+                                : 'text-slate-700 hover:bg-slate-100'
+                        }
+                    `}
+                    aria-label="Hesabım"
+                >
+                    <UserIcon className="w-6 h-6" />
+                </Link>
+
+                <Link
+                    href="/cart"
+                    className={`
+                        relative
+                        p-2
+                        rounded-full
+                        transition-all duration-200
+                        ${isScrolled
+                            ? 'text-slate-700 hover:bg-slate-100'
+                            : isTransparentPage
+                                ? 'text-white hover:bg-white/20'
+                                : 'text-slate-700 hover:bg-slate-100'
+                        }
+                    `}
+                    aria-label="Sepete git"
+                >
+                    <ShoppingCartIcon className="w-6 h-6" />
+                    {cartCount > 0 && (
+                        <span className="absolute -top-1 -right-1 flex h-5 w-5 items-center justify-center rounded-full bg-red-500 text-[10px] font-bold text-white shadow-sm ring-2 ring-white">
+                            {cartCount}
+                        </span>
+                    )}
+                </Link>
+            </div>
 
             {/* Desktop CTA Button - Separate Group */}
             {onOpenProjectModal && (

@@ -11,12 +11,14 @@ import {
   WrenchScrewdriverIcon,
   FolderOpenIcon,
   PhoneIcon,
-  FilmIcon
+  FilmIcon,
+  ShoppingCartIcon
 } from '@heroicons/react/24/outline';
 import { resolveIcon, getIconForPage } from '../lib/icons';
 import DesktopNav from './layout/DesktopNav';
 import MobileNav from './layout/MobileNav';
 import ProjectModal from './features/ProjectModal';
+import { useCart } from '@/context/CartContext';
 
 interface SiteSettings {
   siteName: string;
@@ -47,6 +49,8 @@ const Header: React.FC = () => {
   const [navLinks, setNavLinks] = useState<Array<{ href: string; label: string; icon: any; isExternal?: boolean }>>([]);
   const [navLoaded, setNavLoaded] = useState(false);
   const [siteSettings, setSiteSettings] = useState<SiteSettings | null>(null);
+  const { cartCount } = useCart();
+
 
   const pathname = usePathname() || '';
 
@@ -277,6 +281,25 @@ const Header: React.FC = () => {
               isTransparentPage={isTransparentPage}
               onOpenProjectModal={openProjectModal}
             />
+
+            {/* Mobile Cart Button */}
+            <Link
+              href="/cart"
+              className={`lg:hidden p-2 rounded-lg transition-all duration-200 mr-2 relative ${isScrolled
+                ? 'text-slate-700 hover:bg-slate-100'
+                : isTransparentPage
+                  ? 'text-white hover:bg-white/15 drop-shadow'
+                  : 'text-slate-700 hover:bg-slate-100'
+                }`}
+              aria-label="Sepete git"
+            >
+              <ShoppingCartIcon className="w-6 h-6" />
+              {cartCount > 0 && (
+                <span className="absolute -top-1 -right-1 flex h-5 w-5 items-center justify-center rounded-full bg-red-500 text-[10px] font-bold text-white shadow-sm ring-2 ring-white">
+                  {cartCount}
+                </span>
+              )}
+            </Link>
 
             {/* Mobile Menu Button */}
             <button

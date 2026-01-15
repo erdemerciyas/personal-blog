@@ -17,6 +17,8 @@ import {
     DocumentIcon,
     CheckCircleIcon
 } from '@heroicons/react/24/outline';
+import toast from 'react-hot-toast';
+import Swal from 'sweetalert2';
 
 interface MediaItem {
     _id: string;
@@ -85,7 +87,18 @@ export default function AdminProductMediaPage() {
     };
 
     const handleDelete = async (itemsToDelete: string[]) => {
-        if (!confirm(`${itemsToDelete.length} öğeyi silmek istediğinize emin misiniz?`)) return;
+        const result = await Swal.fire({
+            title: 'Emin misiniz?',
+            text: `${itemsToDelete.length} öğeyi silmek istediğinize emin misiniz?`,
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#3085d6',
+            cancelButtonColor: '#d33',
+            confirmButtonText: 'Evet, sil!',
+            cancelButtonText: 'Vazgeç'
+        });
+
+        if (!result.isConfirmed) return;
 
         setLoading(true);
         try {
@@ -101,12 +114,13 @@ export default function AdminProductMediaPage() {
                 if (selectedItem && itemsToDelete.includes(selectedItem._id)) {
                     setSelectedItem(null);
                 }
+                toast.success('Başarıyla silindi');
             } else {
-                alert('Silme işlemi başarısız oldu.');
+                toast.error('Silme işlemi başarısız oldu.');
             }
         } catch (error) {
             console.error('Delete failed', error);
-            alert('Bir hata oluştu.');
+            toast.error('Bir hata oluştu.');
         } finally {
             setLoading(false);
         }
@@ -142,8 +156,9 @@ export default function AdminProductMediaPage() {
         setShowUploadModal(false);
         if (successCount > 0) {
             loadMedia();
+            toast.success(`${successCount} dosya başarıyla yüklendi`);
         } else {
-            alert('Yükleme başarısız oldu.');
+            toast.error('Yükleme başarısız oldu.');
         }
     };
 

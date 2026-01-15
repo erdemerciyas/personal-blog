@@ -18,6 +18,17 @@ export interface IUser {
   isTwoFactorEnabled?: boolean;
   twoFactorBackupCodes?: string[];
   avatar?: string;
+  addresses?: {
+    title: string;
+    fullName: string;
+    phone: string;
+    country: string;
+    city: string;
+    district: string;
+    address: string;
+    zipCode: string;
+    isPrimary: boolean;
+  }[];
 }
 
 const userSchema = new mongoose.Schema<IUser>(
@@ -81,6 +92,17 @@ const userSchema = new mongoose.Schema<IUser>(
       type: String,
       required: false,
     },
+    addresses: [{
+      title: String,
+      fullName: String,
+      phone: String,
+      country: String,
+      city: String,
+      district: String,
+      address: String,
+      zipCode: String,
+      isPrimary: { type: Boolean, default: false }
+    }],
   },
   {
     timestamps: true,
@@ -88,18 +110,13 @@ const userSchema = new mongoose.Schema<IUser>(
 );
 
 // Şifreyi hashle
-userSchema.pre('save', async function (next) {
+userSchema.pre('save', async function () {
   if (!this.isModified('password')) {
-    return next();
+    return;
   }
 
-  try {
-    const salt = await bcrypt.genSalt(10);
-    this.password = await bcrypt.hash(this.password, salt);
-    next();
-  } catch (error: unknown) {
-    next(error instanceof Error ? error : new Error('Unknown error'));
-  }
+  const salt = await bcrypt.genSalt(10);
+  this.password = await bcrypt.hash(this.password, salt);
 });
 
 // Şifre karşılaştırma metodu
@@ -124,6 +141,11 @@ userSchema.methods.isPasswordReused = async function (newPassword: string): Prom
   // Gerçek uygulamada son 5-10 şifreyi saklayabilirsiniz
   return bcrypt.compare(newPassword, this.password);
 };
+
+// HMR fix: Delete existing model to prevent cached schema usage in dev
+if (process.env.NODE_ENV === 'development') {
+  delete mongoose.models.User;
+}
 
 const User = mongoose.models.User || mongoose.model<IUser>('User', userSchema);
 

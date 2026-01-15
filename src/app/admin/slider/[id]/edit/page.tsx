@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
+import toast from 'react-hot-toast';
 import SliderForm from '../../SliderForm';
 
 export default function EditSliderPage({ params }: { params: { id: string } }) {
@@ -17,7 +18,7 @@ export default function EditSliderPage({ params }: { params: { id: string } }) {
                     const data = await response.json();
                     setSlider(data);
                 } else {
-                    alert('Slider not found');
+                    toast.error('Slider not found');
                     router.push('/admin/slider');
                 }
             } catch (error) {

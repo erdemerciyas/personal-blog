@@ -23,6 +23,7 @@ import {
 const FavoriteButton = dynamic(() => import('./FavoriteButton'), { ssr: false });
 import ProductClientWrapper from './ProductClientWrapper';
 import AskQuestionButton from './AskQuestionButton';
+import AddToCartButton from './AddToCartButton';
 
 
 async function getProduct(slug: string) {
@@ -249,16 +250,14 @@ export default async function ProductDetail({ params }: { params: { slug: string
 
                   {/* Action Buttons */}
                   <div className="space-y-3 pt-6 border-t border-gray-100">
-                    <Link
-                      href={`/products/${product.slug}/order`}
-                      className={`w-full flex items-center justify-center gap-2 py-4 rounded-xl font-bold text-lg shadow-lg shadow-brand-primary-900/10 transition-all active:scale-[0.98] ${product.stock > 0
-                        ? 'bg-brand-primary-900 text-white hover:bg-brand-primary-800'
-                        : 'bg-slate-100 text-slate-400 cursor-not-allowed'
-                        }`}
-                    >
-                      <ShoppingCartIcon className="w-6 h-6" />
-                      {product.stock > 0 ? 'Sepete Ekle' : 'Stokta Yok'}
-                    </Link>
+                    <AddToCartButton product={{
+                      _id: product._id as string,
+                      title: product.title,
+                      price: product.price || 0,
+                      coverImage: product.coverImage,
+                      slug: product.slug as string,
+                      stock: product.stock
+                    }} />
 
                     <div className="flex gap-3">
                       <FavoriteButton productId={product._id as string} />

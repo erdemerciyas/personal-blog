@@ -135,6 +135,7 @@ import { ActiveThemeProvider } from '../providers/ActiveThemeProvider';
 import { LoadingBar } from '../components';
 import { ToastProvider } from '../components/ui/useToast';
 import FixralToastViewport from '../components/ui/FixralToast';
+import { Toaster } from 'react-hot-toast';
 
 export default async function RootLayout({
   children,
@@ -308,6 +309,7 @@ export default async function RootLayout({
               </Providers>
               {/* Global toast viewport */}
               <FixralToastViewport />
+              <Toaster position="top-right" toastOptions={{ duration: 3000 }} />
             </ToastProvider>
           </ActiveThemeProvider>
         </ThemeProvider>

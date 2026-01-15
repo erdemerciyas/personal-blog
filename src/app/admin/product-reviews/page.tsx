@@ -13,6 +13,8 @@ import {
     StarIcon as StarIconOutline
 } from '@heroicons/react/24/outline';
 import { StarIcon as StarIconSolid } from '@heroicons/react/24/solid';
+import toast from 'react-hot-toast';
+import Swal from 'sweetalert2';
 
 interface ProductReview {
     _id: string;
@@ -81,7 +83,19 @@ export default function AdminProductReviewsPage() {
     };
 
     const handleDelete = async (reviewId: string) => {
-        if (!confirm('Bu yorumu silmek istediğinizden emin misiniz?')) return;
+        const result = await Swal.fire({
+            title: 'Emin misiniz?',
+            text: "Bu yorumu silmek istediğinizden emin misiniz?",
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#3085d6',
+            cancelButtonColor: '#d33',
+            confirmButtonText: 'Evet, sil!',
+            cancelButtonText: 'Vazgeç'
+        });
+
+        if (!result.isConfirmed) return;
+
         try {
             const response = await fetch(`/api/admin/product-reviews?id=${reviewId}`, { method: 'DELETE' });
             if (response.ok) {
@@ -91,14 +105,30 @@ export default function AdminProductReviewsPage() {
                     newSet.delete(reviewId);
                     setSelectedItems(newSet);
                 }
+                toast.success('Yorum silindi');
+            } else {
+                toast.error('Silme başarısız');
             }
         } catch (error) {
             console.error('Silme hatası:', error);
+            toast.error('Hata oluştu');
         }
     };
 
     const handleBulkDelete = async () => {
-        if (!confirm(`${selectedItems.size} yorumu silmek istediğinizden emin misiniz?`)) return;
+        const result = await Swal.fire({
+            title: 'Emin misiniz?',
+            text: `${selectedItems.size} yorumu silmek istediğinizden emin misiniz?`,
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#3085d6',
+            cancelButtonColor: '#d33',
+            confirmButtonText: 'Evet, sil!',
+            cancelButtonText: 'Vazgeç'
+        });
+
+        if (!result.isConfirmed) return;
+
         try {
             // Naive Promise.all since API supports single ID delete for now
             await Promise.all(
@@ -106,8 +136,10 @@ export default function AdminProductReviewsPage() {
             );
             setReviews(prev => prev.filter(r => !selectedItems.has(r._id)));
             setSelectedItems(new Set());
+            toast.success('Seçilen yorumlar silindi');
         } catch (error) {
             console.error('Toplu silme hatası:', error);
+            toast.error('Toplu silme hatası');
         }
     };
 

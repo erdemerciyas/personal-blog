@@ -1,66 +1,42 @@
-import { NextResponse } from 'next/server';
-import connectDB from '../../../lib/mongoose';
-import User from '../../../models/User';
+import { NextRequest, NextResponse } from 'next/server';
+import connectDB from '@/lib/mongoose';
+import User from '@/models/User';
 import bcrypt from 'bcryptjs';
 
-// Force dynamic rendering
-export const dynamic = 'force-dynamic';
-
-export async function POST() {
+export async function POST(req: NextRequest) {
   try {
-    console.log('Connecting to MongoDB...');
-    await connectDB();
-    console.log('MongoDB connected successfully');
+    const { name, email, password } = await req.json();
 
-    // Güvenli kullanıcı bilgileri - Environment variables'dan al
-    const email = process.env.ADMIN_EMAIL || 'erdem.erciyas@gmail.com';
-    const password = process.env.ADMIN_DEFAULT_PASSWORD || 'SecureAdmin2024!@#';
-    const name = process.env.ADMIN_NAME || 'Erdem';
-
-    // Check if user already exists
-    console.log('Checking if user exists...');
-    const existingUser = await User.findOne({ email });
-    
-    if (existingUser) {
-      console.log('User already exists');
-      return NextResponse.json(
-        { error: 'User already exists' },
-        { status: 400 }
-      );
+    if (!name || !email || !password) {
+      return NextResponse.json({ error: 'Tüm alanlar zorunludur.' }, { status: 400 });
     }
 
-    // Hash password
-    console.log('Hashing password...');
-    const hashedPassword = await bcrypt.hash(password, 10);
+    await connectDB();
 
-    // Create user with admin role
-    console.log('Creating user...');
+    // Check existing
+    const existingUser = await User.findOne({ email: email.toLowerCase() });
+    if (existingUser) {
+      return NextResponse.json({ error: 'Bu e-posta adresi zaten kayıtlı.' }, { status: 409 });
+    }
+
+    // Create User (Model handles hashing)
     const user = await User.create({
-      email,
-      password: hashedPassword,
       name,
-      role: 'admin'
+      email: email.toLowerCase(),
+      password: password, // Model pre-save hook will hash this
+      role: 'user',
     });
 
-    console.log('User created successfully:', user);
     return NextResponse.json({
-      message: 'User registered successfully',
-      user: {
-        email: user.email,
-        name: user.name,
-        role: user.role
-      }
-    });
-  } catch (error: unknown) {
-    console.error('Registration error:', error);
-    return NextResponse.json(
-      { error: 'Internal Server Error', details: error instanceof Error ? error.message : 'Unknown error' },
-      { status: 500 }
-    );
+      message: 'Kayıt başarılı.',
+      user: { id: user._id, email: user.email, name: user.name }
+    }, { status: 201 });
+
+  } catch (error: any) {
+    console.error('Registration Error Details:', error);
+    return NextResponse.json({
+      error: error.message || 'Bir hata oluştu.',
+      details: error.toString()
+    }, { status: 500 });
   }
 }
-
-// GET metodu ile de kullanıcı oluşturulabilir
-export async function GET() {
-  return POST();
-} 

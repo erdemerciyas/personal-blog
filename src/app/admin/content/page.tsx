@@ -11,6 +11,8 @@ import {
   PencilIcon,
   TrashIcon
 } from '@heroicons/react/24/outline';
+import toast from 'react-hot-toast';
+import Swal from 'sweetalert2';
 
 interface ContentItem {
   _id: string;
@@ -54,7 +56,17 @@ export default function AdminContentPage() {
   };
 
   const handleDelete = async (contentId: string) => {
-    if (!confirm('Are you sure you want to delete this content?')) return;
+    const result = await Swal.fire({
+      title: 'Are you sure?',
+      text: "Are you sure you want to delete this content?",
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonColor: '#3085d6',
+      cancelButtonColor: '#d33',
+      confirmButtonText: 'Yes, delete it!'
+    });
+
+    if (!result.isConfirmed) return;
 
     try {
       const response = await fetch(`/api/admin/content/${contentId}`, {
@@ -63,9 +75,13 @@ export default function AdminContentPage() {
 
       if (response.ok) {
         setContent(content.filter(item => item._id !== contentId));
+        toast.success('Content deleted successfully');
+      } else {
+        toast.error('Failed to delete content');
       }
     } catch (error) {
       console.error('Error deleting content:', error);
+      toast.error('Error deleting content');
     }
   };
 
@@ -152,61 +168,55 @@ export default function AdminContentPage() {
           <div className="flex space-x-2 bg-slate-100 p-1 rounded-xl overflow-x-auto">
             <button
               onClick={() => setTypeFilter('all')}
-              className={`px-4 py-2 rounded-lg text-sm font-medium transition-all whitespace-nowrap ${
-                typeFilter === 'all'
-                  ? 'bg-white text-indigo-600 shadow-sm'
-                  : 'text-slate-600 hover:text-slate-900'
-              }`}
+              className={`px-4 py-2 rounded-lg text-sm font-medium transition-all whitespace-nowrap ${typeFilter === 'all'
+                ? 'bg-white text-indigo-600 shadow-sm'
+                : 'text-slate-600 hover:text-slate-900'
+                }`}
             >
               All ({content.length})
             </button>
             <button
               onClick={() => setTypeFilter('news')}
-              className={`px-4 py-2 rounded-lg text-sm font-medium transition-all whitespace-nowrap ${
-                typeFilter === 'news'
-                  ? 'bg-white text-indigo-600 shadow-sm'
-                  : 'text-slate-600 hover:text-slate-900'
-              }`}
+              className={`px-4 py-2 rounded-lg text-sm font-medium transition-all whitespace-nowrap ${typeFilter === 'news'
+                ? 'bg-white text-indigo-600 shadow-sm'
+                : 'text-slate-600 hover:text-slate-900'
+                }`}
             >
               News ({content.filter(c => c.type === 'news').length})
             </button>
             <button
               onClick={() => setTypeFilter('page')}
-              className={`px-4 py-2 rounded-lg text-sm font-medium transition-all whitespace-nowrap ${
-                typeFilter === 'page'
-                  ? 'bg-white text-indigo-600 shadow-sm'
-                  : 'text-slate-600 hover:text-slate-900'
-              }`}
+              className={`px-4 py-2 rounded-lg text-sm font-medium transition-all whitespace-nowrap ${typeFilter === 'page'
+                ? 'bg-white text-indigo-600 shadow-sm'
+                : 'text-slate-600 hover:text-slate-900'
+                }`}
             >
               Pages ({content.filter(c => c.type === 'page').length})
             </button>
             <button
               onClick={() => setTypeFilter('portfolio')}
-              className={`px-4 py-2 rounded-lg text-sm font-medium transition-all whitespace-nowrap ${
-                typeFilter === 'portfolio'
-                  ? 'bg-white text-indigo-600 shadow-sm'
-                  : 'text-slate-600 hover:text-slate-900'
-              }`}
+              className={`px-4 py-2 rounded-lg text-sm font-medium transition-all whitespace-nowrap ${typeFilter === 'portfolio'
+                ? 'bg-white text-indigo-600 shadow-sm'
+                : 'text-slate-600 hover:text-slate-900'
+                }`}
             >
               Portfolio ({content.filter(c => c.type === 'portfolio').length})
             </button>
             <button
               onClick={() => setTypeFilter('service')}
-              className={`px-4 py-2 rounded-lg text-sm font-medium transition-all whitespace-nowrap ${
-                typeFilter === 'service'
-                  ? 'bg-white text-indigo-600 shadow-sm'
-                  : 'text-slate-600 hover:text-slate-900'
-              }`}
+              className={`px-4 py-2 rounded-lg text-sm font-medium transition-all whitespace-nowrap ${typeFilter === 'service'
+                ? 'bg-white text-indigo-600 shadow-sm'
+                : 'text-slate-600 hover:text-slate-900'
+                }`}
             >
               Services ({content.filter(c => c.type === 'service').length})
             </button>
             <button
               onClick={() => setTypeFilter('product')}
-              className={`px-4 py-2 rounded-lg text-sm font-medium transition-all whitespace-nowrap ${
-                typeFilter === 'product'
-                  ? 'bg-white text-indigo-600 shadow-sm'
-                  : 'text-slate-600 hover:text-slate-900'
-              }`}
+              className={`px-4 py-2 rounded-lg text-sm font-medium transition-all whitespace-nowrap ${typeFilter === 'product'
+                ? 'bg-white text-indigo-600 shadow-sm'
+                : 'text-slate-600 hover:text-slate-900'
+                }`}
             >
               Products ({content.filter(c => c.type === 'product').length})
             </button>
@@ -232,11 +242,10 @@ export default function AdminContentPage() {
                       {item.title}
                     </h3>
                     <div className="flex items-center space-x-2 mt-1 text-xs text-slate-500">
-                      <span className={`px-2 py-0.5 rounded-full font-medium ${
-                        item.status === 'published'
-                          ? 'bg-emerald-100 text-emerald-700'
-                          : 'bg-amber-100 text-amber-700'
-                      }`}>
+                      <span className={`px-2 py-0.5 rounded-full font-medium ${item.status === 'published'
+                        ? 'bg-emerald-100 text-emerald-700'
+                        : 'bg-amber-100 text-amber-700'
+                        }`}>
                         {item.status}
                       </span>
                       <span className="capitalize">{item.type}</span>

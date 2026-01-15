@@ -44,14 +44,43 @@ const MessageSchema = new mongoose.Schema({
     enum: ['low', 'medium', 'high', 'urgent'],
     default: 'medium',
   },
+  userId: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'User',
+  },
+  senderId: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'User',
+  },
+  receiverId: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'User',
+  },
+  isGlobal: {
+    type: Boolean,
+    default: false,
+  },
+  adminReply: {
+    type: String,
+  },
+  conversation: [{
+    sender: { type: String, enum: ['user', 'admin'] },
+    message: { type: String },
+    createdAt: { type: Date, default: Date.now },
+    isRead: { type: Boolean, default: false }
+  }],
   type: {
     type: String,
-    enum: ['contact', 'product_question', 'service_request'],
+    enum: ['contact', 'product_question', 'service_request', 'announcement', 'reply', 'order_question'],
     default: 'contact',
   },
   productId: {
     type: mongoose.Schema.Types.ObjectId,
     ref: 'Product',
+  },
+  orderId: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'Order',
   },
   productName: {
     type: String,

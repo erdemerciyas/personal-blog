@@ -129,7 +129,7 @@ export const authOptions: NextAuthOptions = {
     },
   },
   pages: {
-    signIn: '/admin/login',
+    signIn: '/login',
     error: '/admin/login',
   },
   callbacks: {
@@ -162,38 +162,24 @@ export const authOptions: NextAuthOptions = {
     async redirect({ url, baseUrl }) {
       const finalBaseUrl = getBaseUrl();
 
-      // Redirect logging removed for security
-
-      // Eğer callbackUrl dashboard ise direkt oraya git
+      // If callback provided is dashboard, verify destination
       if (url.includes('/admin/dashboard')) {
         return `${finalBaseUrl}/admin/dashboard`;
       }
 
-      // Login sayfasından geliyorsa dashboard'a yönlendir
-      if (url.includes('/admin/login') || url === finalBaseUrl || url === baseUrl) {
+      // If coming from Admin Login, go to Dashboard
+      if (url.includes('/admin/login')) {
         return `${finalBaseUrl}/admin/dashboard`;
       }
 
-      // Göreceli URL ise tam adrese çevir
+      // Default: Allow standard redirect (e.g. to checkout or account)
       if (url.startsWith('/')) {
         return `${finalBaseUrl}${url}`;
+      } else if (new URL(url).origin === finalBaseUrl) {
+        return url;
       }
 
-      // Güvenlik kontrolü - sadece kendi domain'imize redirect
-      try {
-        const urlObj = new URL(url);
-        const baseUrlObj = new URL(finalBaseUrl);
-
-        if (urlObj.hostname === baseUrlObj.hostname) {
-          return url;
-        } else {
-          // Farklı domain ise dashboard'a yönlendir
-          return `${finalBaseUrl}/admin/dashboard`;
-        }
-      } catch {
-        // Redirect URL parse error - silently handle
-        return `${finalBaseUrl}/admin/dashboard`;
-      }
+      return finalBaseUrl;
     }
   },
   secret: process.env.NEXTAUTH_SECRET,

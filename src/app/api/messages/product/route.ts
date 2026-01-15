@@ -8,6 +8,7 @@ import { authOptions } from '@/lib/auth';
 // POST /api/messages/product - Yeni ürün sorusu oluştur
 export async function POST(req: Request) {
     try {
+        const session = await getServerSession(authOptions);
         const body = await req.json();
         const { name, email, phone, message, productId, productName } = body;
 
@@ -29,7 +30,7 @@ export async function POST(req: Request) {
             );
         }
 
-        const newMessage = await Message.create({
+        const messageData: any = {
             name,
             email,
             phone,
@@ -40,7 +41,14 @@ export async function POST(req: Request) {
             productName: productName || product.title,
             status: 'new',
             isRead: false
-        });
+        };
+
+        if (session) {
+            messageData.userId = session.user.id;
+            messageData.senderId = session.user.id;
+        }
+
+        const newMessage = await Message.create(messageData);
 
         return NextResponse.json(
             { message: 'Sorunuz başarıyla iletildi.', data: newMessage },

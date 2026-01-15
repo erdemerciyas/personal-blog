@@ -13,6 +13,8 @@ import {
   TrashIcon,
   ArrowPathIcon
 } from '@heroicons/react/24/outline';
+import toast from 'react-hot-toast';
+import Swal from 'sweetalert2';
 
 interface Theme {
   _id: string;
@@ -80,7 +82,18 @@ export default function AdminThemesPage() {
   };
 
   const handleDelete = async (themeId: string) => {
-    if (!confirm('Bu temayı silmek istediğinizden emin misiniz?')) return;
+    const result = await Swal.fire({
+      title: 'Emin misiniz?',
+      text: "Bu temayı silmek istediğinizden emin misiniz?",
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonColor: '#3085d6',
+      cancelButtonColor: '#d33',
+      confirmButtonText: 'Evet, sil!',
+      cancelButtonText: 'Vazgeç'
+    });
+
+    if (!result.isConfirmed) return;
 
     try {
       const response = await fetch(`/api/admin/themes/${themeId}`, {
@@ -89,9 +102,13 @@ export default function AdminThemesPage() {
 
       if (response.ok) {
         setThemes(themes.filter(theme => theme._id !== themeId));
+        toast.success('Tema silindi');
+      } else {
+        toast.error('Tema silinemedi');
       }
     } catch (error) {
       console.error('Tema silinirken hata:', error);
+      toast.error('Hata oluştu');
     }
   };
 
@@ -273,8 +290,8 @@ export default function AdminThemesPage() {
                 <button
                   onClick={() => handleActivate(theme._id)}
                   className={`flex-1 px-4 py-2 text-sm font-medium rounded-lg transition-all ${theme.isActive
-                      ? 'bg-emerald-100 text-emerald-700 hover:bg-emerald-200'
-                      : 'text-white bg-gradient-to-r from-indigo-500 to-violet-600 hover:shadow-lg'
+                    ? 'bg-emerald-100 text-emerald-700 hover:bg-emerald-200'
+                    : 'text-white bg-gradient-to-r from-indigo-500 to-violet-600 hover:shadow-lg'
                     }`}
                 >
                   {theme.isActive ? 'Yeniden Aktifleştir' : 'Aktifleştir'}

@@ -11,6 +11,8 @@ import {
   CheckIcon,
   ClockIcon
 } from '@heroicons/react/24/outline';
+import toast from 'react-hot-toast';
+import Swal from 'sweetalert2';
 
 interface Message {
   _id: string;
@@ -18,9 +20,9 @@ interface Message {
   email: string;
   subject: string;
   message: string;
-  status: 'unread' | 'read';
+  status: 'unread' | 'read' | 'new' | 'replied' | 'closed'; // Updated to match DB Schema
   createdAt: string;
-  type?: 'contact' | 'product_question' | 'service_request';
+  type?: 'contact' | 'product_question' | 'service_request' | 'announcement' | 'reply' | 'order_question';
   productId?: string;
   productName?: string;
 }
@@ -47,7 +49,7 @@ export default function AdminMessagesPage() {
 
   const loadMessages = async () => {
     try {
-      const response = await fetch('/api/admin/messages');
+      const response = await fetch('/api/admin/messages?scope=general');
       if (response.ok) {
         const data = await response.json();
         setMessages(data);
@@ -60,7 +62,17 @@ export default function AdminMessagesPage() {
   };
 
   const handleDelete = async (messageId: string) => {
-    if (!confirm('Are you sure you want to delete this message?')) return;
+    const result = await Swal.fire({
+      title: 'Deleting Message',
+      text: "Are you sure you want to delete this message?",
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonColor: '#d33',
+      cancelButtonColor: '#3085d6',
+      confirmButtonText: 'Yes, delete it!'
+    });
+
+    if (!result.isConfirmed) return;
 
     try {
       const response = await fetch(`/api/admin/messages/${messageId}`, {
@@ -69,14 +81,28 @@ export default function AdminMessagesPage() {
 
       if (response.ok) {
         setMessages(messages.filter(msg => msg._id !== messageId));
+        toast.success('Message deleted successfully');
+      } else {
+        toast.error('Failed to delete message');
       }
     } catch (error) {
       console.error('Error deleting message:', error);
+      toast.error('Error deleting message');
     }
   };
 
   const handleBulkDelete = async () => {
-    if (!confirm(`Are you sure you want to delete ${selectedMessages.size} message(s)?`)) return;
+    const result = await Swal.fire({
+      title: 'Bulk Delete',
+      text: `Are you sure you want to delete ${selectedMessages.size} message(s)?`,
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonColor: '#d33',
+      cancelButtonColor: '#3085d6',
+      confirmButtonText: 'Yes, delete selected!'
+    });
+
+    if (!result.isConfirmed) return;
 
     try {
       await Promise.all(
@@ -86,12 +112,18 @@ export default function AdminMessagesPage() {
       );
       setMessages(messages.filter(msg => !selectedMessages.has(msg._id)));
       setSelectedMessages(new Set());
+      toast.success('Selected messages deleted successfully');
     } catch (error) {
       console.error('Error deleting messages:', error);
+      toast.error('Error deleting messages');
     }
   };
 
   const handleMarkAsRead = async (messageId: string) => {
+    // Optimistically update
+    const message = messages.find(m => m._id === messageId);
+    if (message?.status === 'read') return;
+
     try {
       const response = await fetch(`/api/admin/messages/${messageId}/read`, {
         method: 'POST',
@@ -108,13 +140,19 @@ export default function AdminMessagesPage() {
   };
 
   const filteredMessages = messages.filter(message => {
-    // Exclude product questions from this view
-    if (message.type === 'product_question') return false;
+    // message.type filter removed to show all messages including questions
 
-    const matchesSearch = message.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      message.email.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      message.subject.toLowerCase().includes(searchQuery.toLowerCase());
-    const matchesStatus = statusFilter === 'all' || message.status === statusFilter;
+    const matchesSearch = message.name?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      message.email?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      message.subject?.toLowerCase().includes(searchQuery.toLowerCase());
+
+    let matchesStatus = true;
+    if (statusFilter === 'unread') {
+      matchesStatus = message.status === 'unread' || message.status === 'new';
+    } else if (statusFilter === 'read') {
+      matchesStatus = message.status === 'read' || message.status === 'replied' || message.status === 'closed';
+    }
+
     return matchesSearch && matchesStatus;
   });
 
@@ -127,6 +165,8 @@ export default function AdminMessagesPage() {
       minute: '2-digit'
     });
   };
+
+  const unreadCount = messages.filter(m => m.status === 'unread' || m.status === 'new').length;
 
   if (status === 'loading' || loading) {
     return (
@@ -152,7 +192,7 @@ export default function AdminMessagesPage() {
         </div>
         <div className="flex items-center space-x-2">
           <span className="text-sm text-slate-600">
-            {messages.filter(m => m.status === 'unread').length} unread
+            {unreadCount} unread
           </span>
         </div>
       </div>
@@ -187,7 +227,7 @@ export default function AdminMessagesPage() {
                 : 'text-slate-600 hover:text-slate-900'
                 }`}
             >
-              Unread ({messages.filter(m => m.status === 'unread').length})
+              Unread ({unreadCount})
             </button>
             <button
               onClick={() => setStatusFilter('read')}
@@ -196,7 +236,7 @@ export default function AdminMessagesPage() {
                 : 'text-slate-600 hover:text-slate-900'
                 }`}
             >
-              Read ({messages.filter(m => m.status === 'read').length})
+              Read ({messages.length - unreadCount})
             </button>
           </div>
         </div>
@@ -221,81 +261,98 @@ export default function AdminMessagesPage() {
       {/* Messages List */}
       <div className="bg-white rounded-2xl shadow-sm border border-slate-200/60 overflow-hidden">
         {filteredMessages.length > 0 ? (
-          <div className="divide-y divide-slate-200">
-            {filteredMessages.map((message) => (
-              <div
-                key={message._id}
-                className={`p-6 hover:bg-slate-50 transition-colors cursor-pointer ${message.status === 'unread' ? 'bg-indigo-50/50' : ''
-                  }`}
-                onClick={() => handleMarkAsRead(message._id)}
-              >
-                <div className="flex items-start space-x-4">
-                  <div className="flex-shrink-0">
-                    <input
-                      type="checkbox"
-                      checked={selectedMessages.has(message._id)}
-                      onChange={(e) => {
-                        e.stopPropagation();
-                        const newSelected = new Set(selectedMessages);
-                        if (newSelected.has(message._id)) {
-                          newSelected.delete(message._id);
-                        } else {
-                          newSelected.add(message._id);
-                        }
-                        setSelectedMessages(newSelected);
-                      }}
-                      className="w-5 h-5 text-indigo-600 border-slate-300 rounded focus:ring-indigo-500"
-                    />
-                  </div>
-                  <div className="flex-1 min-w-0">
-                    <div className="flex items-start justify-between mb-2">
-                      <div className="flex items-center space-x-3">
-                        <div className="w-10 h-10 rounded-full bg-gradient-to-br from-indigo-500 to-violet-600 flex items-center justify-center text-white font-semibold">
-                          {message.name.charAt(0).toUpperCase()}
+          <>
+            <div className="px-6 py-3 border-b border-slate-200 bg-slate-50/50 flex items-center">
+              <input
+                type="checkbox"
+                checked={selectedMessages.size > 0 && selectedMessages.size === filteredMessages.length}
+                onChange={(e) => {
+                  if (e.target.checked) {
+                    setSelectedMessages(new Set(filteredMessages.map(m => m._id)));
+                  } else {
+                    setSelectedMessages(new Set());
+                  }
+                }}
+                className="w-5 h-5 text-indigo-600 border-slate-300 rounded focus:ring-indigo-500 mr-4"
+              />
+              <span className="text-sm font-medium text-slate-600">Select All</span>
+            </div>
+            <div className="divide-y divide-slate-200">
+              {filteredMessages.map((message) => (
+                <div
+                  key={message._id}
+                  className={`p-6 hover:bg-slate-50 transition-colors cursor-pointer ${message.status === 'unread' || message.status === 'new' ? 'bg-indigo-50/50' : ''
+                    }`}
+                  onClick={() => handleMarkAsRead(message._id)}
+                >
+                  <div className="flex items-start space-x-4">
+                    <div className="flex-shrink-0">
+                      <input
+                        type="checkbox"
+                        checked={selectedMessages.has(message._id)}
+                        onChange={(e) => {
+                          e.stopPropagation();
+                          const newSelected = new Set(selectedMessages);
+                          if (newSelected.has(message._id)) {
+                            newSelected.delete(message._id);
+                          } else {
+                            newSelected.add(message._id);
+                          }
+                          setSelectedMessages(newSelected);
+                        }}
+                        className="w-5 h-5 text-indigo-600 border-slate-300 rounded focus:ring-indigo-500"
+                      />
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <div className="flex items-start justify-between mb-2">
+                        <div className="flex items-center space-x-3">
+                          <div className="w-10 h-10 rounded-full bg-gradient-to-br from-indigo-500 to-violet-600 flex items-center justify-center text-white font-semibold">
+                            {message.name?.charAt(0).toUpperCase()}
+                          </div>
+                          <div>
+                            <h3 className="text-sm font-semibold text-slate-900">
+                              {message.name}
+                            </h3>
+                            <div className="flex items-center space-x-2 text-xs text-slate-500">
+                              <EnvelopeIcon className="w-3 h-3" />
+                              <span className="truncate">{message.email}</span>
+                            </div>
+                          </div>
                         </div>
-                        <div>
-                          <h3 className="text-sm font-semibold text-slate-900">
-                            {message.name}
-                          </h3>
-                          <div className="flex items-center space-x-2 text-xs text-slate-500">
-                            <EnvelopeIcon className="w-3 h-3" />
-                            <span className="truncate">{message.email}</span>
+                        <div className="flex items-center space-x-2">
+                          {(message.status === 'unread' || message.status === 'new') && (
+                            <span className="w-2 h-2 rounded-full bg-indigo-600"></span>
+                          )}
+                          <div className="flex items-center space-x-1 text-xs text-slate-500">
+                            <ClockIcon className="w-3 h-3" />
+                            <span>{formatDate(message.createdAt)}</span>
                           </div>
                         </div>
                       </div>
-                      <div className="flex items-center space-x-2">
-                        {message.status === 'unread' && (
-                          <span className="w-2 h-2 rounded-full bg-indigo-600"></span>
-                        )}
-                        <div className="flex items-center space-x-1 text-xs text-slate-500">
-                          <ClockIcon className="w-3 h-3" />
-                          <span>{formatDate(message.createdAt)}</span>
-                        </div>
-                      </div>
+                      <h4 className="text-sm font-medium text-slate-900 mb-2">
+                        {message.subject}
+                      </h4>
+                      <p className="text-sm text-slate-600 line-clamp-2">
+                        {message.message}
+                      </p>
                     </div>
-                    <h4 className="text-sm font-medium text-slate-900 mb-2">
-                      {message.subject}
-                    </h4>
-                    <p className="text-sm text-slate-600 line-clamp-2">
-                      {message.message}
-                    </p>
-                  </div>
-                  <div className="flex-shrink-0">
-                    <button
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        handleDelete(message._id);
-                      }}
-                      className="p-2 hover:bg-red-100 rounded-lg transition-colors"
-                      title="Delete"
-                    >
-                      <TrashIcon className="w-4 h-4 text-slate-600" />
-                    </button>
+                    <div className="flex-shrink-0">
+                      <button
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          handleDelete(message._id);
+                        }}
+                        className="p-2 hover:bg-red-100 rounded-lg transition-colors"
+                        title="Delete"
+                      >
+                        <TrashIcon className="w-4 h-4 text-slate-600" />
+                      </button>
+                    </div>
                   </div>
                 </div>
-              </div>
-            ))}
-          </div>
+              ))}
+            </div>
+          </>
         ) : (
           <div className="text-center py-16">
             <ChatBubbleLeftRightIcon className="w-16 h-16 text-slate-300 mx-auto mb-4" />

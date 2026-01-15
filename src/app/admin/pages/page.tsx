@@ -15,6 +15,8 @@ import {
   Bars3Icon,
   XMarkIcon
 } from '@heroicons/react/24/outline';
+import toast from 'react-hot-toast';
+import Swal from 'sweetalert2';
 
 interface PageItem {
   _id: string;
@@ -93,11 +95,14 @@ export default function AdminPagesPage() {
 
       if (!response.ok) {
         setPages(pages);
-        alert('Durum güncellenemedi');
+        toast.error('Durum güncellenemedi');
+      } else {
+        toast.success('Durum güncellendi');
       }
     } catch (error) {
       console.error('Durum güncellenirken hata:', error);
       setPages(pages);
+      toast.error('Bir hata oluştu');
     }
   };
 
@@ -127,19 +132,31 @@ export default function AdminPagesPage() {
       if (response.ok) {
         setHasReordered(false);
         loadPages();
+        toast.success('Sıralama kaydedildi');
       } else {
-        alert('Sıralama kaydedilemedi');
+        toast.error('Sıralama kaydedilemedi');
       }
     } catch (error) {
       console.error('Sıralama kaydedilirken hata:', error);
-      alert('Sıralama kaydedilirken hata oluştu');
+      toast.error('Sıralama kaydedilirken hata oluştu');
     } finally {
       setSavingOrder(false);
     }
   };
 
   const handleDelete = async (pageId: string) => {
-    if (!confirm('Bu sayfayı silmek istediğinizden emin misiniz?')) return;
+    const result = await Swal.fire({
+      title: 'Emin misiniz?',
+      text: "Bu sayfayı silmek istediğinizden emin misiniz?",
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonColor: '#3085d6',
+      cancelButtonColor: '#d33',
+      confirmButtonText: 'Evet, sil!',
+      cancelButtonText: 'Vazgeç'
+    });
+
+    if (!result.isConfirmed) return;
 
     try {
       const response = await fetch(`/api/admin/pages/${pageId}`, {
@@ -148,9 +165,13 @@ export default function AdminPagesPage() {
 
       if (response.ok) {
         setPages(pages.filter(page => page._id !== pageId));
+        toast.success('Sayfa silindi');
+      } else {
+        toast.error('Sayfa silinemedi');
       }
     } catch (error) {
       console.error('Sayfa silinirken hata:', error);
+      toast.error('Bir hata oluştu');
     }
   };
 
@@ -190,12 +211,13 @@ export default function AdminPagesPage() {
         setIsEditModalOpen(false);
         setEditingPage(null);
         loadPages(); // Reload to ensure sync
+        toast.success('Sayfa güncellendi');
       } else {
-        alert('Sayfa güncellenemedi');
+        toast.error('Sayfa güncellenemedi');
       }
     } catch (error) {
       console.error('Güncelleme hatası:', error);
-      alert('Bir hata oluştu');
+      toast.error('Bir hata oluştu');
     }
   };
 

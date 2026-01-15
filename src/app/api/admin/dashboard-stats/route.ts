@@ -73,23 +73,31 @@ export const GET = withSecurity(SecurityConfigs.admin)(async () => {
       portfolioCount, servicesCount, messagesCount, usersCount,
       recentMessages, productsCount, newsCount, productQuestionsCount,
       recentNews, recentPortfolio, recentServices, recentProducts, recentUsers,
-      ordersCount, productCategoriesCount
+      ordersCount, productCategoriesCount,
+      // specific counts for notifications
+      newOrdersCount, unreadMessagesCount, unreadProductQuestionsCount
     ] = await Promise.all([
       Portfolio.countDocuments(),
       Service.countDocuments(),
-      Message.countDocuments({ type: { $ne: 'product_question' } }), // General messages only
+      Message.countDocuments({ type: { $nin: ['product_question', 'order_question'] } }), // General messages only
       User.countDocuments(),
-      Message.find({ type: { $ne: 'product_question' } }).sort({ createdAt: -1 }).limit(5).select('name email subject createdAt status'),
+      Message.find({ type: { $nin: ['product_question', 'order_question'] } }).sort({ createdAt: -1 }).limit(5).select('name email subject createdAt status'),
       Product.countDocuments(),
       News.countDocuments(),
-      Message.countDocuments({ type: 'product_question' }), // Product Questions Count
+      Message.countDocuments({ type: { $in: ['product_question', 'order_question'] } }), // Product & Order Questions Count
       News.find().sort({ createdAt: -1 }).limit(5).select('title status createdAt views'),
       Portfolio.find().sort({ createdAt: -1 }).limit(5).select('title status createdAt'),
       Service.find().sort({ createdAt: -1 }).limit(5).select('title status createdAt'),
       Product.find().sort({ createdAt: -1 }).limit(5).select('name status createdAt'),
       User.find().sort({ createdAt: -1 }).limit(5).select('name email role createdAt'),
       Order.countDocuments(),
-      ProductCategory.countDocuments()
+      ProductCategory.countDocuments(),
+      // New Notification Counts
+      // Count orders that need attention (new, pending payment, paid/ready to ship, preparing)
+      // Note: Model uses 'preparing', checking for both just in case legacy data used 'processing'
+      Order.countDocuments({ status: { $in: ['new', 'pending', 'paid', 'preparing', 'processing'] } }),
+      Message.countDocuments({ type: { $nin: ['product_question', 'order_question'] }, status: { $in: ['unread', 'new'] } }),
+      Message.countDocuments({ type: { $in: ['product_question', 'order_question'] }, status: { $in: ['new', 'unread'] } })
     ]);
 
     const stats = {
@@ -104,6 +112,11 @@ export const GET = withSecurity(SecurityConfigs.admin)(async () => {
       productQuestionsCount,
       ordersCount,
       productCategoriesCount,
+      // Notification Specific Stats
+      newOrdersCount,
+      unreadMessagesCount,
+      unreadProductQuestionsCount,
+
       recentMessages: recentMessages.map(msg => ({
         _id: msg._id,
         name: msg.name,
