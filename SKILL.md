@@ -40,3 +40,21 @@ Interpret creatively and make unexpected choices that feel genuinely designed fo
 **IMPORTANT**: Match implementation complexity to the aesthetic vision. Maximalist designs need elaborate code with extensive animations and effects. Minimalist or refined designs need restraint, precision, and careful attention to spacing, typography, and subtle details. Elegance comes from executing the vision well.
 
 Remember: Claude is capable of extraordinary creative work. Don't hold back, show what can truly be created when thinking outside the box and committing fully to a distinctive vision.
+
+## Project Design System (Fixral 3D)
+
+**Hero & Page Layout Pattern**
+For main user-facing pages (Account, Cart, etc.), use the "Dark Hero + Overlapping Card" pattern:
+- **Hero Section**: Full width `bg-slate-900` container with `pt-10 pb-20`.
+- **Hero Content**: White text, large bold headings. Use flex layouts for stats/actions.
+- **Content Container**: The main content grid/card should follow immediately with a negative margin (`-mt-10`) to overlap the hero.
+- **Glassmorphism**: When placing elements *inside* the dark hero, use `bg-white/10 backdrop-blur-sm border border-white/20 rounded-xl`.
+
+**Card Styling**
+- **Container**: `bg-white rounded-2xl shadow-sm` (or `shadow-xl` for main containers) `border border-slate-200`.
+- **Interactivity**: Hover effects should lift the card (`hover:shadow-md`) or add a colored border (`hover:border-brand-primary-500`).
+
+**Typography & Iconography**
+- **Headings**: Bold, Slate-900.
+- **Body**: Slate-500 for secondary text, Slate-900 for primary data.
+- **Icons**: Use Heroicons Outline (`w-5 h-5` standard).
