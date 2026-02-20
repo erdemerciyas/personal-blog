@@ -25,7 +25,7 @@ export const metadata: Metadata = {
     title: 'Haberler | Fixral',
     description: 'Fixral\'dan en son haberler ve duyuruları okuyun',
     type: 'website',
-    url: 'https://fixral.com/tr/haberler',
+    url: 'https://www.fixral.com/tr/haberler',
   },
 };
 
@@ -284,3 +284,4 @@ export default async function NewsListPage({ searchParams }: PageProps) {
     );
   }
 }
+

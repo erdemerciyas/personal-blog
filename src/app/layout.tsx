@@ -71,7 +71,7 @@ export async function generateMetadata(): Promise<Metadata> {
       if (siteSettings.seo?.metaDescription) description = siteSettings.seo.metaDescription;
     }
 
-    const baseUrl = process.env.NEXT_PUBLIC_APP_URL || 'https://fixral.com';
+    const baseUrl = process.env.NEXT_PUBLIC_APP_URL || 'https://www.fixral.com';
     const logoUrl = typeof siteSettings.logo === 'string' ? siteSettings.logo : siteSettings.logo?.url;
     const googleVerification = siteSettings?.analytics?.googleSiteVerification || ENV_GOOGLE_VERIFICATION;
 

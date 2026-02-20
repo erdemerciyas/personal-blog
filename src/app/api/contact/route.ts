@@ -172,7 +172,7 @@ export async function POST(request: NextRequest) {
               </div>
               
               <div style="text-align: center; margin: 30px 0;">
-                <a href="https://fixral.com" 
+                <a href="https://www.fixral.com" 
                    style="background: linear-gradient(135deg, #0f766e, #0891b2); color: white; padding: 12px 24px; 
                           text-decoration: none; border-radius: 8px; font-weight: bold; display: inline-block;">
                   🌐 Web Sitemizi Ziyaret Edin

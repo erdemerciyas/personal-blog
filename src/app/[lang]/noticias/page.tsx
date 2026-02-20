@@ -25,7 +25,7 @@ export const metadata: Metadata = {
     title: 'Noticias | Fixral',
     description: 'Lee las últimas noticias y anuncios de Fixral',
     type: 'website',
-    url: 'https://fixral.com/es/noticias',
+    url: 'https://www.fixral.com/es/noticias',
   },
 };
 
@@ -284,3 +284,4 @@ export default async function NewsListPage({ searchParams }: PageProps) {
     );
   }
 }
+

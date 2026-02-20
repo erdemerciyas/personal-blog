@@ -56,7 +56,7 @@ function detectSuspiciousActivity(request: NextRequest): boolean {
   for (const p of patterns) if (p.test(url)) return true;
 
   const suspiciousAgents = [
-    'sqlmap', 'nikto', 'nmap', 'masscan', 'nessus', 'openvas', 'burpsuite', 'w3af', 'havij', 'pangolin', 'crawler', 'bot'
+    'sqlmap', 'nikto', 'nmap', 'masscan', 'nessus', 'openvas', 'burpsuite', 'w3af', 'havij', 'pangolin'
   ];
   return suspiciousAgents.some(a => userAgent.includes(a));
 }

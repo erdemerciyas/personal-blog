@@ -27,13 +27,13 @@ export async function generateNewsSitemapEntries(): Promise<
 
     const entries = articles.flatMap((article: any) => [
       {
-        url: `https://fixral.com/tr/haberler/${article.slug}`,
+        url: `https://www.fixral.com/tr/haberler/${article.slug}`,
         lastmod: new Date(article.updatedAt || article.publishedAt).toISOString().split('T')[0],
         changefreq: 'weekly',
         priority: 0.8,
       },
       {
-        url: `https://fixral.com/es/noticias/${article.slug}`,
+        url: `https://www.fixral.com/es/noticias/${article.slug}`,
         lastmod: new Date(article.updatedAt || article.publishedAt).toISOString().split('T')[0],
         changefreq: 'weekly',
         priority: 0.8,
@@ -103,12 +103,12 @@ export function generateNewsArticleSchema(article: any, language: 'tr' | 'es' = 
       name: 'Fixral',
       logo: {
         '@type': 'ImageObject',
-        url: 'https://fixral.com/logo.png',
+        url: 'https://www.fixral.com/logo.png',
       },
     },
     mainEntityOfPage: {
       '@type': 'WebPage',
-      '@id': `https://fixral.com/${language === 'tr' ? 'tr/haberler' : 'es/noticias'}/${article.slug}`,
+      '@id': `https://www.fixral.com/${language === 'tr' ? 'tr/haberler' : 'es/noticias'}/${article.slug}`,
     },
     keywords: translation.keywords.join(', '),
   };
@@ -119,7 +119,7 @@ export function generateNewsArticleSchema(article: any, language: 'tr' | 'es' = 
  */
 export function generateOpenGraphTags(article: any, language: 'tr' | 'es' = 'tr') {
   const translation = article.translations[language];
-  const url = `https://fixral.com/${language === 'tr' ? 'tr/haberler' : 'es/noticias'}/${article.slug}`;
+  const url = `https://www.fixral.com/${language === 'tr' ? 'tr/haberler' : 'es/noticias'}/${article.slug}`;
 
   return {
     'og:title': translation.title,
@@ -257,3 +257,4 @@ export function getSEORecommendations(article: any, language: 'tr' | 'es' = 'tr'
 
   return recommendations;
 }
+
