@@ -15,8 +15,9 @@ import GlobalBreadcrumbsJsonLd from '../components/seo/GlobalBreadcrumbsJsonLd';
 import PageTransitionWrapper from '../components/PageTransitionWrapper';
 
 // Force dynamic rendering and disable caching for layout/metadata
-export const dynamic = 'force-dynamic'
-export const revalidate = 0
+// Removed for SEO and performance improvements
+// export const dynamic = 'force-dynamic'
+// export const revalidate = 0
 
 // Env fallbacks for Google integrations
 const ENV_GOOGLE_VERIFICATION = process.env.GOOGLE_SITE_VERIFICATION

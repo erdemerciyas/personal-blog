@@ -1,0 +1,473 @@
+
+> personal-blog@3.6.0 prebuild
+> node scripts/cleanup.js
+
+Port 3000 is free.
+
+> personal-blog@3.6.0 build
+> next build
+
+Sentry not installed, skipping Sentry configuration
+Bundle analyzer not installed, skipping bundle analysis
+  Ôû▓ Next.js 14.2.35
+  - Environments: .env.local, .env.production
+  - Experiments (use with caution):
+    ┬À scrollRestoration
+    ┬À instrumentationHook
+
+   Creating an optimized production build ...
+Browserslist: browsers data (caniuse-lite) is 7 months old. Please run:
+  npx update-browserslist-db@latest
+  Why you should do it regularly: https://github.com/browserslist/update-db#readme
+ ÔÜá Compiled with warnings
+
+./src/plugins/core/PluginManager.ts
+Critical dependency: the request of a dependency is an expression
+
+Import trace for requested module:
+./src/plugins/core/PluginManager.ts
+./src/app/api/admin/plugins/[id]/route.ts
+
+   Skipping validation of types
+   Skipping linting
+   Collecting page data ...
+{"level":"info","message":"Environment configuration validated successfully","timestamp":"2026-02-20T09:35:54.654Z","context":"CONFIG"}
+(node:20776) [MONGOOSE] Warning: Duplicate schema index on {"slug":1} found. This is often due to declaring an index using both "index: true" and "schema.index()". Please remove the duplicate index definition.
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:20776) [MONGOOSE] Warning: Duplicate schema index on {"tags":1} found. This is often due to declaring an index using both "index: true" and "schema.index()". Please remove the duplicate index definition.
+(node:28360) [MONGOOSE] Warning: Duplicate schema index on {"slug":1} found. This is often due to declaring an index using both "index: true" and "schema.index()". Please remove the duplicate index definition.
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:28360) [MONGOOSE] Warning: Duplicate schema index on {"tags":1} found. This is often due to declaring an index using both "index: true" and "schema.index()". Please remove the duplicate index definition.
+(node:20776) [MONGOOSE] Warning: Duplicate schema index on {"slug":1} found. This is often due to declaring an index using both "index: true" and "schema.index()". Please remove the duplicate index definition.
+(node:31788) [MONGOOSE] Warning: Duplicate schema index on {"slug":1} found. This is often due to declaring an index using both "index: true" and "schema.index()". Please remove the duplicate index definition.
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:31788) [MONGOOSE] Warning: Duplicate schema index on {"tags":1} found. This is often due to declaring an index using both "index: true" and "schema.index()". Please remove the duplicate index definition.
+(node:8516) [MONGOOSE] Warning: Duplicate schema index on {"slug":1} found. This is often due to declaring an index using both "index: true" and "schema.index()". Please remove the duplicate index definition.
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:16408) [MONGOOSE] Warning: Duplicate schema index on {"slug":1} found. This is often due to declaring an index using both "index: true" and "schema.index()". Please remove the duplicate index definition.
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:16928) [MONGOOSE] Warning: Duplicate schema index on {"slug":1} found. This is often due to declaring an index using both "index: true" and "schema.index()". Please remove the duplicate index definition.
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:20776) [MONGOOSE] Warning: Duplicate schema index on {"slug":1} found. This is often due to declaring an index using both "index: true" and "schema.index()". Please remove the duplicate index definition.
+(node:16928) [MONGOOSE] Warning: Duplicate schema index on {"slug":1} found. This is often due to declaring an index using both "index: true" and "schema.index()". Please remove the duplicate index definition.
+(node:16928) [MONGOOSE] Warning: Duplicate schema index on {"tags":1} found. This is often due to declaring an index using both "index: true" and "schema.index()". Please remove the duplicate index definition.
+(node:28360) [MONGOOSE] Warning: Duplicate schema index on {"slug":1} found. This is often due to declaring an index using both "index: true" and "schema.index()". Please remove the duplicate index definition.
+(node:28360) [MONGOOSE] Warning: Duplicate schema index on {"slug":1} found. This is often due to declaring an index using both "index: true" and "schema.index()". Please remove the duplicate index definition.
+(node:24172) [MONGOOSE] Warning: Duplicate schema index on {"slug":1} found. This is often due to declaring an index using both "index: true" and "schema.index()". Please remove the duplicate index definition.
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:12156) [MONGOOSE] Warning: Duplicate schema index on {"slug":1} found. This is often due to declaring an index using both "index: true" and "schema.index()". Please remove the duplicate index definition.
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:22840) [MONGOOSE] Warning: Duplicate schema index on {"slug":1} found. This is often due to declaring an index using both "index: true" and "schema.index()". Please remove the duplicate index definition.
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:8516) [MONGOOSE] Warning: Duplicate schema index on {"slug":1} found. This is often due to declaring an index using both "index: true" and "schema.index()". Please remove the duplicate index definition.
+(node:8516) [MONGOOSE] Warning: Duplicate schema index on {"slug":1} found. This is often due to declaring an index using both "index: true" and "schema.index()". Please remove the duplicate index definition.
+(node:8516) [MONGOOSE] Warning: Duplicate schema index on {"tags":1} found. This is often due to declaring an index using both "index: true" and "schema.index()". Please remove the duplicate index definition.
+(node:22840) [MONGOOSE] Warning: Duplicate schema index on {"slug":1} found. This is often due to declaring an index using both "index: true" and "schema.index()". Please remove the duplicate index definition.
+(node:22840) [MONGOOSE] Warning: Duplicate schema index on {"tags":1} found. This is often due to declaring an index using both "index: true" and "schema.index()". Please remove the duplicate index definition.
+{"level":"info","message":"Environment configuration validated successfully","timestamp":"2026-02-20T09:35:54.876Z","context":"CONFIG"}
+{"level":"info","message":"Environment configuration validated successfully","timestamp":"2026-02-20T09:35:54.884Z","context":"CONFIG"}
+(node:20776) [MONGOOSE] Warning: Duplicate schema index on {"slug":1} found. This is often due to declaring an index using both "index: true" and "schema.index()". Please remove the duplicate index definition.
+(node:20776) [MONGOOSE] Warning: Duplicate schema index on {"tags":1} found. This is often due to declaring an index using both "index: true" and "schema.index()". Please remove the duplicate index definition.
+{"level":"info","message":"Environment configuration validated successfully","timestamp":"2026-02-20T09:35:54.937Z","context":"CONFIG"}
+(node:12156) [MONGOOSE] Warning: Duplicate schema index on {"slug":1} found. This is often due to declaring an index using both "index: true" and "schema.index()". Please remove the duplicate index definition.
+{"level":"info","message":"Environment configuration validated successfully","timestamp":"2026-02-20T09:35:54.949Z","context":"CONFIG"}
+{"level":"info","message":"Environment configuration validated successfully","timestamp":"2026-02-20T09:35:54.953Z","context":"CONFIG"}
+{"level":"info","message":"Environment configuration validated successfully","timestamp":"2026-02-20T09:35:54.962Z","context":"CONFIG"}
+(node:24172) [MONGOOSE] Warning: Duplicate schema index on {"slug":1} found. This is often due to declaring an index using both "index: true" and "schema.index()". Please remove the duplicate index definition.
+(node:24172) [MONGOOSE] Warning: Duplicate schema index on {"tags":1} found. This is often due to declaring an index using both "index: true" and "schema.index()". Please remove the duplicate index definition.
+(node:24172) [MONGOOSE] Warning: Duplicate schema index on {"slug":1} found. This is often due to declaring an index using both "index: true" and "schema.index()". Please remove the duplicate index definition.
+(node:22840) [MONGOOSE] Warning: Duplicate schema index on {"slug":1} found. This is often due to declaring an index using both "index: true" and "schema.index()". Please remove the duplicate index definition.
+(node:12156) [MONGOOSE] Warning: Duplicate schema index on {"slug":1} found. This is often due to declaring an index using both "index: true" and "schema.index()". Please remove the duplicate index definition.
+(node:12156) [MONGOOSE] Warning: Duplicate schema index on {"tags":1} found. This is often due to declaring an index using both "index: true" and "schema.index()". Please remove the duplicate index definition.
+(node:22916) [MONGOOSE] Warning: Duplicate schema index on {"slug":1} found. This is often due to declaring an index using both "index: true" and "schema.index()". Please remove the duplicate index definition.
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:22916) [MONGOOSE] Warning: Duplicate schema index on {"tags":1} found. This is often due to declaring an index using both "index: true" and "schema.index()". Please remove the duplicate index definition.
+{"level":"info","message":"Environment configuration validated successfully","timestamp":"2026-02-20T09:35:55.242Z","context":"CONFIG"}
+(node:22916) [MONGOOSE] Warning: Duplicate schema index on {"slug":1} found. This is often due to declaring an index using both "index: true" and "schema.index()". Please remove the duplicate index definition.
+(node:27464) [MONGOOSE] Warning: Duplicate schema index on {"slug":1} found. This is often due to declaring an index using both "index: true" and "schema.index()". Please remove the duplicate index definition.
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:27464) [MONGOOSE] Warning: Duplicate schema index on {"tags":1} found. This is often due to declaring an index using both "index: true" and "schema.index()". Please remove the duplicate index definition.
+{"level":"info","message":"Generated static params for news articles","timestamp":"2026-02-20T09:35:58.004Z","context":"NEWS_DETAIL","data":"{\"count\":2}"}
+{"level":"info","message":"Generated static params for news articles","timestamp":"2026-02-20T09:35:58.544Z","context":"NEWS_DETAIL","data":"{\"count\":2}"}
+{"level":"info","message":"Generated static params for news articles (ES)","timestamp":"2026-02-20T09:35:58.998Z","context":"NEWS_DETAIL","data":"{\"count\":2}"}
+   Generating static pages (0/135) ...
+Error fetching profile: n [Error]: Dynamic server usage: Route /api/admin/profile couldn't be rendered statically because it used `headers`. See more info here: https://nextjs.org/docs/messages/dynamic-server-error
+    at l (C:\Users\erdem\Personal-Blog\.next\server\chunks\8948.js:1:37220)
+    at u (C:\Users\erdem\Personal-Blog\.next\server\chunks\5609.js:25:117812)
+    at s (C:\Users\erdem\Personal-Blog\.next\server\chunks\5609.js:25:19584)
+    at d (C:\Users\erdem\Personal-Blog\.next\server\app\api\admin\profile\route.js:1:1361)
+    at C:\Users\erdem\Personal-Blog\node_modules\next\dist\compiled\next-server\app-route.runtime.prod.js:6:38417
+    at C:\Users\erdem\Personal-Blog\node_modules\next\dist\server\lib\trace\tracer.js:140:36
+    at NoopContextManager.with (C:\Users\erdem\Personal-Blog\node_modules\next\dist\compiled\@opentelemetry\api\index.js:1:7062)
+    at ContextAPI.with (C:\Users\erdem\Personal-Blog\node_modules\next\dist\compiled\@opentelemetry\api\index.js:1:518)
+    at NoopTracer.startActiveSpan (C:\Users\erdem\Personal-Blog\node_modules\next\dist\compiled\@opentelemetry\api\index.js:1:18093)
+    at ProxyTracer.startActiveSpan (C:\Users\erdem\Personal-Blog\node_modules\next\dist\compiled\@opentelemetry\api\index.js:1:18854) {
+  description: "Route /api/admin/profile couldn't be rendered statically because it used `headers`. See more info here: https://nextjs.org/docs/messages/dynamic-server-error",
+  digest: 'DYNAMIC_SERVER_USAGE'
+}
+   Generating static pages (33/135) 
+(node:31788) [MONGOOSE] Warning: Duplicate schema index on {"slug":1} found. This is often due to declaring an index using both "index: true" and "schema.index()". Please remove the duplicate index definition.
+(node:16928) [MONGOOSE] Warning: Duplicate schema index on {"slug":1} found. This is often due to declaring an index using both "index: true" and "schema.index()". Please remove the duplicate index definition.
+­şöı Debug - SiteSettings: {
+  found: true,
+  logo: {
+    url: 'https://res.cloudinary.com/dlgnbhq8l/image/upload/v1759989791/personal-blog/general/1759989790748_80464fc8_fixral-logo-kare.png.jpg',
+    alt: 'Site Logo',
+    width: 200,
+    height: 60
+  },
+  siteName: 'FIXRAL 3D Tersine M├╝hendislik ve Dijital ├ç├Âz├╝mler',
+  fullData: {
+    logo: {
+      url: 'https://res.cloudinary.com/dlgnbhq8l/image/upload/v1759989791/personal-blog/general/1759989790748_80464fc8_fixral-logo-kare.png.jpg',
+      alt: 'Site Logo',
+      width: 200,
+      height: 60
+    },
+    colors: { primary: '#003450', secondary: '#075985', accent: '#0369a1' },
+    socialMedia: {
+      twitter: '@fixral',
+      instagram: '@fixral',
+      linkedin: '@fixral',
+      github: '@fixral'
+    },
+    seo: {
+      metaTitle: 'Tersine M├╝hendislik, Reverse Engineering - 3D Tasar─▒m, 3D Tarama ve M├╝hendislik ├ç├Âz├╝mleri',
+      metaDescription: 'Profesyonel 3D tasar─▒m, tersine m├╝hendislik, 3D bask─▒ ve m├╝hendislik ├ğ├Âz├╝mleri ile projelerinizi hayata ge├ğiriyoruz.',
+      keywords: [Array]
+    },
+    contact: {
+      email: 'fixral3d@gmail.com',
+      phone: '05334210728',
+      address: 'Turgutlu Manisa'
+    },
+    analytics: {
+      enableAnalytics: true,
+      googleAnalyticsId: 'G-DHM0BFJ9PQ',
+      googleTagManagerId: 'GTM-TQXBM8ZX',
+      googleSiteVerification: 'jXX7ASmYpD2OOlPo5cKqGptc9Zy1yLxl00b-JqlQHZE'
+    },
+    system: { maxUploadSize: 10 },
+    _id: new ObjectId('683c9d6d913634b9887854e4'),
+    siteName: 'FIXRAL 3D Tersine M├╝hendislik ve Dijital ├ç├Âz├╝mler',
+    slogan: 'Tersine M├╝hendislik, Reverse Engineering - 3D Tasar─▒m, 3D Tarama ve M├╝hendislik ├ç├Âz├╝mleri',
+    description: 'Profesyonel 3D tasar─▒m, tersine m├╝hendislik, 3D bask─▒ ve m├╝hendislik ├ğ├Âz├╝mleri ile projelerinizi hayata ge├ğiriyoruz.',
+    isActive: true,
+    createdAt: 2025-06-01T18:35:25.194Z,
+    updatedAt: 2026-01-12T06:48:50.129Z,
+    __v: 0,
+    pageSettings: {
+      home: true,
+      about: true,
+      services: true,
+      portfolio: true,
+      contact: true,
+      blog: true
+    },
+    security: {
+      enableSecurityQuestion: false,
+      maintenanceMode: false,
+      allowRegistration: true
+    },
+    activeTheme: new ObjectId('689dcb250fbf2832a24265f1'),
+    theme: { header: [Object] },
+    allowRegistration: false,
+    enableComments: false,
+    favicon: '',
+    language: 'tr',
+    maintenanceMode: false,
+    siteUrl: 'https://www.fixral.com',
+    timezone: 'Europe/Istanbul'
+  }
+}
+­şöı Debug - Settings: {
+  found: true,
+  logo: 'https://res.cloudinary.com/dlgnbhq8l/image/upload/v1759989791/personal-blog/general/1759989790748_80464fc8_fixral-logo-kare.png.jpg',
+  siteName: 'FIXRAL 3D'
+}
+Starting YouTube video sync cron job
+­şöî Seeding plugins...
+{"level":"info","message":"Environment configuration validated successfully","timestamp":"2026-02-20T09:36:04.065Z","context":"CONFIG"}
+{"level":"info","message":"Environment configuration validated successfully","timestamp":"2026-02-20T09:36:04.114Z","context":"CONFIG"}
+(node:27464) [MONGOOSE] Warning: Duplicate schema index on {"slug":1} found. This is often due to declaring an index using both "index: true" and "schema.index()". Please remove the duplicate index definition.
+(node:27464) [MONGOOSE] Warning: Duplicate schema index on {"tags":1} found. This is often due to declaring an index using both "index: true" and "schema.index()". Please remove the duplicate index definition.
+{"level":"info","message":"Environment configuration validated successfully","timestamp":"2026-02-20T09:36:04.144Z","context":"CONFIG"}
+(node:31788) [MONGOOSE] Warning: Duplicate schema index on {"slug":1} found. This is often due to declaring an index using both "index: true" and "schema.index()". Please remove the duplicate index definition.
+[Themes API] Active theme: Fixral Reverse Engineering
+Connected to MongoDB
+Error syncing YouTube videos: Error: YouTube API credentials not configured
+    at l (C:\Users\erdem\Personal-Blog\.next\server\app\api\cron\sync-youtube-videos\route.js:1:666)
+    at p (C:\Users\erdem\Personal-Blog\.next\server\app\api\cron\sync-youtube-videos\route.js:1:1444)
+    at process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+    at async C:\Users\erdem\Personal-Blog\node_modules\next\dist\compiled\next-server\app-route.runtime.prod.js:6:38411
+    at async e_.execute (C:\Users\erdem\Personal-Blog\node_modules\next\dist\compiled\next-server\app-route.runtime.prod.js:6:27880)
+    at async e_.handle (C:\Users\erdem\Personal-Blog\node_modules\next\dist\compiled\next-server\app-route.runtime.prod.js:6:39943)
+    at async exportAppRoute (C:\Users\erdem\Personal-Blog\node_modules\next\dist\export\routes\app-route.js:77:26)
+    at async exportPageImpl (C:\Users\erdem\Personal-Blog\node_modules\next\dist\export\worker.js:175:20)
+    at async Span.traceAsyncFn (C:\Users\erdem\Personal-Blog\node_modules\next\dist\trace\trace.js:154:20)
+    at async Object.exportPage (C:\Users\erdem\Personal-Blog\node_modules\next\dist\export\worker.js:237:20)
+{"level":"info","message":"Environment configuration validated successfully","timestamp":"2026-02-20T09:36:04.834Z","context":"CONFIG"}
+{"level":"info","message":"Environment configuration validated successfully","timestamp":"2026-02-20T09:36:06.003Z","context":"CONFIG"}
+   Generating static pages (67/135) 
+­şÄ¿ Seeding themes...
+{"level":"info","message":"Environment configuration validated successfully","timestamp":"2026-02-20T09:36:08.776Z","context":"CONFIG"}
+(node:27464) [MONGOOSE] Warning: Duplicate schema index on {"slug":1} found. This is often due to declaring an index using both "index: true" and "schema.index()". Please remove the duplicate index definition.
+{"level":"info","message":"Environment configuration validated successfully","timestamp":"2026-02-20T09:36:09.196Z","context":"CONFIG"}
+   Generating static pages (101/135) 
+(node:16408) [MONGOOSE] Warning: Duplicate schema index on {"slug":1} found. This is often due to declaring an index using both "index: true" and "schema.index()". Please remove the duplicate index definition.
+(node:16408) [MONGOOSE] Warning: Duplicate schema index on {"tags":1} found. This is often due to declaring an index using both "index: true" and "schema.index()". Please remove the duplicate index definition.
+{"level":"error","message":"Error rendering news list page","timestamp":"2026-02-20T09:36:12.727Z","context":"NEWS_LIST","data":"{\"error\":{\"description\":\"Route /haberler couldn't be rendered statically because it used `searchParams.page`. See more info here: https://nextjs.org/docs/messages/dynamic-server-error\",\"digest\":\"DYNAMIC_SERVER_USAGE\"}}"}
+{"level":"error","message":"Error rendering news list page","timestamp":"2026-02-20T09:36:12.728Z","context":"NEWS_LIST","data":"{\"error\":{\"description\":\"Route /haberler couldn't be rendered statically because it used `searchParams.page`. See more info here: https://nextjs.org/docs/messages/dynamic-server-error\",\"digest\":\"DYNAMIC_SERVER_USAGE\"}}"}
+Fetching portfolio items with limit: 6
+Fetching portfolio items with limit: 6
+Found 6 portfolio items
+Found 6 portfolio items
+ Ô£ô Generating static pages (135/135)
+   Finalizing page optimization ...
+   Collecting build traces ...
+
+Route (app)                                                                                                     Size     First Load JS
+Ôöî Ôùï /                                                                                                           43.9 kB         190 kB
+Ôö£ Ôùï /_not-found                                                                                                 152 B          87.6 kB
+Ôö£ ãÆ /[lang]/haberler                                                                                            2.04 kB         142 kB
+Ôö£ ÔùÅ /[lang]/haberler/[slug]                                                                                     2.04 kB         142 kB
+Ôö£   Ôö£ /tr/haberler/fixralcomdan-endustriyel-seviyede-3d-tarama-ve-tersine-muhendislik-hizmetleri-1765218907557
+Ôö£   Ôöö /tr/haberler/yeni-acik-kaynak-proje-yayinda-full-personal-blogger-system-1768200202534
+Ôö£ ãÆ /[lang]/noticias                                                                                            2.04 kB         142 kB
+Ôö£ ÔùÅ /[lang]/noticias/[slug]                                                                                     2.04 kB         142 kB
+Ôö£   Ôö£ /es/noticias/fixralcomdan-endustriyel-seviyede-3d-tarama-ve-tersine-muhendislik-hizmetleri-1765218907557
+Ôö£   Ôöö /es/noticias/yeni-acik-kaynak-proje-yayinda-full-personal-blogger-system-1768200202534
+Ôö£ Ôùï /account                                                                                                    10.5 kB         147 kB
+Ôö£ Ôùï /admin/backup                                                                                               2.91 kB         126 kB
+Ôö£ Ôùï /admin/categories                                                                                           2.68 kB         125 kB
+Ôö£ Ôùï /admin/contact                                                                                              2.17 kB        99.3 kB
+Ôö£ Ôùï /admin/content                                                                                              3.26 kB         135 kB
+Ôö£ Ôùï /admin/dashboard                                                                                            5.05 kB         111 kB
+Ôö£ Ôùï /admin/editor                                                                                               2.14 kB         108 kB
+Ôö£ Ôùï /admin/footer                                                                                               5.45 kB         103 kB
+Ôö£ Ôùï /admin/login                                                                                                2.84 kB         109 kB
+Ôö£ Ôùï /admin/media                                                                                                7.09 kB         135 kB
+Ôö£ Ôùï /admin/messages                                                                                             6.38 kB         143 kB
+Ôö£ Ôùï /admin/models                                                                                               4.81 kB         136 kB
+Ôö£ Ôùï /admin/monitoring                                                                                           2.56 kB        99.7 kB
+Ôö£ Ôùï /admin/news                                                                                                 5.52 kB         137 kB
+Ôö£ ãÆ /admin/news/[id]/edit                                                                                       154 B           209 kB
+Ôö£ ãÆ /admin/news/create                                                                                          154 B           209 kB
+Ôö£ Ôùï /admin/orders                                                                                               7.37 kB         153 kB
+Ôö£ ãÆ /admin/orders/[id]                                                                                          4.68 kB         116 kB
+Ôö£ Ôùï /admin/pages                                                                                                6.22 kB         163 kB
+Ôö£ Ôùï /admin/plugins                                                                                              3.22 kB         109 kB
+Ôö£ ãÆ /admin/plugins/[slug]                                                                                       3.48 kB         109 kB
+Ôö£ Ôùï /admin/portfolio                                                                                            5.11 kB         111 kB
+Ôö£ ãÆ /admin/portfolio/edit/[id]                                                                                  9.63 kB         289 kB
+Ôö£ Ôùï /admin/portfolio/new                                                                                        9.49 kB         289 kB
+Ôö£ Ôùï /admin/product-categories                                                                                   3.95 kB         127 kB
+Ôö£ Ôùï /admin/product-media                                                                                        5.25 kB         128 kB
+Ôö£ Ôùï /admin/product-reviews                                                                                      4.07 kB         127 kB
+Ôö£ Ôùï /admin/products                                                                                             6.18 kB         138 kB
+Ôö£ ãÆ /admin/products/edit/[id]                                                                                   779 B           110 kB
+Ôö£ Ôùï /admin/products/media                                                                                       3.9 kB          127 kB
+Ôö£ Ôùï /admin/products/new                                                                                         481 B           100 kB
+Ôö£ Ôùï /admin/products/questions                                                                                   5.96 kB         138 kB
+Ôö£ Ôùï /admin/products/reviews                                                                                     2.78 kB        99.9 kB
+Ôö£ Ôùï /admin/profile                                                                                              6.42 kB         130 kB
+Ôö£ Ôùï /admin/reset-password                                                                                       2.83 kB        99.1 kB
+Ôö£ Ôùï /admin/services                                                                                             5.1 kB          111 kB
+Ôö£ ãÆ /admin/services/[action]                                                                                    3.43 kB         109 kB
+Ôö£ ãÆ /admin/services/edit/[id]                                                                                   4.05 kB         283 kB
+Ôö£ Ôùï /admin/services/new                                                                                         3.65 kB         283 kB
+Ôö£ Ôùï /admin/settings                                                                                             4.98 kB         107 kB
+Ôö£ Ôùï /admin/site-settings                                                                                        5.63 kB         115 kB
+Ôö£ Ôùï /admin/sitemap                                                                                              3.4 kB         90.9 kB
+Ôö£ Ôùï /admin/slider                                                                                               3.58 kB         126 kB
+Ôö£ ãÆ /admin/slider/[id]/edit                                                                                     611 B          95.4 kB
+Ôö£ Ôùï /admin/slider/new                                                                                           251 B            90 kB
+Ôö£ Ôùï /admin/themes                                                                                               3.64 kB         135 kB
+Ôö£ ãÆ /admin/themes/[id]                                                                                          4.96 kB         106 kB
+Ôö£ ãÆ /admin/themes/[id]/customize                                                                                9.89 kB         102 kB
+Ôö£ ãÆ /admin/themes/[id]/edit                                                                                     3.46 kB         109 kB
+Ôö£ Ôùï /admin/themes/create                                                                                        3.85 kB         101 kB
+Ôö£ Ôùï /admin/updates                                                                                              2.73 kB        99.9 kB
+Ôö£ Ôùï /admin/users                                                                                                4.77 kB         128 kB
+Ôö£ Ôùï /admin/videos                                                                                               3.26 kB         126 kB
+Ôö£ ãÆ /api/3dmodels/delete                                                                                        0 B                0 B
+Ôö£ ãÆ /api/3dmodels/download                                                                                      0 B                0 B
+Ôö£ ãÆ /api/3dmodels/download/[id]                                                                                 0 B                0 B
+Ôö£ ãÆ /api/3dmodels/list                                                                                          0 B                0 B
+Ôö£ ãÆ /api/3dmodels/upload                                                                                        0 B                0 B
+Ôö£ ãÆ /api/admin/2fa/setup                                                                                        0 B                0 B
+Ôö£ ãÆ /api/admin/backup/export                                                                                    0 B                0 B
+Ôö£ ãÆ /api/admin/backup/import                                                                                    0 B                0 B
+Ôö£ ãÆ /api/admin/categories                                                                                       0 B                0 B
+Ôö£ ãÆ /api/admin/categories/[id]                                                                                  0 B                0 B
+Ôö£ ãÆ /api/admin/change-password                                                                                  0 B                0 B
+Ôö£ ãÆ /api/admin/clear-cache                                                                                      0 B                0 B
+Ôö£ ãÆ /api/admin/content                                                                                          0 B                0 B
+Ôö£ ãÆ /api/admin/content-settings                                                                                 0 B                0 B
+Ôö£ ãÆ /api/admin/dashboard-stats                                                                                  0 B                0 B
+Ôö£ ãÆ /api/admin/footer-settings                                                                                  0 B                0 B
+Ôö£ ãÆ /api/admin/logo-upload                                                                                      0 B                0 B
+Ôö£ ãÆ /api/admin/mail-status                                                                                      0 B                0 B
+Ôö£ ãÆ /api/admin/media                                                                                            0 B                0 B
+Ôö£ ãÆ /api/admin/media/[id]                                                                                       0 B                0 B
+Ôö£ ãÆ /api/admin/messages                                                                                         0 B                0 B
+Ôö£ ãÆ /api/admin/messages/[id]                                                                                    0 B                0 B
+Ôö£ ãÆ /api/admin/messages/[id]/read                                                                               0 B                0 B
+Ôö£ ãÆ /api/admin/messages/reply                                                                                   0 B                0 B
+Ôö£ ãÆ /api/admin/models                                                                                           0 B                0 B
+Ôö£ ãÆ /api/admin/news                                                                                             0 B                0 B
+Ôö£ ãÆ /api/admin/news/[id]                                                                                        0 B                0 B
+Ôö£ ãÆ /api/admin/page-settings                                                                                    0 B                0 B
+Ôö£ ãÆ /api/admin/page-settings/[pageId]                                                                           0 B                0 B
+Ôö£ ãÆ /api/admin/pages                                                                                            0 B                0 B
+Ôö£ ãÆ /api/admin/pages/[id]                                                                                       0 B                0 B
+Ôö£ ãÆ /api/admin/plugins                                                                                          0 B                0 B
+Ôö£ ãÆ /api/admin/plugins/[id]                                                                                     0 B                0 B
+Ôö£ ãÆ /api/admin/plugins/by-slug/[slug]                                                                           0 B                0 B
+Ôö£ ãÆ /api/admin/plugins/toggle                                                                                   0 B                0 B
+Ôö£ ãÆ /api/admin/portfolio                                                                                        0 B                0 B
+Ôö£ ãÆ /api/admin/portfolio/[id]                                                                                   0 B                0 B
+Ôö£ ãÆ /api/admin/product-categories                                                                               0 B                0 B
+Ôö£ ãÆ /api/admin/product-categories/[id]                                                                          0 B                0 B
+Ôö£ ãÆ /api/admin/product-media                                                                                    0 B                0 B
+Ôö£ ãÆ /api/admin/product-reviews                                                                                  0 B                0 B
+Ôö£ ãÆ /api/admin/product-upload                                                                                   0 B                0 B
+Ôö£ ãÆ /api/admin/products                                                                                         0 B                0 B
+Ôö£ ãÆ /api/admin/products/[id]                                                                                    0 B                0 B
+Ôö£ ãÆ /api/admin/products/[id]/reviews                                                                            0 B                0 B
+Ôö£ ãÆ /api/admin/products/batch                                                                                   0 B                0 B
+Ôö£ ãÆ /api/admin/profile                                                                                          0 B                0 B
+Ôö£ ãÆ /api/admin/profile/password                                                                                 0 B                0 B
+Ôö£ ãÆ /api/admin/security                                                                                         0 B                0 B
+Ôö£ ãÆ /api/admin/seed-plugins-themes                                                                              0 B                0 B
+Ôö£ ãÆ /api/admin/services                                                                                         0 B                0 B
+Ôö£ ãÆ /api/admin/services/[id]                                                                                    0 B                0 B
+Ôö£ Ôùï /api/admin/setup-plugins                                                                                    0 B                0 B
+Ôö£ ãÆ /api/admin/site-settings                                                                                    0 B                0 B
+Ôö£ Ôùï /api/admin/site-settings/debug                                                                              0 B                0 B
+Ôö£ ãÆ /api/admin/sitemap                                                                                          0 B                0 B
+Ôö£ ãÆ /api/admin/slider                                                                                           0 B                0 B
+Ôö£ ãÆ /api/admin/slider/[id]                                                                                      0 B                0 B
+Ôö£ ãÆ /api/admin/themes                                                                                           0 B                0 B
+Ôö£ ãÆ /api/admin/themes/[id]                                                                                      0 B                0 B
+Ôö£ ãÆ /api/admin/themes/[id]/activate                                                                             0 B                0 B
+Ôö£ ãÆ /api/admin/themes/[id]/customize                                                                            0 B                0 B
+Ôö£ ãÆ /api/admin/themes/activate                                                                                  0 B                0 B
+Ôö£ ãÆ /api/admin/updates/check                                                                                    0 B                0 B
+Ôö£ ãÆ /api/admin/updates/run                                                                                      0 B                0 B
+Ôö£ ãÆ /api/admin/upload                                                                                           0 B                0 B
+Ôö£ ãÆ /api/admin/users                                                                                            0 B                0 B
+Ôö£ ãÆ /api/admin/users/[id]                                                                                       0 B                0 B
+Ôö£ ãÆ /api/admin/users/[id]/password                                                                              0 B                0 B
+Ôö£ ãÆ /api/admin/users/password                                                                                   0 B                0 B
+Ôö£ ãÆ /api/admin/users/send-verification                                                                          0 B                0 B
+Ôö£ ãÆ /api/admin/videos                                                                                           0 B                0 B
+Ôö£ ãÆ /api/admin/videos/[id]                                                                                      0 B                0 B
+Ôö£ ãÆ /api/admin/videos/[id]/status                                                                               0 B                0 B
+Ôö£ ãÆ /api/admin/videos/bulk-delete                                                                               0 B                0 B
+Ôö£ ãÆ /api/ai/generate-metadata                                                                                   0 B                0 B
+Ôö£ ãÆ /api/auth/[...nextauth]                                                                                     0 B                0 B
+Ôö£ ãÆ /api/auth/forgot-password                                                                                   0 B                0 B
+Ôö£ ãÆ /api/auth/refresh                                                                                           0 B                0 B
+Ôö£ ãÆ /api/auth/reset-password                                                                                    0 B                0 B
+Ôö£ ãÆ /api/cart                                                                                                   0 B                0 B
+Ôö£ ãÆ /api/cart/[itemId]                                                                                          0 B                0 B
+Ôö£ ãÆ /api/categories                                                                                             0 B                0 B
+Ôö£ ãÆ /api/categories/[id]                                                                                        0 B                0 B
+Ôö£ Ôùï /api/channels                                                                                               0 B                0 B
+Ôö£ ãÆ /api/checkout/create-order                                                                                  0 B                0 B
+Ôö£ ãÆ /api/contact                                                                                                0 B                0 B
+Ôö£ Ôùï /api/contact-info                                                                                           0 B                0 B
+Ôö£ ãÆ /api/create-admin                                                                                           0 B                0 B
+Ôö£ ãÆ /api/cron/cleanup                                                                                           0 B                0 B
+Ôö£ ãÆ /api/cron/sync-youtube-videos                                                                               0 B                0 B
+Ôö£ ãÆ /api/csrf                                                                                                   0 B                0 B
+Ôö£ Ôùï /api/debug                                                                                                  0 B                0 B
+Ôö£ Ôùï /api/docs                                                                                                   1.84 kB        89.3 kB
+Ôö£ ãÆ /api/footer-settings                                                                                        0 B                0 B
+Ôö£ ãÆ /api/health                                                                                                 0 B                0 B
+Ôö£ ãÆ /api/messages                                                                                               0 B                0 B
+Ôö£ ãÆ /api/messages/[id]                                                                                          0 B                0 B
+Ôö£ ãÆ /api/messages/product                                                                                       0 B                0 B
+Ôö£ ãÆ /api/monitoring/performance                                                                                 0 B                0 B
+Ôö£ ãÆ /api/news                                                                                                   0 B                0 B
+Ôö£ ãÆ /api/news/[id]                                                                                              0 B                0 B
+Ôö£ ãÆ /api/news/bulk-action                                                                                       0 B                0 B
+Ôö£ ãÆ /api/news/slug/[slug]                                                                                       0 B                0 B
+Ôö£ ãÆ /api/orders                                                                                                 0 B                0 B
+Ôö£ ãÆ /api/orders/[id]                                                                                            0 B                0 B
+Ôö£ ãÆ /api/orders/[id]/cancel                                                                                     0 B                0 B
+Ôö£ ãÆ /api/orders/bulk                                                                                            0 B                0 B
+Ôö£ ãÆ /api/orders/messages                                                                                        0 B                0 B
+Ôö£ ãÆ /api/orders/my-orders                                                                                       0 B                0 B
+Ôö£ ãÆ /api/portfolio                                                                                              0 B                0 B
+Ôö£ ãÆ /api/portfolio/[id]                                                                                         0 B                0 B
+Ôö£ ãÆ /api/portfolio/slug/[slug]                                                                                  0 B                0 B
+Ôö£ ãÆ /api/product-categories                                                                                     0 B                0 B
+Ôö£ ãÆ /api/products                                                                                               0 B                0 B
+Ôö£ ãÆ /api/products/[id]                                                                                          0 B                0 B
+Ôö£ ãÆ /api/products/[id]/reviews                                                                                  0 B                0 B
+Ôö£ ãÆ /api/products/slug/[slug]                                                                                   0 B                0 B
+Ôö£ ãÆ /api/register                                                                                               0 B                0 B
+Ôö£ Ôùï /api/robots                                                                                                 0 B                0 B
+Ôö£ ãÆ /api/services                                                                                               0 B                0 B
+Ôö£ ãÆ /api/services/[id]                                                                                          0 B                0 B
+Ôö£ ãÆ /api/settings                                                                                               0 B                0 B
+Ôö£ ãÆ /api/settings/email                                                                                         0 B                0 B
+Ôö£ ãÆ /api/settings/name                                                                                          0 B                0 B
+Ôö£ ãÆ /api/settings/password                                                                                      0 B                0 B
+Ôö£ ãÆ /api/settings/sync                                                                                          0 B                0 B
+Ôö£ ãÆ /api/sitemap                                                                                                0 B                0 B
+Ôö£ ãÆ /api/slider                                                                                                 0 B                0 B
+Ôö£ ãÆ /api/swagger                                                                                                0 B                0 B
+Ôö£ Ôùï /api/test-db                                                                                                0 B                0 B
+Ôö£ Ôùï /api/themes/active                                                                                          0 B                0 B
+Ôö£ ãÆ /api/upload                                                                                                 0 B                0 B
+Ôö£ ãÆ /api/user/addresses                                                                                         0 B                0 B
+Ôö£ ãÆ /api/user/addresses/[id]                                                                                    0 B                0 B
+Ôö£ ãÆ /api/user/messages                                                                                          0 B                0 B
+Ôö£ ãÆ /api/user/messages/[id]                                                                                     0 B                0 B
+Ôö£ ãÆ /api/youtube                                                                                                0 B                0 B
+Ôö£ Ôùï /api/youtube-health                                                                                         0 B                0 B
+Ôö£ Ôùï /cart                                                                                                       4.03 kB         115 kB
+Ôö£ Ôùï /checkout/address                                                                                           2.26 kB         104 kB
+Ôö£ Ôùï /checkout/auth                                                                                              1.63 kB         108 kB
+Ôö£ Ôùï /checkout/payment                                                                                           2.98 kB         105 kB
+Ôö£ Ôùï /checkout/success                                                                                           1.68 kB        97.9 kB
+Ôö£ Ôùï /contact                                                                                                    8.72 kB         144 kB
+Ôö£ ãÆ /haberler                                                                                                   2.04 kB         142 kB
+Ôö£ ÔùÅ /haberler/[slug]                                                                                            2.04 kB         142 kB
+Ôö£   Ôö£ /haberler/fixralcomdan-endustriyel-seviyede-3d-tarama-ve-tersine-muhendislik-hizmetleri-1765218907557
+Ôö£   Ôöö /haberler/yeni-acik-kaynak-proje-yayinda-full-personal-blogger-system-1768200202534
+Ôö£ Ôùï /icon.svg                                                                                                   0 B                0 B
+Ôö£ Ôùï /login                                                                                                      1.32 kB         112 kB
+Ôö£ Ôùï /offline                                                                                                    1.4 kB         88.9 kB
+Ôö£ Ôùï /portfolio                                                                                                  7.92 kB         164 kB
+Ôö£ ãÆ /portfolio/[slug]                                                                                           253 kB          410 kB
+Ôö£ ãÆ /products                                                                                                   8.07 kB         148 kB
+Ôö£ ãÆ /products/[slug]                                                                                            11.8 kB         175 kB
+Ôö£ ãÆ /products/[slug]/order                                                                                      6.4 kB          146 kB
+Ôö£ Ôùï /products/favorites                                                                                         777 B            97 kB
+Ôö£ Ôùï /register                                                                                                   1.52 kB        97.8 kB
+Ôö£ Ôùï /robots.txt                                                                                                 0 B                0 B
+Ôö£ ãÆ /services                                                                                                   5.95 kB         155 kB
+Ôö£ Ôùï /sitemap.xml                                                                                                0 B                0 B
+Ôöö Ôùï /videos                                                                                                     6.38 kB         141 kB
++ First Load JS shared by all                                                                                   87.5 kB
+  Ôö£ chunks/2117-95a1e4fc19211611.js                                                                             31.9 kB
+  Ôö£ chunks/fd9d1056-3d7cbe8a0b2ffa69.js                                                                         53.6 kB
+  Ôöö other shared chunks (total)                                                                                 1.95 kB
+
+Route (pages)                                                                                                   Size     First Load JS
+ÔöÇ ãÆ /api/page-settings                                                                                          0 B            82.5 kB
++ First Load JS shared by all                                                                                   82.5 kB
+  Ôö£ chunks/framework-08aa667e5202eed8.js                                                                        44.9 kB
+  Ôö£ chunks/main-23277d3d1f596bfb.js                                                                             35.7 kB
+  Ôöö other shared chunks (total)                                                                                 1.93 kB
+
+ãÆ Middleware                                                                                                    49.3 kB
+
+Ôùï  (Static)   prerendered as static content
+ÔùÅ  (SSG)      prerendered as static HTML (uses getStaticProps)
+ãÆ  (Dynamic)  server-rendered on demand
+

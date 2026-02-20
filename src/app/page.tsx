@@ -10,8 +10,8 @@ import NewsCarousel from '../components/NewsCarousel';
 import { getSliderItems, getPortfolioItems, getServices } from '../lib/data';
 
 // Force dynamic rendering to ensure fresh data on every request
-export const dynamic = 'force-dynamic';
-export const revalidate = 0;
+// Removed for SEO and performance: export const dynamic = 'force-dynamic';
+export const revalidate = 3600; // ISR for 1 hour
 
 export default async function HomePage() {
   // Fetch data in parallel

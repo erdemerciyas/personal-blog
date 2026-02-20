@@ -1,15 +1,7 @@
+'use client';
+
 /* eslint-disable react/no-unescaped-entities */
 import React from 'react';
-import { Metadata } from 'next';
-
-export const metadata: Metadata = {
-  title: 'Offline - Personal Blog',
-  description: 'You are currently offline. Please check your internet connection.',
-  robots: {
-    index: false,
-    follow: false
-  }
-};
 
 export default function OfflinePage() {
   return (
@@ -18,17 +10,17 @@ export default function OfflinePage() {
         {/* Offline Icon */}
         <div className="mb-6">
           <div className="w-20 h-20 mx-auto bg-red-500/20 rounded-full flex items-center justify-center">
-            <svg 
-              className="w-10 h-10 text-red-400" 
-              fill="none" 
-              stroke="currentColor" 
+            <svg
+              className="w-10 h-10 text-red-400"
+              fill="none"
+              stroke="currentColor"
               viewBox="0 0 24 24"
             >
-              <path 
-                strokeLinecap="round" 
-                strokeLinejoin="round" 
-                strokeWidth={2} 
-                d="M18.364 5.636l-12.728 12.728m0-12.728l12.728 12.728M12 2C6.477 2 2 6.477 2 12s4.477 10 10 10 10-4.477 10-10S17.523 2 12 2z" 
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M18.364 5.636l-12.728 12.728m0-12.728l12.728 12.728M12 2C6.477 2 2 6.477 2 12s4.477 10 10 10 10-4.477 10-10S17.523 2 12 2z"
               />
             </svg>
           </div>
@@ -60,7 +52,7 @@ export default function OfflinePage() {
           >
             Try Again
           </button>
-          
+
           <button
             onClick={() => window.history.back()}
             className="w-full bg-gray-600 hover:bg-gray-700 text-white font-semibold py-3 px-6 rounded-lg transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2 focus:ring-offset-slate-900"
@@ -72,17 +64,17 @@ export default function OfflinePage() {
         {/* Cached Content Info */}
         <div className="mt-8 p-4 bg-blue-500/10 rounded-lg border border-blue-500/20">
           <div className="flex items-start space-x-3">
-            <svg 
-              className="w-5 h-5 text-blue-400 mt-0.5 flex-shrink-0" 
-              fill="none" 
-              stroke="currentColor" 
+            <svg
+              className="w-5 h-5 text-blue-400 mt-0.5 flex-shrink-0"
+              fill="none"
+              stroke="currentColor"
               viewBox="0 0 24 24"
             >
-              <path 
-                strokeLinecap="round" 
-                strokeLinejoin="round" 
-                strokeWidth={2} 
-                d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" 
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
               />
             </svg>
             <div className="text-left">

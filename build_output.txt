@@ -1,0 +1,441 @@
+
+> personal-blog@3.6.0 prebuild
+> node scripts/cleanup.js
+
+Port 3000 is free.
+
+> personal-blog@3.6.0 build
+> next build
+
+Sentry not installed, skipping Sentry configuration
+Bundle analyzer not installed, skipping bundle analysis
+  Ôû▓ Next.js 14.2.35
+  - Environments: .env.local, .env.production
+  - Experiments (use with caution):
+    ┬À scrollRestoration
+    ┬À instrumentationHook
+
+   Creating an optimized production build ...
+ ÔÜá Compiled with warnings
+
+./src/plugins/core/PluginManager.ts
+Critical dependency: the request of a dependency is an expression
+
+Import trace for requested module:
+./src/plugins/core/PluginManager.ts
+./src/app/api/admin/plugins/[id]/route.ts
+
+   Skipping validation of types
+   Skipping linting
+   Collecting page data ...
+{"level":"info","message":"Environment configuration validated successfully","timestamp":"2026-02-20T09:20:05.163Z","context":"CONFIG"}
+(node:27088) [MONGOOSE] Warning: Duplicate schema index on {"slug":1} found. This is often due to declaring an index using both "index: true" and "schema.index()". Please remove the duplicate index definition.
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:27088) [MONGOOSE] Warning: Duplicate schema index on {"tags":1} found. This is often due to declaring an index using both "index: true" and "schema.index()". Please remove the duplicate index definition.
+(node:5228) [MONGOOSE] Warning: Duplicate schema index on {"slug":1} found. This is often due to declaring an index using both "index: true" and "schema.index()". Please remove the duplicate index definition.
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:5228) [MONGOOSE] Warning: Duplicate schema index on {"tags":1} found. This is often due to declaring an index using both "index: true" and "schema.index()". Please remove the duplicate index definition.
+(node:27088) [MONGOOSE] Warning: Duplicate schema index on {"slug":1} found. This is often due to declaring an index using both "index: true" and "schema.index()". Please remove the duplicate index definition.
+(node:20280) [MONGOOSE] Warning: Duplicate schema index on {"slug":1} found. This is often due to declaring an index using both "index: true" and "schema.index()". Please remove the duplicate index definition.
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:30016) [MONGOOSE] Warning: Duplicate schema index on {"slug":1} found. This is often due to declaring an index using both "index: true" and "schema.index()". Please remove the duplicate index definition.
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:33452) [MONGOOSE] Warning: Duplicate schema index on {"slug":1} found. This is often due to declaring an index using both "index: true" and "schema.index()". Please remove the duplicate index definition.
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:30016) [MONGOOSE] Warning: Duplicate schema index on {"slug":1} found. This is often due to declaring an index using both "index: true" and "schema.index()". Please remove the duplicate index definition.
+(node:5228) [MONGOOSE] Warning: Duplicate schema index on {"slug":1} found. This is often due to declaring an index using both "index: true" and "schema.index()". Please remove the duplicate index definition.
+(node:5228) [MONGOOSE] Warning: Duplicate schema index on {"slug":1} found. This is often due to declaring an index using both "index: true" and "schema.index()". Please remove the duplicate index definition.
+(node:26532) [MONGOOSE] Warning: Duplicate schema index on {"slug":1} found. This is often due to declaring an index using both "index: true" and "schema.index()". Please remove the duplicate index definition.
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:11408) [MONGOOSE] Warning: Duplicate schema index on {"slug":1} found. This is often due to declaring an index using both "index: true" and "schema.index()". Please remove the duplicate index definition.
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:20280) [MONGOOSE] Warning: Duplicate schema index on {"slug":1} found. This is often due to declaring an index using both "index: true" and "schema.index()". Please remove the duplicate index definition.
+(node:33452) [MONGOOSE] Warning: Duplicate schema index on {"slug":1} found. This is often due to declaring an index using both "index: true" and "schema.index()". Please remove the duplicate index definition.
+(node:27296) [MONGOOSE] Warning: Duplicate schema index on {"slug":1} found. This is often due to declaring an index using both "index: true" and "schema.index()". Please remove the duplicate index definition.
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:18320) [MONGOOSE] Warning: Duplicate schema index on {"slug":1} found. This is often due to declaring an index using both "index: true" and "schema.index()". Please remove the duplicate index definition.
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:27296) [MONGOOSE] Warning: Duplicate schema index on {"tags":1} found. This is often due to declaring an index using both "index: true" and "schema.index()". Please remove the duplicate index definition.
+(node:11408) [MONGOOSE] Warning: Duplicate schema index on {"slug":1} found. This is often due to declaring an index using both "index: true" and "schema.index()". Please remove the duplicate index definition.
+(node:11408) [MONGOOSE] Warning: Duplicate schema index on {"tags":1} found. This is often due to declaring an index using both "index: true" and "schema.index()". Please remove the duplicate index definition.
+(node:2576) [MONGOOSE] Warning: Duplicate schema index on {"slug":1} found. This is often due to declaring an index using both "index: true" and "schema.index()". Please remove the duplicate index definition.
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:2576) [MONGOOSE] Warning: Duplicate schema index on {"tags":1} found. This is often due to declaring an index using both "index: true" and "schema.index()". Please remove the duplicate index definition.
+{"level":"info","message":"Environment configuration validated successfully","timestamp":"2026-02-20T09:20:05.333Z","context":"CONFIG"}
+(node:27296) [MONGOOSE] Warning: Duplicate schema index on {"slug":1} found. This is often due to declaring an index using both "index: true" and "schema.index()". Please remove the duplicate index definition.
+{"level":"info","message":"Environment configuration validated successfully","timestamp":"2026-02-20T09:20:05.376Z","context":"CONFIG"}
+{"level":"info","message":"Environment configuration validated successfully","timestamp":"2026-02-20T09:20:05.386Z","context":"CONFIG"}
+(node:2576) [MONGOOSE] Warning: Duplicate schema index on {"slug":1} found. This is often due to declaring an index using both "index: true" and "schema.index()". Please remove the duplicate index definition.
+(node:2576) [MONGOOSE] Warning: Duplicate schema index on {"tags":1} found. This is often due to declaring an index using both "index: true" and "schema.index()". Please remove the duplicate index definition.
+{"level":"info","message":"Environment configuration validated successfully","timestamp":"2026-02-20T09:20:05.437Z","context":"CONFIG"}
+(node:27296) [MONGOOSE] Warning: Duplicate schema index on {"slug":1} found. This is often due to declaring an index using both "index: true" and "schema.index()". Please remove the duplicate index definition.
+{"level":"info","message":"Environment configuration validated successfully","timestamp":"2026-02-20T09:20:05.452Z","context":"CONFIG"}
+{"level":"info","message":"Environment configuration validated successfully","timestamp":"2026-02-20T09:20:05.459Z","context":"CONFIG"}
+(node:2576) [MONGOOSE] Warning: Duplicate schema index on {"slug":1} found. This is often due to declaring an index using both "index: true" and "schema.index()". Please remove the duplicate index definition.
+(node:18320) [MONGOOSE] Warning: Duplicate schema index on {"slug":1} found. This is often due to declaring an index using both "index: true" and "schema.index()". Please remove the duplicate index definition.
+(node:18320) [MONGOOSE] Warning: Duplicate schema index on {"tags":1} found. This is often due to declaring an index using both "index: true" and "schema.index()". Please remove the duplicate index definition.
+(node:18320) [MONGOOSE] Warning: Duplicate schema index on {"slug":1} found. This is often due to declaring an index using both "index: true" and "schema.index()". Please remove the duplicate index definition.
+(node:11408) [MONGOOSE] Warning: Duplicate schema index on {"slug":1} found. This is often due to declaring an index using both "index: true" and "schema.index()". Please remove the duplicate index definition.
+{"level":"info","message":"Environment configuration validated successfully","timestamp":"2026-02-20T09:20:05.516Z","context":"CONFIG"}
+(node:7124) [MONGOOSE] Warning: Duplicate schema index on {"slug":1} found. This is often due to declaring an index using both "index: true" and "schema.index()". Please remove the duplicate index definition.
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:7124) [MONGOOSE] Warning: Duplicate schema index on {"tags":1} found. This is often due to declaring an index using both "index: true" and "schema.index()". Please remove the duplicate index definition.
+{"level":"info","message":"Environment configuration validated successfully","timestamp":"2026-02-20T09:20:05.768Z","context":"CONFIG"}
+(node:7124) [MONGOOSE] Warning: Duplicate schema index on {"slug":1} found. This is often due to declaring an index using both "index: true" and "schema.index()". Please remove the duplicate index definition.
+(node:33452) [MONGOOSE] Warning: Duplicate schema index on {"slug":1} found. This is often due to declaring an index using both "index: true" and "schema.index()". Please remove the duplicate index definition.
+(node:33452) [MONGOOSE] Warning: Duplicate schema index on {"tags":1} found. This is often due to declaring an index using both "index: true" and "schema.index()". Please remove the duplicate index definition.
+{"level":"info","message":"Generated static params for news articles","timestamp":"2026-02-20T09:20:08.518Z","context":"NEWS_DETAIL","data":"{\"count\":2}"}
+{"level":"info","message":"Generated static params for news articles","timestamp":"2026-02-20T09:20:08.777Z","context":"NEWS_DETAIL","data":"{\"count\":2}"}
+{"level":"info","message":"Generated static params for news articles (ES)","timestamp":"2026-02-20T09:20:09.043Z","context":"NEWS_DETAIL","data":"{\"count\":2}"}
+   Generating static pages (0/135) ...
+Error fetching profile: n [Error]: Dynamic server usage: Route /api/admin/profile couldn't be rendered statically because it used `headers`. See more info here: https://nextjs.org/docs/messages/dynamic-server-error
+    at l (C:\Users\erdem\Personal-Blog\.next\server\chunks\8948.js:1:37220)
+    at u (C:\Users\erdem\Personal-Blog\.next\server\chunks\5609.js:25:117812)
+    at s (C:\Users\erdem\Personal-Blog\.next\server\chunks\5609.js:25:19584)
+    at d (C:\Users\erdem\Personal-Blog\.next\server\app\api\admin\profile\route.js:1:1361)
+    at C:\Users\erdem\Personal-Blog\node_modules\next\dist\compiled\next-server\app-route.runtime.prod.js:6:38417
+    at C:\Users\erdem\Personal-Blog\node_modules\next\dist\server\lib\trace\tracer.js:140:36
+    at NoopContextManager.with (C:\Users\erdem\Personal-Blog\node_modules\next\dist\compiled\@opentelemetry\api\index.js:1:7062)
+    at ContextAPI.with (C:\Users\erdem\Personal-Blog\node_modules\next\dist\compiled\@opentelemetry\api\index.js:1:518)
+    at NoopTracer.startActiveSpan (C:\Users\erdem\Personal-Blog\node_modules\next\dist\compiled\@opentelemetry\api\index.js:1:18093)
+    at ProxyTracer.startActiveSpan (C:\Users\erdem\Personal-Blog\node_modules\next\dist\compiled\@opentelemetry\api\index.js:1:18854) {
+  description: "Route /api/admin/profile couldn't be rendered statically because it used `headers`. See more info here: https://nextjs.org/docs/messages/dynamic-server-error",
+  digest: 'DYNAMIC_SERVER_USAGE'
+}
+(node:27088) [MONGOOSE] Warning: Duplicate schema index on {"slug":1} found. This is often due to declaring an index using both "index: true" and "schema.index()". Please remove the duplicate index definition.
+(node:2576) [MONGOOSE] Warning: Duplicate schema index on {"slug":1} found. This is often due to declaring an index using both "index: true" and "schema.index()". Please remove the duplicate index definition.
+   Generating static pages (33/135) 
+(node:30016) [MONGOOSE] Warning: Duplicate schema index on {"slug":1} found. This is often due to declaring an index using both "index: true" and "schema.index()". Please remove the duplicate index definition.
+(node:30016) [MONGOOSE] Warning: Duplicate schema index on {"tags":1} found. This is often due to declaring an index using both "index: true" and "schema.index()". Please remove the duplicate index definition.
+Starting YouTube video sync cron job
+Connected to MongoDB
+Error syncing YouTube videos: Error: YouTube API credentials not configured
+    at l (C:\Users\erdem\Personal-Blog\.next\server\app\api\cron\sync-youtube-videos\route.js:1:666)
+    at p (C:\Users\erdem\Personal-Blog\.next\server\app\api\cron\sync-youtube-videos\route.js:1:1444)
+    at async C:\Users\erdem\Personal-Blog\node_modules\next\dist\compiled\next-server\app-route.runtime.prod.js:6:38411
+    at async e_.execute (C:\Users\erdem\Personal-Blog\node_modules\next\dist\compiled\next-server\app-route.runtime.prod.js:6:27880)
+    at async e_.handle (C:\Users\erdem\Personal-Blog\node_modules\next\dist\compiled\next-server\app-route.runtime.prod.js:6:39943)
+    at async exportAppRoute (C:\Users\erdem\Personal-Blog\node_modules\next\dist\export\routes\app-route.js:77:26)
+    at async exportPageImpl (C:\Users\erdem\Personal-Blog\node_modules\next\dist\export\worker.js:175:20)
+    at async Span.traceAsyncFn (C:\Users\erdem\Personal-Blog\node_modules\next\dist\trace\trace.js:154:20)
+    at async Object.exportPage (C:\Users\erdem\Personal-Blog\node_modules\next\dist\export\worker.js:237:20)
+­şöı Debug - SiteSettings: {
+  found: true,
+  logo: {
+    url: 'https://res.cloudinary.com/dlgnbhq8l/image/upload/v1759989791/personal-blog/general/1759989790748_80464fc8_fixral-logo-kare.png.jpg',
+    alt: 'Site Logo',
+    width: 200,
+    height: 60
+  },
+  siteName: 'FIXRAL 3D Tersine M├╝hendislik ve Dijital ├ç├Âz├╝mler',
+  fullData: {
+    logo: {
+      url: 'https://res.cloudinary.com/dlgnbhq8l/image/upload/v1759989791/personal-blog/general/1759989790748_80464fc8_fixral-logo-kare.png.jpg',
+      alt: 'Site Logo',
+      width: 200,
+      height: 60
+    },
+    colors: { primary: '#003450', secondary: '#075985', accent: '#0369a1' },
+    socialMedia: {
+      twitter: '@fixral',
+      instagram: '@fixral',
+      linkedin: '@fixral',
+      github: '@fixral'
+    },
+    seo: {
+      metaTitle: 'Tersine M├╝hendislik, Reverse Engineering - 3D Tasar─▒m, 3D Tarama ve M├╝hendislik ├ç├Âz├╝mleri',
+      metaDescription: 'Profesyonel 3D tasar─▒m, tersine m├╝hendislik, 3D bask─▒ ve m├╝hendislik ├ğ├Âz├╝mleri ile projelerinizi hayata ge├ğiriyoruz.',
+      keywords: [Array]
+    },
+    contact: {
+      email: 'fixral3d@gmail.com',
+      phone: '05334210728',
+      address: 'Turgutlu Manisa'
+    },
+    analytics: {
+      enableAnalytics: true,
+      googleAnalyticsId: 'G-DHM0BFJ9PQ',
+      googleTagManagerId: 'GTM-TQXBM8ZX',
+      googleSiteVerification: 'jXX7ASmYpD2OOlPo5cKqGptc9Zy1yLxl00b-JqlQHZE'
+    },
+    system: { maxUploadSize: 10 },
+    _id: new ObjectId('683c9d6d913634b9887854e4'),
+    siteName: 'FIXRAL 3D Tersine M├╝hendislik ve Dijital ├ç├Âz├╝mler',
+    slogan: 'Tersine M├╝hendislik, Reverse Engineering - 3D Tasar─▒m, 3D Tarama ve M├╝hendislik ├ç├Âz├╝mleri',
+    description: 'Profesyonel 3D tasar─▒m, tersine m├╝hendislik, 3D bask─▒ ve m├╝hendislik ├ğ├Âz├╝mleri ile projelerinizi hayata ge├ğiriyoruz.',
+    isActive: true,
+    createdAt: 2025-06-01T18:35:25.194Z,
+    updatedAt: 2026-01-12T06:48:50.129Z,
+    __v: 0,
+    pageSettings: {
+      home: true,
+      about: true,
+      services: true,
+      portfolio: true,
+      contact: true,
+      blog: true
+    },
+    security: {
+      enableSecurityQuestion: false,
+      maintenanceMode: false,
+      allowRegistration: true
+    },
+    activeTheme: new ObjectId('689dcb250fbf2832a24265f1'),
+    theme: { header: [Object] },
+    allowRegistration: false,
+    enableComments: false,
+    favicon: '',
+    language: 'tr',
+    maintenanceMode: false,
+    siteUrl: 'https://www.fixral.com',
+    timezone: 'Europe/Istanbul'
+  }
+}
+­şöı Debug - Settings: {
+  found: true,
+  logo: 'https://res.cloudinary.com/dlgnbhq8l/image/upload/v1759989791/personal-blog/general/1759989790748_80464fc8_fixral-logo-kare.png.jpg',
+  siteName: 'FIXRAL 3D'
+}
+(node:26532) [MONGOOSE] Warning: Duplicate schema index on {"slug":1} found. This is often due to declaring an index using both "index: true" and "schema.index()". Please remove the duplicate index definition.
+(node:26532) [MONGOOSE] Warning: Duplicate schema index on {"tags":1} found. This is often due to declaring an index using both "index: true" and "schema.index()". Please remove the duplicate index definition.
+{"level":"info","message":"Environment configuration validated successfully","timestamp":"2026-02-20T09:20:13.550Z","context":"CONFIG"}
+{"level":"info","message":"Environment configuration validated successfully","timestamp":"2026-02-20T09:20:13.592Z","context":"CONFIG"}
+(node:11408) [MONGOOSE] Warning: Duplicate schema index on {"slug":1} found. This is often due to declaring an index using both "index: true" and "schema.index()". Please remove the duplicate index definition.
+(node:11408) [MONGOOSE] Warning: Duplicate schema index on {"tags":1} found. This is often due to declaring an index using both "index: true" and "schema.index()". Please remove the duplicate index definition.
+{"level":"info","message":"Environment configuration validated successfully","timestamp":"2026-02-20T09:20:13.680Z","context":"CONFIG"}
+(node:26532) [MONGOOSE] Warning: Duplicate schema index on {"slug":1} found. This is often due to declaring an index using both "index: true" and "schema.index()". Please remove the duplicate index definition.
+­şöî Seeding plugins...
+{"level":"info","message":"Environment configuration validated successfully","timestamp":"2026-02-20T09:20:14.636Z","context":"CONFIG"}
+   Generating static pages (67/135) 
+{"level":"info","message":"Environment configuration validated successfully","timestamp":"2026-02-20T09:20:17.070Z","context":"CONFIG"}
+[Themes API] Active theme: Fixral Reverse Engineering
+­şÄ¿ Seeding themes...
+{"level":"info","message":"Environment configuration validated successfully","timestamp":"2026-02-20T09:20:18.167Z","context":"CONFIG"}
+   Generating static pages (101/135) 
+{"level":"error","message":"Error rendering news list page","timestamp":"2026-02-20T09:20:23.168Z","context":"NEWS_LIST","data":"{\"error\":{\"description\":\"Route /haberler couldn't be rendered statically because it used `searchParams.page`. See more info here: https://nextjs.org/docs/messages/dynamic-server-error\",\"digest\":\"DYNAMIC_SERVER_USAGE\"}}"}
+{"level":"error","message":"Error rendering news list page","timestamp":"2026-02-20T09:20:23.170Z","context":"NEWS_LIST","data":"{\"error\":{\"description\":\"Route /haberler couldn't be rendered statically because it used `searchParams.page`. See more info here: https://nextjs.org/docs/messages/dynamic-server-error\",\"digest\":\"DYNAMIC_SERVER_USAGE\"}}"}
+Error: Event handlers cannot be passed to Client Component props.
+  {onClick: function onClick, className: ..., children: ...}
+            ^^^^^^^^^^^^^^^^
+If you need interactivity, consider converting part of this to a Client Component.
+    at e_ (C:\Users\erdem\Personal-Blog\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:140589)
+    at Object.toJSON (C:\Users\erdem\Personal-Blog\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:135777)
+    at stringify (<anonymous>)
+    at eE (C:\Users\erdem\Personal-Blog\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:142242)
+    at eT (C:\Users\erdem\Personal-Blog\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:142721)
+    at AsyncLocalStorage.run (node:internal/async_local_storage/async_hooks:91:14)
+    at Timeout._onTimeout (C:\Users\erdem\Personal-Blog\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:150805)
+    at listOnTimeout (node:internal/timers:588:17)
+    at process.processTimers (node:internal/timers:523:7) {
+  digest: '4158157532'
+}
+Error: Event handlers cannot be passed to Client Component props.
+  {onClick: function onClick, className: ..., children: ...}
+            ^^^^^^^^^^^^^^^^
+If you need interactivity, consider converting part of this to a Client Component.
+    at e_ (C:\Users\erdem\Personal-Blog\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:140589)
+    at Object.toJSON (C:\Users\erdem\Personal-Blog\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:135777)
+    at stringify (<anonymous>)
+    at eE (C:\Users\erdem\Personal-Blog\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:142242)
+    at eT (C:\Users\erdem\Personal-Blog\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:142721)
+    at Timeout._onTimeout (C:\Users\erdem\Personal-Blog\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:135497)
+    at listOnTimeout (node:internal/timers:588:17)
+    at process.processTimers (node:internal/timers:523:7) {
+  digest: '1931687256'
+}
+Error: Event handlers cannot be passed to Client Component props.
+  {onClick: function onClick, className: ..., children: ...}
+            ^^^^^^^^^^^^^^^^
+If you need interactivity, consider converting part of this to a Client Component.
+    at e_ (C:\Users\erdem\Personal-Blog\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:140589)
+    at Object.toJSON (C:\Users\erdem\Personal-Blog\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:135777)
+    at stringify (<anonymous>)
+    at eE (C:\Users\erdem\Personal-Blog\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:142242)
+    at eT (C:\Users\erdem\Personal-Blog\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:142721)
+    at Timeout._onTimeout (C:\Users\erdem\Personal-Blog\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:135497)
+    at listOnTimeout (node:internal/timers:588:17)
+    at process.processTimers (node:internal/timers:523:7) {
+  digest: '1931687256'
+}
+Fetching portfolio items with limit: 6
+Fetching portfolio items with limit: 6
+Found 6 portfolio items
+Found 6 portfolio items
+Error: `props.dangerouslySetInnerHTML` must be in the form `{__html: ...}`. Please visit https://reactjs.org/link/dangerously-set-inner-html for more information.
+    at eA (C:\Users\erdem\Personal-Blog\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:21884)
+    at eq (C:\Users\erdem\Personal-Blog\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:24259)
+    at C:\Users\erdem\Personal-Blog\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:58354
+    at nM (C:\Users\erdem\Personal-Blog\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:58364)
+    at nL (C:\Users\erdem\Personal-Blog\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:64547)
+    at nB (C:\Users\erdem\Personal-Blog\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:67539)
+    at nM (C:\Users\erdem\Personal-Blog\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:58561)
+    at nL (C:\Users\erdem\Personal-Blog\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:64547)
+    at nB (C:\Users\erdem\Personal-Blog\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:67539)
+    at nD (C:\Users\erdem\Personal-Blog\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:66681) {
+  digest: '4040333968'
+}
+Error: `props.dangerouslySetInnerHTML` must be in the form `{__html: ...}`. Please visit https://reactjs.org/link/dangerously-set-inner-html for more information.
+    at eA (C:\Users\erdem\Personal-Blog\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:21884)
+    at eq (C:\Users\erdem\Personal-Blog\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:24259)
+    at C:\Users\erdem\Personal-Blog\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:58354
+    at nM (C:\Users\erdem\Personal-Blog\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:58364)
+    at nL (C:\Users\erdem\Personal-Blog\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:64547)
+    at nB (C:\Users\erdem\Personal-Blog\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:67539)
+    at nM (C:\Users\erdem\Personal-Blog\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:58561)
+    at nL (C:\Users\erdem\Personal-Blog\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:64547)
+    at nB (C:\Users\erdem\Personal-Blog\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:67539)
+    at nD (C:\Users\erdem\Personal-Blog\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:66681) {
+  digest: '4040333968'
+}
+
+Error occurred prerendering page "/es/noticias/fixralcomdan-endustriyel-seviyede-3d-tarama-ve-tersine-muhendislik-hizmetleri-1765218907557". Read more: https://nextjs.org/docs/messages/prerender-error
+
+Error: `props.dangerouslySetInnerHTML` must be in the form `{__html: ...}`. Please visit https://reactjs.org/link/dangerously-set-inner-html for more information.
+    at eA (C:\Users\erdem\Personal-Blog\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:21884)
+    at eq (C:\Users\erdem\Personal-Blog\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:24259)
+    at C:\Users\erdem\Personal-Blog\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:58354
+    at nM (C:\Users\erdem\Personal-Blog\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:58364)
+    at nL (C:\Users\erdem\Personal-Blog\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:64547)
+    at nB (C:\Users\erdem\Personal-Blog\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:67539)
+    at nM (C:\Users\erdem\Personal-Blog\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:58561)
+    at nL (C:\Users\erdem\Personal-Blog\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:64547)
+    at nB (C:\Users\erdem\Personal-Blog\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:67539)
+    at nD (C:\Users\erdem\Personal-Blog\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:66681)
+
+Error occurred prerendering page "/es/noticias/yeni-acik-kaynak-proje-yayinda-full-personal-blogger-system-1768200202534". Read more: https://nextjs.org/docs/messages/prerender-error
+
+Error: `props.dangerouslySetInnerHTML` must be in the form `{__html: ...}`. Please visit https://reactjs.org/link/dangerously-set-inner-html for more information.
+    at eA (C:\Users\erdem\Personal-Blog\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:21884)
+    at eq (C:\Users\erdem\Personal-Blog\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:24259)
+    at C:\Users\erdem\Personal-Blog\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:58354
+    at nM (C:\Users\erdem\Personal-Blog\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:58364)
+    at nL (C:\Users\erdem\Personal-Blog\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:64547)
+    at nB (C:\Users\erdem\Personal-Blog\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:67539)
+    at nM (C:\Users\erdem\Personal-Blog\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:58561)
+    at nL (C:\Users\erdem\Personal-Blog\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:64547)
+    at nB (C:\Users\erdem\Personal-Blog\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:67539)
+    at nD (C:\Users\erdem\Personal-Blog\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:66681)
+ ÔÜá Sending SIGTERM signal to Next.js build worker due to timeout of 60 seconds. Subsequent errors may be a result of the worker exiting.
+ Ô¿» Next.js build worker exited with code: null and signal: SIGTERM
+ Ô¿» Next.js build worker exited with code: null and signal: SIGTERM
+ Ô¿» Next.js build worker exited with code: null and signal: SIGTERM
+ Ô¿» Next.js build worker exited with code: null and signal: SIGTERM
+ Ô¿» Next.js build worker exited with code: null and signal: SIGTERM
+ Ô¿» Next.js build worker exited with code: null and signal: SIGTERM
+ Ô¿» Next.js build worker exited with code: null and signal: SIGTERM
+ Ô¿» Next.js build worker exited with code: null and signal: SIGTERM
+ Ô¿» Next.js build worker exited with code: null and signal: SIGTERM
+ Ô¿» Next.js build worker exited with code: null and signal: SIGTERM
+ Ô¿» Next.js build worker exited with code: null and signal: SIGTERM
+ ÔÜá Restarted static page generation for /offline because it took more than 60 seconds
+ ÔÜá See more info here https://nextjs.org/docs/messages/static-page-generation-timeout
+{"level":"info","message":"Environment configuration validated successfully","timestamp":"2026-02-20T09:21:28.049Z","context":"CONFIG"}
+(node:34732) [MONGOOSE] Warning: Duplicate schema index on {"slug":1} found. This is often due to declaring an index using both "index: true" and "schema.index()". Please remove the duplicate index definition.
+(Use `node --trace-warnings ...` to show where the warning was created)
+Error: Event handlers cannot be passed to Client Component props.
+  {onClick: function onClick, className: ..., children: ...}
+            ^^^^^^^^^^^^^^^^
+If you need interactivity, consider converting part of this to a Client Component.
+    at e_ (C:\Users\erdem\Personal-Blog\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:140589)
+    at Object.toJSON (C:\Users\erdem\Personal-Blog\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:135777)
+    at stringify (<anonymous>)
+    at eE (C:\Users\erdem\Personal-Blog\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:142242)
+    at eT (C:\Users\erdem\Personal-Blog\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:142721)
+    at AsyncLocalStorage.run (node:internal/async_local_storage/async_hooks:91:14)
+    at Timeout._onTimeout (C:\Users\erdem\Personal-Blog\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:150805)
+    at listOnTimeout (node:internal/timers:588:17)
+    at process.processTimers (node:internal/timers:523:7) {
+  digest: '4158157532'
+}
+Error: Event handlers cannot be passed to Client Component props.
+  {onClick: function onClick, className: ..., children: ...}
+            ^^^^^^^^^^^^^^^^
+If you need interactivity, consider converting part of this to a Client Component.
+    at e_ (C:\Users\erdem\Personal-Blog\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:140589)
+    at Object.toJSON (C:\Users\erdem\Personal-Blog\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:135777)
+    at stringify (<anonymous>)
+    at eE (C:\Users\erdem\Personal-Blog\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:142242)
+    at eT (C:\Users\erdem\Personal-Blog\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:142721)
+    at Timeout._onTimeout (C:\Users\erdem\Personal-Blog\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:135497)
+    at listOnTimeout (node:internal/timers:588:17)
+    at process.processTimers (node:internal/timers:523:7) {
+  digest: '1931687256'
+}
+Error: Event handlers cannot be passed to Client Component props.
+  {onClick: function onClick, className: ..., children: ...}
+            ^^^^^^^^^^^^^^^^
+If you need interactivity, consider converting part of this to a Client Component.
+    at e_ (C:\Users\erdem\Personal-Blog\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:140589)
+    at Object.toJSON (C:\Users\erdem\Personal-Blog\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:135777)
+    at stringify (<anonymous>)
+    at eE (C:\Users\erdem\Personal-Blog\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:142242)
+    at eT (C:\Users\erdem\Personal-Blog\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:142721)
+    at Timeout._onTimeout (C:\Users\erdem\Personal-Blog\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:135497)
+    at listOnTimeout (node:internal/timers:588:17)
+    at process.processTimers (node:internal/timers:523:7) {
+  digest: '1931687256'
+}
+ ÔÜá Sending SIGTERM signal to Next.js build worker due to timeout of 60 seconds. Subsequent errors may be a result of the worker exiting.
+ Ô¿» Next.js build worker exited with code: null and signal: SIGTERM
+ ÔÜá Restarted static page generation for /offline because it took more than 60 seconds
+{"level":"info","message":"Environment configuration validated successfully","timestamp":"2026-02-20T09:22:28.724Z","context":"CONFIG"}
+(node:30768) [MONGOOSE] Warning: Duplicate schema index on {"slug":1} found. This is often due to declaring an index using both "index: true" and "schema.index()". Please remove the duplicate index definition.
+(Use `node --trace-warnings ...` to show where the warning was created)
+Error: Event handlers cannot be passed to Client Component props.
+  {onClick: function onClick, className: ..., children: ...}
+            ^^^^^^^^^^^^^^^^
+If you need interactivity, consider converting part of this to a Client Component.
+    at e_ (C:\Users\erdem\Personal-Blog\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:140589)
+    at Object.toJSON (C:\Users\erdem\Personal-Blog\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:135777)
+    at stringify (<anonymous>)
+    at eE (C:\Users\erdem\Personal-Blog\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:142242)
+    at eT (C:\Users\erdem\Personal-Blog\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:142721)
+    at AsyncLocalStorage.run (node:internal/async_local_storage/async_hooks:91:14)
+    at Timeout._onTimeout (C:\Users\erdem\Personal-Blog\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:150805)
+    at listOnTimeout (node:internal/timers:588:17)
+    at process.processTimers (node:internal/timers:523:7) {
+  digest: '4158157532'
+}
+Error: Event handlers cannot be passed to Client Component props.
+  {onClick: function onClick, className: ..., children: ...}
+            ^^^^^^^^^^^^^^^^
+If you need interactivity, consider converting part of this to a Client Component.
+    at e_ (C:\Users\erdem\Personal-Blog\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:140589)
+    at Object.toJSON (C:\Users\erdem\Personal-Blog\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:135777)
+    at stringify (<anonymous>)
+    at eE (C:\Users\erdem\Personal-Blog\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:142242)
+    at eT (C:\Users\erdem\Personal-Blog\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:142721)
+    at Timeout._onTimeout (C:\Users\erdem\Personal-Blog\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:135497)
+    at listOnTimeout (node:internal/timers:588:17)
+    at process.processTimers (node:internal/timers:523:7) {
+  digest: '1931687256'
+}
+Error: Event handlers cannot be passed to Client Component props.
+  {onClick: function onClick, className: ..., children: ...}
+            ^^^^^^^^^^^^^^^^
+If you need interactivity, consider converting part of this to a Client Component.
+    at e_ (C:\Users\erdem\Personal-Blog\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:140589)
+    at Object.toJSON (C:\Users\erdem\Personal-Blog\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:135777)
+    at stringify (<anonymous>)
+    at eE (C:\Users\erdem\Personal-Blog\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:142242)
+    at eT (C:\Users\erdem\Personal-Blog\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:142721)
+    at Timeout._onTimeout (C:\Users\erdem\Personal-Blog\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:135497)
+    at listOnTimeout (node:internal/timers:588:17)
+    at process.processTimers (node:internal/timers:523:7) {
+  digest: '1931687256'
+}
+ ÔÜá Sending SIGTERM signal to Next.js build worker due to timeout of 60 seconds. Subsequent errors may be a result of the worker exiting.
+ Ô¿» Next.js build worker exited with code: null and signal: SIGTERM
+
+> Build error occurred
+Error: Static page generation for /offline is still timing out after 3 attempts. See more info here https://nextjs.org/docs/messages/static-page-generation-timeout
+    at onRestart (C:\Users\erdem\Personal-Blog\node_modules\next\dist\build\index.js:292:27)
+    at C:\Users\erdem\Personal-Blog\node_modules\next\dist\lib\worker.js:104:40
+    at process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+    at async C:\Users\erdem\Personal-Blog\node_modules\next\dist\export\index.js:450:20
+    at async Span.traceAsyncFn (C:\Users\erdem\Personal-Blog\node_modules\next\dist\trace\trace.js:154:20)
+    at async C:\Users\erdem\Personal-Blog\node_modules\next\dist\export\index.js:448:24
+    at async Promise.all (index 119)
+    at async exportAppImpl (C:\Users\erdem\Personal-Blog\node_modules\next\dist\export\index.js:440:21)
+    at async C:\Users\erdem\Personal-Blog\node_modules\next\dist\export\index.js:623:16
+    at async Span.traceAsyncFn (C:\Users\erdem\Personal-Blog\node_modules\next\dist\trace\trace.js:154:20)

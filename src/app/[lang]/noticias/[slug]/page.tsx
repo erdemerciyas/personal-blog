@@ -134,14 +134,14 @@ export default async function NewsDetailPage({ params }: PageProps) {
       notFound();
     }
 
-    const translation = news.translations.es;
+    const translation = news.translations?.es || { title: '', metaDescription: '', content: '', excerpt: '', keywords: [] };
 
     // Generate JSON-LD schema
     const jsonLd = {
       '@context': 'https://schema.org',
       '@type': 'NewsArticle',
-      headline: translation.title,
-      description: translation.metaDescription,
+      headline: translation.title || news.slug,
+      description: translation.metaDescription || '',
       image: news.featuredImage.url,
       datePublished: news.publishedAt?.toISOString() || news.createdAt.toISOString(),
       dateModified: news.updatedAt.toISOString(),
@@ -260,7 +260,7 @@ export default async function NewsDetailPage({ params }: PageProps) {
 
                   {/* HTML Content */}
                   <div className="prose prose-lg prose-slate max-w-none">
-                    <div dangerouslySetInnerHTML={{ __html: translation.content }} />
+                    <div dangerouslySetInnerHTML={{ __html: typeof translation.content === 'string' ? translation.content : (translation.content ? JSON.stringify(translation.content) : '') }} />
                   </div>
                 </div>
               </article>
@@ -378,7 +378,7 @@ export default async function NewsDetailPage({ params }: PageProps) {
                         </div>
                         <div>
                           <h4 className="text-sm font-medium text-slate-900 group-hover:text-fixral-primary line-clamp-2 leading-snug">
-                            {relatedNews.translations.es.title}
+                            {relatedNews.translations?.es?.title || ''}
                           </h4>
                           <div className="text-xs text-slate-500 mt-1">Leer más →</div>
                         </div>
