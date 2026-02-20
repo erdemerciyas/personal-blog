@@ -112,6 +112,14 @@ export async function generateMetadata(): Promise<Metadata> {
       verification: {
         google: finalVerification || undefined,
       },
+      alternates: {
+        canonical: baseUrl,
+        languages: {
+          'tr-TR': `${baseUrl}/tr`,
+          'es-ES': `${baseUrl}/es`,
+          'x-default': baseUrl,
+        },
+      },
       icons: {
         icon: siteSettings.favicon || logoUrl || '/favicon.svg',
         apple: siteSettings.favicon || logoUrl || '/favicon.svg',

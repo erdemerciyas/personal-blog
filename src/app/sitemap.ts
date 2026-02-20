@@ -53,6 +53,12 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
             priority: 0.8,
         },
         {
+            url: `${baseUrl}/es/noticias`,
+            lastModified: new Date(),
+            changeFrequency: 'daily',
+            priority: 0.8,
+        },
+        {
             url: `${baseUrl}/products`,
             lastModified: new Date(),
             changeFrequency: 'daily',
@@ -66,9 +72,18 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
         // Fetch dynamic News URLs
         const newsItems = await News.find({ status: 'published' }).select('slug updatedAt createdAt').lean();
         newsItems.forEach((post: any) => {
+            const lastModified = post.updatedAt || post.createdAt || new Date();
+            // Turkish News
             sitemapUrls.push({
                 url: `${baseUrl}/tr/haberler/${post.slug}`,
-                lastModified: post.updatedAt || post.createdAt || new Date(),
+                lastModified,
+                changeFrequency: 'weekly',
+                priority: 0.7,
+            });
+            // Spanish News
+            sitemapUrls.push({
+                url: `${baseUrl}/es/noticias/${post.slug}`,
+                lastModified,
                 changeFrequency: 'weekly',
                 priority: 0.7,
             });

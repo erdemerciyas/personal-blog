@@ -74,6 +74,14 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
         description: translation.metaDescription,
         images: [news.featuredImage.url],
       },
+      alternates: {
+        canonical: `https://www.fixral.com/tr/haberler/${news.slug}`,
+        languages: {
+          'tr-TR': `https://www.fixral.com/tr/haberler/${news.slug}`,
+          'es-ES': `https://www.fixral.com/es/noticias/${news.slug}`,
+          'x-default': `https://www.fixral.com/tr/haberler/${news.slug}`,
+        },
+      },
     };
   } catch (error) {
     logger.error('Error generating metadata for news detail', 'NEWS_DETAIL', { error });
