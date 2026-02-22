@@ -36,6 +36,7 @@
 ### 🚀 SEO ve Performans Optimizasyonları
 *   **Yüksek Performans:** Özel ISR (Artımlı Statik Yenileme) önbellekleme mimarisi sayesinde TTFB (İlk Bayt Süresi) minimumda tutulur ve SEO'da maksimum puan hedeflenir.
 *   **Dinamik XML Site Haritası & Robots.txt:** MongoDB üzerinden anlık çekilen blog, haber ve portfolyo linkleri güncel arama motoru optimizasyonu sağlar (`sitemap.ts` ve `robots.ts` ile otomatik yapılandırılır).
+*   **Gelişmiş Canonical Tag & İndeksleme Yönetimi:** Next.js Metadata API ile her sayfa için bağımsız kurallı (canonical) URL'ler üretilmektedir.
 *   **JSON-LD:** Arama sonuçlarında zengin snippet'lar için hazır yapılandırılmış şema verileri (Schema Markup).
 
 ---

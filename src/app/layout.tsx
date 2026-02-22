@@ -113,7 +113,6 @@ export async function generateMetadata(): Promise<Metadata> {
         google: finalVerification || undefined,
       },
       alternates: {
-        canonical: baseUrl,
         languages: {
           'tr-TR': `${baseUrl}/tr`,
           'es-ES': `${baseUrl}/es`,
