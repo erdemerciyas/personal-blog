@@ -133,7 +133,7 @@ export default function PortfolioMediaGallery({
     }
 
     try {
-      const response = await fetch(`/api/3dmodels/download?url=${encodeURIComponent(model.url)}&filename=${encodeURIComponent(model.name)}`);
+      const response = await fetch(`/api/public/3dmodels/download?url=${encodeURIComponent(model.url)}&filename=${encodeURIComponent(model.name)}`);
 
       if (!response.ok) {
         throw new Error('İndirme başarısız');

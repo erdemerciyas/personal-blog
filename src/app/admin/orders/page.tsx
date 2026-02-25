@@ -102,7 +102,7 @@ export default function AdminOrdersPage() {
         setLoading(true);
         setSelectedOrders(new Set()); // Clear selection on reload
         try {
-            const response = await fetch(`/api/orders?deleted=${showTrash}&page=${page}&limit=20&t=${Date.now()}`, {
+            const response = await fetch(`/api/public/orders?deleted=${showTrash}&page=${page}&limit=20&t=${Date.now()}`, {
                 cache: 'no-store'
             });
             if (response.ok) {
@@ -166,13 +166,13 @@ export default function AdminOrdersPage() {
         try {
             let response;
             if (action === 'permanent_delete') {
-                response = await fetch('/api/orders/bulk', {
+                response = await fetch('/api/public/orders/bulk', {
                     method: 'DELETE',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ orderIds: Array.from(selectedOrders) }),
                 });
             } else {
-                response = await fetch('/api/orders/bulk', {
+                response = await fetch('/api/public/orders/bulk', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({
@@ -206,7 +206,7 @@ export default function AdminOrdersPage() {
         if (!selectedOrder) return;
 
         try {
-            const response = await fetch(`/api/orders/${selectedOrder._id}`, {
+            const response = await fetch(`/api/public/orders/${selectedOrder._id}`, {
                 method: 'PUT',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({

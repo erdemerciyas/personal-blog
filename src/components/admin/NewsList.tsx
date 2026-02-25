@@ -54,7 +54,7 @@ export default function NewsList({ language = 'tr', page = 1 }: NewsListProps) {
         params.append('search', search);
       }
 
-      const response = await fetch(`/api/news?${params}`);
+      const response = await fetch(`/api/public/news?${params}`);
 
       if (!response.ok) {
         throw new Error('Failed to fetch news');
@@ -102,7 +102,7 @@ export default function NewsList({ language = 'tr', page = 1 }: NewsListProps) {
       setBulkLoading(true);
       setError(null);
 
-      const response = await fetch('/api/news/bulk-action', {
+      const response = await fetch('/api/public/news/bulk-action', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -139,7 +139,7 @@ export default function NewsList({ language = 'tr', page = 1 }: NewsListProps) {
     if (!confirm('Bu makaleyi silmek istediğinize emin misiniz?')) return;
 
     try {
-      const response = await fetch(`/api/news/${id}`, {
+      const response = await fetch(`/api/public/news/${id}`, {
         method: 'DELETE',
       });
 

@@ -265,7 +265,7 @@ export const apiEndpoints = {
   portfolio: {
     list: {
       method: 'GET',
-      path: '/api/portfolio',
+      path: '/api/public/portfolio',
       description: 'Get all portfolio items',
       tags: ['Portfolio'],
       parameters: [
@@ -300,7 +300,7 @@ export const apiEndpoints = {
     },
     get: {
       method: 'GET',
-      path: '/api/portfolio/{id}',
+      path: '/api/public/portfolio/{id}',
       description: 'Get portfolio item by ID',
       tags: ['Portfolio'],
       parameters: [
@@ -326,7 +326,7 @@ export const apiEndpoints = {
   products: {
     list: {
       method: 'GET',
-      path: '/api/products',
+      path: '/api/public/products',
       description: 'Get all products',
       tags: ['Products'],
       responses: {
@@ -343,7 +343,7 @@ export const apiEndpoints = {
   services: {
     list: {
       method: 'GET',
-      path: '/api/services',
+      path: '/api/public/services',
       description: 'Get all services',
       tags: ['Services'],
       responses: {
@@ -395,7 +395,7 @@ export const apiEndpoints = {
   contact: {
     send: {
       method: 'POST',
-      path: '/api/contact',
+      path: '/api/public/contact',
       description: 'Send contact form message',
       tags: ['Contact'],
       requestBody: {

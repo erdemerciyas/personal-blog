@@ -1,14 +1,13 @@
 # FIXRAL 3D - Gelişmiş CMS & E-Ticaret Platformu
 
-![Fixral Banner](https://via.placeholder.com/1200x400.png?text=FIXRAL+CMS+%26+PORTFOLIO)
-
 [![Next.js](https://img.shields.io/badge/Next.js-14.2-black?style=for-the-badge&logo=next.js)](https://nextjs.org/)
 [![TypeScript](https://img.shields.io/badge/TypeScript-5.0-blue?style=for-the-badge&logo=typescript)](https://www.typescriptlang.org/)
 [![MongoDB](https://img.shields.io/badge/MongoDB-6.0-green?style=for-the-badge&logo=mongodb)](https://www.mongodb.com/)
 [![Tailwind CSS](https://img.shields.io/badge/Tailwind-3.4-38B2AC?style=for-the-badge&logo=tailwind-css)](https://tailwindcss.com/)
-[![Status](https://img.shields.io/badge/Durum-Yay%C4%B1na%20Haz%C4%B1r-success?style=for-the-badge)]()
+[![Sürüm](https://img.shields.io/badge/S%C3%BCr%C3%BCm-3.7.0-blue?style=for-the-badge)]()
+[![Durum](https://img.shields.io/badge/Durum-Yay%C4%B1nda-success?style=for-the-badge)]()
 
-**Fixral 3D**, Next.js 14 (App Router) ile inşa edilmiş, üretime tam hazır (production-grade), tam yığın (full-stack) bir İçerik Yönetim Sistemi (CMS) ve E-Ticaret platformudur. 
+**Fixral 3D**, Next.js 14 (App Router) ile inşa edilmiş, üretime tam hazır (production-grade), tam yığın (full-stack) bir İçerik Yönetim Sistemi (CMS) ve E-Ticaret platformudur.
 
 Özellikle 3D baskı hizmetleri, mühendislik portfolyoları ve dijital ürün satışları için tasarlanmış olmakla birlikte; modüler mimarisi sayesinde herhangi bir kurumsal portfolyo veya ajans web sitesi için de mükemmel bir uyum sağlar.
 
@@ -16,132 +15,153 @@
 
 ## 🌟 Önemli Özellikler
 
+### 🎯 Modüler Mimari (v3.7.0)
+*   **Tema Sistemi (ThemeRegistry):** Veritabanından aktif temayı seçip, `src/themes/` altındaki uygun bileşenleri dinamik olarak yükleyen kayıt defteri yapısı. Yeni tema eklemek için `page.tsx`'e dokunmaya gerek yoktur.
+*   **Eklenti Sistemi (PluginRegistry):** SEO, Analytics gibi eklentilerin sunucu tarafında otomatik olarak başlatılmasını sağlayan Event-Driven yapı. `layout.tsx` üzerinden `PluginManager` ile yönetilir.
+*   **Tam i18n Desteği:** Tüm public sayfalar (ürünler, hizmetler, portfolyo, sepet, hesap) `[lang]` dinamik dizini altında çoklu dil yapısına tam entegre edilmiştir.
+*   **Sunucu Taraflı Veri Çekme (SSR):** Portfolyo, hizmetler ve ana sayfa verileri Client-Side API istekleri yerine doğrudan Server Component'lerde veritabanından çekilir. Sayfa geçişlerinde sıfır gecikme.
+
 ### 🛒 Gelişmiş E-Ticaret Motoru
 *   **Ürün Yönetimi:** Varyasyonlar (renk, boyut), kategoriler ve etiketlerle zengin ürün listelemeleri.
-*   **Dinamik Sepet Sistemi:** Gerçek zamanlı stok doğrulama ve fiyat hesaplamasıyla desteklenmiş sepet yapısı.
-*   **Ödeme Adımları (Checkout):** Ödeme altyapılarına entegre edilebilir akıcı sipariş ekranı (Iyzico yapısı hazırlanmıştır).
-*   **Sipariş ve Bildirimler:** Süreç takibi, otomatik sipariş durumu e-postaları (Hazırlanıyor, Kargolandı vb.) ve e-posta bildirimleri (Nodemailer destekli).
+*   **Dinamik Sepet:** Gerçek zamanlı stok doğrulama ve fiyat hesaplamasıyla Zustand tabanlı sepet yapısı.
+*   **Sipariş Akışı:** Adres seçimi, ödeme ve sipariş takibiyle eksiksiz checkout süreci.
+*   **E-posta Bildirimleri:** Nodemailer ile sipariş durumu güncellemeleri ve iletişim form yanıtları.
 
 ### 🎨 Portfolyo & 3D Görselleştirme
-*   **3D Model Görüntüleyici:** `@react-three/fiber` ve `@react-three/drei` kullanılarak yerleşik 3D model (GLB/GLTF/STL) desteği. Tarayıcı üzerinde modelleri döndürme, yakınlaştırma ve inceleme imkanı.
-*   **Gelişmiş Vitrin:** Dinamik masonry (tuğla) düzenleri, yüksek çözünürlüklü görseller ve filtrelemeli projeler.
-*   **Hizmetler Modülü:** "Tersine Mühendislik", "3D Tarama" vb. hizmet sunumları için özel sayfa yapıları.
+*   **3D Model Görüntüleyici:** `@react-three/fiber` ile tarayıcı üzerinde GLB/GLTF/STL model desteği.
+*   **Gelişmiş Vitrin:** Dinamik masonry düzenleri, filtreleme, sıralama ve arama özellikleri.
+*   **Hizmetler Modülü:** Tersine Mühendislik, 3D Tarama gibi hizmetler için özel sayfa yapıları.
 
-### ⚡ Güçlü Yönetici(Admin) Paneli
-*   **CMS Yeteneği:** Bloglar (Gelişmiş Zengin Metin Editörü), Haberler, Slaytlar ve Sayfalar da dahil tüm içeriğin tam yönetimi.
-*   **Mesaj Merkezi:** İletişim formları, proje başvuruları ve satıcıya sorulan sorular için tek noktadan yönetim. Panelin içinden kullanıcılara **Doğrudan Yanıt (Reply)** verebilme özelliği.
-*   **Dosya/Medya:** Cloudinary ile sürükle-bırak destekli görsel optimizasyonlu medya yönetimi.
-*   **Güvenlik:** **NextAuth.js** ile tamamen güvenli, rol tabanlı erişim kontrolü. Sayfalar SSR ve Middleware aracılığıyla korunur.
+### ⚡ Yönetici (Admin) Paneli
+*   **CMS Yeteneği:** Blog, Haberler, Slaytlar, Sayfa Ayarları ve tüm içeriğin tam yönetimi.
+*   **Mesaj Merkezi:** İletişim formları ve proje başvurularına panelden doğrudan yanıt verebilme.
+*   **Medya Yönetimi:** Cloudinary entegrasyonu ile sürükle-bırak görsel yükleme.
+*   **Güvenlik:** NextAuth.js ile rol tabanlı erişim kontrolü; Middleware ve SSR koruması.
 
-### 🚀 SEO ve Performans Optimizasyonları
-*   **Yüksek Performans:** Özel ISR (Artımlı Statik Yenileme) önbellekleme mimarisi sayesinde TTFB (İlk Bayt Süresi) minimumda tutulur ve SEO'da maksimum puan hedeflenir.
-*   **Dinamik XML Site Haritası & Robots.txt:** MongoDB üzerinden anlık çekilen blog, haber ve portfolyo linkleri güncel arama motoru optimizasyonu sağlar (`sitemap.ts` ve `robots.ts` ile otomatik yapılandırılır).
-*   **Gelişmiş Canonical Tag & İndeksleme Yönetimi:** Next.js Metadata API ile her sayfa için bağımsız kurallı (canonical) URL'ler üretilmektedir.
-*   **JSON-LD:** Arama sonuçlarında zengin snippet'lar için hazır yapılandırılmış şema verileri (Schema Markup).
+### 🚀 SEO ve Performans
+*   **ISR Önbellekleme:** Artımlı Statik Yenileme ile minimum TTFB ve maksimum SEO puanı.
+*   **Dinamik Sitemap & Robots.txt:** MongoDB'den çekilen güncel linklerle otomatik arama motoru optimizasyonu.
+*   **Canonical URL Yönetimi:** Her sayfa için bağımsız canonical URL üretimi.
+*   **Modern Navigasyon:** Glassmorphism (buzlu cam) efektli, şeffaf ve animasyonlu üst menü.
 
 ---
 
 ## 🛠 Teknoloji Yığını
 
-*   **Çatı (Framework):** [Next.js 14](https://nextjs.org/) (React 18 + App Router)
-*   **Dil:** TypeScript
-*   **Stil & Tasarım:** Tailwind CSS, Headless UI, Heroicons, Framer Motion
-*   **Veritabanı:** MongoDB (Mongoose ODM)
-*   **3D Grafik:** Three.js, React Three Fiber
-*   **Kimlik Doğrulama:** NextAuth.js
-*   **Form Doğrulama:** React Hook Form, Zod
-*   **Medya Depolama:** Cloudinary
+| Kategori | Teknoloji |
+|---|---|
+| **Çatı** | Next.js 14 (React 18 + App Router) |
+| **Dil** | TypeScript |
+| **Stil** | Tailwind CSS, Framer Motion, Heroicons |
+| **Veritabanı** | MongoDB (Mongoose ODM) |
+| **3D Grafik** | Three.js, React Three Fiber |
+| **Kimlik Doğrulama** | NextAuth.js |
+| **Form Doğrulama** | React Hook Form, Zod |
+| **Medya** | Cloudinary |
 
 ---
 
 ## 🚀 Geliştirme Ortamı Kurulumu
 
-Projeyi kendi bilgisayarınızda çalıştırmak için aşağıdaki adımları izleyin.
-
 ### Ön Koşullar
-*   **Node.js**: v18.17.0 veya üstü
+*   **Node.js** v18.17.0 veya üstü
 *   **npm** veya **yarn**
-*   **MongoDB**: Çalışan bir bağlantı URI (Yerel veya Atlas)
-*   **Cloudinary Hesabı**: Resim yüklemeleri için API bilgileri
+*   **MongoDB** bağlantı URI (Yerel veya Atlas)
+*   **Cloudinary** hesabı (görsel yüklemeleri için)
 
-### Adım Adım Kurulum
+### Kurulum
 
-1.  **Projeyi Klonlayın:**
-    ```bash
-    git clone https://github.com/erdemerciyas/personal-blog.git
-    cd personal-blog
-    ```
+```bash
+# 1. Projeyi klonlayın
+git clone https://github.com/erdemerciyas/personal-blog.git
+cd personal-blog
 
-2.  **Bağımlılıkları Yükleyin:**
-    ```bash
-    npm install
-    ```
+# 2. Bağımlılıkları yükleyin
+npm install
 
-3.  **Çevresel Değişkenleri Ayarlayın:**
-    Ana dizinde `.env.local` adlı bir dosya oluşturun ve altyapı ayarlarınızı girin:
+# 3. .env.local dosyasını oluşturun (aşağıdaki şablonu kullanın)
 
-    ```bash
-    # Veritabanı (MongoDB)
-    MONGODB_URI=mongodb+srv://<USER>:<PASS>@<CLUSTER>.mongodb.net/fixral
+# 4. Uygulamayı başlatın
+npm run dev
+```
 
-    # NextAuth Güvenlik
-    NEXTAUTH_URL=http://localhost:3000
-    NEXTAUTH_SECRET=guvenlik_icin_karmaşık_bir_sifre_girin_buraya
+### Çevresel Değişkenler (.env.local)
 
-    # Bulut Medya (Cloudinary)
-    NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME=site_adi
-    NEXT_PUBLIC_CLOUDINARY_API_KEY=xxx
-    CLOUDINARY_API_SECRET=yyy
+```bash
+# Veritabanı
+MONGODB_URI=mongodb+srv://<USER>:<PASS>@<CLUSTER>.mongodb.net/fixral
 
-    # E-Posta Bildirimleri (SMTP)
-    SMTP_HOST=smtp.gmail.com
-    SMTP_PORT=587
-    SMTP_USER=ornek@domain.com
-    SMTP_PASS=uygulama_sifresi
-    ```
+# NextAuth Güvenlik
+NEXTAUTH_URL=http://localhost:3000
+NEXTAUTH_SECRET=guvenlik_icin_karmasik_bir_sifre
 
-4.  **Uygulamayı Başlatın:**
-    ```bash
-    npm run dev
-    ```
-    Tarayıcınız üzerinden `http://localhost:3000` adresine girerek test edebilirsiniz.
+# Cloudinary
+NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME=site_adi
+NEXT_PUBLIC_CLOUDINARY_API_KEY=xxx
+CLOUDINARY_API_SECRET=yyy
+
+# E-Posta (SMTP)
+SMTP_HOST=smtp.gmail.com
+SMTP_PORT=587
+SMTP_USER=ornek@domain.com
+SMTP_PASS=uygulama_sifresi
+```
 
 ---
 
-## 📦 Kesintisiz Vercel & CI/CD Dağıtımı (Deployment)
+## 📦 Derleme ve Dağıtım
 
-Projemiz, Vercel üzerinde 0 hata ile derlenmek (build) ve otomatik olarak dağıtılmak üzere tasarlanmıştır.
-
-### Derleme (Build) Sırasında Dikkat Edilmesi Gerekenler
-*   Vercel veya herhangi bir farklı sunucu platformunda projeyi canlıya alırken, **Environment Variables (Çevresel Değişkenler)** menüsünden projenin ihtiyacı olan *tüm değişkenlerin* (MONGODB_URI vb.) doğru eklendiğinden kesinlikle emin olun.
-*   Sayfaların çoğu `Static Generation` + `ISR` (Incremental Static Regeneration) mimarisinde hazırlanmıştır. Eğer derleme sırasında veritabanı bulunamazsa veya eksik değişken varsa projeyi derlemeyi iptal eder (Build Fail). Bunun önüne geçebilmek için veri tabanı bağlantınızın Vercel üzerinden dışarı açık olmasına izin vermeniz gereklidir. (MongoDB Atlas kullanıyorsanız Network Access'i tüm IP'lere [0.0.0.0/0] veya özel Vercel IP'lerine açtığınızdan emin olun).
-
-### Derlemeyi ve Linting'i Yerelde Doğrulamak
-Kodu GitHub'a veya sunucuya (Vercel) yollamadan (push) önce daima bu komutları çalıştırıp hata bulunmadığından emin olun:
 ```bash
-# Sıkı kod düzeni ve kullanım hataları kontrolü
+# Kod düzeni kontrolü
 npm run lint
 
-# TypeScript tip güvenliği hataları kontrolü (Type-Safe)
+# TypeScript tip güvenliği kontrolü
 npx tsc --noEmit
 
-# Sunucu öncesi gerçek statik derleme testi
+# Üretim derlemesi
 npm run build
 ```
-Bu adımlar başarılıysa uygulama %100 oranında Vercel ve CI (Continuous Integration) pipeline aşamalarını başarıyla geçecektir.
+
+> **Not:** Vercel veya benzeri platformlarda tüm çevresel değişkenlerin (MONGODB_URI vb.) doğru eklendiğinden emin olun. MongoDB Atlas kullanıyorsanız Network Access'i uygun şekilde yapılandırın.
 
 ---
 
-## 🔐 Güvenlik ve Pipeline Standartları
+## 📋 v3.7.0 Sürüm Notları
 
-Bu proje kapsamlı GitHub pipeline/iş akışı kuralları çerçevesinde tasarlanmıştır:
-1. **Veri Giriş Temizliği:** Tüm API uç noktalarında gelen veriler ZOD ve Next.js Request validasyonları sayesinde süzgeçten geçirilmektedir. DOM tarafına yansıtılacak olan veriler XSS saldırılarına karşı `dangerouslySetInnerHTML` kontrolleriyle veya ek sanitleme algoritmalarıyla korunur (`DOMPurify`).
-2. **Paket Güvenliği:** Kod bağımlılıklarını güncel tutmak için belirli aralıklarla `npm audit` uygulanabilir.
+### Mimari İyileştirmeler
+- Tüm public sayfalar `[lang]` dizini altına taşınarak tam i18n entegrasyonu sağlandı
+- API endpoint'leri `public/` ve `admin/` olarak net sınırlarla ayrıştırıldı
+- Plugin ve Theme Registry sistemi kurularak modüler mimari tamamlandı
+
+### Performans Düzeltmeleri
+- Portfolyo sayfası tamamen SSR'a geçirildi (sıfır Client-Side fetch)
+- Header'daki 30 saniyelik interval sorgusu kaldırıldı (veritabanı yükü azaltıldı)
+- Sayfa geçişlerindeki "yank-back" navigasyon döngüsü düzeltildi
+- `loading.tsx` ile sayfa geçişlerinde anında iskelet animasyonu eklendi
+
+### UI/UX Güncellemeleri
+- Navigasyon menüsü modern glassmorphism tasarımına geçirildi
+- Şeffaf header ile backdrop-blur efektleri uygulandı
+- Aktif sayfa göstergesi ince animasyonlu alt çizgiye dönüştürüldü
+
+### Teknik Temizlik
+- Mongoose duplicate index uyarıları giderildi
+- PluginManager hata mesajları sessizleştirildi
+- Gereksiz `console.log` çıktıları debug moduna alındı
 
 ---
 
-## 🤝 Katkıda Bulunma, Destek ve Lisans
+## 🔐 Güvenlik
 
-Bu proje kişisel / kapalı kaynak kullanım için yetkilendirilmiştir. Hakları izinsiz kopyalanamaz veya dağıtılamaz. Her türlü katkı veya bildirim için `Issues/Pull Requests` ağını takip edebilirsiniz.
+*   **Veri Doğrulama:** Tüm API uç noktalarında Zod ve Next.js validasyonları.
+*   **XSS Koruması:** DOM tarafına yansıtılan veriler sanitize edilir.
+*   **CSRF Koruması:** Token tabanlı form güvenliği.
+*   **Middleware Güvenliği:** IP engelleme, rate limiting ve yetkilendirme kontrolleri.
+
+---
+
+## 🤝 Lisans ve İletişim
+
+Bu proje kişisel / kapalı kaynak kullanım için yetkilendirilmiştir. Hakları izinsiz kopyalanamaz veya dağıtılamaz.
 
 **Geliştirici:** Erdem Erciyas

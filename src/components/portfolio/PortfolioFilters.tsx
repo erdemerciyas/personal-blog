@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useMemo } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { 
+import {
   MagnifyingGlassIcon,
   XMarkIcon,
   TagIcon,
@@ -49,6 +49,9 @@ export default function PortfolioFilters({
   // Debounced search
   const [searchValue, setSearchValue] = useState(filters.search);
   useEffect(() => {
+    if (searchValue === filters.search) {
+      return;
+    }
     const timer = setTimeout(() => {
       onFiltersChange({ ...filters, search: searchValue });
     }, 300);
@@ -69,7 +72,7 @@ export default function PortfolioFilters({
     const newCategories = filters.categories.includes(categorySlug)
       ? filters.categories.filter(c => c !== categorySlug)
       : [...filters.categories, categorySlug];
-    
+
     onFiltersChange({ ...filters, categories: newCategories });
   };
 
@@ -77,7 +80,7 @@ export default function PortfolioFilters({
     const newTechnologies = filters.technologies.includes(tech)
       ? filters.technologies.filter(t => t !== tech)
       : [...filters.technologies, tech];
-    
+
     onFiltersChange({ ...filters, technologies: newTechnologies });
   };
 
@@ -129,9 +132,8 @@ export default function PortfolioFilters({
       <div className="flex flex-col lg:flex-row gap-4 mb-6">
         {/* Search Input */}
         <div className="flex-1 relative">
-          <div className={`relative transition-all duration-300 ${
-            searchFocused ? 'transform scale-[1.02]' : ''
-          }`}>
+          <div className={`relative transition-all duration-300 ${searchFocused ? 'transform scale-[1.02]' : ''
+            }`}>
             <MagnifyingGlassIcon className="absolute left-4 top-1/2 transform -translate-y-1/2 w-5 h-5 text-slate-400" />
             <input
               type="text"
@@ -178,11 +180,10 @@ export default function PortfolioFilters({
           {/* Advanced Filters Toggle */}
           <button
             onClick={() => setShowAdvanced(!showAdvanced)}
-            className={`flex items-center px-6 py-4 rounded-2xl font-semibold transition-all duration-300 shadow-sm hover:shadow-lg ${
-              showAdvanced || activeFiltersCount > 0
+            className={`flex items-center px-6 py-4 rounded-2xl font-semibold transition-all duration-300 shadow-sm hover:shadow-lg ${showAdvanced || activeFiltersCount > 0
                 ? 'bg-brand-primary-600 text-white'
                 : 'bg-white border-2 border-slate-200 text-slate-700 hover:border-brand-primary-300'
-            }`}
+              }`}
             aria-expanded={showAdvanced}
             aria-controls="advanced-filters"
           >
@@ -208,7 +209,7 @@ export default function PortfolioFilters({
           >
             <div className="flex flex-wrap items-center gap-2 mb-4">
               <span className="text-sm font-medium text-slate-600">Aktif Filtreler:</span>
-              
+
               {/* Search Filter */}
               {filters.search && (
                 <span className="inline-flex items-center px-3 py-1 bg-brand-primary-100 text-brand-primary-800 rounded-full text-sm font-medium">
@@ -267,8 +268,8 @@ export default function PortfolioFilters({
                   {filters.dateRange.start && filters.dateRange.end
                     ? `${filters.dateRange.start} - ${filters.dateRange.end}`
                     : filters.dateRange.start
-                    ? `${filters.dateRange.start} sonrası`
-                    : `${filters.dateRange.end} öncesi`
+                      ? `${filters.dateRange.start} sonrası`
+                      : `${filters.dateRange.end} öncesi`
                   }
                   <button
                     onClick={() => clearFilter('dateRange')}

@@ -14,7 +14,7 @@ export function usePerformanceMonitoring() {
 
   const sendMetrics = useCallback(async (metrics: PerformanceMetrics) => {
     try {
-      await fetch('/api/monitoring/performance', {
+      await fetch('/api/public/monitoring/performance', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

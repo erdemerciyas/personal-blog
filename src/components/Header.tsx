@@ -100,7 +100,7 @@ const Header: React.FC = () => {
   useEffect(() => {
     const fetchSiteSettings = async () => {
       try {
-        const response = await fetch('/api/settings', { cache: 'no-store' });
+        const response = await fetch('/api/public/settings', { cache: 'no-store' });
         if (response.ok) {
           const data = await response.json();
           setSiteSettings({
@@ -178,19 +178,6 @@ const Header: React.FC = () => {
     };
 
     fetchNavigation();
-
-    const refreshInterval = setInterval(fetchNavigation, 30000);
-
-    const handlePageSettingsChange = () => {
-      fetchNavigation();
-    };
-
-    window.addEventListener('pageSettingsChanged', handlePageSettingsChange);
-
-    return () => {
-      clearInterval(refreshInterval);
-      window.removeEventListener('pageSettingsChanged', handlePageSettingsChange);
-    };
   }, []);
 
   // Close mobile menu on route change
@@ -219,6 +206,19 @@ const Header: React.FC = () => {
     setIsMobileMenuOpen(false);
   };
 
+  const currentLang = ['tr', 'en', 'es'].includes(pathname.split('/')[1]) ? pathname.split('/')[1] : 'tr';
+
+  const localizedNavLinks = navLinks.map(link => {
+    if (link.isExternal || link.href.startsWith('http') || link.href.startsWith('mailto:') || link.href.startsWith('tel:')) return link;
+    const cleanPath = link.href.startsWith('/') ? link.href : `/${link.href}`;
+    // Avoid double prefix if it's already there
+    if (cleanPath.startsWith(`/${currentLang}/`) || cleanPath === `/${currentLang}`) {
+      return link;
+    }
+    const newHref = `/${currentLang}${cleanPath === '/' ? '' : cleanPath}`;
+    return { ...link, href: newHref };
+  });
+
   return (
     <>
       <a
@@ -228,17 +228,17 @@ const Header: React.FC = () => {
         Ana içeriğe atla
       </a>
       <header className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${isScrolled
-        ? 'bg-white/95 backdrop-blur-md shadow-lg border-b border-slate-200/40'
+        ? 'bg-white/70 backdrop-blur-lg shadow-sm border-b border-white/20'
         : isTransparentPage
-          ? 'bg-gradient-to-b from-black/20 to-transparent backdrop-blur-sm'
-          : 'bg-white/95 backdrop-blur-md shadow-lg border-b border-slate-200/40'
+          ? 'bg-transparent'
+          : 'bg-white/70 backdrop-blur-lg shadow-sm border-b border-white/20'
         }`} role="banner">
         <div className="container mx-auto px-6">
           <div className="flex items-center justify-between h-20 sm:h-24">
             {/* Logo - Home Link */}
-            <Link href="/" className="flex items-center space-x-3 group shrink-0 -ml-2 sm:-ml-4 lg:-ml-6 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-primary-600 focus-visible:ring-offset-2 rounded-xl" aria-label="Anasayfaya git">
+            <Link href={`/${currentLang}`} className="flex items-center space-x-3 group shrink-0 -ml-2 sm:-ml-4 lg:-ml-6 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-primary-600 focus-visible:ring-offset-2 rounded-xl" aria-label="Anasayfaya git">
               {siteSettings?.logo?.url && (
-                <div className="relative w-12 h-12 sm:w-14 sm:h-14 rounded-2xl overflow-hidden bg-white/10 backdrop-blur-sm p-1">
+                <div className="relative w-12 h-12 sm:w-14 sm:h-14 rounded-2xl overflow-hidden p-1">
                   <Image
                     src={siteSettings.logo.url}
                     alt={siteSettings.logo.alt}
@@ -275,7 +275,7 @@ const Header: React.FC = () => {
 
             {/* Desktop Navigation */}
             <DesktopNav
-              navLinks={navLinks}
+              navLinks={localizedNavLinks}
               pathname={pathname || ''}
               isScrolled={isScrolled}
               isTransparentPage={isTransparentPage}
@@ -325,7 +325,7 @@ const Header: React.FC = () => {
           {/* Mobile Menu */}
           <MobileNav
             isOpen={isMobileMenuOpen}
-            navLinks={navLinks}
+            navLinks={localizedNavLinks}
             pathname={pathname || ''}
             onClose={closeMobileMenu}
             onOpenProjectModal={openProjectModal}

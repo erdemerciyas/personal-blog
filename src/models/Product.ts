@@ -52,7 +52,7 @@ const attributeSchema = new mongoose.Schema<AttributeKV>({
 
 const productSchema = new mongoose.Schema<IProduct>({
   title: { type: String, required: true, trim: true },
-  slug: { type: String, required: true, unique: true, index: true },
+  slug: { type: String, required: true, unique: true },
   description: { type: String, required: true },
   condition: { type: String, enum: ['new', 'used'], required: true, default: 'new' },
   price: { type: Number },

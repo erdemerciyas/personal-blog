@@ -67,7 +67,7 @@ export async function revalidateNewsListing(): Promise<void> {
  */
 export async function revalidateSitemap(): Promise<void> {
   try {
-    revalidatePath('/api/sitemap', 'page');
+    revalidatePath('/api/public/sitemap', 'page');
     revalidateTag('sitemap');
 
     logger.info('Sitemap revalidated', 'CACHE_SERVICE');

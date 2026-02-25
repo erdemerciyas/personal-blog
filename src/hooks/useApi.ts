@@ -97,7 +97,7 @@ export function useApi<T>(
 
 // Specialized hooks for common API calls
 export function useSliderItems() {
-  return useApi('/api/slider', {
+  return useApi('/api/public/slider', {
     cacheKey: CACHE_KEYS.SLIDER_ITEMS,
     cacheTTL: 10 * 60 * 1000 // 10 minutes for slider
   });
@@ -124,7 +124,7 @@ export function usePortfolioItems(options?: {
 }
 
 export function useServices() {
-  return useApi('/api/services', {
+  return useApi('/api/public/services', {
     cacheKey: CACHE_KEYS.SERVICES,
     cacheTTL: 10 * 60 * 1000 // 10 minutes
   });

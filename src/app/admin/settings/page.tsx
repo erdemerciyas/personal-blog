@@ -75,7 +75,7 @@ export default function AdminSettingsPage() {
 
   const loadSettings = async () => {
     try {
-      const response = await fetch('/api/settings');
+      const response = await fetch('/api/public/settings');
       if (response.ok) {
         const data = await response.json();
         setSettings(data);
@@ -99,7 +99,7 @@ export default function AdminSettingsPage() {
     setMessage(null);
 
     try {
-      const response = await fetch('/api/settings', {
+      const response = await fetch('/api/public/settings', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

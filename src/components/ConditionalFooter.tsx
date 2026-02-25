@@ -81,7 +81,7 @@ const ConditionalFooter: React.FC = () => {
   useEffect(() => {
     const fetchFooterSettings = async () => {
       try {
-        const response = await fetch('/api/footer-settings');
+        const response = await fetch('/api/public/footer-settings');
         if (response.ok) {
           const data = await response.json();
           // Sanitize links to ensure absolute paths
@@ -154,7 +154,7 @@ const ConditionalFooter: React.FC = () => {
   useEffect(() => {
     const fetchSiteSettings = async () => {
       try {
-        const res = await fetch('/api/settings', { cache: 'no-store' });
+        const res = await fetch('/api/public/settings', { cache: 'no-store' });
         if (res.ok) {
           const data = await res.json();
           setSite({

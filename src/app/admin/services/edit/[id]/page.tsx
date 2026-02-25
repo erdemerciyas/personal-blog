@@ -50,7 +50,7 @@ export default function EditServicePage({ params }: { params: { id: string } }) 
   useEffect(() => {
     const fetchService = async () => {
       try {
-        const response = await fetch(`/api/services/${params.id}`);
+        const response = await fetch(`/api/public/services/${params.id}`);
         if (!response.ok) {
           throw new Error('Servis yüklenirken bir hata oluştu');
         }
@@ -101,7 +101,7 @@ export default function EditServicePage({ params }: { params: { id: string } }) 
     };
 
     try {
-      const response = await fetch(`/api/services/${params.id}`, {
+      const response = await fetch(`/api/public/services/${params.id}`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',

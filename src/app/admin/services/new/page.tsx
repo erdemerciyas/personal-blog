@@ -45,7 +45,7 @@ export default function NewServicePage() {
     const filteredFeatures = features.filter(feature => feature.trim() !== '');
 
     try {
-      const response = await fetch('/api/services', {
+      const response = await fetch('/api/public/services', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

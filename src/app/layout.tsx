@@ -144,6 +144,7 @@ import { LoadingBar } from '../components';
 import { ToastProvider } from '../components/ui/useToast';
 import FixralToastViewport from '../components/ui/FixralToast';
 import { Toaster } from 'react-hot-toast';
+import { pluginManager } from '../plugins/core/PluginManager';
 
 export default async function RootLayout({
   children,
@@ -158,6 +159,13 @@ export default async function RootLayout({
       await connectDB();
       // Use SiteSettings single source of truth
       const siteSettings = await SiteSettings.getSiteSettings();
+
+      // Ensure plugins are loaded on the server
+      try {
+        await pluginManager.loadAllPlugins();
+      } catch (err) {
+        console.error('Failed to initialize plugins:', err);
+      }
 
       // Check if analytics plugin is active
       const analyticsPlugin = await Plugin.findOne({ slug: 'analytics-plugin', isActive: true });

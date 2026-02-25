@@ -326,7 +326,7 @@ export function ActiveThemeProvider({ children }: { children: ReactNode }) {
 
   const fetchActiveTheme = async () => {
     try {
-      const response = await fetch('/api/themes/active', { cache: 'no-store' });
+      const response = await fetch('/api/public/themes/active', { cache: 'no-store' });
       const data = await response.json();
 
       if (data.success && data.data?.config) {

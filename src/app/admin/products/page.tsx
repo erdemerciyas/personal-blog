@@ -172,7 +172,7 @@ export default function AdminProductsPage() {
     setMessages([]);
 
     try {
-      const res = await fetch(`/api/messages/product?productId=${product._id}`);
+      const res = await fetch(`/api/public/messages/product?productId=${product._id}`);
       if (res.ok) {
         const data = await res.json();
         setMessages(data.items || []);

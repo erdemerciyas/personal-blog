@@ -4,6 +4,7 @@
 
 import Plugin, { IPlugin, IPluginComponent } from '../../models/Plugin';
 import { hookSystem } from './HookSystem';
+import { PluginRegistry } from '../PluginRegistry';
 
 interface PluginManagerOptions {
   debug?: boolean;
@@ -42,13 +43,13 @@ class PluginManager {
 
     // Load plugin module
     const pluginModule = await this.loadPluginModule(plugin);
-    
+
     // Initialize plugin
     if (pluginModule.init) {
       try {
-        console.log(`[PluginManager] Initializing plugin: ${plugin.name}`);
+        if (this.debug) console.log(`[PluginManager] Initializing plugin: ${plugin.name}`);
         await pluginModule.init(hookSystem);
-        
+
         if (this.debug) {
           console.log(`[PluginManager] Plugin initialized: ${plugin.name}`);
         }
@@ -64,7 +65,7 @@ class PluginManager {
         const callback = pluginModule[hook.callback];
         if (typeof callback === 'function') {
           hookSystem.addAction(hook.name, callback, hook.priority, pluginSlug);
-          
+
           if (this.debug) {
             console.log(`[PluginManager] Registered hook: ${hook.name} for ${pluginSlug}`);
           }
@@ -85,21 +86,34 @@ class PluginManager {
     return plugin;
   }
 
+  private isInitialized: boolean = false;
+
   /**
    * Load all active plugins from database
    */
   async loadAllPlugins(): Promise<void> {
+    if (this.isInitialized) {
+      if (this.debug) console.log('[PluginManager] Plugins already loaded, skipping...');
+      return;
+    }
+    this.isInitialized = true;
+
     if (this.debug) {
       console.log('[PluginManager] Loading all active plugins...');
     }
 
     const activePlugins = await Plugin.getActivePlugins();
-    
+
     for (const plugin of activePlugins) {
       try {
         await this.loadPlugin(plugin.slug);
-      } catch (error) {
-        console.error(`[PluginManager] Failed to load plugin ${plugin.slug}:`, error);
+      } catch (error: any) {
+        // Only warn (not error) for plugins that exist in DB but have no physical implementation yet
+        if (error?.message?.includes('not found in PluginRegistry')) {
+          if (this.debug) console.warn(`[PluginManager] Plugin "${plugin.slug}" is active in DB but not implemented yet, skipping.`);
+        } else {
+          console.error(`[PluginManager] Failed to load plugin ${plugin.slug}:`, error);
+        }
       }
     }
 
@@ -154,20 +168,20 @@ class PluginManager {
   async getComponent(componentId: string): Promise<React.ComponentType<any> | null> {
     for (const [pluginSlug, plugin] of this.plugins.entries()) {
       const component = plugin.components.find((c) => c.id === componentId);
-      
+
       if (component) {
         try {
           const pluginModule = this.loadedModules.get(pluginSlug);
-          
+
           if (pluginModule && pluginModule.components) {
             const componentModule = await import(
               `@/plugins/${plugin.type}/${plugin.slug}/components/${component.component}`
             );
-            
+
             if (this.debug) {
               console.log(`[PluginManager] Loaded component: ${componentId} from ${pluginSlug}`);
             }
-            
+
             return componentModule.default;
           }
         } catch (error) {
@@ -212,12 +226,15 @@ class PluginManager {
    */
   private async loadPluginModule(plugin: IPlugin): Promise<any> {
     try {
-      const modulePath = `@/plugins/${plugin.type}/${plugin.slug}`;
-      console.log(`[PluginManager] Attempting to load module from: ${modulePath}`);
-      const loadedModule = await import(modulePath);
-      console.log(`[PluginManager] Module loaded successfully from: ${modulePath}`);
-      console.log(`[PluginManager] Available exports:`, Object.keys(loadedModule));
-      
+      console.log(`[PluginManager] Attempting to load module from registry: ${plugin.slug}`);
+      const loadedModule = await PluginRegistry.getPlugin(plugin.slug);
+
+      if (!loadedModule) {
+        throw new Error(`Plugin not found in PluginRegistry mapping: ${plugin.slug}`);
+      }
+
+      console.log(`[PluginManager] Module loaded successfully from registry: ${plugin.slug}`);
+
       // Check if init function exists
       if (typeof loadedModule.init === 'function') {
         console.log(`[PluginManager] Found init function: ${loadedModule.init.name}`);
@@ -225,7 +242,7 @@ class PluginManager {
         console.warn(`[PluginManager] No init function found in module. Available exports:`, Object.keys(loadedModule));
         console.warn(`[PluginManager] Plugin may not be properly configured`);
       }
-      
+
       return loadedModule;
     } catch (error) {
       console.error(`[PluginManager] Failed to load plugin module: ${plugin.slug}`, error);
@@ -262,11 +279,11 @@ class PluginManager {
    */
   getAvailableComponents(): IPluginComponent[] {
     const components: IPluginComponent[] = [];
-    
+
     for (const plugin of this.plugins.values()) {
       components.push(...plugin.components);
     }
-    
+
     return components;
   }
 
@@ -275,7 +292,7 @@ class PluginManager {
    */
   clearAll(): void {
     const pluginSlugs = Array.from(this.plugins.keys());
-    
+
     for (const slug of pluginSlugs) {
       this.unloadPlugin(slug);
     }
@@ -296,7 +313,15 @@ class PluginManager {
 
 export { PluginManager };
 
-// Global plugin manager instance
-export const pluginManager = new PluginManager();
+const globalForPlugins = globalThis as unknown as {
+  pluginManager: PluginManager | undefined;
+};
+
+// Global plugin manager instance - single instantiation even in dev mode
+export const pluginManager = globalForPlugins.pluginManager ?? new PluginManager();
+
+if (process.env.NODE_ENV !== 'production') {
+  globalForPlugins.pluginManager = pluginManager;
+}
 
 export default PluginManager;

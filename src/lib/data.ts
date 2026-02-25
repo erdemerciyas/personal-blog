@@ -13,7 +13,9 @@ export const getSliderItems = cache(async () => {
             .sort({ order: 1 })
             .lean();
 
-        return sliders.map((slider: any) => ({
+        const safeSliders = JSON.parse(JSON.stringify(sliders));
+
+        return safeSliders.map((slider: any) => ({
             _id: slider._id.toString(),
             title: slider.title,
             subtitle: slider.subtitle,
@@ -52,9 +54,11 @@ export const getPortfolioItems = cache(async (limit = 6) => {
 
         console.log(`Found ${items.length} portfolio items`);
 
-        return items.map((item: any) => ({
+        const safeItems = JSON.parse(JSON.stringify(items));
+
+        return safeItems.map((item: any) => ({
             ...item,
-            _id: item._id.toString(),
+            _id: item._id,
             categories: Array.isArray(item.categoryIds)
                 ? item.categoryIds.map((cat: any) => ({
                     ...cat,
@@ -79,9 +83,11 @@ export const getServices = cache(async (limit = 6) => {
             .limit(limit)
             .lean();
 
-        return services.map((service: any) => ({
+        const safeServices = JSON.parse(JSON.stringify(services));
+
+        return safeServices.map((service: any) => ({
             ...service,
-            _id: service._id.toString(),
+            _id: service._id,
             createdAt: service.createdAt ? new Date(service.createdAt).toISOString() : null,
             updatedAt: service.updatedAt ? new Date(service.updatedAt).toISOString() : null,
         }));

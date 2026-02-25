@@ -185,7 +185,7 @@ export default function NewsForm({ initialData, onSubmit, isLoading = false }: N
         return;
       }
 
-      const response = await fetch('/api/ai/generate-metadata', {
+      const response = await fetch('/api/public/ai/generate-metadata', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -252,7 +252,7 @@ export default function NewsForm({ initialData, onSubmit, isLoading = false }: N
 
       console.log('Submitting form data:', JSON.stringify(cleanedData, null, 2));
 
-      const url = initialData ? `/api/news/${initialData._id}` : '/api/news';
+      const url = initialData ? `/api/public/news/${initialData._id}` : '/api/public/news';
       const method = initialData ? 'PUT' : 'POST';
 
       const response = await fetch(url, {

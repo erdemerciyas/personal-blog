@@ -72,7 +72,7 @@ export default function AdminOrderDetailPage({ params }: { params: { id: string 
 
     const fetchOrder = async () => {
         try {
-            const res = await fetch(`/api/orders/${params.id}`);
+            const res = await fetch(`/api/public/orders/${params.id}`);
             if (res.ok) {
                 const data = await res.json();
                 setOrder(data.data);
@@ -93,7 +93,7 @@ export default function AdminOrderDetailPage({ params }: { params: { id: string 
     const handleUpdate = async () => {
         setUpdating(true);
         try {
-            const res = await fetch(`/api/orders/${params.id}`, {
+            const res = await fetch(`/api/public/orders/${params.id}`, {
                 method: 'PUT',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({

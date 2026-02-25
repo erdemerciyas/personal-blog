@@ -81,7 +81,7 @@ export default function EditPortfolioItem({ params }: { params: { id: string } }
 
   const fetchCategories = async () => {
     try {
-      const response = await fetch('/api/categories');
+      const response = await fetch('/api/public/categories');
       if (!response.ok) throw new Error('Kategoriler getirilemedi');
       const data = await response.json();
       setCategories(data);
@@ -93,7 +93,7 @@ export default function EditPortfolioItem({ params }: { params: { id: string } }
 
   const fetchPortfolioItem = useCallback(async () => {
     try {
-      const response = await fetch(`/api/portfolio/${params.id}`);
+      const response = await fetch(`/api/public/portfolio/${params.id}`);
       if (!response.ok) throw new Error('Portfolyo öğesi getirilemedi');
       const data = await response.json();
 
@@ -163,7 +163,7 @@ export default function EditPortfolioItem({ params }: { params: { id: string } }
         images: formData.images.filter(img => img.trim() !== ''),
       };
 
-      const response = await fetch(`/api/portfolio/${params.id}`, {
+      const response = await fetch(`/api/public/portfolio/${params.id}`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
@@ -254,7 +254,7 @@ export default function EditPortfolioItem({ params }: { params: { id: string } }
       const formDataUpload = new FormData();
       formDataUpload.append('file', file);
 
-      const response = await fetch('/api/3dmodels/upload', {
+      const response = await fetch('/api/public/3dmodels/upload', {
         method: 'POST',
         body: formDataUpload,
       });
@@ -296,7 +296,7 @@ export default function EditPortfolioItem({ params }: { params: { id: string } }
     if (!confirm(`"${model.name}" modelini silmek istediğinizden emin misiniz?`)) return;
 
     try {
-      const response = await fetch(`/api/3dmodels/delete?publicId=${encodeURIComponent(model.publicId)}`, {
+      const response = await fetch(`/api/public/3dmodels/delete?publicId=${encodeURIComponent(model.publicId)}`, {
         method: 'DELETE',
       });
 

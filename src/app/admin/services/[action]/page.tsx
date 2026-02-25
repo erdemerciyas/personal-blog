@@ -43,7 +43,7 @@ export default function ServiceFormPage() {
     if (isEditing && params?.id) {
       const fetchService = async () => {
         try {
-          const response = await fetch(`/api/services/${params.id}`);
+          const response = await fetch(`/api/public/services/${params.id}`);
           if (!response.ok) {
             throw new Error('Servis yüklenirken bir hata oluştu');
           }
@@ -66,7 +66,7 @@ export default function ServiceFormPage() {
     setLoading(true);
 
     try {
-      const url = isEditing ? `/api/services/${params?.id}` : '/api/services';
+      const url = isEditing ? `/api/public/services/${params?.id}` : '/api/public/services';
       const method = isEditing ? 'PUT' : 'POST';
 
       const response = await fetch(url, {

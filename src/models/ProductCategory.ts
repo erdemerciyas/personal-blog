@@ -15,7 +15,7 @@ export interface IProductCategory {
 
 const productCategorySchema = new mongoose.Schema<IProductCategory>({
   name: { type: String, required: true, trim: true, unique: true },
-  slug: { type: String, required: true, trim: true, unique: true, index: true },
+  slug: { type: String, required: true, trim: true, unique: true },
   description: { type: String },
   parent: { type: mongoose.Schema.Types.ObjectId, ref: 'ProductCategory', default: null },
   order: { type: Number, default: 0 },

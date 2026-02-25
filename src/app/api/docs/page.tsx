@@ -140,12 +140,12 @@ export default function ApiDocsPage() {
           <h3 className="text-lg font-semibold text-green-900 mb-2">📖 Example Usage</h3>
           <pre className="text-sm text-green-800 bg-white p-4 rounded overflow-x-auto">
 {`// Get all portfolios
-fetch('/api/portfolio')
+fetch('/api/public/portfolio')
   .then(res => res.json())
   .then(data => console.log(data));
 
 // Create new portfolio (requires auth)
-fetch('/api/portfolio', {
+fetch('/api/public/portfolio', {
   method: 'POST',
   headers: {
     'Content-Type': 'application/json',

@@ -46,7 +46,7 @@ export default function NewsCarousel({
       setError(null);
 
       const response = await fetch(
-        `/api/news?status=published&limit=${limit}&sortBy=publishedAt&sortOrder=desc`
+        `/api/public/news?status=published&limit=${limit}&sortBy=publishedAt&sortOrder=desc`
       );
 
       if (!response.ok) {

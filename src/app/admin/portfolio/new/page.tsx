@@ -83,7 +83,7 @@ export default function NewPortfolioItem() {
   const fetchCategories = async () => {
     try {
       setLoading(true);
-      const response = await fetch('/api/categories');
+      const response = await fetch('/api/public/categories');
       if (!response.ok) throw new Error('Kategoriler getirilemedi');
       const data = await response.json();
       setCategories(data);
@@ -126,7 +126,7 @@ export default function NewPortfolioItem() {
         images: formData.images.filter(img => img.trim() !== ''),
       };
 
-      const response = await fetch('/api/portfolio', {
+      const response = await fetch('/api/public/portfolio', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -217,7 +217,7 @@ export default function NewPortfolioItem() {
       const formDataUpload = new FormData();
       formDataUpload.append('file', file);
 
-      const response = await fetch('/api/3dmodels/upload', {
+      const response = await fetch('/api/public/3dmodels/upload', {
         method: 'POST',
         body: formDataUpload,
       });
@@ -258,7 +258,7 @@ export default function NewPortfolioItem() {
     if (!confirm(`"${model.name}" modelini silmek istediğinizden emin misiniz?`)) return;
 
     try {
-      const response = await fetch(`/api/3dmodels/delete?publicId=${encodeURIComponent(model.publicId)}`, {
+      const response = await fetch(`/api/public/3dmodels/delete?publicId=${encodeURIComponent(model.publicId)}`, {
         method: 'DELETE',
       });
 

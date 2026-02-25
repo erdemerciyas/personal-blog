@@ -63,7 +63,7 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
         try {
             setLoading(true);
             const guestId = getGuestCartId();
-            let url = '/api/cart';
+            let url = '/api/public/cart';
 
             if (guestId && !session) {
                 url += `?cartId=${guestId}`;
@@ -89,7 +89,7 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
     const addToCart = async (productId: string, quantity: number, attributes?: Record<string, string>) => {
         try {
             const guestId = getGuestCartId();
-            const res = await fetch('/api/cart', {
+            const res = await fetch('/api/public/cart', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
@@ -119,7 +119,7 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
         try {
             const guestId = getGuestCartId();
             // Assume itemId is ProductId for now based on API implementation
-            let url = `/api/cart/${itemId}`;
+            let url = `/api/public/cart/${itemId}`;
             if (!session && guestId) {
                 url += `?cartId=${guestId}`;
             }
@@ -140,7 +140,7 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
     const updateQuantity = async (itemId: string, quantity: number) => {
         try {
             const guestId = getGuestCartId();
-            const res = await fetch(`/api/cart/${itemId}`, {
+            const res = await fetch(`/api/public/cart/${itemId}`, {
                 method: 'PATCH',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({

@@ -47,7 +47,7 @@ export default function ProjectModal({ isOpen, onClose }: ProjectModalProps) {
         setSubmitStatus('idle');
 
         try {
-            const response = await fetch('/api/contact', {
+            const response = await fetch('/api/public/contact', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',

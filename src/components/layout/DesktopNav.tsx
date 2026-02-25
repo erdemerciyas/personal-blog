@@ -32,28 +32,28 @@ export default function DesktopNav({
 
     // Determine text color based on scroll state and page type
     const textColorClass = isScrolled
-        ? 'text-slate-700'
+        ? 'text-slate-600'
         : isTransparentPage
-            ? 'text-white drop-shadow'
-            : 'text-slate-700';
+            ? 'text-white/80 drop-shadow'
+            : 'text-slate-600';
 
     const activeColorClass = isScrolled
-        ? 'bg-brand-primary-100 text-brand-primary-900'
+        ? 'text-brand-primary-900 font-semibold bg-slate-50'
         : isTransparentPage
-            ? 'bg-white/20 text-white backdrop-blur-sm shadow-lg'
-            : 'bg-brand-primary-100 text-brand-primary-900';
+            ? 'text-white font-semibold bg-white/10 backdrop-blur-md'
+            : 'text-brand-primary-900 font-semibold bg-slate-50';
 
     const hoverColorClass = isScrolled
-        ? 'hover:bg-slate-100 hover:text-brand-primary-800'
+        ? 'hover:text-brand-primary-800 hover:bg-slate-50'
         : isTransparentPage
-            ? 'hover:bg-white/20 hover:text-white'
-            : 'hover:bg-slate-100 hover:text-brand-primary-800';
+            ? 'hover:text-white hover:bg-white/10'
+            : 'hover:text-brand-primary-800 hover:bg-slate-50';
 
     const underlineColorClass = isScrolled
-        ? 'bg-brand-primary-700'
+        ? 'bg-brand-primary-600'
         : isTransparentPage
-            ? 'bg-white/80'
-            : 'bg-brand-primary-700';
+            ? 'bg-white'
+            : 'bg-brand-primary-600';
 
     return (
         <div className="hidden lg:flex items-center gap-2 xl:gap-6 flex-1 justify-end ml-12 on-desktop-nav-container">
@@ -69,17 +69,17 @@ export default function DesktopNav({
 
                     const baseClasses = `
                         relative overflow-hidden 
-                        h-10 lg:h-11
+                        h-9 lg:h-10
                         px-3 lg:px-4
                         rounded-full
-                        font-medium text-sm
-                        transition-all duration-200 
+                        text-sm
+                        transition-all duration-300 ease-out
                         group 
                         flex items-center justify-center gap-2 
                         whitespace-nowrap
                         focus-visible:outline-none 
                         focus-visible:ring-2 
-                        focus-visible:ring-brand-primary-600 
+                        focus-visible:ring-brand-primary-500 
                         focus-visible:ring-offset-2
                         ${isActive ? activeColorClass : `${textColorClass} ${hoverColorClass}`}
                     `;
@@ -93,14 +93,14 @@ export default function DesktopNav({
                                 aria-hidden="true"
                                 className={`
                                     pointer-events-none 
-                                    absolute left-4 right-4 bottom-2
-                                    h-0.5 
+                                    absolute left-5 right-5 bottom-1
+                                    h-[2px] 
                                     origin-center
                                     scale-x-0 
                                     rounded-full
                                     transition-transform duration-300 ease-out
                                     ${underlineColorClass}
-                                    ${isActive ? 'scale-x-100' : 'group-hover:scale-x-50'}
+                                    ${isActive ? 'scale-x-100' : 'group-hover:scale-x-[0.3]'}
                                 `}
                             />
                         </>
