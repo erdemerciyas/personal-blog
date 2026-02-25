@@ -4,8 +4,10 @@ import SiteSettings from '@/models/SiteSettings';
 import News from '@/models/News';
 import Product from '@/models/Product';
 import Portfolio from '@/models/Portfolio';
+import Service from '@/models/Service';
 import fs from 'fs';
 import path from 'path';
+import os from 'os';
 
 export interface SitemapURL {
     loc: string;
@@ -15,14 +17,16 @@ export interface SitemapURL {
 }
 
 export class SitemapService {
+    private static readonly SUPPORTED_LOCALES = ['tr'];
+
     private static readonly STATIC_PAGES = [
-        '',           // Home
-        '/about',     // About
-        '/contact',   // Contact
-        '/services',  // Services
-        '/portfolio', // Portfolio
-        '/blog',      // Blog
-        '/products',  // Shop
+        { path: '', changefreq: 'daily' as const, priority: 1.0 },
+        { path: '/contact', changefreq: 'monthly' as const, priority: 0.8 },
+        { path: '/services', changefreq: 'weekly' as const, priority: 0.8 },
+        { path: '/portfolio', changefreq: 'weekly' as const, priority: 0.8 },
+        { path: '/products', changefreq: 'daily' as const, priority: 0.8 },
+        { path: '/videos', changefreq: 'weekly' as const, priority: 0.7 },
+        { path: '/haberler', changefreq: 'daily' as const, priority: 0.8 },
     ];
 
     static async generateSitemapXML(): Promise<string> {
@@ -30,30 +34,34 @@ export class SitemapService {
 
         // 1. Get Base URL
         const settings = await SiteSettings.getSiteSettings();
-        const baseUrl = (settings.siteUrl || process.env.NEXT_PUBLIC_APP_URL || 'https://example.com').replace(/\/$/, '');
+        const baseUrl = (settings.siteUrl || process.env.NEXT_PUBLIC_APP_URL || 'https://www.fixral.com').replace(/\/$/, '');
 
         const urls: SitemapURL[] = [];
 
-        // 2. Add Static Pages
-        this.STATIC_PAGES.forEach(page => {
-            urls.push({
-                loc: `${baseUrl}${page}`,
-                changefreq: 'daily',
-                priority: page === '' ? 1.0 : 0.8,
-                lastmod: new Date().toISOString()
+        // 2. Add Static Pages (with locale prefix)
+        for (const locale of this.SUPPORTED_LOCALES) {
+            this.STATIC_PAGES.forEach(page => {
+                urls.push({
+                    loc: `${baseUrl}/${locale}${page.path}`,
+                    changefreq: page.changefreq,
+                    priority: page.priority,
+                    lastmod: new Date().toISOString()
+                });
             });
-        });
+        }
 
         // 3. Add News (Blog Posts)
         try {
             const posts = await News.find({ status: 'published' }).select('slug updatedAt').lean();
             posts.forEach((post: any) => {
-                urls.push({
-                    loc: `${baseUrl}/blog/${post.slug}`,
-                    lastmod: post.updatedAt ? new Date(post.updatedAt).toISOString() : new Date().toISOString(),
-                    changefreq: 'weekly',
-                    priority: 0.7
-                });
+                for (const locale of this.SUPPORTED_LOCALES) {
+                    urls.push({
+                        loc: `${baseUrl}/${locale}/haberler/${post.slug}`,
+                        lastmod: post.updatedAt ? new Date(post.updatedAt).toISOString() : new Date().toISOString(),
+                        changefreq: 'weekly',
+                        priority: 0.7
+                    });
+                }
             });
         } catch (e) {
             console.error('Error fetching news for sitemap:', e);
@@ -63,12 +71,14 @@ export class SitemapService {
         try {
             const products = await Product.find({ isActive: true }).select('slug updatedAt').lean();
             products.forEach((product: any) => {
-                urls.push({
-                    loc: `${baseUrl}/products/${product.slug}`,
-                    lastmod: product.updatedAt ? new Date(product.updatedAt).toISOString() : new Date().toISOString(),
-                    changefreq: 'weekly',
-                    priority: 0.8
-                });
+                for (const locale of this.SUPPORTED_LOCALES) {
+                    urls.push({
+                        loc: `${baseUrl}/${locale}/products/${product.slug}`,
+                        lastmod: product.updatedAt ? new Date(product.updatedAt).toISOString() : new Date().toISOString(),
+                        changefreq: 'weekly',
+                        priority: 0.8
+                    });
+                }
             });
         } catch (e) {
             console.error('Error fetching products for sitemap:', e);
@@ -78,18 +88,35 @@ export class SitemapService {
         try {
             const projects = await Portfolio.find({ isActive: true }).select('slug updatedAt').lean();
             projects.forEach((project: any) => {
-                urls.push({
-                    loc: `${baseUrl}/portfolio/${project.slug}`,
-                    lastmod: project.updatedAt ? new Date(project.updatedAt).toISOString() : new Date().toISOString(),
-                    changefreq: 'monthly',
-                    priority: 0.6
-                });
+                for (const locale of this.SUPPORTED_LOCALES) {
+                    urls.push({
+                        loc: `${baseUrl}/${locale}/portfolio/${project.slug}`,
+                        lastmod: project.updatedAt ? new Date(project.updatedAt).toISOString() : new Date().toISOString(),
+                        changefreq: 'monthly',
+                        priority: 0.6
+                    });
+                }
             });
         } catch (e) {
             console.error('Error fetching portfolio for sitemap:', e);
         }
 
-
+        // 6. Add Services
+        try {
+            const services = await Service.find({ isActive: true }).select('slug updatedAt').lean();
+            services.forEach((service: any) => {
+                for (const locale of this.SUPPORTED_LOCALES) {
+                    urls.push({
+                        loc: `${baseUrl}/${locale}/services/${service.slug}`,
+                        lastmod: service.updatedAt ? new Date(service.updatedAt).toISOString() : new Date().toISOString(),
+                        changefreq: 'monthly',
+                        priority: 0.7
+                    });
+                }
+            });
+        } catch (e) {
+            console.error('Error fetching services for sitemap:', e);
+        }
 
         // Generate XML
         const xml = `<?xml version="1.0" encoding="UTF-8"?>
@@ -107,14 +134,25 @@ ${urls.map(url => `  <url>
 
     static async saveSitemapToFile(): Promise<string> {
         const xml = await this.generateSitemapXML();
-        const publicDir = path.join(process.cwd(), 'public');
 
-        if (!fs.existsSync(publicDir)) {
-            fs.mkdirSync(publicDir, { recursive: true });
+        // Try writing to public/ first (works in local dev and VPS)
+        // Fall back to /tmp/ for Vercel Serverless (read-only filesystem)
+        let filePath: string;
+
+        try {
+            const publicDir = path.join(process.cwd(), 'public');
+            if (!fs.existsSync(publicDir)) {
+                fs.mkdirSync(publicDir, { recursive: true });
+            }
+            filePath = path.join(publicDir, 'sitemap.xml');
+            fs.writeFileSync(filePath, xml);
+        } catch (fsError) {
+            // Serverless environment (Vercel) - write to /tmp
+            console.warn('[SitemapService] Cannot write to public/, falling back to /tmp/');
+            const tmpDir = os.tmpdir();
+            filePath = path.join(tmpDir, 'sitemap.xml');
+            fs.writeFileSync(filePath, xml);
         }
-
-        const filePath = path.join(publicDir, 'sitemap.xml');
-        fs.writeFileSync(filePath, xml);
 
         return filePath;
     }
