@@ -6,7 +6,7 @@ import { NextResponse } from 'next/server';
 import type { NextRequest } from 'next/server';
 import { getToken } from 'next-auth/jwt';
 
-const locales = ['tr', 'es', 'en'];
+const locales = ['tr', 'es'];
 const defaultLocale = 'tr';
 
 function getLocale(request: NextRequest): string {
@@ -78,7 +78,7 @@ export async function middleware(request: NextRequest) {
 
   // 2) API & Admin Bypass
   if (pathname.startsWith('/api') || pathname.startsWith('/admin')) {
-    // Admin route authentication check
+    // Admin PAGE route authentication check
     if (pathname.startsWith('/admin') && pathname !== '/admin/login' && !pathname.startsWith('/admin/reset-password')) {
       const token = await getToken({ req: request, secret: process.env.NEXTAUTH_SECRET });
       if (!token) {
@@ -89,13 +89,19 @@ export async function middleware(request: NextRequest) {
       }
     }
 
+    // Admin API route authentication check (middleware seviyesi — ikinci savunma katmanı)
+    if (pathname.startsWith('/api/admin')) {
+      const token = await getToken({ req: request, secret: process.env.NEXTAUTH_SECRET });
+      if (!token) {
+        return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+      }
+      if (token.role !== 'admin') {
+        return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
+      }
+    }
+
     // Setup standard headers for API/Admin
     const response = NextResponse.next();
-    if (!pathname.startsWith('/api/admin') || process.env.NODE_ENV === 'development') {
-      response.headers.set('X-RateLimit-Limit', '1000');
-      response.headers.set('X-RateLimit-Remaining', '1000');
-      response.headers.set('X-RateLimit-Reset', (Date.now() + 60000).toString());
-    }
     response.headers.set('X-Robots-Tag', 'noindex, nofollow');
     return response;
   }

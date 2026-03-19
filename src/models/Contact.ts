@@ -90,14 +90,12 @@ const ContactSchema = new mongoose.Schema({
 ContactSchema.index({ isActive: 1 });
 
 // Pre-save middleware to update updatedAt
-ContactSchema.pre('save', function(next) {
+ContactSchema.pre('save', async function() {
   this.updatedAt = new Date();
-  next();
 });
 
-ContactSchema.pre('findOneAndUpdate', function(next) {
+ContactSchema.pre('findOneAndUpdate', async function(this: any) {
   this.set({ updatedAt: new Date() });
-  next();
 });
 
 export default mongoose.models.Contact || mongoose.model('Contact', ContactSchema); 

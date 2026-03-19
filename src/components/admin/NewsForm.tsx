@@ -1,14 +1,16 @@
 'use client';
 
-import React, { useState, useCallback, useRef } from 'react';
+import React, { useState, useCallback, useRef, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import Image from 'next/image';
 import { useEditor, EditorContent } from '@tiptap/react';
 import StarterKit from '@tiptap/starter-kit';
 import Link from '@tiptap/extension-link';
 import TiptapImage from '@tiptap/extension-image';
-import { NewsItem, AIMetadataGenerationResponse } from '@/types/news';
+import { NewsItem, AIMetadataGenerationResponse, NewsTranslation } from '@/types/news';
 import { logger } from '@/core/lib/logger';
+import { useActiveLanguages } from '@/hooks/useActiveLanguages';
+import LanguageTabs from '@/components/admin/LanguageTabs';
 import {
   SparklesIcon,
   CheckIcon,
@@ -23,42 +25,46 @@ interface NewsFormProps {
   isLoading?: boolean;
 }
 
-/**
- * News Form Component for Admin Panel
- * Supports multilingual content (TR/ES), WYSIWYG editor, image upload, and AI metadata generation
- */
+const emptyTranslation = (): NewsTranslation => ({
+  title: '',
+  content: '',
+  excerpt: '',
+  metaDescription: '',
+  keywords: [],
+});
+
 export default function NewsForm({ initialData, onSubmit, isLoading = false }: NewsFormProps) {
   const router = useRouter();
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [loading, setLoading] = useState(isLoading);
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState<string | null>(null);
-  const [activeLanguage, setActiveLanguage] = useState<'tr' | 'es'>('tr');
+  const [activeLanguage, setActiveLanguage] = useState<string>('');
   const [generatingMetadata, setGeneratingMetadata] = useState(false);
   const [uploadingImage, setUploadingImage] = useState(false);
 
-  // Form state
+  const { languages, defaultLanguage, loading: langsLoading, error: langsError } = useActiveLanguages();
+
+  // Build initial translations from active languages
+  const buildInitialTranslations = useCallback(() => {
+    const translations: Record<string, NewsTranslation> = {};
+    if (languages.length > 0) {
+      languages.forEach((lang) => {
+        const existing = initialData?.translations?.[lang.code];
+        translations[lang.code] = existing
+          ? { ...emptyTranslation(), ...existing }
+          : emptyTranslation();
+      });
+    }
+    return translations;
+  }, [languages, initialData]);
+
   const [formData, setFormData] = useState({
-    translations: {
-      tr: {
-        title: initialData?.translations.tr.title || '',
-        content: initialData?.translations.tr.content || '',
-        excerpt: initialData?.translations.tr.excerpt || '',
-        metaDescription: initialData?.translations.tr.metaDescription || '',
-        keywords: initialData?.translations.tr.keywords || [],
-      },
-      es: {
-        title: initialData?.translations.es.title || '',
-        content: initialData?.translations.es.content || '',
-        excerpt: initialData?.translations.es.excerpt || '',
-        metaDescription: initialData?.translations.es.metaDescription || '',
-        keywords: initialData?.translations.es.keywords || [],
-      },
-    },
+    translations: {} as Record<string, NewsTranslation>,
     featuredImage: {
-      url: initialData?.featuredImage.url || '',
-      altText: initialData?.featuredImage.altText || '',
-      cloudinaryPublicId: initialData?.featuredImage.cloudinaryPublicId || '',
+      url: initialData?.featuredImage?.url || '',
+      altText: initialData?.featuredImage?.altText || '',
+      cloudinaryPublicId: initialData?.featuredImage?.cloudinaryPublicId || '',
     },
     tags: initialData?.tags || [],
     relatedPortfolioIds: initialData?.relatedPortfolioIds || [],
@@ -66,10 +72,23 @@ export default function NewsForm({ initialData, onSubmit, isLoading = false }: N
     status: (initialData?.status || 'draft') as 'draft' | 'published',
   });
 
+  // Initialize translations and active language when languages load
+  useEffect(() => {
+    if (languages.length > 0 && Object.keys(formData.translations).length === 0) {
+      setFormData((prev) => ({ ...prev, translations: buildInitialTranslations() }));
+      if (!activeLanguage && defaultLanguage) {
+        setActiveLanguage(defaultLanguage.code);
+      }
+    }
+  }, [languages, defaultLanguage, buildInitialTranslations, activeLanguage, formData.translations]);
+
+  // Previous language ref for saving editor content on tab switch
+  const prevLangRef = useRef<string>(activeLanguage);
+
   // Shared extensions configuration
   const extensions = [
     StarterKit.configure({
-      link: false, // Disable link from StarterKit to avoid duplication
+      link: false,
     }),
     Link.configure({
       openOnClick: false,
@@ -77,45 +96,73 @@ export default function NewsForm({ initialData, onSubmit, isLoading = false }: N
     TiptapImage,
   ];
 
-  // TipTap Editor for Turkish
-  const editorTr = useEditor({
+  // Single TipTap editor instance
+  const editor = useEditor({
     extensions,
-    content: formData.translations.tr.content,
+    content: '',
     immediatelyRender: false,
-    onUpdate: ({ editor }) => {
-      setFormData((prev) => ({
-        ...prev,
-        translations: {
-          ...prev.translations,
-          tr: {
-            ...prev.translations.tr,
-            content: editor.getHTML(),
+    onUpdate: ({ editor: ed }) => {
+      const lang = prevLangRef.current;
+      if (lang) {
+        setFormData((prev) => ({
+          ...prev,
+          translations: {
+            ...prev.translations,
+            [lang]: {
+              ...prev.translations[lang],
+              content: ed.getHTML(),
+            },
           },
-        },
-      }));
+        }));
+      }
     },
   });
 
-  // TipTap Editor for Spanish
-  const editorEs = useEditor({
-    extensions,
-    content: formData.translations.es.content,
-    immediatelyRender: false,
-    onUpdate: ({ editor }) => {
-      setFormData((prev) => ({
-        ...prev,
-        translations: {
-          ...prev.translations,
-          es: {
-            ...prev.translations.es,
-            content: editor.getHTML(),
-          },
-        },
-      }));
-    },
-  });
+  // Set initial editor content when editor is ready and languages loaded
+  useEffect(() => {
+    if (editor && activeLanguage && formData.translations[activeLanguage]) {
+      const content = formData.translations[activeLanguage]?.content || '';
+      if (editor.getHTML() !== content) {
+        editor.commands.setContent(content);
+      }
+    }
+  }, [editor, activeLanguage, languages.length > 0 && Object.keys(formData.translations).length > 0 ? 'ready' : 'waiting']);
 
-  const currentEditor = activeLanguage === 'tr' ? editorTr : editorEs;
+  // Handle language tab switch
+  const handleLanguageChange = useCallback(
+    (newLang: string) => {
+      if (newLang === activeLanguage) return;
+
+      // Save current editor content to the previous language
+      if (editor && activeLanguage) {
+        setFormData((prev) => ({
+          ...prev,
+          translations: {
+            ...prev.translations,
+            [activeLanguage]: {
+              ...prev.translations[activeLanguage],
+              content: editor.getHTML(),
+            },
+          },
+        }));
+      }
+
+      setActiveLanguage(newLang);
+      prevLangRef.current = newLang;
+
+      // Load new language content into editor
+      if (editor) {
+        const newContent = formData.translations[newLang]?.content || '';
+        editor.commands.setContent(newContent);
+      }
+    },
+    [activeLanguage, editor, formData.translations]
+  );
+
+  // Keep prevLangRef in sync
+  useEffect(() => {
+    prevLangRef.current = activeLanguage;
+  }, [activeLanguage]);
 
   // Handle image upload
   const handleImageUpload = useCallback(async (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -126,29 +173,21 @@ export default function NewsForm({ initialData, onSubmit, isLoading = false }: N
       setUploadingImage(true);
       setError(null);
 
-      // Create FormData for upload
       const uploadFormData = new FormData();
       uploadFormData.append('file', file);
       uploadFormData.append('pageContext', 'news');
 
-      console.log('Uploading file:', file.name, file.type, file.size);
-
-      // Upload to /api/admin/upload
       const uploadRes = await fetch('/api/admin/upload', {
         method: 'POST',
         body: uploadFormData,
       });
 
-      console.log('Upload response status:', uploadRes.status);
-
       if (!uploadRes.ok) {
         const errorData = await uploadRes.json();
-        console.error('Upload error:', errorData);
         throw new Error(errorData.error || 'Resim yüklenemedi');
       }
 
       const uploadData = await uploadRes.json();
-      console.log('Upload success:', uploadData);
 
       setFormData((prev) => ({
         ...prev,
@@ -165,7 +204,6 @@ export default function NewsForm({ initialData, onSubmit, isLoading = false }: N
       }
     } catch (err) {
       const errorMessage = err instanceof Error ? err.message : 'Bilinmeyen hata';
-      console.error('Upload error caught:', errorMessage);
       logger.error('Resim yükleme hatası', 'NEWS_FORM', { error: errorMessage });
       setError(errorMessage);
     } finally {
@@ -179,7 +217,7 @@ export default function NewsForm({ initialData, onSubmit, isLoading = false }: N
       setGeneratingMetadata(true);
       setError(null);
 
-      const content = formData.translations[activeLanguage].content;
+      const content = formData.translations[activeLanguage]?.content;
       if (!content || content.length < 100) {
         setError('Content must be at least 100 characters to generate metadata');
         return;
@@ -187,18 +225,11 @@ export default function NewsForm({ initialData, onSubmit, isLoading = false }: N
 
       const response = await fetch('/api/public/ai/generate-metadata', {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          content,
-          language: activeLanguage,
-        }),
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ content, language: activeLanguage }),
       });
 
-      if (!response.ok) {
-        throw new Error('Failed to generate metadata');
-      }
+      if (!response.ok) throw new Error('Failed to generate metadata');
 
       const { data: metadata } = (await response.json()) as { data: AIMetadataGenerationResponse };
 
@@ -234,15 +265,17 @@ export default function NewsForm({ initialData, onSubmit, isLoading = false }: N
       setLoading(true);
       setError(null);
 
-      // Only send translations that have content
-      const translations: any = {};
-
-      if (formData.translations.tr.title || formData.translations.tr.content) {
-        translations.tr = formData.translations.tr;
+      // Save current editor content before submit
+      if (editor && activeLanguage) {
+        formData.translations[activeLanguage].content = editor.getHTML();
       }
 
-      if (formData.translations.es.title || formData.translations.es.content) {
-        translations.es = formData.translations.es;
+      // Only send translations that have content
+      const translations: Record<string, NewsTranslation> = {};
+      for (const [code, trans] of Object.entries(formData.translations)) {
+        if (trans.title || trans.content) {
+          translations[code] = trans;
+        }
       }
 
       const cleanedData = {
@@ -250,16 +283,12 @@ export default function NewsForm({ initialData, onSubmit, isLoading = false }: N
         translations,
       };
 
-      console.log('Submitting form data:', JSON.stringify(cleanedData, null, 2));
-
       const url = initialData ? `/api/public/news/${initialData._id}` : '/api/public/news';
       const method = initialData ? 'PUT' : 'POST';
 
       const response = await fetch(url, {
         method,
-        headers: {
-          'Content-Type': 'application/json',
-        },
+        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(cleanedData),
       });
 
@@ -287,7 +316,17 @@ export default function NewsForm({ initialData, onSubmit, isLoading = false }: N
     }
   };
 
-  const translation = formData.translations[activeLanguage];
+  // Loading state while languages are being fetched
+  if (langsLoading) {
+    return (
+      <div className="flex items-center justify-center py-12">
+        <div className="animate-spin rounded-full h-8 w-8 border-2 border-indigo-600 border-t-transparent"></div>
+        <span className="ml-3 text-slate-600">Diller yükleniyor...</span>
+      </div>
+    );
+  }
+
+  const translation = formData.translations[activeLanguage] || emptyTranslation();
 
   return (
     <form onSubmit={handleSubmit} className="space-y-6">
@@ -313,23 +352,13 @@ export default function NewsForm({ initialData, onSubmit, isLoading = false }: N
       )}
 
       {/* Language Tabs */}
-      <div className="bg-white dark:bg-slate-800 rounded-2xl shadow-sm border border-slate-200/60 dark:border-slate-700 overflow-hidden">
-        <div className="flex border-b border-slate-200/60">
-          {(['tr', 'es'] as const).map((lang) => (
-            <button
-              key={lang}
-              type="button"
-              onClick={() => setActiveLanguage(lang)}
-              className={`flex-1 px-6 py-4 text-sm font-semibold transition-all duration-200 ${activeLanguage === lang
-                ? 'bg-gradient-to-r from-indigo-500 to-violet-600 text-white'
-                : 'text-slate-600 hover:text-slate-900 hover:bg-slate-50 dark:text-slate-400 dark:hover:text-white dark:hover:bg-slate-700'
-                }`}
-            >
-              {lang === 'tr' ? 'Türkçe' : 'Español'}
-            </button>
-          ))}
-        </div>
-      </div>
+      <LanguageTabs
+        languages={languages}
+        activeLanguage={activeLanguage}
+        onLanguageChange={handleLanguageChange}
+        translations={formData.translations}
+        error={langsError}
+      />
 
       {/* Featured Image */}
       <div className="bg-white dark:bg-slate-800 rounded-2xl shadow-sm border border-slate-200/60 dark:border-slate-700 p-6">
@@ -455,7 +484,7 @@ export default function NewsForm({ initialData, onSubmit, isLoading = false }: N
         <div className="flex gap-2 p-3 bg-slate-50 rounded-xl border border-slate-200/60 mb-2">
           <button
             type="button"
-            onClick={() => currentEditor?.chain().focus().toggleBold().run()}
+            onClick={() => editor?.chain().focus().toggleBold().run()}
             className="px-3 py-1 bg-white border border-slate-200 dark:bg-slate-700 dark:border-slate-600 dark:text-white rounded-lg hover:bg-slate-50 font-semibold text-sm transition-colors"
             title="Kalın"
           >
@@ -463,7 +492,7 @@ export default function NewsForm({ initialData, onSubmit, isLoading = false }: N
           </button>
           <button
             type="button"
-            onClick={() => currentEditor?.chain().focus().toggleItalic().run()}
+            onClick={() => editor?.chain().focus().toggleItalic().run()}
             className="px-3 py-1 bg-white border border-slate-200 dark:bg-slate-700 dark:border-slate-600 dark:text-white rounded-lg hover:bg-slate-50 italic text-sm transition-colors"
             title="İtalik"
           >
@@ -471,7 +500,7 @@ export default function NewsForm({ initialData, onSubmit, isLoading = false }: N
           </button>
           <button
             type="button"
-            onClick={() => currentEditor?.chain().focus().toggleHeading({ level: 2 }).run()}
+            onClick={() => editor?.chain().focus().toggleHeading({ level: 2 }).run()}
             className="px-3 py-1 bg-white border border-slate-200 dark:bg-slate-700 dark:border-slate-600 dark:text-white rounded-lg hover:bg-slate-50 font-semibold text-sm transition-colors"
             title="Başlık"
           >
@@ -479,7 +508,7 @@ export default function NewsForm({ initialData, onSubmit, isLoading = false }: N
           </button>
           <button
             type="button"
-            onClick={() => currentEditor?.chain().focus().toggleBulletList().run()}
+            onClick={() => editor?.chain().focus().toggleBulletList().run()}
             className="px-3 py-1 bg-white border border-slate-200 dark:bg-slate-700 dark:border-slate-600 dark:text-white rounded-lg hover:bg-slate-50 text-sm transition-colors"
             title="Liste"
           >
@@ -489,7 +518,7 @@ export default function NewsForm({ initialData, onSubmit, isLoading = false }: N
 
         {/* Editor */}
         <EditorContent
-          editor={currentEditor}
+          editor={editor}
           className="w-full min-h-96 p-4 border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 text-slate-900 dark:text-white rounded-xl focus-within:ring-2 focus-within:ring-indigo-500 focus-within:border-transparent prose prose-sm max-w-none dark:prose-invert"
         />
       </div>

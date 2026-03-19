@@ -56,11 +56,64 @@ module.exports = {
           border: 'var(--admin-border)',
           'text-primary': 'var(--admin-text-primary)',
           'text-secondary': 'var(--admin-text-secondary)',
-        }
+        },
+
+        // ── Design System: Semantic Colors (CSS variable based) ──
+        brand: {
+          50:  'var(--color-brand-50)',
+          100: 'var(--color-brand-100)',
+          200: 'var(--color-brand-200)',
+          300: 'var(--color-brand-300)',
+          400: 'var(--color-brand-400)',
+          500: 'var(--color-brand-500)',
+          600: 'var(--color-brand-600)',
+          700: 'var(--color-brand-700)',
+          800: 'var(--color-brand-800)',
+          900: 'var(--color-brand-900)',
+        },
+        success: {
+          light:   'var(--color-success-light)',
+          DEFAULT: 'var(--color-success)',
+          dark:    'var(--color-success-dark)',
+        },
+        warning: {
+          light:   'var(--color-warning-light)',
+          DEFAULT: 'var(--color-warning)',
+          dark:    'var(--color-warning-dark)',
+        },
+        danger: {
+          light:   'var(--color-danger-light)',
+          DEFAULT: 'var(--color-danger)',
+          dark:    'var(--color-danger-dark)',
+        },
+        info: {
+          light:   'var(--color-info-light)',
+          DEFAULT: 'var(--color-info)',
+          dark:    'var(--color-info-dark)',
+        },
+        surface: {
+          primary:   'var(--color-surface-primary)',
+          secondary: 'var(--color-surface-secondary)',
+          tertiary:  'var(--color-surface-tertiary)',
+        },
+        border: {
+          DEFAULT: 'var(--color-border)',
+          strong:  'var(--color-border-strong)',
+          subtle:  'var(--color-border-subtle)',
+        },
+        social: {
+          twitter:  '#1DA1F2',
+          facebook: '#4267B2',
+          linkedin: '#0077b5',
+        },
+        page: {
+          bg: '#f6f7f9',
+        },
       },
       fontFamily: {
         sans: ['Inter', 'var(--font-inter)', 'system-ui', 'sans-serif'],
         display: ['Inter', 'var(--font-inter)', 'system-ui', 'sans-serif'],
+        mono: ['ui-monospace', 'SFMono-Regular', 'monospace'],
       },
       fontSize: {
         'fixral-xs': ['0.75rem', { lineHeight: '1rem' }],
@@ -141,6 +194,21 @@ module.exports = {
       },
       borderColor: {
         DEFAULT: '#cbd5e1', // slate-300
+      },
+      // ── Design System: Transition Durations ──
+      transitionDuration: {
+        fast: '100ms',
+        base: '150ms',
+        slow: '300ms',
+      },
+      // ── Design System: Z-Index Scale ──
+      zIndex: {
+        dropdown: '1000',
+        sticky:   '1020',
+        fixed:    '1030',
+        modal:    '1050',
+        popover:  '1070',
+        tooltip:  '1080',
       },
     },
   },

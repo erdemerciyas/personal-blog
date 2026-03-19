@@ -21,6 +21,7 @@ import {
 } from '@heroicons/react/24/outline';
 import toast from 'react-hot-toast';
 import Swal from 'sweetalert2';
+import { PageHeader, Card, Badge, Button } from '@/components/ui';
 
 interface NewsItem {
   _id: string;
@@ -192,10 +193,10 @@ export default function AdminNewsPage() {
       <div className="flex items-center justify-center min-h-[60vh]">
         <div className="flex flex-col items-center space-y-4">
           <div className="relative">
-            <div className="w-16 h-16 border-4 border-indigo-200 rounded-full"></div>
-            <div className="absolute top-0 left-0 w-16 h-16 border-4 border-transparent border-t-indigo-600 rounded-full animate-spin"></div>
+            <div className="w-16 h-16 border-4 border-brand-200 rounded-full"></div>
+            <div className="absolute top-0 left-0 w-16 h-16 border-4 border-transparent border-t-brand-600 rounded-full animate-spin"></div>
           </div>
-          <p className="text-lg font-medium text-slate-600">Haberler yükleniyor...</p>
+          <p className="text-lg font-medium text-gray-600">Haberler yükleniyor...</p>
         </div>
       </div>
     );
@@ -204,62 +205,59 @@ export default function AdminNewsPage() {
   return (
     <div className="space-y-6">
       {/* Page Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 sticky top-0 z-20 bg-slate-50/80 backdrop-blur-sm py-4">
-        <div>
-          <h1 className="text-2xl font-bold text-slate-900 tracking-tight">Haber Yönetimi</h1>
-          <p className="text-slate-500 mt-1">Blog yazılarını ve haberleri düzenleyin</p>
-        </div>
-        <Link
-          href="/admin/news/create"
-          className="inline-flex items-center px-6 py-3 bg-slate-900 text-white font-semibold rounded-xl hover:bg-slate-800 hover:shadow-lg hover:shadow-slate-900/20 transition-all duration-200"
-        >
-          <PlusIcon className="w-5 h-5 mr-2" />
-          Yeni Haber Ekle
-        </Link>
-      </div>
+      <PageHeader
+        title="Haber Yönetimi"
+        description="Blog yazılarını ve haberleri düzenleyin"
+        actions={
+          <Button variant="primary" size="lg" onClick={() => router.push('/admin/news/create')}>
+            <PlusIcon className="w-5 h-5" />
+            Yeni Haber Ekle
+          </Button>
+        }
+      />
 
       {/* Sticky Toolbar */}
-      <div className="bg-white rounded-2xl shadow-sm border border-slate-200 p-2 sm:p-3 sticky top-24 z-10 transition-all duration-300">
+      <Card padding="sm" className="sticky top-24 z-10">
         <div className="flex flex-col lg:flex-row gap-4 items-center justify-between">
           {/* Search & Filter Group */}
           <div className="flex-1 w-full lg:w-auto flex flex-col sm:flex-row gap-3">
             <div className="relative flex-1">
-              <MagnifyingGlassIcon className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-400" />
+              <MagnifyingGlassIcon className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
               <input
                 type="text"
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
                 placeholder="Haber başlığı veya özet ara..."
-                className="w-full pl-10 pr-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500/50 focus:border-indigo-500 focus:bg-white transition-all shadow-sm"
+                className="w-full pl-10 pr-4 py-2.5 bg-surface-secondary border border-border rounded-xl focus:outline-none focus:ring-2 focus:ring-brand-500/50 focus:border-brand-500 focus:bg-white transition-all shadow-sm"
               />
             </div>
 
-            <div className="flex items-center bg-slate-100 border border-slate-200/50 rounded-xl p-1 shadow-sm shrink-0 overflow-x-auto">
+            <div className="flex items-center bg-surface-tertiary border border-border/50 rounded-xl p-1 shadow-sm shrink-0 overflow-x-auto">
               <button
                 onClick={() => setStatusFilter('all')}
                 className={`px-3 py-1.5 rounded-lg text-sm font-medium transition-all whitespace-nowrap ${statusFilter === 'all'
-                  ? 'bg-white text-slate-900 shadow-sm'
-                  : 'text-slate-500 hover:text-slate-900'
+                  ? 'bg-white text-gray-900 shadow-sm'
+                  : 'text-gray-500 hover:text-gray-900'
                   }`}
               >
                 Tümü
               </button>
-              <div className="w-px h-4 bg-slate-200 mx-1" />
+              <div className="w-px h-4 bg-border mx-1" />
               <button
                 onClick={() => setStatusFilter('published')}
                 className={`px-3 py-1.5 rounded-lg text-sm font-medium transition-all whitespace-nowrap ${statusFilter === 'published'
-                  ? 'bg-emerald-50 text-emerald-700 shadow-sm'
-                  : 'text-slate-500 hover:text-emerald-700'
+                  ? 'bg-success-light text-success-dark shadow-sm'
+                  : 'text-gray-500 hover:text-success-dark'
                   }`}
               >
                 Yayında
               </button>
-              <div className="w-px h-4 bg-slate-200 mx-1" />
+              <div className="w-px h-4 bg-border mx-1" />
               <button
                 onClick={() => setStatusFilter('draft')}
                 className={`px-3 py-1.5 rounded-lg text-sm font-medium transition-all whitespace-nowrap ${statusFilter === 'draft'
-                  ? 'bg-amber-50 text-amber-700 shadow-sm'
-                  : 'text-slate-500 hover:text-amber-700'
+                  ? 'bg-warning-light text-warning-dark shadow-sm'
+                  : 'text-gray-500 hover:text-warning-dark'
                   }`}
               >
                 Taslak
@@ -271,7 +269,7 @@ export default function AdminNewsPage() {
           <div className="flex items-center justify-between sm:justify-end gap-3 w-full lg:w-auto">
             {selectedItems.size > 0 && (
               <div className="flex items-center gap-3 animate-in fade-in slide-in-from-right-4 duration-200">
-                <span className="text-sm font-medium text-slate-600 hidden sm:inline">
+                <span className="text-sm font-medium text-gray-600 hidden sm:inline">
                   {selectedItems.size} seçildi
                 </span>
                 <button
@@ -284,17 +282,17 @@ export default function AdminNewsPage() {
               </div>
             )}
 
-            <div className="flex bg-slate-100 border border-slate-200/50 rounded-xl p-1 shadow-sm shrink-0">
+            <div className="flex bg-surface-tertiary border border-border/50 rounded-xl p-1 shadow-sm shrink-0">
               <button
                 onClick={() => setViewMode('grid')}
-                className={`p-2 rounded-lg transition-all ${viewMode === 'grid' ? 'bg-white text-indigo-600 shadow-sm' : 'text-slate-500 hover:text-slate-700'}`}
+                className={`p-2 rounded-lg transition-all ${viewMode === 'grid' ? 'bg-white text-brand-600 shadow-sm' : 'text-gray-500 hover:text-gray-700'}`}
                 title="Grid Görünümü"
               >
                 <Squares2X2Icon className="w-5 h-5" />
               </button>
               <button
                 onClick={() => setViewMode('list')}
-                className={`p-2 rounded-lg transition-all ${viewMode === 'list' ? 'bg-white text-indigo-600 shadow-sm' : 'text-slate-500 hover:text-slate-700'}`}
+                className={`p-2 rounded-lg transition-all ${viewMode === 'list' ? 'bg-white text-brand-600 shadow-sm' : 'text-gray-500 hover:text-gray-700'}`}
                 title="Liste Görünümü"
               >
                 <ListBulletIcon className="w-5 h-5" />
@@ -302,16 +300,16 @@ export default function AdminNewsPage() {
             </div>
           </div>
         </div>
-      </div>
+      </Card>
 
       {/* Content Area */}
       {filteredItems.length === 0 ? (
-        <div className="bg-white rounded-2xl shadow-sm border border-slate-200 border-dashed p-12 text-center">
-          <div className="w-16 h-16 bg-slate-50 rounded-full flex items-center justify-center mx-auto mb-4">
-            <DocumentTextIcon className="w-8 h-8 text-slate-400" />
+        <Card className="border-dashed p-12 text-center">
+          <div className="w-16 h-16 bg-surface-secondary rounded-full flex items-center justify-center mx-auto mb-4">
+            <DocumentTextIcon className="w-8 h-8 text-gray-400" />
           </div>
-          <h3 className="text-lg font-semibold text-slate-900 mb-2">Haber bulunamadı</h3>
-          <p className="text-slate-500 mb-6 max-w-sm mx-auto">
+          <h3 className="text-lg font-semibold text-gray-900 mb-2">Haber bulunamadı</h3>
+          <p className="text-gray-500 mb-6 max-w-sm mx-auto">
             {searchQuery || statusFilter !== 'all'
               ? 'Arama kriterlerinize uygun haber bulunamadı. Filtreleri temizlemeyi deneyin.'
               : 'Henüz hiç haber eklenmemiş. İlk haberinizi oluşturarak başlayın.'}
@@ -319,33 +317,33 @@ export default function AdminNewsPage() {
           {(searchQuery || statusFilter !== 'all') ? (
             <button
               onClick={() => { setSearchQuery(''); setStatusFilter('all'); }}
-              className="text-indigo-600 hover:text-indigo-700 font-medium hover:underline"
+              className="text-brand-600 hover:text-brand-700 font-medium hover:underline"
             >
               Filtreleri Temizle
             </button>
           ) : (
             <Link
               href="/admin/news/create"
-              className="inline-flex items-center px-6 py-3 bg-slate-900 text-white font-semibold rounded-xl hover:bg-slate-800 transition-all"
+              className="inline-flex items-center px-6 py-3 bg-gray-900 text-white font-semibold rounded-xl hover:bg-gray-800 transition-all"
             >
               <PlusIcon className="w-5 h-5 mr-2" />
               Haber Ekle
             </Link>
           )}
-        </div>
+        </Card>
       ) : (
         <>
           {viewMode === 'grid' ? (
-            <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
+            <ul className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
               {filteredItems.map(item => (
-                <div
+                <li
                   key={item._id}
                   className={`group relative bg-white rounded-2xl border transition-all duration-300 hover:shadow-xl overflow-hidden
-                         ${selectedItems.has(item._id) ? 'border-indigo-500 ring-1 ring-indigo-500' : 'border-slate-200 hover:border-slate-300'}
+                         ${selectedItems.has(item._id) ? 'border-brand-500 ring-1 ring-brand-500' : 'border-border hover:border-gray-300'}
                       `}
                 >
                   {/* Image / Cover */}
-                  <div className="aspect-video bg-slate-100 relative overflow-hidden">
+                  <div className="aspect-video bg-surface-tertiary relative overflow-hidden">
                     {item.featuredImage ? (
                       <img
                         src={item.featuredImage}
@@ -353,7 +351,7 @@ export default function AdminNewsPage() {
                         className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
                       />
                     ) : (
-                      <div className="w-full h-full flex items-center justify-center text-slate-300">
+                      <div className="w-full h-full flex items-center justify-center text-gray-300">
                         <DocumentTextIcon className="w-12 h-12" />
                       </div>
                     )}
@@ -366,7 +364,7 @@ export default function AdminNewsPage() {
                            `}
                     >
                       <div className={`w-8 h-8 rounded-full border-2 flex items-center justify-center
-                               ${selectedItems.has(item._id) ? 'bg-indigo-600 border-indigo-600 text-white' : 'bg-transparent border-white text-transparent hover:bg-white/20'}
+                               ${selectedItems.has(item._id) ? 'bg-brand-600 border-brand-600 text-white' : 'bg-transparent border-white text-transparent hover:bg-white/20'}
                             `}>
                         <CheckCircleIcon className="w-5 h-5" />
                       </div>
@@ -375,7 +373,7 @@ export default function AdminNewsPage() {
                     {/* Status Badge */}
                     <div className="absolute top-3 right-3 pointer-events-none">
                       <span className={`px-2.5 py-1 rounded-lg text-xs font-semibold backdrop-blur-md shadow-sm border border-white/20
-                               ${item.status === 'published' ? 'bg-emerald-500/90 text-white' : 'bg-amber-400/90 text-white'}
+                               ${item.status === 'published' ? 'bg-success/90 text-white' : 'bg-warning/90 text-white'}
                             `}>
                         {item.status === 'published' ? 'Yayında' : 'Taslak'}
                       </span>
@@ -384,26 +382,26 @@ export default function AdminNewsPage() {
 
                   {/* Content */}
                   <div className="p-5">
-                    <div className="flex items-center gap-2 text-xs text-slate-400 mb-3">
+                    <div className="flex items-center gap-2 text-xs text-gray-400 mb-3">
                       <CalendarIcon className="w-4 h-4" />
                       <span>{formatDate(item.createdAt)}</span>
                       {item.category && (
                         <>
-                          <span className="w-1 h-1 bg-slate-300 rounded-full" />
-                          <span className="text-slate-600 font-medium">{item.category}</span>
+                          <span className="w-1 h-1 bg-gray-300 rounded-full" />
+                          <span className="text-gray-600 font-medium">{item.category}</span>
                         </>
                       )}
                     </div>
 
-                    <h3 className="text-lg font-bold text-slate-900 mb-2 line-clamp-1 group-hover:text-indigo-600 transition-colors">
+                    <h3 className="text-lg font-bold text-gray-900 mb-2 line-clamp-1 group-hover:text-brand-600 transition-colors">
                       {item.title}
                     </h3>
-                    <p className="text-sm text-slate-500 line-clamp-2 mb-4 h-10">
+                    <p className="text-sm text-gray-500 line-clamp-2 mb-4 h-10">
                       {item.excerpt}
                     </p>
 
-                    <div className="flex items-center justify-between pt-4 border-t border-slate-100">
-                      <div className="flex items-center text-xs text-slate-500">
+                    <div className="flex items-center justify-between pt-4 border-t border-border-subtle">
+                      <div className="flex items-center text-xs text-gray-500">
                         {item.views !== undefined && (
                           <span className="flex items-center gap-1">
                             <EyeIcon className="w-3.5 h-3.5" />
@@ -415,14 +413,14 @@ export default function AdminNewsPage() {
                       <div className="flex items-center gap-2">
                         <button
                           onClick={() => handleDelete(item._id)}
-                          className="p-2 text-slate-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors"
+                          className="p-2 text-gray-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors"
                           title="Sil"
                         >
                           <TrashIcon className="w-4 h-4" />
                         </button>
                         <Link
                           href={`/admin/news/${item._id}/edit`}
-                          className="flex items-center px-3 py-1.5 bg-slate-100 text-slate-700 text-sm font-medium rounded-lg hover:bg-slate-200 transition-colors"
+                          className="flex items-center px-3 py-1.5 bg-surface-tertiary text-gray-700 text-sm font-medium rounded-lg hover:bg-gray-200 transition-colors"
                         >
                           <PencilIcon className="w-3.5 h-3.5 mr-1.5" />
                           Düzenle
@@ -430,21 +428,21 @@ export default function AdminNewsPage() {
                       </div>
                     </div>
                   </div>
-                </div>
+                </li>
               ))}
-            </div>
+            </ul>
           ) : (
             // LIST VIEW
-            <div className="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden">
+            <Card padding="none" className="overflow-hidden">
               <table className="w-full text-left border-collapse">
                 <thead>
-                  <tr className="bg-slate-50 border-b border-slate-200 text-xs font-semibold text-slate-500 uppercase tracking-wider">
+                  <tr className="bg-surface-secondary border-b border-border text-xs font-semibold text-gray-500 uppercase tracking-wider">
                     <th className="px-6 py-4 w-12">
                       <input
                         type="checkbox"
                         checked={selectedItems.size === filteredItems.length}
                         onChange={(e) => handleSelectAll(e.target.checked)}
-                        className="rounded border-slate-300 text-indigo-600 focus:ring-indigo-500"
+                        className="rounded border-gray-300 text-brand-600 focus:ring-brand-500"
                       />
                     </th>
                     <th className="px-6 py-4">Haber Detayı</th>
@@ -453,46 +451,46 @@ export default function AdminNewsPage() {
                     <th className="px-6 py-4 w-32 text-right">İşlemler</th>
                   </tr>
                 </thead>
-                <tbody className="divide-y divide-slate-100">
+                <tbody className="divide-y divide-border-subtle">
                   {filteredItems.map(item => (
                     <tr
                       key={item._id}
-                      className={`group transition-colors ${selectedItems.has(item._id) ? 'bg-indigo-50/50' : 'hover:bg-slate-50'}`}
+                      className={`group transition-colors ${selectedItems.has(item._id) ? 'bg-brand-50/50' : 'hover:bg-surface-secondary'}`}
                     >
                       <td className="px-6 py-4">
                         <input
                           type="checkbox"
                           checked={selectedItems.has(item._id)}
                           onChange={() => handleSelectItem(item._id)}
-                          className="rounded border-slate-300 text-indigo-600 focus:ring-indigo-500"
+                          className="rounded border-gray-300 text-brand-600 focus:ring-brand-500"
                         />
                       </td>
                       <td className="px-6 py-4">
                         <div className="flex items-center gap-4">
-                          <div className="w-16 h-12 bg-slate-100 rounded-lg overflow-hidden flex-shrink-0 border border-slate-200">
+                          <div className="w-16 h-12 bg-surface-tertiary rounded-lg overflow-hidden flex-shrink-0 border border-border">
                             {item.featuredImage ? (
                               <img src={item.featuredImage} alt="" className="w-full h-full object-cover" />
                             ) : (
-                              <div className="w-full h-full flex items-center justify-center text-slate-300">
+                              <div className="w-full h-full flex items-center justify-center text-gray-300">
                                 <DocumentTextIcon className="w-6 h-6" />
                               </div>
                             )}
                           </div>
                           <div>
-                            <h4 className="text-sm font-semibold text-slate-900 group-hover:text-indigo-600 transition-colors">
+                            <h4 className="text-sm font-semibold text-gray-900 group-hover:text-brand-600 transition-colors">
                               {item.title}
                             </h4>
-                            <p className="text-xs text-slate-500 mt-0.5 line-clamp-1">
+                            <p className="text-xs text-gray-500 mt-0.5 line-clamp-1">
                               {item.excerpt}
                             </p>
                             <div className="flex items-center gap-2 mt-1.5">
                               {item.category && (
-                                <span className="inline-flex items-center px-1.5 py-0.5 rounded text-[10px] font-medium bg-slate-100 text-slate-600">
+                                <span className="inline-flex items-center px-1.5 py-0.5 rounded text-[10px] font-medium bg-surface-tertiary text-gray-600">
                                   {item.category}
                                 </span>
                               )}
                               {item.views !== undefined && (
-                                <span className="flex items-center gap-1 text-[10px] text-slate-400">
+                                <span className="flex items-center gap-1 text-[10px] text-gray-400">
                                   <EyeIcon className="w-3 h-3" /> {item.views}
                                 </span>
                               )}
@@ -501,20 +499,16 @@ export default function AdminNewsPage() {
                         </div>
                       </td>
                       <td className="px-6 py-4">
-                        <span className={`inline-flex items-center px-2 py-1 rounded-full text-xs font-medium border
-                                  ${item.status === 'published'
-                            ? 'bg-emerald-50 text-emerald-700 border-emerald-100'
-                            : 'bg-amber-50 text-amber-700 border-amber-100'}
-                               `}>
+                        <Badge variant={item.status === 'published' ? 'success' : 'warning'}>
                           <span className={`w-1.5 h-1.5 rounded-full mr-1.5
-                                     ${item.status === 'published' ? 'bg-emerald-500' : 'bg-amber-500'}
+                                     ${item.status === 'published' ? 'bg-success' : 'bg-warning'}
                                   `} />
                           {item.status === 'published' ? 'Yayında' : 'Taslak'}
-                        </span>
+                        </Badge>
                       </td>
                       <td className="px-6 py-4">
-                        <div className="flex flex-col text-xs text-slate-500">
-                          <span className="font-medium text-slate-700">{formatDate(item.createdAt).split(' ').slice(0, 2).join(' ')}</span>
+                        <div className="flex flex-col text-xs text-gray-500">
+                          <span className="font-medium text-gray-700">{formatDate(item.createdAt).split(' ').slice(0, 2).join(' ')}</span>
                           <span>{formatDate(item.createdAt).split(' ')[2]}</span>
                         </div>
                       </td>
@@ -522,14 +516,14 @@ export default function AdminNewsPage() {
                         <div className="flex items-center justify-end gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
                           <Link
                             href={`/admin/news/${item._id}/edit`}
-                            className="p-1.5 text-slate-500 hover:text-indigo-600 hover:bg-indigo-50 rounded-lg transition-colors"
+                            className="p-1.5 text-gray-500 hover:text-brand-600 hover:bg-brand-50 rounded-lg transition-colors"
                             title="Düzenle"
                           >
                             <PencilIcon className="w-4 h-4" />
                           </Link>
                           <button
                             onClick={() => handleDelete(item._id)}
-                            className="p-1.5 text-slate-500 hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors"
+                            className="p-1.5 text-gray-500 hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors"
                             title="Sil"
                           >
                             <TrashIcon className="w-4 h-4" />
@@ -540,7 +534,7 @@ export default function AdminNewsPage() {
                   ))}
                 </tbody>
               </table>
-            </div>
+            </Card>
           )}
         </>
       )}

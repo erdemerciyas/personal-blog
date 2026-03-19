@@ -5,8 +5,27 @@ import Theme from '@/models/Theme';
 import PageSettings from '@/models/PageSettings';
 import Category from '@/models/Category';
 import { notFound } from 'next/navigation';
+import type { Metadata } from 'next';
+import { SITE_URL, generateAlternates, generateOgImages } from '@/lib/seo-utils';
 
 export const revalidate = 3600; // ISR for 1 hour
+
+export async function generateMetadata({ params }: { params: Promise<{ lang: string }> }): Promise<Metadata> {
+  const { lang } = await params;
+  const canonical = lang === 'es' ? `${SITE_URL}/es/portfolio` : `${SITE_URL}/tr/portfolio`;
+  return {
+    title: 'Portfolyo | Fixral',
+    description: 'Tamamladığımız projeleri ve çalışmalarımızı keşfedin.',
+    alternates: generateAlternates('/tr/portfolio', '/es/portfolio'),
+    openGraph: {
+      title: 'Portfolyo | Fixral',
+      description: 'Tamamladığımız projeleri ve çalışmalarımızı keşfedin.',
+      url: canonical,
+      type: 'website',
+      images: generateOgImages(undefined, 'Portfolyo | Fixral'),
+    },
+  };
+}
 
 export default async function PortfolioPage() {
   await connectDB();

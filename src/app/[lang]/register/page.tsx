@@ -6,7 +6,7 @@ import Link from 'next/link';
 
 export default function RegisterPage() {
     const router = useRouter();
-    const searchParams = useSearchParams();
+    const searchParams = useSearchParams()!;
     const redirectUrl = searchParams.get('redirect') || '/';
 
     const [formData, setFormData] = useState({

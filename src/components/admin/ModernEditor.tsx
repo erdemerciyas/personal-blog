@@ -15,7 +15,7 @@ import { TableRow } from '@tiptap/extension-table-row';
 import { TableCell } from '@tiptap/extension-table-cell';
 import { TableHeader } from '@tiptap/extension-table-header';
 import { createLowlight } from 'lowlight';
-import { useCallback, useState, useEffect } from 'react';
+import { useCallback, useState, useEffect, useRef } from 'react';
 import DOMPurify from 'dompurify';
 import {
   BoldIcon,
@@ -168,15 +168,19 @@ const ModernEditor: React.FC<ModernEditorProps> = ({
     ] : []),
   ];
 
+  const isInternalUpdate = useRef(false);
+
   const editor = useEditor({
     extensions,
     content: content || '',
     editable: !readOnly,
     immediatelyRender: false,
     onUpdate: ({ editor }) => {
+      isInternalUpdate.current = true;
       const html = editor.getHTML();
       const sanitizedHtml = sanitizeContent(html);
       onChange(sanitizedHtml);
+      isInternalUpdate.current = false;
     },
     editorProps: {
       attributes: {
@@ -196,6 +200,16 @@ const ModernEditor: React.FC<ModernEditorProps> = ({
       },
     },
   });
+
+  // Sync external content changes into the editor
+  useEffect(() => {
+    if (editor && !isInternalUpdate.current) {
+      const currentHtml = editor.getHTML();
+      if (content !== currentHtml) {
+        editor.commands.setContent(content || '');
+      }
+    }
+  }, [content, editor]);
 
   // Toolbar fonksiyonları
   const addImage = useCallback((url: string) => {

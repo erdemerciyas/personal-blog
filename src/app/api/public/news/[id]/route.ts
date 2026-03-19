@@ -158,7 +158,11 @@ export async function PUT(
     const updateData: UpdateNewsInput = body;
 
     if (updateData.translations) {
-      news.translations = { ...news.translations, ...updateData.translations };
+      // translations is a Mongoose Map - use set() for each language
+      const newTrans = updateData.translations as Record<string, any>;
+      for (const [langCode, value] of Object.entries(newTrans)) {
+        news.translations.set(langCode, value);
+      }
     }
 
     if (updateData.featuredImage) {

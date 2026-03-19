@@ -80,6 +80,7 @@ const navigation = [
       { name: 'Kullanıcılar', href: '/admin/users' },
       { name: 'Site Ayarları', href: '/admin/site-settings' },
       { name: 'Sitemap', href: '/admin/sitemap' },
+      { name: 'Dil Ayarları', href: '/admin/languages' },
       { name: 'Güncellemeler', href: '/admin/updates' },
     ]
   },
@@ -196,6 +197,14 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
   return (
     <AdminThemeProvider>
       <div className="min-h-screen bg-[var(--admin-bg)] text-[var(--admin-text-primary)] font-sans transition-colors duration-300">
+        {/* Skip to main content */}
+        <a
+          href="#main-content"
+          className="sr-only focus:not-sr-only focus:fixed focus:left-4 focus:top-4 focus:z-tooltip focus:rounded-md focus:bg-indigo-600 focus:px-4 focus:py-2 focus:text-sm focus:text-white focus:shadow-lg"
+        >
+          İçeriğe geç
+        </a>
+
         {/* Mobile sidebar backdrop */}
         {sidebarOpen && (
           <div
@@ -255,7 +264,8 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
             )}
 
             {/* Navigation */}
-            <nav className="flex-1 overflow-y-auto px-4 py-6 space-y-1">
+            <nav className="flex-1 overflow-y-auto px-4 py-6 space-y-1" aria-label="Ana admin menü">
+              <ul className="space-y-1">
               {navigation.map((item) => {
                 // Handle Item with Children (Submenu)
                 if (item.children) {
@@ -263,9 +273,10 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
                   const groupActive = isGroupActive(item.children);
 
                   return (
-                    <div key={item.name} className="py-1">
+                    <li key={item.name} className="py-1">
                       <button
                         onClick={() => toggleSubmenu(item.name)}
+                        aria-expanded={isOpen}
                         className={`w-full flex items-center justify-between px-3 py-2.5 text-sm font-semibold rounded-xl transition-all duration-200 ${groupActive
                           ? 'text-indigo-600 bg-indigo-50/50 dark:bg-indigo-900/20 dark:text-indigo-400'
                           : 'text-[var(--admin-text-secondary)] hover:bg-[var(--admin-bg)] hover:text-[var(--admin-text-primary)] dark:text-slate-400 dark:hover:text-slate-200 dark:hover:bg-slate-800'
@@ -286,14 +297,14 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
 
                       {/* Submenu Items */}
                       {isOpen && (
-                        <div className="mt-1 ml-4 pl-4 border-l-2 border-[var(--admin-border)] space-y-1">
+                        <ul className="mt-1 ml-4 pl-4 border-l-2 border-[var(--admin-border)] space-y-1">
                           {item.children.map((child) => {
                             const active = isActive(child.href);
                             const count = child.href ? counts[child.href] : 0;
                             const isAlert = isAlertPath(child.href);
                             return (
+                              <li key={child.name}>
                               <Link
-                                key={child.name}
                                 href={child.href}
                                 onClick={() => setSidebarOpen(false)}
                                 className={`flex items-center justify-between px-3 py-2 text-sm font-medium rounded-lg transition-colors ${active
@@ -313,11 +324,12 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
                                   </span>
                                 )}
                               </Link>
+                              </li>
                             );
                           })}
-                        </div>
+                        </ul>
                       )}
-                    </div>
+                    </li>
                   );
                 }
 
@@ -327,8 +339,8 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
                 const isAlert = item.href ? isAlertPath(item.href) : false;
 
                 return (
+                  <li key={item.name}>
                   <Link
-                    key={item.name}
                     href={item.href || '#'}
                     onClick={() => setSidebarOpen(false)}
                     className={`group flex items-center px-3 py-2.5 text-sm font-semibold rounded-xl transition-all duration-200 mb-1 ${active
@@ -352,15 +364,19 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
                       </span>
                     )}
                   </Link>
+                  </li>
                 );
               })}
+              </ul>
             </nav>
 
 
             {/* Secondary Navigation (Profile) */}
             <div className="px-4 py-2 mt-auto">
-              <nav className="space-y-1">
+              <nav className="space-y-1" aria-label="Kullanıcı menüsü">
+                <ul className="space-y-1">
                 {secondaryNavigation.map((item) => (
+                  <li key={item.name}>
                   <Link
                     key={item.name}
                     href={item.href}
@@ -376,7 +392,9 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
                     />
                     {item.name}
                   </Link>
+                  </li>
                 ))}
+                </ul>
               </nav>
             </div>
 
@@ -456,7 +474,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
           </header>
 
           {/* Page Content */}
-          <main className="p-6 lg:p-8">
+          <main id="main-content" className="p-6 lg:p-8">
             {children}
           </main>
         </div>

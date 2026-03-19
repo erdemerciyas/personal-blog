@@ -8,22 +8,27 @@ import '@/models/Portfolio'; // Ensure Portfolio model is registered for populat
 import { NewsItem } from '@/types/news';
 import { logger } from '@/core/lib/logger';
 import PageHero from '@/components/common/PageHero';
+import { SITE_URL, getBlogAlternates, generateOgImages } from '@/lib/seo-utils';
+import { Badge } from '@/components/ui/Badge';
+import { buttonVariants } from '@/components/ui/Button';
+import { cn } from '@/lib/utils';
 
 interface PageProps {
-  params: {
+  params: Promise<{
     lang: string;
     slug: string;
-  };
+  }>;
 }
 
 /**
  * Generate metadata for news article detail page (Spanish)
  */
 export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
+  const { slug } = await params;
   try {
     await connectDB();
 
-    const news = (await News.findOne({ slug: params.slug }).lean()) as unknown as NewsItem | null;
+    const news = (await News.findOne({ slug }).lean()) as unknown as NewsItem | null;
 
     if (!news) {
       return {
@@ -40,24 +45,21 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
     }
 
     const translation = news.translations.es;
+    const ogImages = news.featuredImage?.url
+      ? [{ url: news.featuredImage.url, width: 1200, height: 630, alt: news.featuredImage.altText }]
+      : generateOgImages(undefined, translation.title);
 
     return {
       title: translation.title,
       description: translation.metaDescription,
       keywords: translation.keywords,
+      alternates: getBlogAlternates(news.slug),
       openGraph: {
         title: translation.title,
         description: translation.metaDescription,
         type: 'article',
-        url: `https://www.fixral.com/es/noticias/${news.slug}`,
-        images: [
-          {
-            url: news.featuredImage.url,
-            width: 1200,
-            height: 630,
-            alt: news.featuredImage.altText,
-          },
-        ],
+        url: `${SITE_URL}/es/noticias/${news.slug}`,
+        images: ogImages,
         publishedTime: news.publishedAt?.toISOString(),
         authors: [news.author.name],
       },
@@ -65,15 +67,7 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
         card: 'summary_large_image',
         title: translation.title,
         description: translation.metaDescription,
-        images: [news.featuredImage.url],
-      },
-      alternates: {
-        canonical: `https://www.fixral.com/es/noticias/${news.slug}`,
-        languages: {
-          'tr-TR': `https://www.fixral.com/tr/haberler/${news.slug}`,
-          'es-ES': `https://www.fixral.com/es/noticias/${news.slug}`,
-          'x-default': `https://www.fixral.com/tr/haberler/${news.slug}`,
-        },
+        images: [ogImages[0].url],
       },
     };
   } catch (error) {
@@ -124,22 +118,23 @@ export const dynamicParams = true;
 /**
  * News Detail Page Component (Spanish)
  */
-export default async function NewsDetailPage({ params }: PageProps) {
+export default async function NewsDetailPage({ params: paramsPromise }: PageProps) {
+  const { slug, lang } = await paramsPromise;
   try {
     await connectDB();
 
-    const news = (await News.findOne({ slug: params.slug })
+    const news = (await News.findOne({ slug })
       .populate('relatedPortfolioIds', 'title slug coverImage')
       .populate('relatedNewsIds', 'slug translations featuredImage')
       .lean()) as NewsItem | null;
 
     if (!news) {
-      logger.warn('News article not found (ES)', 'NEWS_DETAIL', { slug: params.slug });
+      logger.warn('News article not found (ES)', 'NEWS_DETAIL', { slug });
       notFound();
     }
 
     if (news.status !== 'published') {
-      logger.warn('News article not published (ES)', 'NEWS_DETAIL', { slug: params.slug, status: news.status });
+      logger.warn('News article not published (ES)', 'NEWS_DETAIL', { slug, status: news.status });
       notFound();
     }
 
@@ -193,7 +188,7 @@ export default async function NewsDetailPage({ params }: PageProps) {
           <nav className="mb-6 rounded-2xl border border-slate-200 bg-white/80 shadow-sm px-4 py-3 text-sm text-slate-600">
             <ol className="flex flex-wrap items-center gap-2">
               <li>
-                <Link href={`/${params.lang}`} className="hover:text-fixral-primary transition-colors flex items-center gap-1">
+                <Link href={`/${lang}`} className="hover:text-fixral-primary transition-colors flex items-center gap-1">
                   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" className="w-4 h-4">
                     <path fillRule="evenodd" d="M9.293 2.293a1 1 0 011.414 0l7 7A1 1 0 0117.414 11H16v5a2 2 0 01-2 2H6a2 2 0 01-2-2v-5H3.293a1 1 0 01-1.414-1.414l7-7z" clipRule="evenodd" />
                   </svg>
@@ -202,7 +197,7 @@ export default async function NewsDetailPage({ params }: PageProps) {
               </li>
               <li className="text-slate-300">/</li>
               <li>
-                <Link href={`/${params.lang}/noticias`} className="hover:text-fixral-primary transition-colors">
+                <Link href={`/${lang}/noticias`} className="hover:text-fixral-primary transition-colors">
                   Noticias
                 </Link>
               </li>
@@ -239,9 +234,9 @@ export default async function NewsDetailPage({ params }: PageProps) {
                   {/* Meta Header */}
                   <div className="flex flex-wrap items-center gap-3 text-sm text-slate-500 mb-4">
                     {news.tags && news.tags.length > 0 && (
-                      <span className="px-3 py-1 bg-fixral-primary/10 text-fixral-primary rounded-full font-medium text-xs uppercase tracking-wider">
+                      <Badge variant="primary" className="uppercase tracking-wider">
                         {news.tags[0]}
-                      </span>
+                      </Badge>
                     )}
 
                     <div className="flex items-center gap-1">
@@ -347,7 +342,7 @@ export default async function NewsDetailPage({ params }: PageProps) {
                     href={`https://twitter.com/intent/tweet?url=https://www.fixral.com/es/noticias/${news.slug}&text=${encodeURIComponent(translation.title)}`}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="w-10 h-10 bg-[#1DA1F2] text-white rounded-full flex items-center justify-center hover:opacity-90 transition-opacity"
+                    className="w-10 h-10 bg-social-twitter text-white rounded-full flex items-center justify-center hover:opacity-90 transition-opacity"
                   >
                     <svg fill="currentColor" viewBox="0 0 24 24" className="w-5 h-5"><path d="M23.953 4.57a10 10 0 01-2.825.775 4.958 4.958 0 002.163-2.723c-.951.555-2.005.959-3.127 1.184a4.92 4.92 0 00-8.384 4.482C7.69 8.095 4.067 6.13 1.64 3.162a4.822 4.822 0 00-.666 2.475c0 1.71.87 3.213 2.188 4.096a4.904 4.904 0 01-2.228-.616v.06a4.923 4.923 0 003.946 4.84 4.996 4.996 0 01-2.212.085 4.936 4.936 0 004.604 3.417 9.867 9.867 0 01-6.102 2.105c-.39 0-.779-.023-1.17-.067a13.995 13.995 0 007.557 2.209c9.053 0 13.998-7.496 13.998-13.985 0-.21 0-.42-.015-.63A9.935 9.935 0 0024 4.59z" /></svg>
                   </a>
@@ -355,7 +350,7 @@ export default async function NewsDetailPage({ params }: PageProps) {
                     href={`https://www.facebook.com/sharer/sharer.php?u=https://www.fixral.com/es/noticias/${news.slug}`}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="w-10 h-10 bg-[#4267B2] text-white rounded-full flex items-center justify-center hover:opacity-90 transition-opacity"
+                    className="w-10 h-10 bg-social-facebook text-white rounded-full flex items-center justify-center hover:opacity-90 transition-opacity"
                   >
                     <svg fill="currentColor" viewBox="0 0 24 24" className="w-5 h-5"><path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z" /></svg>
                   </a>
@@ -363,7 +358,7 @@ export default async function NewsDetailPage({ params }: PageProps) {
                     href={`https://www.linkedin.com/sharing/share-offsite/?url=https://www.fixral.com/es/noticias/${news.slug}`}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="w-10 h-10 bg-[#0077b5] text-white rounded-full flex items-center justify-center hover:opacity-90 transition-opacity"
+                    className="w-10 h-10 bg-social-linkedin text-white rounded-full flex items-center justify-center hover:opacity-90 transition-opacity"
                   >
                     <svg fill="currentColor" viewBox="0 0 24 24" className="w-5 h-5"><path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433c-1.144 0-2.063-.926-2.063-2.065 0-1.138.92-2.063 2.063-2.063 1.14 0 2.064.925 2.064 2.063 0 1.139-.925 2.065-2.064 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z" /></svg>
                   </a>

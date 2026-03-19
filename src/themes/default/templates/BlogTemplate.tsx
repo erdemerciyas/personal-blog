@@ -35,51 +35,50 @@ export default function BlogTemplate({
       </header>
 
       {posts.length > 0 ? (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+        <ul className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 list-none p-0">
           {posts.map((post) => (
-            <article
-              key={post.id}
-              className="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-lg transition-shadow"
-            >
-              {post.featuredImage && (
-                <div className="relative h-48 bg-gray-200">
-                  <Image
-                    src={post.featuredImage}
-                    alt={post.title}
-                    fill
-                    className="object-cover"
-                  />
-                </div>
-              )}
-              
-              <div className="p-6">
-                <h2 className="text-xl font-semibold text-gray-900 mb-3">
-                  <Link
-                    href={`/blog/${post.slug}`}
-                    className="hover:text-brand-primary-600 transition-colors"
-                  >
-                    {post.title}
-                  </Link>
-                </h2>
-                
-                {post.excerpt && (
-                  <p className="text-gray-600 mb-4 line-clamp-3">
-                    {post.excerpt}
-                  </p>
+            <li key={post.id}>
+              <article className="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-lg transition-shadow h-full">
+                {post.featuredImage && (
+                  <div className="relative h-48 bg-gray-200">
+                    <Image
+                      src={post.featuredImage}
+                      alt={post.title}
+                      fill
+                      className="object-cover"
+                    />
+                  </div>
                 )}
-                
-                <div className="flex items-center justify-between text-sm text-gray-500">
-                  {post.author && <span>{post.author}</span>}
-                  {post.createdAt && (
-                    <span>
-                      {new Date(post.createdAt).toLocaleDateString('tr-TR')}
-                    </span>
+
+                <div className="p-6">
+                  <h2 className="text-xl font-semibold text-gray-900 mb-3">
+                    <Link
+                      href={`/blog/${post.slug}`}
+                      className="hover:text-brand-primary-600 transition-colors"
+                    >
+                      {post.title}
+                    </Link>
+                  </h2>
+
+                  {post.excerpt && (
+                    <p className="text-gray-600 mb-4 line-clamp-3">
+                      {post.excerpt}
+                    </p>
                   )}
+
+                  <div className="flex items-center justify-between text-sm text-gray-500">
+                    {post.author && <span>{post.author}</span>}
+                    {post.createdAt && (
+                      <span>
+                        {new Date(post.createdAt).toLocaleDateString('tr-TR')}
+                      </span>
+                    )}
+                  </div>
                 </div>
-              </div>
-            </article>
+              </article>
+            </li>
           ))}
-        </div>
+        </ul>
       ) : (
         <div className="text-center py-12">
           <p className="text-gray-600 text-lg">Henüz blog yazısı yok</p>

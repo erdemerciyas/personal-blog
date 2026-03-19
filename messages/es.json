@@ -1,0 +1,113 @@
+{
+  "common": {
+    "loading": "Cargando...",
+    "error": "Se produjo un error.",
+    "retry": "Reintentar",
+    "save": "Guardar",
+    "cancel": "Cancelar",
+    "delete": "Eliminar",
+    "edit": "Editar",
+    "add": "Agregar",
+    "search": "Buscar",
+    "filter": "Filtrar",
+    "sort": "Ordenar",
+    "back": "Atrás",
+    "next": "Siguiente",
+    "previous": "Anterior",
+    "close": "Cerrar",
+    "confirm": "Confirmar",
+    "yes": "Sí",
+    "no": "No",
+    "submit": "Enviar",
+    "reset": "Restablecer",
+    "noResults": "No se encontraron resultados.",
+    "required": "Este campo es obligatorio.",
+    "success": "Operación exitosa.",
+    "readMore": "Leer más",
+    "viewAll": "Ver todo"
+  },
+  "nav": {
+    "home": "Inicio",
+    "products": "Productos",
+    "portfolio": "Portafolio",
+    "services": "Servicios",
+    "news": "Noticias",
+    "contact": "Contacto",
+    "login": "Iniciar sesión",
+    "register": "Registrarse",
+    "logout": "Cerrar sesión",
+    "cart": "Carrito",
+    "account": "Mi cuenta"
+  },
+  "hero": {
+    "title": "Fixral — Soluciones y Servicios Digitales",
+    "subtitle": "Tecnologías web modernas, desarrollo de software y servicios de transformación digital.",
+    "cta": "Descubre nuestros servicios",
+    "ctaSecondary": "Contáctanos"
+  },
+  "products": {
+    "title": "Productos",
+    "search": "Buscar productos...",
+    "sort": {
+      "newest": "Más recientes",
+      "oldest": "Más antiguos",
+      "priceAsc": "Precio (ascendente)",
+      "priceDesc": "Precio (descendente)"
+    },
+    "price": "Precio",
+    "priceRange": "Rango de precios",
+    "apply": "Aplicar",
+    "inStock": "En stock",
+    "outOfStock": "Agotado",
+    "addToCart": "Agregar al carrito",
+    "orderNow": "Pedir ahora",
+    "noProducts": "No se encontraron productos."
+  },
+  "news": {
+    "title": "Noticias",
+    "latest": "Últimas noticias",
+    "readMore": "Leer más",
+    "noNews": "No se encontraron noticias.",
+    "publishedAt": "Fecha de publicación"
+  },
+  "portfolio": {
+    "title": "Portafolio",
+    "client": "Cliente",
+    "date": "Fecha de finalización",
+    "technologies": "Tecnologías",
+    "noPortfolio": "No se encontraron proyectos."
+  },
+  "contact": {
+    "title": "Contacto",
+    "name": "Nombre completo",
+    "email": "Correo electrónico",
+    "phone": "Teléfono",
+    "subject": "Asunto",
+    "message": "Mensaje",
+    "send": "Enviar mensaje",
+    "success": "Tu mensaje ha sido enviado con éxito.",
+    "error": "No se pudo enviar el mensaje. Por favor, inténtalo de nuevo."
+  },
+  "auth": {
+    "login": "Iniciar sesión",
+    "register": "Registrarse",
+    "email": "Correo electrónico",
+    "password": "Contraseña",
+    "confirmPassword": "Confirmar contraseña",
+    "forgotPassword": "Olvidé mi contraseña",
+    "noAccount": "¿No tienes cuenta?",
+    "hasAccount": "¿Ya tienes cuenta?",
+    "loginSuccess": "Inicio de sesión exitoso.",
+    "logoutSuccess": "Sesión cerrada."
+  },
+  "footer": {
+    "rights": "Todos los derechos reservados.",
+    "privacyPolicy": "Política de privacidad",
+    "terms": "Términos de uso"
+  },
+  "meta": {
+    "siteName": "Fixral",
+    "defaultTitle": "Fixral — Soluciones y Servicios Digitales",
+    "defaultDescription": "Tecnologías web modernas, desarrollo de software y servicios de transformación digital."
+  }
+}

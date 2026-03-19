@@ -68,6 +68,42 @@
   --admin-border: #e2e8f0;
   --admin-text-primary: #0f172a;
   --admin-text-secondary: #64748b;
+
+  /* ── Design System: Brand Colors ── */
+  --color-brand-50:  #f0f9ff;
+  --color-brand-100: #e0f2fe;
+  --color-brand-200: #bae6fd;
+  --color-brand-300: #7dd3fc;
+  --color-brand-400: #38bdf8;
+  --color-brand-500: #0ea5e9;
+  --color-brand-600: #0284c7;
+  --color-brand-700: #0369a1;
+  --color-brand-800: #075985;
+  --color-brand-900: var(--theme-primary);
+
+  /* ── Design System: Semantic Status Colors ── */
+  --color-success-light: #f0fdf4;
+  --color-success:       #16a34a;
+  --color-success-dark:  #15803d;
+  --color-warning-light: #fffbeb;
+  --color-warning:       #d97706;
+  --color-warning-dark:  #b45309;
+  --color-danger-light:  #fef2f2;
+  --color-danger:        #dc2626;
+  --color-danger-dark:   #b91c1c;
+  --color-info-light:    #eff6ff;
+  --color-info:          #2563eb;
+  --color-info-dark:     #1d4ed8;
+
+  /* ── Design System: Surface Colors ── */
+  --color-surface-primary:   #ffffff;
+  --color-surface-secondary: #f9fafb;
+  --color-surface-tertiary:  #f3f4f6;
+
+  /* ── Design System: Border Colors ── */
+  --color-border:        #e5e7eb;
+  --color-border-strong: #d1d5db;
+  --color-border-subtle: #f3f4f6;
 }
 
 /* Admin Theme Variables - Dark Mode */
@@ -77,6 +113,14 @@
   --admin-border: #334155;
   --admin-text-primary: #f1f5f9;
   --admin-text-secondary: #94a3b8;
+
+  /* ── Design System: Dark Mode Overrides ── */
+  --color-surface-primary:   #0f172a;
+  --color-surface-secondary: #1e293b;
+  --color-surface-tertiary:  #334155;
+  --color-border:        #334155;
+  --color-border-strong: #475569;
+  --color-border-subtle: #1e293b;
 }
 
 /* Dark theme variables (media-based) */

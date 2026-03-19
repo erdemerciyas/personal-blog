@@ -1,4 +1,6 @@
 const path = require('path');
+const createNextIntlPlugin = require('next-intl/plugin');
+const withNextIntl = createNextIntlPlugin('./src/i18n/request.ts');
 
 // Sentry opsiyonel: Paket yoksa no-op ile devam et
 let withSentryConfig = (config) => config;
@@ -139,4 +141,4 @@ if (withSentryConfig !== ((config) => config)) {
   finalConfig = withSentryConfig(finalConfig, sentryWebpackPluginOptions);
 }
 
-module.exports = finalConfig;
+module.exports = withNextIntl(finalConfig);

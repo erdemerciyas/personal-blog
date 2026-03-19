@@ -1,10 +1,14 @@
 {
   "extends": [
     "next/core-web-vitals",
-    "next/typescript"
+    "next/typescript",
+    "plugin:jsx-a11y/recommended"
   ],
   "rules": {
-    "@typescript-eslint/no-explicit-any": "off",
+    "jsx-a11y/anchor-is-valid": "warn",
+    "jsx-a11y/heading-has-content": "error",
+    "jsx-a11y/no-redundant-roles": "warn",
+    "@typescript-eslint/no-explicit-any": "warn",
     "@next/next/no-img-element": "warn",
     "@typescript-eslint/no-unused-vars": ["warn", { 
       "argsIgnorePattern": "^_",
@@ -13,7 +17,14 @@
     }],
     "react/no-unescaped-entities": ["error", {
       "forbid": [">", "}"]
-    }]
+    }],
+    "no-restricted-syntax": [
+      "warn",
+      {
+        "selector": "JSXAttribute[name.name='style']",
+        "message": "Inline style kullanma. Tailwind class veya CSS variable kullan."
+      }
+    ]
   },
   "overrides": [
     {

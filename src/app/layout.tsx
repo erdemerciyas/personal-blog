@@ -231,35 +231,41 @@ export default async function RootLayout({
         <link rel="dns-prefetch" href="//fonts.gstatic.com" />
         <link rel="dns-prefetch" href="//res.cloudinary.com" />
 
-        {/* JSON-LD: Organization */}
-        <Script id="ld-organization" type="application/ld+json" strategy="afterInteractive">
-          {JSON.stringify({
-            '@context': 'https://schema.org',
-            '@type': 'Organization',
-            name: config.app.name,
-            url: config.app.url,
-            logo: `${config.app.url}/favicon.svg`,
-            sameAs: [
-              'https://www.linkedin.com',
-              'https://github.com/erdemerciyas'
-            ]
-          })}
-        </Script>
+        {/* JSON-LD: Organization — server-side inline (Google'ın ilk HTML'de görmesi için) */}
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{
+            __html: JSON.stringify({
+              '@context': 'https://schema.org',
+              '@type': 'Organization',
+              name: config.app.name,
+              url: config.app.url,
+              logo: `${config.app.url}/favicon.svg`,
+              sameAs: [
+                'https://www.linkedin.com',
+                'https://github.com/erdemerciyas'
+              ]
+            })
+          }}
+        />
 
-        {/* JSON-LD: WebSite with SearchAction */}
-        <Script id="ld-website" type="application/ld+json" strategy="afterInteractive">
-          {JSON.stringify({
-            '@context': 'https://schema.org',
-            '@type': 'WebSite',
-            name: config.app.name,
-            url: config.app.url,
-            potentialAction: {
-              '@type': 'SearchAction',
-              target: `${config.app.url}/?q={search_term_string}`,
-              'query-input': 'required name=search_term_string'
-            }
-          })}
-        </Script>
+        {/* JSON-LD: WebSite with SearchAction — server-side inline */}
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{
+            __html: JSON.stringify({
+              '@context': 'https://schema.org',
+              '@type': 'WebSite',
+              name: config.app.name,
+              url: config.app.url,
+              potentialAction: {
+                '@type': 'SearchAction',
+                target: `${config.app.url}/?q={search_term_string}`,
+                'query-input': 'required name=search_term_string'
+              }
+            })
+          }}
+        />
         {/* Google Tag Manager */}
         {gtmId && (
           <Script id="gtm-script" strategy="afterInteractive">
@@ -287,7 +293,7 @@ export default async function RootLayout({
           </>
         )}
       </head>
-      <body className={`${inter.variable} font-sans min-h-screen bg-[#f6f7f9] flex flex-col text-fixral-charcoal antialiased`}>
+      <body className={`${inter.variable} font-sans min-h-screen bg-page-bg flex flex-col text-fixral-charcoal antialiased`}>
         {/* GTM noscript */}
         {gtmId && (
           <noscript>

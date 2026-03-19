@@ -30,13 +30,13 @@ export default function ServicesGrid({ services = [] }: ServicesGridProps) {
     }
 
     return (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mb-16" aria-live="polite">
+        <ul className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mb-16 list-none p-0" aria-live="polite">
             {services.map((service, index) => {
                 const IconComponent = resolveIcon(service.icon);
 
                 return (
+                    <li key={service._id}>
                     <article
-                        key={service._id}
                         className="card-modern group h-full flex flex-col will-change-transform transition-transform duration-500"
                         style={{
                             animationDelay: `${index * 0.05}s`,
@@ -100,8 +100,9 @@ export default function ServicesGrid({ services = [] }: ServicesGridProps) {
                             </Link>
                         </div>
                     </article>
+                    </li>
                 );
             })}
-        </div>
+        </ul>
     );
 }

@@ -4,6 +4,11 @@ import { NextResponse } from 'next/server';
 import bcrypt from 'bcryptjs';
 
 export async function POST() {
+  // Bu endpoint sadece development ortamında çalışır
+  if (process.env.NODE_ENV !== 'development') {
+    return NextResponse.json({ error: 'Not Found' }, { status: 404 });
+  }
+
   try {
     await connectDB();
     

@@ -7,7 +7,7 @@ const PageHero = dynamic(() => import('@/components/common/PageHero'), { ssr: fa
 async function getProduct(slug: string) {
   const base = process.env.NEXTAUTH_URL || 'http://localhost:3000';
   try {
-    const res = await fetch(`${base}/api/products/slug/${slug}`, { cache: 'no-store' });
+    const res = await fetch(`${base}/api/products/slug/${slug}`, { next: { revalidate: 3600 } });
     if (!res.ok) return null;
     return res.json();
   } catch (error) {

@@ -318,9 +318,9 @@ export default function AdminModelsPage() {
       ) : (
         <>
           {viewMode === 'grid' ? (
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+            <ul className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
               {filteredModels.map(model => (
-                <div
+                <li
                   key={model._id}
                   className={`group relative bg-white rounded-2xl border transition-all duration-300 hover:shadow-xl overflow-hidden
                          ${selectedItems.has(model._id) ? 'border-indigo-500 ring-1 ring-indigo-500' : 'border-slate-200 hover:border-slate-300'}
@@ -385,9 +385,9 @@ export default function AdminModelsPage() {
                       </button>
                     </div>
                   </div>
-                </div>
+                </li>
               ))}
-            </div>
+            </ul>
           ) : (
             // LIST VIEW
             <div className="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden">

@@ -87,16 +87,16 @@ export default function SingleTemplate({
 
       {/* Tags */}
       {tags.length > 0 && (
-        <div className="flex flex-wrap gap-2 mb-8">
+        <ul className="flex flex-wrap gap-2 mb-8 list-none p-0">
           {tags.map((tag, index) => (
-            <span
+            <li
               key={index}
               className="px-3 py-1 bg-gray-100 text-gray-700 rounded-full text-sm"
             >
               #{tag}
-            </span>
+            </li>
           ))}
-        </div>
+        </ul>
       )}
 
       {/* Content */}

@@ -150,6 +150,11 @@ export async function PUT(
       updatedAt: new Date(),
     };
 
+    // Çok dilli içerik desteği
+    if (data.translations) {
+      updateData.translations = data.translations;
+    }
+
     // Çoklu kategori desteği
     if (data.categoryIds && Array.isArray(data.categoryIds) && data.categoryIds.length > 0) {
       updateData.categoryIds = data.categoryIds.map((id: string) => new ObjectId(id));

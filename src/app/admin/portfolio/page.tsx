@@ -17,6 +17,7 @@ import {
   FunnelIcon,
   CheckCircleIcon
 } from '@heroicons/react/24/outline';
+import { PageHeader, Card, Badge, Button } from '@/components/ui';
 
 interface PortfolioItem {
   _id: string;
@@ -143,10 +144,10 @@ export default function AdminPortfolioPage() {
       <div className="flex items-center justify-center min-h-[60vh]">
         <div className="flex flex-col items-center space-y-4">
           <div className="relative">
-            <div className="w-16 h-16 border-4 border-indigo-200 rounded-full"></div>
-            <div className="absolute top-0 left-0 w-16 h-16 border-4 border-transparent border-t-indigo-600 rounded-full animate-spin"></div>
+            <div className="w-16 h-16 border-4 border-brand-200 rounded-full"></div>
+            <div className="absolute top-0 left-0 w-16 h-16 border-4 border-transparent border-t-brand-600 rounded-full animate-spin"></div>
           </div>
-          <p className="text-lg font-medium text-slate-600">Portfolyo yükleniyor...</p>
+          <p className="text-lg font-medium text-gray-600">Portfolyo yükleniyor...</p>
         </div>
       </div>
     );
@@ -155,36 +156,30 @@ export default function AdminPortfolioPage() {
   return (
     <div className="space-y-6">
       {/* Page Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 sticky top-0 z-20 bg-slate-50/80 backdrop-blur-sm py-4">
-        <div>
-          <h1 className="text-3xl font-bold text-slate-900 tracking-tight">Portfolyo</h1>
-          <p className="text-slate-500 mt-1 font-medium">Projelerinizi yönetin ve düzenleyin</p>
-        </div>
-        <div className="flex items-center gap-3">
-          {selectedItems.size > 0 && (
-            <button
-              onClick={handleBulkDelete}
-              className="hidden sm:inline-flex items-center px-4 py-2.5 bg-red-50 text-red-600 font-medium rounded-xl hover:bg-red-100 transition-all border border-red-100"
-            >
-              <TrashIcon className="w-4 h-4 mr-2" />
-              {selectedItems.size} Sil
-            </button>
-          )}
-          <Link
-            href="/admin/portfolio/new"
-            className="inline-flex items-center px-5 py-2.5 bg-slate-900 text-white font-semibold rounded-xl hover:bg-slate-800 hover:shadow-lg hover:shadow-slate-900/20 transition-all duration-200 transform hover:-translate-y-0.5"
-          >
-            <PlusIcon className="w-5 h-5 mr-2" />
-            Yeni Proje
-          </Link>
-        </div>
-      </div>
+      <PageHeader
+        title="Portfolyo"
+        description="Projelerinizi yönetin ve düzenleyin"
+        actions={
+          <div className="flex items-center gap-3">
+            {selectedItems.size > 0 && (
+              <Button variant="danger" size="sm" onClick={handleBulkDelete} className="hidden sm:inline-flex">
+                <TrashIcon className="w-4 h-4" />
+                {selectedItems.size} Sil
+              </Button>
+            )}
+            <Button variant="primary" size="lg" onClick={() => router.push('/admin/portfolio/new')}>
+              <PlusIcon className="w-5 h-5" />
+              Yeni Proje
+            </Button>
+          </div>
+        }
+      />
 
       {/* Toolbar */}
-      <div className="bg-white rounded-2xl shadow-sm border border-slate-200 p-2 sm:p-3 sticky top-24 z-10 transition-all duration-300">
+      <Card padding="sm" className="sticky top-24 z-10">
         <div className="flex flex-col lg:flex-row gap-3 items-center justify-between">
           <div className="flex-1 w-full lg:w-auto relative group">
-            <div className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 group-focus-within:text-indigo-500 transition-colors">
+            <div className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 group-focus-within:text-brand-500 transition-colors">
               <MagnifyingGlassIcon className="w-5 h-5" />
             </div>
             <input
@@ -192,19 +187,19 @@ export default function AdminPortfolioPage() {
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               placeholder="Proje ara..."
-              className="w-full pl-10 pr-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500/50 focus:border-indigo-500 focus:bg-white transition-all"
+              className="w-full pl-10 pr-4 py-2.5 bg-surface-secondary border border-border rounded-xl focus:outline-none focus:ring-2 focus:ring-brand-500/50 focus:border-brand-500 focus:bg-white transition-all"
             />
           </div>
 
           <div className="flex items-center gap-2 w-full lg:w-auto overflow-x-auto pb-1 lg:pb-0 no-scrollbar">
-            <div className="flex bg-slate-100 p-1 rounded-xl shrink-0">
+            <div className="flex bg-surface-tertiary p-1 rounded-xl shrink-0">
               {(['all', 'published', 'draft'] as const).map((s) => (
                 <button
                   key={s}
                   onClick={() => setStatusFilter(s)}
                   className={`px-3 py-1.5 rounded-lg text-sm font-medium transition-all ${statusFilter === s
-                      ? 'bg-white text-slate-900 shadow-sm'
-                      : 'text-slate-500 hover:text-slate-700'
+                      ? 'bg-white text-gray-900 shadow-sm'
+                      : 'text-gray-500 hover:text-gray-700'
                     }`}
                 >
                   {s === 'all' ? 'Tümü' : s === 'published' ? 'Yayında' : 'Taslak'}
@@ -212,19 +207,19 @@ export default function AdminPortfolioPage() {
               ))}
             </div>
 
-            <div className="w-px h-8 bg-slate-200 mx-1 shrink-0 hidden sm:block"></div>
+            <div className="w-px h-8 bg-border mx-1 shrink-0 hidden sm:block"></div>
 
-            <div className="flex bg-slate-100 p-1 rounded-xl shrink-0">
+            <div className="flex bg-surface-tertiary p-1 rounded-xl shrink-0">
               <button
                 onClick={() => setViewMode('grid')}
-                className={`p-2 rounded-lg transition-all ${viewMode === 'grid' ? 'bg-white text-indigo-600 shadow-sm' : 'text-slate-500 hover:text-slate-700'}`}
+                className={`p-2 rounded-lg transition-all ${viewMode === 'grid' ? 'bg-white text-brand-600 shadow-sm' : 'text-gray-500 hover:text-gray-700'}`}
                 title="Izgara Görünümü"
               >
                 <Squares2X2Icon className="w-5 h-5" />
               </button>
               <button
                 onClick={() => setViewMode('list')}
-                className={`p-2 rounded-lg transition-all ${viewMode === 'list' ? 'bg-white text-indigo-600 shadow-sm' : 'text-slate-500 hover:text-slate-700'}`}
+                className={`p-2 rounded-lg transition-all ${viewMode === 'list' ? 'bg-white text-brand-600 shadow-sm' : 'text-gray-500 hover:text-gray-700'}`}
                 title="Liste Görünümü"
               >
                 <ListBulletIcon className="w-5 h-5" />
@@ -235,8 +230,8 @@ export default function AdminPortfolioPage() {
 
         {/* Mobile Bulk Delete */}
         {selectedItems.size > 0 && (
-          <div className="mt-3 pt-3 border-t border-slate-100 flex sm:hidden justify-between items-center px-1">
-            <span className="text-sm font-medium text-slate-600">{selectedItems.size} seçildi</span>
+          <div className="mt-3 pt-3 border-t border-border-subtle flex sm:hidden justify-between items-center px-1">
+            <span className="text-sm font-medium text-gray-600">{selectedItems.size} seçildi</span>
             <button
               onClick={handleBulkDelete}
               className="text-sm font-medium text-red-600 bg-red-50 px-3 py-1.5 rounded-lg"
@@ -245,36 +240,38 @@ export default function AdminPortfolioPage() {
             </button>
           </div>
         )}
-      </div>
+      </Card>
 
       {/* Content Area */}
       {filteredItems.length === 0 ? (
-        <div className="flex flex-col items-center justify-center py-20 bg-white rounded-2xl shadow-sm border border-slate-200 border-dashed">
-          <PhotoIcon className="w-16 h-16 text-slate-300 mb-4" />
-          <h3 className="text-xl font-semibold text-slate-900 mb-2">Proje Bulunamadı</h3>
-          <p className="text-slate-500 mb-6 text-center max-w-md px-4">
-            Aradığınız kriterlere uygun proje bulunamadı veya henüz hiç proje eklemediniz.
-          </p>
-          {!searchQuery && statusFilter === 'all' && (
-            <Link
-              href="/admin/portfolio/new"
-              className="inline-flex items-center px-6 py-3 bg-indigo-600 text-white font-semibold rounded-xl hover:bg-indigo-700 transition-colors"
-            >
-              <PlusIcon className="w-5 h-5 mr-2" />
-              İlk Projeyi Ekle
-            </Link>
-          )}
-        </div>
+        <Card className="border-dashed py-20 text-center">
+          <div className="flex flex-col items-center justify-center">
+            <PhotoIcon className="w-16 h-16 text-gray-300 mb-4" />
+            <h3 className="text-xl font-semibold text-gray-900 mb-2">Proje Bulunamadı</h3>
+            <p className="text-gray-500 mb-6 text-center max-w-md px-4">
+              Aradığınız kriterlere uygun proje bulunamadı veya henüz hiç proje eklemediniz.
+            </p>
+            {!searchQuery && statusFilter === 'all' && (
+              <Link
+                href="/admin/portfolio/new"
+                className="inline-flex items-center px-6 py-3 bg-brand-600 text-white font-semibold rounded-xl hover:bg-brand-700 transition-colors"
+              >
+                <PlusIcon className="w-5 h-5 mr-2" />
+                İlk Projeyi Ekle
+              </Link>
+            )}
+          </div>
+        </Card>
       ) : (
         <>
           {viewMode === 'grid' ? (
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 2xl:grid-cols-4 gap-6">
+            <ul className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 2xl:grid-cols-4 gap-6">
               {filteredItems.map(item => (
-                <div
+                <li
                   key={item._id}
                   className={`group relative bg-white rounded-2xl shadow-sm border transition-all duration-300 overflow-hidden hover:shadow-xl hover:-translate-y-1 ${selectedItems.has(item._id)
-                      ? 'ring-2 ring-indigo-500 border-transparent'
-                      : 'border-slate-200'
+                      ? 'ring-2 ring-brand-500 border-transparent'
+                      : 'border-border'
                     }`}
                   onClick={() => handleSelectItem(item._id)}
                 >
@@ -284,12 +281,12 @@ export default function AdminPortfolioPage() {
                       type="checkbox"
                       checked={selectedItems.has(item._id)}
                       onChange={(e) => { e.stopPropagation(); handleSelectItem(item._id); }}
-                      className="w-5 h-5 text-indigo-600 border-slate-300 rounded focus:ring-indigo-500 cursor-pointer block"
+                      className="w-5 h-5 text-brand-600 border-gray-300 rounded focus:ring-brand-500 cursor-pointer block"
                     />
                   </div>
 
                   {/* Image Container */}
-                  <div className="aspect-[4/3] bg-slate-100 relative overflow-hidden">
+                  <div className="aspect-[4/3] bg-surface-tertiary relative overflow-hidden">
                     {item.coverImage || (item.images && item.images.length > 0) ? (
                       <img
                         src={item.coverImage || item.images![0]}
@@ -298,7 +295,7 @@ export default function AdminPortfolioPage() {
                         loading="lazy"
                       />
                     ) : (
-                      <div className="w-full h-full flex items-center justify-center text-slate-300">
+                      <div className="w-full h-full flex items-center justify-center text-gray-300">
                         <PhotoIcon className="w-16 h-16" />
                       </div>
                     )}
@@ -308,7 +305,7 @@ export default function AdminPortfolioPage() {
                       <Link
                         href={`/admin/portfolio/edit/${item._id}`}
                         onClick={(e) => e.stopPropagation()}
-                        className="p-2 bg-white/20 backdrop-blur-md text-white rounded-xl hover:bg-white hover:text-slate-900 transition-colors"
+                        className="p-2 bg-white/20 backdrop-blur-md text-white rounded-xl hover:bg-white hover:text-gray-900 transition-colors"
                         title="Düzenle"
                       >
                         <PencilIcon className="w-5 h-5" />
@@ -325,8 +322,8 @@ export default function AdminPortfolioPage() {
                     {/* Status Badge */}
                     <div className="absolute top-3 right-3">
                       <span className={`px-2.5 py-1 rounded-full text-xs font-semibold backdrop-blur-md border border-white/10 shadow-sm ${item.status === 'published'
-                          ? 'bg-emerald-500/90 text-white'
-                          : 'bg-amber-400/90 text-white'
+                          ? 'bg-success/90 text-white'
+                          : 'bg-warning/90 text-white'
                         }`}>
                         {item.status === 'published' ? 'Yayında' : 'Taslak'}
                       </span>
@@ -335,32 +332,32 @@ export default function AdminPortfolioPage() {
 
                   {/* Content */}
                   <div className="p-5">
-                    <div className="flex items-center gap-2 mb-2 text-xs font-medium text-indigo-600">
+                    <div className="flex items-center gap-2 mb-2 text-xs font-medium text-brand-600">
                       <TagIcon className="w-3.5 h-3.5" />
                       <span className="uppercase tracking-wider truncate">{item.category}</span>
                     </div>
-                    <h3 className="text-lg font-bold text-slate-900 mb-2 line-clamp-1 group-hover:text-indigo-600 transition-colors" title={item.title}>
+                    <h3 className="text-lg font-bold text-gray-900 mb-2 line-clamp-1 group-hover:text-brand-600 transition-colors" title={item.title}>
                       {item.title}
                     </h3>
-                    <p className="text-slate-500 text-sm line-clamp-2 leading-relaxed mb-4 min-h-[2.5rem]">
+                    <p className="text-gray-500 text-sm line-clamp-2 leading-relaxed mb-4 min-h-[2.5rem]">
                       {item.description ? item.description.replace(/<[^>]+>/g, '') : 'Açıklama yok'}
                     </p>
 
-                    <div className="flex items-center justify-between pt-4 border-t border-slate-100 text-xs text-slate-400 font-medium">
+                    <div className="flex items-center justify-between pt-4 border-t border-border-subtle text-xs text-gray-400 font-medium">
                       <div className="flex items-center gap-1.5">
                         <CalendarIcon className="w-4 h-4" />
                         {formatDate(item.createdAt)}
                       </div>
                     </div>
                   </div>
-                </div>
+                </li>
               ))}
-            </div>
+            </ul>
           ) : (
-            <div className="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden">
+            <Card padding="none" className="overflow-hidden">
               <div className="overflow-x-auto">
-                <table className="w-full text-left text-sm text-slate-600">
-                  <thead className="bg-slate-50 border-b border-slate-200 font-semibold text-slate-700 uppercase tracking-wider text-xs">
+                <table className="w-full text-left text-sm text-gray-600">
+                  <thead className="bg-surface-secondary border-b border-border font-semibold text-gray-700 uppercase tracking-wider text-xs">
                     <tr>
                       <th className="px-6 py-4 w-12">
                         <input
@@ -370,7 +367,7 @@ export default function AdminPortfolioPage() {
                             if (selectedItems.size === filteredItems.length) setSelectedItems(new Set());
                             else setSelectedItems(new Set(filteredItems.map(i => i._id)));
                           }}
-                          className="w-4 h-4 text-indigo-600 border-slate-300 rounded focus:ring-indigo-500 rounded cursor-pointer"
+                          className="w-4 h-4 text-brand-600 border-gray-300 rounded focus:ring-brand-500 rounded cursor-pointer"
                         />
                       </th>
                       <th className="px-6 py-4">Proje Detayları</th>
@@ -380,11 +377,11 @@ export default function AdminPortfolioPage() {
                       <th className="px-6 py-4 text-right">İşlemler</th>
                     </tr>
                   </thead>
-                  <tbody className="divide-y divide-slate-100">
+                  <tbody className="divide-y divide-border-subtle">
                     {filteredItems.map(item => (
                       <tr
                         key={item._id}
-                        className={`group hover:bg-slate-50/80 transition-colors ${selectedItems.has(item._id) ? 'bg-indigo-50/30' : ''}`}
+                        className={`group hover:bg-surface-secondary/80 transition-colors ${selectedItems.has(item._id) ? 'bg-brand-50/30' : ''}`}
                         onClick={() => handleSelectItem(item._id)}
                       >
                         <td className="px-6 py-4" onClick={e => e.stopPropagation()}>
@@ -392,12 +389,12 @@ export default function AdminPortfolioPage() {
                             type="checkbox"
                             checked={selectedItems.has(item._id)}
                             onChange={() => handleSelectItem(item._id)}
-                            className="w-4 h-4 text-indigo-600 border-slate-300 rounded focus:ring-indigo-500 cursor-pointer"
+                            className="w-4 h-4 text-brand-600 border-gray-300 rounded focus:ring-brand-500 cursor-pointer"
                           />
                         </td>
                         <td className="px-6 py-4">
                           <div className="flex items-center gap-4">
-                            <div className="w-16 h-12 bg-slate-100 rounded-lg overflow-hidden shrink-0 border border-slate-200">
+                            <div className="w-16 h-12 bg-surface-tertiary rounded-lg overflow-hidden shrink-0 border border-border">
                               {item.coverImage || (item.images && item.images.length > 0) ? (
                                 <img
                                   src={item.coverImage || item.images![0]}
@@ -406,30 +403,28 @@ export default function AdminPortfolioPage() {
                                 />
                               ) : (
                                 <div className="w-full h-full flex items-center justify-center">
-                                  <PhotoIcon className="w-6 h-6 text-slate-300" />
+                                  <PhotoIcon className="w-6 h-6 text-gray-300" />
                                 </div>
                               )}
                             </div>
                             <div>
-                              <div className="font-bold text-slate-900 group-hover:text-indigo-600 transition-colors">{item.title}</div>
-                              <div className="text-xs text-slate-500 mt-0.5 max-w-xs truncate">{item.slug}</div>
+                              <div className="font-bold text-gray-900 group-hover:text-brand-600 transition-colors">{item.title}</div>
+                              <div className="text-xs text-gray-500 mt-0.5 max-w-xs truncate">{item.slug}</div>
                             </div>
                           </div>
                         </td>
                         <td className="px-6 py-4">
-                          <span className="inline-flex items-center px-2.5 py-1 rounded-lg bg-slate-100 text-slate-600 text-xs font-medium">
+                          <span className="inline-flex items-center px-2.5 py-1 rounded-lg bg-surface-tertiary text-gray-600 text-xs font-medium">
                             <TagIcon className="w-3 h-3 mr-1.5" />
                             {item.category}
                           </span>
                         </td>
                         <td className="px-6 py-4">
-                          <span className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium ${item.status === 'published' ? 'bg-emerald-50 text-emerald-700 border border-emerald-100' : 'bg-amber-50 text-amber-700 border border-amber-100'
-                            }`}>
-                            <div className={`w-1.5 h-1.5 rounded-full ${item.status === 'published' ? 'bg-emerald-500' : 'bg-amber-500'}`}></div>
+                          <Badge variant={item.status === 'published' ? 'success' : 'warning'}>
                             {item.status === 'published' ? 'Yayında' : 'Taslak'}
-                          </span>
+                          </Badge>
                         </td>
-                        <td className="px-6 py-4 text-right text-xs font-mono text-slate-500">
+                        <td className="px-6 py-4 text-right text-xs font-mono text-gray-500">
                           {formatDate(item.createdAt)}
                         </td>
                         <td className="px-6 py-4 text-right">
@@ -437,14 +432,14 @@ export default function AdminPortfolioPage() {
                             <Link
                               href={`/admin/portfolio/edit/${item._id}`}
                               onClick={e => e.stopPropagation()}
-                              className="p-1.5 text-slate-400 hover:text-indigo-600 hover:bg-indigo-50 rounded-lg transition-colors"
+                              className="p-1.5 text-gray-400 hover:text-brand-600 hover:bg-brand-50 rounded-lg transition-colors"
                               title="Düzenle"
                             >
                               <PencilIcon className="w-4 h-4" />
                             </Link>
                             <button
                               onClick={(e) => { e.stopPropagation(); handleDelete(item._id); }}
-                              className="p-1.5 text-slate-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors"
+                              className="p-1.5 text-gray-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors"
                               title="Sil"
                             >
                               <TrashIcon className="w-4 h-4" />
@@ -456,7 +451,7 @@ export default function AdminPortfolioPage() {
                   </tbody>
                 </table>
               </div>
-            </div>
+            </Card>
           )}
         </>
       )}

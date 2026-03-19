@@ -34,6 +34,13 @@ export interface IProduct {
   ratingAverage: number;
   ratingCount: number;
   isActive: boolean;
+  translations?: Map<string, {
+    title?: string;
+    description?: string;
+    excerpt?: string;
+    metaDescription?: string;
+    keywords?: string[];
+  }>;
   createdAt: Date;
   updatedAt: Date;
 }
@@ -73,6 +80,22 @@ const productSchema = new mongoose.Schema<IProduct>({
   ratingCount: { type: Number, default: 0 },
 
   isActive: { type: Boolean, default: true },
+
+  // Çok dilli içerik desteği
+  translations: {
+    type: Map,
+    of: new mongoose.Schema(
+      {
+        title:           { type: String },
+        description:     { type: String },
+        excerpt:         { type: String },
+        metaDescription: { type: String },
+        keywords:        [{ type: String }],
+      },
+      { _id: false }
+    ),
+    default: {},
+  },
 }, { timestamps: true });
 
 productSchema.pre('validate', async function (this: Document & Partial<IProduct>) {

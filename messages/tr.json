@@ -1,0 +1,113 @@
+{
+  "common": {
+    "loading": "Yükleniyor...",
+    "error": "Bir hata oluştu.",
+    "retry": "Tekrar dene",
+    "save": "Kaydet",
+    "cancel": "İptal",
+    "delete": "Sil",
+    "edit": "Düzenle",
+    "add": "Ekle",
+    "search": "Ara",
+    "filter": "Filtrele",
+    "sort": "Sırala",
+    "back": "Geri",
+    "next": "İleri",
+    "previous": "Önceki",
+    "close": "Kapat",
+    "confirm": "Onayla",
+    "yes": "Evet",
+    "no": "Hayır",
+    "submit": "Gönder",
+    "reset": "Sıfırla",
+    "noResults": "Sonuç bulunamadı.",
+    "required": "Bu alan zorunludur.",
+    "success": "İşlem başarılı.",
+    "readMore": "Devamını oku",
+    "viewAll": "Tümünü gör"
+  },
+  "nav": {
+    "home": "Anasayfa",
+    "products": "Ürünler",
+    "portfolio": "Portfolyo",
+    "services": "Hizmetler",
+    "news": "Haberler",
+    "contact": "İletişim",
+    "login": "Giriş Yap",
+    "register": "Kayıt Ol",
+    "logout": "Çıkış Yap",
+    "cart": "Sepet",
+    "account": "Hesabım"
+  },
+  "hero": {
+    "title": "Fixral — Dijital Çözümler ve Hizmetler",
+    "subtitle": "Modern web teknolojileri, yazılım geliştirme ve dijital dönüşüm hizmetleri.",
+    "cta": "Hizmetlerimizi Keşfet",
+    "ctaSecondary": "İletişime Geç"
+  },
+  "products": {
+    "title": "Ürünler",
+    "search": "Ürün ara...",
+    "sort": {
+      "newest": "En Yeniler",
+      "oldest": "En Eskiler",
+      "priceAsc": "Fiyat (Artan)",
+      "priceDesc": "Fiyat (Azalan)"
+    },
+    "price": "Fiyat",
+    "priceRange": "Fiyat Aralığı",
+    "apply": "Uygula",
+    "inStock": "Stokta",
+    "outOfStock": "Stokta Yok",
+    "addToCart": "Sepete Ekle",
+    "orderNow": "Hemen Sipariş Ver",
+    "noProducts": "Ürün bulunamadı."
+  },
+  "news": {
+    "title": "Haberler",
+    "latest": "Son Haberler",
+    "readMore": "Devamını oku",
+    "noNews": "Haber bulunamadı.",
+    "publishedAt": "Yayın tarihi"
+  },
+  "portfolio": {
+    "title": "Portfolyo",
+    "client": "Müşteri",
+    "date": "Tamamlanma Tarihi",
+    "technologies": "Teknolojiler",
+    "noPortfolio": "Portfolyo bulunamadı."
+  },
+  "contact": {
+    "title": "İletişim",
+    "name": "Ad Soyad",
+    "email": "E-posta",
+    "phone": "Telefon",
+    "subject": "Konu",
+    "message": "Mesaj",
+    "send": "Mesaj Gönder",
+    "success": "Mesajınız başarıyla iletildi.",
+    "error": "Mesaj gönderilemedi. Lütfen tekrar deneyin."
+  },
+  "auth": {
+    "login": "Giriş Yap",
+    "register": "Kayıt Ol",
+    "email": "E-posta",
+    "password": "Şifre",
+    "confirmPassword": "Şifreyi Onayla",
+    "forgotPassword": "Şifremi unuttum",
+    "noAccount": "Hesabınız yok mu?",
+    "hasAccount": "Zaten hesabınız var mı?",
+    "loginSuccess": "Giriş başarılı.",
+    "logoutSuccess": "Çıkış yapıldı."
+  },
+  "footer": {
+    "rights": "Tüm hakları saklıdır.",
+    "privacyPolicy": "Gizlilik Politikası",
+    "terms": "Kullanım Koşulları"
+  },
+  "meta": {
+    "siteName": "Fixral",
+    "defaultTitle": "Fixral — Dijital Çözümler ve Hizmetler",
+    "defaultDescription": "Modern web teknolojileri, yazılım geliştirme ve dijital dönüşüm hizmetleri."
+  }
+}

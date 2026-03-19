@@ -65,6 +65,14 @@
 - [ ] I have added/updated JSDoc comments for new functions
 - [ ] I have updated TypeScript types if needed
 
+#### UI / Semantic HTML
+- [ ] Yeni `<div>` yerine semantic eleman kullanıldı (bkz. ELEMENT_GUIDE.md)
+- [ ] Liste içerikleri `<ul>/<li>` pattern'i ile sarmalandı
+- [ ] Heading hiyerarşisi atlanmadı (h1 → h2 → h3)
+- [ ] Inline `style` yerine Tailwind class kullanıldı
+- [ ] Hardcoded hex renk yerine token class kullanıldı
+- [ ] Yeni component `src/components/ui/` altındaki atomik component'leri kullanıyor
+
 #### Security & Performance
 - [ ] I have considered security implications of my changes
 - [ ] I have tested for potential performance impacts

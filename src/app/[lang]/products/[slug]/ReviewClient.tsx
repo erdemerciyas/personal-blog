@@ -26,15 +26,17 @@ export function ApprovedReviews({ productId }: { productId: string }) {
   if (!items.length) return <div className="mt-8 text-sm text-gray-500">Henüz yorum yok</div>;
 
   return (
-    <div className="mt-8 space-y-3">
-      <div className="font-medium">Onaylı Yorumlar</div>
-      {items.map((r) => (
-        <div key={r._id} className="rounded-xl border bg-white shadow-sm p-4">
-          <div className="text-sm text-slate-600">Puan: {r.rating} • {new Date(r.createdAt).toLocaleString('tr-TR')}</div>
-          {r.comment && <div className="text-sm mt-1 text-slate-800">{r.comment}</div>}
-        </div>
-      ))}
-    </div>
+    <section className="mt-8 space-y-3">
+      <h3 className="font-medium">Onaylı Yorumlar</h3>
+      <ul className="space-y-3 list-none p-0">
+        {items.map((r) => (
+          <li key={r._id} className="rounded-xl border bg-white shadow-sm p-4">
+            <div className="text-sm text-slate-600">Puan: {r.rating} • {new Date(r.createdAt).toLocaleString('tr-TR')}</div>
+            {r.comment && <div className="text-sm mt-1 text-slate-800">{r.comment}</div>}
+          </li>
+        ))}
+      </ul>
+    </section>
   );
 }
 

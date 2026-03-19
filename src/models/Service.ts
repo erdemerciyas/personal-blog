@@ -1,5 +1,13 @@
 import mongoose from 'mongoose';
 
+export interface IServiceTranslation {
+  title?: string;
+  description?: string;
+  excerpt?: string;
+  metaDescription?: string;
+  keywords?: string[];
+}
+
 export interface IService {
   _id: string;
   title: string;
@@ -7,6 +15,7 @@ export interface IService {
   features?: string[];
   image: string;
   icon?: string;
+  translations?: Map<string, IServiceTranslation>;
   createdAt: Date;
   updatedAt: Date;
 }
@@ -35,6 +44,20 @@ const serviceSchema = new mongoose.Schema<IService>(
     icon: {
       type: String,
       default: '',
+    },
+    translations: {
+      type: Map,
+      of: new mongoose.Schema(
+        {
+          title:           { type: String },
+          description:     { type: String },
+          excerpt:         { type: String },
+          metaDescription: { type: String },
+          keywords:        [{ type: String }],
+        },
+        { _id: false }
+      ),
+      default: {},
     },
   },
   {

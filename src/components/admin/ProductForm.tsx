@@ -21,6 +21,8 @@ import {
 } from '@heroicons/react/24/outline';
 import { StarIcon as StarSolidIcon } from '@heroicons/react/24/solid';
 import MediaBrowser from '@/components/MediaBrowser';
+import { useActiveLanguages } from '@/hooks/useActiveLanguages';
+import LanguageTabs from '@/components/admin/LanguageTabs';
 
 interface ProductFormProps {
     initialData?: any;
@@ -33,6 +35,22 @@ interface CategoryItem {
     parent?: string | null;
 }
 
+interface TranslationFields {
+    title: string;
+    description: string;
+    excerpt: string;
+    metaDescription: string;
+    keywords: string[];
+}
+
+const emptyTranslation = (): TranslationFields => ({
+    title: '',
+    description: '',
+    excerpt: '',
+    metaDescription: '',
+    keywords: [],
+});
+
 export default function ProductForm({ initialData, isEditing = false }: ProductFormProps) {
     const router = useRouter();
     const [loading, setLoading] = useState(false);
@@ -41,8 +59,40 @@ export default function ProductForm({ initialData, isEditing = false }: ProductF
     const [categories, setCategories] = useState<CategoryItem[]>([]);
     const [mediaBrowserOpen, setMediaBrowserOpen] = useState(false);
 
+    const { languages, defaultLanguage, loading: langsLoading, error: langsError } = useActiveLanguages();
+    const [activeLanguage, setActiveLanguage] = useState<string>('');
+    const [translations, setTranslations] = useState<Record<string, TranslationFields>>({});
+
+    // Initialize translations and activeLanguage when languages load
+    useEffect(() => {
+        if (languages.length > 0 && Object.keys(translations).length === 0) {
+            const initTrans: Record<string, TranslationFields> = {};
+            const existingTrans = initialData?.translations || {};
+            languages.forEach((lang) => {
+                const existing = existingTrans[lang.code];
+                initTrans[lang.code] = existing
+                    ? { ...emptyTranslation(), ...existing }
+                    : emptyTranslation();
+            });
+            // Pre-fill default language from top-level fields if no translation exists
+            if (defaultLanguage && initialData?.title && !existingTrans[defaultLanguage.code]?.title) {
+                initTrans[defaultLanguage.code] = {
+                    ...initTrans[defaultLanguage.code],
+                    title: initialData.title || '',
+                    description: initialData.description || '',
+                };
+            }
+            setTranslations(initTrans);
+            if (!activeLanguage && defaultLanguage) {
+                setActiveLanguage(defaultLanguage.code);
+            }
+        }
+    }, [languages, defaultLanguage]);
+
     // Validation State
     const [touched, setTouched] = useState<Record<string, boolean>>({});
+
+    const currentTranslation = translations[activeLanguage] || emptyTranslation();
 
     const [form, setForm] = useState({
         title: initialData?.title || '',
@@ -159,13 +209,19 @@ export default function ProductForm({ initialData, isEditing = false }: ProductF
     };
 
     const handleSubmit = async () => {
+        // Sync default language translation to top-level fields
+        const defLangCode = defaultLanguage?.code || activeLanguage;
+        const defTrans = translations[defLangCode] || emptyTranslation();
+        const titleToUse = defTrans.title || form.title;
+        const descToUse = defTrans.description || form.description;
+
         // Basic Validation
-        if (!form.title.trim()) {
+        if (!titleToUse.trim()) {
             setError('Lütfen ürün başlığını giriniz.');
             setTouched(p => ({ ...p, title: true }));
             return;
         }
-        if (!form.description.trim()) {
+        if (!descToUse.trim()) {
             setError('Lütfen ürün açıklamasını giriniz.');
             setTouched(p => ({ ...p, description: true }));
             return;
@@ -182,10 +238,23 @@ export default function ProductForm({ initialData, isEditing = false }: ProductF
             const url = isEditing ? `/api/admin/products/${initialData._id}` : '/api/admin/products';
             const method = isEditing ? 'PUT' : 'POST';
 
+            // Filter out empty translations
+            const filteredTranslations: Record<string, TranslationFields> = {};
+            for (const [code, trans] of Object.entries(translations)) {
+                if (trans.title || trans.description) {
+                    filteredTranslations[code] = trans;
+                }
+            }
+
             const res = await fetch(url, {
                 method,
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(form)
+                body: JSON.stringify({
+                    ...form,
+                    title: titleToUse,
+                    description: descToUse,
+                    translations: filteredTranslations,
+                })
             });
 
             if (!res.ok) {
@@ -226,13 +295,29 @@ export default function ProductForm({ initialData, isEditing = false }: ProductF
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
                 {/* LEFT COLUMN - Main Info */}
                 <div className="lg:col-span-2 space-y-6">
-                    {/* Basic Info Card */}
+                    {/* Language Tabs */}
+                    {!langsLoading && (
+                        <LanguageTabs
+                            languages={languages}
+                            activeLanguage={activeLanguage}
+                            onLanguageChange={setActiveLanguage}
+                            translations={translations}
+                            error={langsError}
+                        />
+                    )}
+
+                    {/* Basic Info Card - Per Language */}
                     <div className="bg-white dark:bg-slate-800 rounded-2xl shadow-sm border border-slate-200 dark:border-slate-700 overflow-hidden">
                         <div className="px-6 py-4 border-b border-slate-100 dark:border-slate-700 bg-slate-50/50 dark:bg-slate-900/50 flex items-center gap-3">
                             <div className="w-8 h-8 rounded-lg bg-indigo-100 text-indigo-600 flex items-center justify-center">
                                 <TagIcon className="w-5 h-5" />
                             </div>
                             <h3 className="font-semibold text-slate-900 dark:text-white">Temel Bilgiler</h3>
+                            {activeLanguage && (
+                                <span className="text-xs px-2 py-0.5 rounded-full bg-indigo-100 text-indigo-700">
+                                    {languages.find(l => l.code === activeLanguage)?.flag} {languages.find(l => l.code === activeLanguage)?.nativeLabel}
+                                </span>
+                            )}
                         </div>
                         <div className="p-6 space-y-5">
                             <div>
@@ -241,8 +326,11 @@ export default function ProductForm({ initialData, isEditing = false }: ProductF
                                 </label>
                                 <input
                                     type="text"
-                                    value={form.title}
-                                    onChange={e => setForm(p => ({ ...p, title: e.target.value }))}
+                                    value={currentTranslation.title}
+                                    onChange={e => setTranslations(prev => ({
+                                        ...prev,
+                                        [activeLanguage]: { ...prev[activeLanguage], title: e.target.value }
+                                    }))}
                                     className="w-full px-4 py-2.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 transition-all font-medium text-slate-900 dark:text-white placeholder:text-slate-400"
                                     placeholder="Örn: Kablosuz Kulaklık"
                                 />
@@ -254,11 +342,94 @@ export default function ProductForm({ initialData, isEditing = false }: ProductF
                                 </label>
                                 <textarea
                                     rows={5}
-                                    value={form.description}
-                                    onChange={e => setForm(p => ({ ...p, description: e.target.value }))}
+                                    value={currentTranslation.description}
+                                    onChange={e => setTranslations(prev => ({
+                                        ...prev,
+                                        [activeLanguage]: { ...prev[activeLanguage], description: e.target.value }
+                                    }))}
                                     className="w-full px-4 py-2.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 transition-all text-slate-600 placeholder:text-slate-400 resize-y"
                                     placeholder="Ürün özelliklerini ve detaylarını yazın..."
                                 />
+                            </div>
+
+                            <div>
+                                <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1.5">
+                                    Kısa Açıklama (Özet)
+                                </label>
+                                <textarea
+                                    rows={2}
+                                    value={currentTranslation.excerpt}
+                                    onChange={e => setTranslations(prev => ({
+                                        ...prev,
+                                        [activeLanguage]: { ...prev[activeLanguage], excerpt: e.target.value }
+                                    }))}
+                                    className="w-full px-4 py-2.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 transition-all text-slate-600 placeholder:text-slate-400 resize-y"
+                                    placeholder="Ürün için kısa açıklama..."
+                                />
+                            </div>
+
+                            <div>
+                                <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1.5">
+                                    Meta Açıklaması (SEO)
+                                </label>
+                                <textarea
+                                    rows={2}
+                                    maxLength={160}
+                                    value={currentTranslation.metaDescription}
+                                    onChange={e => setTranslations(prev => ({
+                                        ...prev,
+                                        [activeLanguage]: { ...prev[activeLanguage], metaDescription: e.target.value }
+                                    }))}
+                                    className="w-full px-4 py-2.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 transition-all text-slate-600 placeholder:text-slate-400 resize-y"
+                                    placeholder="SEO meta açıklaması..."
+                                />
+                                <p className="text-xs text-slate-500 mt-1">{currentTranslation.metaDescription.length}/160 karakter</p>
+                            </div>
+
+                            <div>
+                                <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1.5">
+                                    Anahtar Kelimeler
+                                </label>
+                                <div className="flex flex-wrap gap-2 mb-2">
+                                    {currentTranslation.keywords.map((kw, i) => (
+                                        <span key={i} className="px-3 py-1 bg-indigo-100 text-indigo-800 rounded-full text-sm flex items-center gap-2 border border-indigo-200">
+                                            {kw}
+                                            <button
+                                                type="button"
+                                                onClick={() => setTranslations(prev => ({
+                                                    ...prev,
+                                                    [activeLanguage]: {
+                                                        ...prev[activeLanguage],
+                                                        keywords: prev[activeLanguage].keywords.filter((_, idx) => idx !== i)
+                                                    }
+                                                }))}
+                                                className="hover:text-red-600 transition-colors"
+                                            >×</button>
+                                        </span>
+                                    ))}
+                                </div>
+                                <input
+                                    type="text"
+                                    placeholder="Anahtar kelime yazıp Enter tuşuna basın"
+                                    onKeyDown={(e) => {
+                                        if (e.key === 'Enter') {
+                                            e.preventDefault();
+                                            const kw = e.currentTarget.value.trim();
+                                            if (kw && currentTranslation.keywords.length < 10) {
+                                                setTranslations(prev => ({
+                                                    ...prev,
+                                                    [activeLanguage]: {
+                                                        ...prev[activeLanguage],
+                                                        keywords: [...prev[activeLanguage].keywords, kw]
+                                                    }
+                                                }));
+                                                e.currentTarget.value = '';
+                                            }
+                                        }
+                                    }}
+                                    className="w-full px-4 py-2.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 transition-all text-slate-600 placeholder:text-slate-400"
+                                />
+                                <p className="text-xs text-slate-500 mt-1">{currentTranslation.keywords.length}/10 anahtar kelime</p>
                             </div>
                         </div>
                     </div>

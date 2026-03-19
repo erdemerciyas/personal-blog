@@ -135,9 +135,9 @@ export default function AdminCategoriesPage() {
       </div>
 
       {/* Categories Grid */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+      <ul className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         {filteredCategories.map((category) => (
-          <div
+          <li
             key={category._id}
             className="bg-white rounded-2xl shadow-sm border border-slate-200/60 p-6 hover:shadow-lg transition-all duration-300 group"
           >
@@ -171,9 +171,9 @@ export default function AdminCategoriesPage() {
                 /{category.slug}
               </span>
             </div>
-          </div>
+          </li>
         ))}
-      </div>
+      </ul>
 
       {/* Empty State */}
       {filteredCategories.length === 0 && (

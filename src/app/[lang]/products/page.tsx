@@ -1,3 +1,5 @@
+import type { Metadata } from 'next';
+import { SITE_URL, generateAlternates, generateOgImages } from '@/lib/seo-utils';
 import Link from 'next/link';
 import NextImage from 'next/image';
 import { notFound } from 'next/navigation';
@@ -40,6 +42,23 @@ async function getPageSettings(pageId: string) {
   } catch {
     return null;
   }
+}
+
+export async function generateMetadata({ params }: { params: Promise<{ lang: string }> }): Promise<Metadata> {
+  const { lang } = await params;
+  const canonical = lang === 'es' ? `${SITE_URL}/es/products` : `${SITE_URL}/tr/products`;
+  return {
+    title: 'Ürünler | Fixral',
+    description: 'İkinci el ve sıfır ürünleri keşfedin. Güvenli alışveriş, hızlı teslimat.',
+    alternates: generateAlternates('/tr/products', '/es/products'),
+    openGraph: {
+      title: 'Ürünler | Fixral',
+      description: 'İkinci el ve sıfır ürünleri keşfedin. Güvenli alışveriş, hızlı teslimat.',
+      url: canonical,
+      type: 'website',
+      images: generateOgImages(undefined, 'Ürünler | Fixral'),
+    },
+  };
 }
 
 export default async function ProductsPage({ searchParams }: { searchParams: Record<string, string> }) {

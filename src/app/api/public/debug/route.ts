@@ -2,6 +2,11 @@ import connectDB from '@/lib/mongoose';
 import { NextResponse } from 'next/server';
 
 export async function GET() {
+  // Bu endpoint sadece development ortamında çalışır
+  if (process.env.NODE_ENV !== 'development') {
+    return NextResponse.json({ error: 'Not Found' }, { status: 404 });
+  }
+
   try {
     // Environment Variables Check
     const envCheck = {

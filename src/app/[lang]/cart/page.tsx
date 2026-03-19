@@ -66,9 +66,9 @@ const CartPage = () => {
                 ) : (
                     <div className="grid lg:grid-cols-12 gap-8">
                         {/* Cart Items List */}
-                        <div className="lg:col-span-8 space-y-4">
+                        <ul className="lg:col-span-8 space-y-4 list-none p-0">
                             {cart.items.map((item) => (
-                                <div key={item.product._id} className="bg-white p-4 rounded-2xl shadow-sm border border-slate-200 flex gap-4 sm:gap-6 hover:shadow-md transition-shadow">
+                                <li key={item.product._id} className="bg-white p-4 rounded-2xl shadow-sm border border-slate-200 flex gap-4 sm:gap-6 hover:shadow-md transition-shadow">
                                     {/* Image */}
                                     <div className="relative w-24 h-24 sm:w-32 sm:h-32 flex-shrink-0 bg-slate-100 rounded-xl overflow-hidden border border-slate-100">
                                         <Image
@@ -131,9 +131,9 @@ const CartPage = () => {
                                             </div>
                                         </div>
                                     </div>
-                                </div>
+                                </li>
                             ))}
-                        </div>
+                        </ul>
 
                         {/* Summary Sidebar */}
                         <div className="lg:col-span-4">

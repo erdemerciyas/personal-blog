@@ -2,7 +2,7 @@
  * News Module Type Definitions
  */
 
-export type Language = 'tr' | 'es';
+export type Language = string;
 
 export interface NewsTranslation {
   title: string;
@@ -12,10 +12,7 @@ export interface NewsTranslation {
   keywords: string[];
 }
 
-export interface NewsTranslations {
-  tr: NewsTranslation;
-  es: NewsTranslation;
-}
+export type NewsTranslations = Record<string, NewsTranslation>;
 
 export interface FeaturedImage {
   url: string;

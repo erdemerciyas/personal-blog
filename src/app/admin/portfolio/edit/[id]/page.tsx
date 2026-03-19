@@ -5,6 +5,7 @@ import { useSession } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
 import UniversalEditor from '../../../../../components/ui/UniversalEditor';
 import PortfolioImageGallery from '../../../../../components/PortfolioImageGallery';
+import { Card, CardHeader, CardTitle, CardBody, Button, Badge, FormSection } from '@/components/ui';
 import {
   TagIcon,
   CheckIcon,
@@ -24,6 +25,24 @@ import Link from 'next/link';
 import { Category, PortfolioItem } from '../../../../../types/portfolio';
 import slugify from 'slugify';
 import { useToast } from '../../../../../components/ui/useToast';
+import { useActiveLanguages } from '@/hooks/useActiveLanguages';
+import LanguageTabs from '@/components/admin/LanguageTabs';
+
+interface TranslationFields {
+  title: string;
+  description: string;
+  excerpt: string;
+  metaDescription: string;
+  keywords: string[];
+}
+
+const emptyTranslation = (): TranslationFields => ({
+  title: '',
+  description: '',
+  excerpt: '',
+  metaDescription: '',
+  keywords: [],
+});
 
 type EditForm = Omit<PortfolioItem, 'categoryIds' | 'categoryId' | 'category'> & {
   categoryIds: string[];
@@ -52,6 +71,13 @@ export default function EditPortfolioItem({ params }: { params: { id: string } }
   const [slugLocked, setSlugLocked] = useState(true);
   const [fieldErrors, setFieldErrors] = useState<Record<string, string>>({});
   const [uploadingModel, setUploadingModel] = useState(false);
+
+  const { languages, defaultLanguage, loading: langsLoading, error: langsError } = useActiveLanguages();
+  const [activeLanguage, setActiveLanguage] = useState<string>('');
+  const [translations, setTranslations] = useState<Record<string, TranslationFields>>({});
+  const [translationsInitialized, setTranslationsInitialized] = useState(false);
+
+  const currentTranslation = translations[activeLanguage] || emptyTranslation();
 
   const [formData, setFormData] = useState<EditForm>({
     _id: '',
@@ -132,6 +158,33 @@ export default function EditPortfolioItem({ params }: { params: { id: string } }
     }
   }, [status, router, fetchPortfolioItem]);
 
+  // Initialize translations when both languages and formData are loaded
+  useEffect(() => {
+    if (languages.length > 0 && !translationsInitialized && formData._id) {
+      const initTrans: Record<string, TranslationFields> = {};
+      const existingTrans = (formData as any).translations || {};
+      languages.forEach((lang) => {
+        const existing = existingTrans[lang.code];
+        initTrans[lang.code] = existing
+          ? { ...emptyTranslation(), ...existing }
+          : emptyTranslation();
+      });
+      // Pre-fill default language from top-level fields if no translation exists
+      if (defaultLanguage && formData.title && !existingTrans[defaultLanguage.code]?.title) {
+        initTrans[defaultLanguage.code] = {
+          ...initTrans[defaultLanguage.code],
+          title: formData.title || '',
+          description: formData.description || '',
+        };
+      }
+      setTranslations(initTrans);
+      setTranslationsInitialized(true);
+      if (!activeLanguage && defaultLanguage) {
+        setActiveLanguage(defaultLanguage.code);
+      }
+    }
+  }, [languages, defaultLanguage, formData._id, translationsInitialized]);
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setSubmitting(true);
@@ -139,12 +192,16 @@ export default function EditPortfolioItem({ params }: { params: { id: string } }
     setFieldErrors({});
 
     try {
+      // Use default language translation for validation
+      const defLangCodeForValidation = defaultLanguage?.code || activeLanguage;
+      const defTransForValidation = translations[defLangCodeForValidation] || emptyTranslation();
+
       const errs: Record<string, string> = {};
-      if (!formData.title.trim()) errs.title = 'Proje başlığı zorunludur';
-      if (!formData.slug.trim()) errs.slug = 'URL slug zorunludur';
+      if (!defTransForValidation.title.trim() && !formData.title.trim()) errs.title = 'Proje başlığı zorunludur';
+      if (!formData.slug.trim() && !defTransForValidation.title.trim()) errs.slug = 'URL slug zorunludur';
       if (!formData.client.trim()) errs.client = 'Müşteri/Şirket zorunludur';
       if (!formData.completionDate) errs.completionDate = 'Tamamlanma tarihi zorunludur';
-      if (!formData.description.trim()) errs.description = 'Proje açıklaması zorunludur';
+      if (!defTransForValidation.description.trim() && !formData.description.trim()) errs.description = 'Proje açıklaması zorunludur';
       if (formData.categoryIds.length === 0) errs.categoryIds = 'En az bir kategori seçmelisiniz';
       if (formData.images.length === 0) errs.images = 'En az bir proje görseli yüklemelisiniz';
       if (!formData.coverImage) errs.coverImage = 'Kapak görseli seçmelisiniz';
@@ -157,8 +214,23 @@ export default function EditPortfolioItem({ params }: { params: { id: string } }
         return;
       }
 
+      // Sync default language translation to top-level fields
+      const defLangCode = defaultLanguage?.code || activeLanguage;
+      const defTrans = translations[defLangCode] || emptyTranslation();
+
+      // Filter out empty translations
+      const filteredTranslations: Record<string, TranslationFields> = {};
+      for (const [code, trans] of Object.entries(translations)) {
+        if (trans.title || trans.description) {
+          filteredTranslations[code] = trans;
+        }
+      }
+
       const cleanedData = {
         ...formData,
+        title: defTrans.title || formData.title,
+        description: defTrans.description || formData.description,
+        translations: filteredTranslations,
         technologies: formData.technologies.filter(tech => tech.trim() !== ''),
         images: formData.images.filter(img => img.trim() !== ''),
       };
@@ -336,8 +408,8 @@ export default function EditPortfolioItem({ params }: { params: { id: string } }
     return (
       <div className="flex items-center justify-center min-h-[60vh]">
         <div className="text-center">
-          <div className="w-16 h-16 border-4 border-indigo-200 border-t-indigo-600 rounded-full animate-spin mx-auto mb-4"></div>
-          <p className="text-slate-500 font-medium">Portfolyo Yükleniyor...</p>
+          <div className="w-16 h-16 border-4 border-brand-200 border-t-brand-600 rounded-full animate-spin mx-auto mb-4"></div>
+          <p className="text-gray-500 font-medium">Portfolyo Yükleniyor...</p>
         </div>
       </div>
     );
@@ -346,43 +418,43 @@ export default function EditPortfolioItem({ params }: { params: { id: string } }
   return (
     <div className="max-w-[1600px] mx-auto pb-20">
       {/* Header */}
-      <div className="flex items-center justify-between mb-8 sticky top-0 z-20 bg-slate-50/80 backdrop-blur-sm py-4">
+      <div className="flex items-center justify-between mb-8 sticky top-0 z-20 bg-surface-secondary/80 backdrop-blur-sm py-4">
         <div className="flex items-center gap-4">
           <Link
             href="/admin/portfolio"
-            className="p-2 hover:bg-white hover:shadow-sm rounded-xl transition-all border border-transparent hover:border-slate-200"
+            className="p-2 hover:bg-white hover:shadow-sm rounded-xl transition-all border border-transparent hover:border-border"
           >
-            <ArrowLeftIcon className="w-5 h-5 text-slate-500" />
+            <ArrowLeftIcon className="w-5 h-5 text-gray-500" />
           </Link>
           <div>
-            <h1 className="text-2xl font-bold text-slate-900 tracking-tight">Projeyi Düzenle</h1>
-            <p className="text-sm text-slate-500">{formData.title}</p>
+            <h1 className="text-2xl font-bold text-gray-900 tracking-tight">Projeyi Düzenle</h1>
+            <p className="text-sm text-gray-500">{formData.title}</p>
           </div>
         </div>
         <div className="flex items-center gap-3">
           <Link
             href="/admin/portfolio"
-            className="px-4 py-2 text-sm font-medium text-slate-600 hover:text-slate-900 transition-colors"
+            className="px-4 py-2 text-sm font-medium text-gray-600 hover:text-gray-900 transition-colors"
           >
             İptal
           </Link>
-          <button
+          <Button
             onClick={handleSubmit}
             disabled={submitting}
-            className="flex items-center px-6 py-2.5 bg-indigo-600 text-white font-semibold rounded-xl hover:bg-indigo-700 hover:shadow-lg hover:shadow-indigo-500/20 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+            loading={submitting}
+            variant="primary"
+            size="lg"
+            className="rounded-xl font-semibold"
           >
             {submitting ? (
-              <>
-                <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin mr-2"></div>
-                Güncelleniyor...
-              </>
+              'Güncelleniyor...'
             ) : (
               <>
                 <CheckIcon className="w-5 h-5 mr-2" />
                 Değişiklikleri Kaydet
               </>
             )}
-          </button>
+          </Button>
         </div>
       </div>
 
@@ -397,17 +469,17 @@ export default function EditPortfolioItem({ params }: { params: { id: string } }
         {/* Left Column - Visual Media (40%) */}
         <div className="lg:col-span-5 space-y-6">
           {/* Image Gallery */}
-          <div className="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden">
-            <div className="p-4 border-b border-slate-100 bg-slate-50/50 flex items-center justify-between">
-              <h2 className="font-semibold text-slate-900 flex items-center gap-2">
-                <PhotoIcon className="w-5 h-5 text-indigo-500" />
+          <Card padding="none" className="rounded-2xl overflow-hidden">
+            <div className="p-4 border-b border-border-subtle bg-surface-secondary/50 flex items-center justify-between">
+              <h2 className="font-semibold text-gray-900 flex items-center gap-2">
+                <PhotoIcon className="w-5 h-5 text-brand-500" />
                 Medya Galeri
               </h2>
-              <span className="text-xs font-medium text-slate-500 bg-white px-2 py-1 rounded-md border border-slate-200">
+              <Badge variant="outline" className="text-xs font-medium">
                 {formData.images.length} Görsel
-              </span>
+              </Badge>
             </div>
-            <div className="p-4">
+            <CardBody className="p-4">
               <PortfolioImageGallery
                 images={formData.images}
                 coverImage={formData.coverImage}
@@ -418,13 +490,13 @@ export default function EditPortfolioItem({ params }: { params: { id: string } }
               />
               {fieldErrors.images && <p className="mt-2 text-xs text-red-600 font-medium">{fieldErrors.images}</p>}
               {fieldErrors.coverImage && <p className="mt-1 text-xs text-red-600 font-medium">{fieldErrors.coverImage}</p>}
-            </div>
-          </div>
+            </CardBody>
+          </Card>
 
           {/* 3D Models */}
-          <div className="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden">
-            <div className="p-4 border-b border-slate-100 bg-slate-50/50 flex items-center justify-between">
-              <h2 className="font-semibold text-slate-900 flex items-center gap-2">
+          <Card padding="none" className="rounded-2xl overflow-hidden">
+            <div className="p-4 border-b border-border-subtle bg-surface-secondary/50 flex items-center justify-between">
+              <h2 className="font-semibold text-gray-900 flex items-center gap-2">
                 <CubeIcon className="w-5 h-5 text-blue-500" />
                 3D Varlıklar
               </h2>
@@ -440,24 +512,24 @@ export default function EditPortfolioItem({ params }: { params: { id: string } }
               </label>
             </div>
 
-            <div className="p-4 space-y-3">
+            <CardBody className="p-4 space-y-3">
               {formData.models3D && formData.models3D.length > 0 ? (
                 formData.models3D.map((model, index) => (
-                  <div key={index} className="flex items-center justify-between p-3 border border-slate-100 rounded-xl bg-slate-50 hover:border-slate-300 transition-colors group">
+                  <div key={index} className="flex items-center justify-between p-3 border border-border-subtle rounded-xl bg-surface-secondary hover:border-gray-300 transition-colors group">
                     <div className="flex items-center gap-3 min-w-0">
-                      <div className="w-10 h-10 bg-white border border-slate-200 rounded-lg flex items-center justify-center shrink-0">
-                        <CubeIcon className="w-5 h-5 text-slate-400" />
+                      <div className="w-10 h-10 bg-white border border-border rounded-lg flex items-center justify-center shrink-0">
+                        <CubeIcon className="w-5 h-5 text-gray-400" />
                       </div>
                       <div className="min-w-0">
-                        <p className="text-sm font-medium text-slate-900 truncate" title={model.name}>{model.name}</p>
-                        <p className="text-xs text-slate-500 uppercase">{model.format} • {formatFileSize(model.size)}</p>
+                        <p className="text-sm font-medium text-gray-900 truncate" title={model.name}>{model.name}</p>
+                        <p className="text-xs text-gray-500 uppercase">{model.format} • {formatFileSize(model.size)}</p>
                       </div>
                     </div>
                     <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
                       <button
                         type="button"
                         onClick={() => toggle3DModelDownloadable(index)}
-                        className={`p-1.5 rounded-lg transition-colors ${model.downloadable ? 'text-emerald-600 bg-emerald-50' : 'text-slate-400 hover:bg-white'}`}
+                        className={`p-1.5 rounded-lg transition-colors ${model.downloadable ? 'text-success-dark bg-success-light' : 'text-gray-400 hover:bg-white'}`}
                         title={model.downloadable ? 'İndirilebilir' : 'İndirilemez'}
                       >
                         <ArrowDownTrayIcon className="w-4 h-4" />
@@ -465,7 +537,7 @@ export default function EditPortfolioItem({ params }: { params: { id: string } }
                       <button
                         type="button"
                         onClick={() => remove3DModel(index)}
-                        className="p-1.5 text-slate-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors"
+                        className="p-1.5 text-gray-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors"
                       >
                         <TrashIcon className="w-4 h-4" />
                       </button>
@@ -473,153 +545,222 @@ export default function EditPortfolioItem({ params }: { params: { id: string } }
                   </div>
                 ))
               ) : (
-                <div className="text-center py-8 border-2 border-dashed border-slate-100 rounded-xl">
-                  <p className="text-sm text-slate-400">Henüz 3D model eklenmemiş</p>
+                <div className="text-center py-8 border-2 border-dashed border-border-subtle rounded-xl">
+                  <p className="text-sm text-gray-400">Henüz 3D model eklenmemiş</p>
                 </div>
               )}
-            </div>
-          </div>
+            </CardBody>
+          </Card>
         </div>
 
         {/* Right Column - Content (60%) */}
         <div className="lg:col-span-7 space-y-6">
-          {/* Basic Info */}
-          <div className="bg-white rounded-2xl shadow-sm border border-slate-200 p-6 space-y-6">
-            <div>
-              <label htmlFor="title" className="block text-sm font-medium text-slate-700 mb-2">Proje Başlığı</label>
-              <input
-                type="text"
-                id="title"
-                value={formData.title}
-                onChange={handleTitleChange}
-                className={`w-full px-0 py-2 border-b-2 border-slate-200 focus:border-indigo-600 bg-transparent text-xl font-bold placeholder-slate-300 focus:outline-none transition-colors ${fieldErrors.title ? 'border-red-400' : ''}`}
-                placeholder="Projenize bir isim verin"
-              />
-              {fieldErrors.title && <p className="mt-1 text-xs text-red-600">{fieldErrors.title}</p>}
-            </div>
+          {/* Language Tabs */}
+          {!langsLoading && (
+            <LanguageTabs
+              languages={languages}
+              activeLanguage={activeLanguage}
+              onLanguageChange={setActiveLanguage}
+              translations={translations}
+              error={langsError}
+            />
+          )}
 
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          {/* Basic Info - Per Language */}
+          <Card className="rounded-2xl" padding="md">
+            <div className="space-y-6">
               <div>
-                <label className="block text-xs font-semibold text-slate-500 uppercase tracking-wider mb-2">URL Slug</label>
-                <div className={`flex items-center border rounded-lg bg-slate-50 px-3 py-2 transition-colors ${fieldErrors.slug ? 'border-red-300' : 'border-slate-200 focus-within:border-indigo-500 focus-within:bg-white'}`}>
-                  <span className="text-slate-400 text-sm mr-1">/portfolio/</span>
-                  <input
-                    type="text"
-                    value={formData.slug}
-                    onChange={(e) => setFormData(prev => ({ ...prev, slug: e.target.value }))}
-                    readOnly={slugLocked}
-                    className="flex-1 bg-transparent border-none text-sm text-slate-700 focus:ring-0 p-0"
-                  />
-                  <button
-                    type="button"
-                    onClick={() => setSlugLocked(!slugLocked)}
-                    className="ml-2 text-slate-400 hover:text-indigo-600 transition-colors"
-                  >
-                    {slugLocked ? <PencilIcon className="w-4 h-4" /> : <CheckIcon className="w-4 h-4" />}
-                  </button>
-                </div>
-              </div>
-
-              <div>
-                <label className="block text-xs font-semibold text-slate-500 uppercase tracking-wider mb-2">Müşteri</label>
-                <div className="relative">
-                  <UserIcon className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
-                  <input
-                    type="text"
-                    value={formData.client}
-                    onChange={(e) => setFormData(prev => ({ ...prev, client: e.target.value }))}
-                    className="w-full pl-9 pr-3 py-2 border border-slate-200 rounded-lg text-sm focus:outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 transition-all"
-                    placeholder="Şirket veya Kişi Adı"
-                  />
-                </div>
-              </div>
-            </div>
-
-            <div>
-              <label className="block text-sm font-medium text-slate-700 mb-2">Açıklama</label>
-              <UniversalEditor
-                value={formData.description}
-                onChange={(content) => setFormData(prev => ({ ...prev, description: content }))}
-                placeholder="Projenin hikayesini anlatın..."
-                minHeight="300px"
-              />
-              {fieldErrors.description && <p className="mt-1 text-xs text-red-600">{fieldErrors.description}</p>}
-            </div>
-          </div>
-
-          {/* Metadata & Tech */}
-          <div className="bg-white rounded-2xl shadow-sm border border-slate-200 p-6 space-y-8">
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-              {/* Categories */}
-              <div>
-                <h3 className="text-sm font-bold text-slate-900 mb-4 flex items-center gap-2">
-                  <TagIcon className="w-4 h-4 text-emerald-500" />
-                  Kategoriler
-                </h3>
-                <div className="flex flex-wrap gap-2">
-                  {categories.map((cat) => (
-                    <button
-                      key={cat._id}
-                      type="button"
-                      onClick={() => handleCategoryToggle(cat._id)}
-                      className={`px-3 py-1.5 rounded-full text-xs font-medium border transition-all ${formData.categoryIds.includes(cat._id)
-                        ? 'bg-emerald-50 border-emerald-200 text-emerald-700'
-                        : 'bg-white border-slate-200 text-slate-600 hover:border-emerald-200'
-                        }`}
-                    >
-                      {cat.name}
-                      {formData.categoryIds.includes(cat._id) && <CheckIcon className="w-3 h-3 inline-block ml-1" />}
-                    </button>
-                  ))}
-                </div>
-                {fieldErrors.categoryIds && <p className="mt-2 text-xs text-red-600">{fieldErrors.categoryIds}</p>}
-              </div>
-
-              {/* Date */}
-              <div>
-                <h3 className="text-sm font-bold text-slate-900 mb-4 flex items-center gap-2">
-                  <CalendarIcon className="w-4 h-4 text-amber-500" />
-                  Tamamlanma Tarihi
-                </h3>
+                <label htmlFor="title" className="block text-sm font-medium text-gray-700 mb-2">
+                  Proje Başlığı
+                  {activeLanguage && (
+                    <Badge variant="primary" className="ml-2 text-xs">
+                      {languages.find(l => l.code === activeLanguage)?.flag} {languages.find(l => l.code === activeLanguage)?.nativeLabel}
+                    </Badge>
+                  )}
+                </label>
                 <input
-                  type="date"
-                  value={formData.completionDate}
-                  onChange={(e) => setFormData(prev => ({ ...prev, completionDate: e.target.value }))}
-                  className="w-full px-3 py-2 border border-slate-200 rounded-lg text-sm focus:outline-none focus:border-indigo-500 transition-all"
+                  type="text"
+                  id="title"
+                  value={currentTranslation.title}
+                  onChange={(e) => {
+                    const newTitle = e.target.value;
+                    setTranslations(prev => ({
+                      ...prev,
+                      [activeLanguage]: { ...prev[activeLanguage], title: newTitle }
+                    }));
+                    if (activeLanguage === defaultLanguage?.code && slugLocked) {
+                      setFormData(prev => ({
+                        ...prev,
+                        title: newTitle,
+                        slug: slugify(newTitle, { lower: true, strict: true })
+                      }));
+                    }
+                  }}
+                  className={`w-full px-0 py-2 border-b-2 border-border focus:border-brand-600 bg-transparent text-xl font-bold placeholder-gray-300 focus:outline-none transition-colors ${fieldErrors.title ? 'border-red-400' : ''}`}
+                  placeholder="Projenize bir isim verin"
                 />
+                {fieldErrors.title && <p className="mt-1 text-xs text-red-600">{fieldErrors.title}</p>}
               </div>
-            </div>
 
-            {/* Technologies */}
-            <div>
-              <h3 className="text-sm font-bold text-slate-900 mb-4 flex items-center gap-2">
-                <HashtagIcon className="w-4 h-4 text-violet-500" />
-                Teknolojiler
-              </h3>
-              <div className="flex flex-wrap gap-2">
-                {formData.technologies.map((tech, index) => (
-                  <div key={index} className="relative group">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div>
+                  <label className="block text-xs font-semibold text-gray-500 uppercase tracking-wider mb-2">URL Slug</label>
+                  <div className={`flex items-center border rounded-lg bg-surface-secondary px-3 py-2 transition-colors ${fieldErrors.slug ? 'border-red-300' : 'border-border focus-within:border-brand-500 focus-within:bg-white'}`}>
+                    <span className="text-gray-400 text-sm mr-1">/portfolio/</span>
                     <input
                       type="text"
-                      value={tech}
-                      onChange={(e) => handleTechnologyChange(index, e.target.value)}
-                      placeholder="+ Ekle"
-                      className="w-32 px-3 py-1.5 bg-slate-50 border border-slate-200 rounded-lg text-sm focus:w-48 focus:bg-white focus:border-violet-500 focus:ring-1 focus:ring-violet-500 transition-all"
+                      value={formData.slug}
+                      onChange={(e) => setFormData(prev => ({ ...prev, slug: e.target.value }))}
+                      readOnly={slugLocked}
+                      className="flex-1 bg-transparent border-none text-sm text-gray-700 focus:ring-0 p-0"
                     />
-                    {tech && (
-                      <button
-                        type="button"
-                        onClick={() => removeTechnology(index)}
-                        className="absolute -top-1 -right-1 bg-red-500 text-white rounded-full p-0.5 opacity-0 group-hover:opacity-100 transition-opacity"
-                      >
-                        <XMarkIcon className="w-3 h-3" />
-                      </button>
-                    )}
+                    <button
+                      type="button"
+                      onClick={() => setSlugLocked(!slugLocked)}
+                      className="ml-2 text-gray-400 hover:text-brand-600 transition-colors"
+                    >
+                      {slugLocked ? <PencilIcon className="w-4 h-4" /> : <CheckIcon className="w-4 h-4" />}
+                    </button>
                   </div>
-                ))}
+                </div>
+
+                <div>
+                  <label className="block text-xs font-semibold text-gray-500 uppercase tracking-wider mb-2">Müşteri</label>
+                  <div className="relative">
+                    <UserIcon className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
+                    <input
+                      type="text"
+                      value={formData.client}
+                      onChange={(e) => setFormData(prev => ({ ...prev, client: e.target.value }))}
+                      className="w-full pl-9 pr-3 py-2 border border-border rounded-lg text-sm focus:outline-none focus:border-brand-500 focus:ring-1 focus:ring-brand-500 transition-all"
+                      placeholder="Şirket veya Kişi Adı"
+                    />
+                  </div>
+                </div>
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">Açıklama</label>
+                <UniversalEditor
+                  key={activeLanguage}
+                  value={currentTranslation.description}
+                  onChange={(content) => setTranslations(prev => ({
+                    ...prev,
+                    [activeLanguage]: { ...prev[activeLanguage], description: content }
+                  }))}
+                  placeholder="Projenin hikayesini anlatın..."
+                  minHeight="300px"
+                />
+                {fieldErrors.description && <p className="mt-1 text-xs text-red-600">{fieldErrors.description}</p>}
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">Kısa Açıklama (Özet)</label>
+                <textarea
+                  rows={2}
+                  value={currentTranslation.excerpt}
+                  onChange={(e) => setTranslations(prev => ({
+                    ...prev,
+                    [activeLanguage]: { ...prev[activeLanguage], excerpt: e.target.value }
+                  }))}
+                  className="w-full px-4 py-2.5 rounded-xl border border-border bg-white focus:outline-none focus:ring-2 focus:ring-brand-500/20 focus:border-brand-500 transition-all text-gray-600 placeholder:text-gray-400 resize-y"
+                  placeholder="Proje için kısa açıklama..."
+                />
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">Meta Açıklaması (SEO)</label>
+                <textarea
+                  rows={2}
+                  maxLength={160}
+                  value={currentTranslation.metaDescription}
+                  onChange={(e) => setTranslations(prev => ({
+                    ...prev,
+                    [activeLanguage]: { ...prev[activeLanguage], metaDescription: e.target.value }
+                  }))}
+                  className="w-full px-4 py-2.5 rounded-xl border border-border bg-white focus:outline-none focus:ring-2 focus:ring-brand-500/20 focus:border-brand-500 transition-all text-gray-600 placeholder:text-gray-400 resize-y"
+                  placeholder="SEO meta açıklaması..."
+                />
+                <p className="text-xs text-gray-500 mt-1">{currentTranslation.metaDescription.length}/160 karakter</p>
               </div>
             </div>
-          </div>
+          </Card>
+
+          {/* Metadata & Tech */}
+          <Card className="rounded-2xl" padding="md">
+            <div className="space-y-8">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                {/* Categories */}
+                <div>
+                  <h3 className="text-sm font-bold text-gray-900 mb-4 flex items-center gap-2">
+                    <TagIcon className="w-4 h-4 text-success" />
+                    Kategoriler
+                  </h3>
+                  <div className="flex flex-wrap gap-2">
+                    {categories.map((cat) => (
+                      <button
+                        key={cat._id}
+                        type="button"
+                        onClick={() => handleCategoryToggle(cat._id)}
+                        className={`px-3 py-1.5 rounded-full text-xs font-medium border transition-all ${formData.categoryIds.includes(cat._id)
+                          ? 'bg-success-light border-success/20 text-success-dark'
+                          : 'bg-white border-border text-gray-600 hover:border-success/20'
+                          }`}
+                      >
+                        {cat.name}
+                        {formData.categoryIds.includes(cat._id) && <CheckIcon className="w-3 h-3 inline-block ml-1" />}
+                      </button>
+                    ))}
+                  </div>
+                  {fieldErrors.categoryIds && <p className="mt-2 text-xs text-red-600">{fieldErrors.categoryIds}</p>}
+                </div>
+
+                {/* Date */}
+                <div>
+                  <h3 className="text-sm font-bold text-gray-900 mb-4 flex items-center gap-2">
+                    <CalendarIcon className="w-4 h-4 text-warning" />
+                    Tamamlanma Tarihi
+                  </h3>
+                  <input
+                    type="date"
+                    value={formData.completionDate}
+                    onChange={(e) => setFormData(prev => ({ ...prev, completionDate: e.target.value }))}
+                    className="w-full px-3 py-2 border border-border rounded-lg text-sm focus:outline-none focus:border-brand-500 transition-all"
+                  />
+                </div>
+              </div>
+
+              {/* Technologies */}
+              <div>
+                <h3 className="text-sm font-bold text-gray-900 mb-4 flex items-center gap-2">
+                  <HashtagIcon className="w-4 h-4 text-violet-500" />
+                  Teknolojiler
+                </h3>
+                <div className="flex flex-wrap gap-2">
+                  {formData.technologies.map((tech, index) => (
+                    <div key={index} className="relative group">
+                      <input
+                        type="text"
+                        value={tech}
+                        onChange={(e) => handleTechnologyChange(index, e.target.value)}
+                        placeholder="+ Ekle"
+                        className="w-32 px-3 py-1.5 bg-surface-secondary border border-border rounded-lg text-sm focus:w-48 focus:bg-white focus:border-violet-500 focus:ring-1 focus:ring-violet-500 transition-all"
+                      />
+                      {tech && (
+                        <button
+                          type="button"
+                          onClick={() => removeTechnology(index)}
+                          className="absolute -top-1 -right-1 bg-red-500 text-white rounded-full p-0.5 opacity-0 group-hover:opacity-100 transition-opacity"
+                        >
+                          <XMarkIcon className="w-3 h-3" />
+                        </button>
+                      )}
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </div>
+          </Card>
         </div>
       </div>
     </div>

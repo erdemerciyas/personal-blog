@@ -1,8 +1,9 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React from 'react';
 import { usePathname } from 'next/navigation';
 import BreadcrumbsJsonLd from './BreadcrumbsJsonLd';
+import { SITE_URL } from '@/lib/seo-utils';
 
 function prettify(segment: string) {
   let label = segment.replace(/-/g, ' ');
@@ -12,6 +13,8 @@ function prettify(segment: string) {
   if (label === 'contact') label = 'İletişim';
   if (label === 'products') label = 'Ürünler';
   if (label === 'admin') label = 'Yönetim Paneli';
+  if (label === 'haberler') label = 'Haberler';
+  if (label === 'noticias') label = 'Noticias';
   return label
     .split(' ')
     .map((w) => w.charAt(0).toUpperCase() + w.slice(1))
@@ -20,25 +23,17 @@ function prettify(segment: string) {
 
 export default function GlobalBreadcrumbsJsonLd() {
   const pathname = usePathname() ?? '';
-  const [baseUrl, setBaseUrl] = useState('');
 
-  useEffect(() => {
-    // Client-side'da window.location.origin kullan
-    if (typeof window !== 'undefined') {
-      setBaseUrl(window.location.origin);
-    }
-  }, []);
-
-  // Hydration tamamlanana kadar render etme
-  if (!baseUrl || pathname === '/' || pathname.startsWith('/admin')) return null;
+  // Admin sayfalarında ve kök yolda breadcrumb gerekmez
+  if (pathname === '/' || pathname.startsWith('/admin')) return null;
 
   const segments = pathname.split('/').filter(Boolean);
-  const items = [{ name: 'Anasayfa', item: `${baseUrl}/` }];
+  const items = [{ name: 'Anasayfa', item: `${SITE_URL}/` }];
   let current = '';
 
   for (const s of segments) {
     current += `/${s}`;
-    items.push({ name: prettify(s), item: `${baseUrl}${current}` });
+    items.push({ name: prettify(s), item: `${SITE_URL}${current}` });
   }
 
   return <BreadcrumbsJsonLd items={items} />;

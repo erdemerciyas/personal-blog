@@ -6,7 +6,7 @@ import { CurrencyDollarIcon } from '@heroicons/react/24/outline';
 
 export default function PriceRangeFilter() {
     const router = useRouter();
-    const searchParams = useSearchParams();
+    const searchParams = useSearchParams()!;
     const [min, setMin] = useState(searchParams.get('priceMin') || '');
     const [max, setMax] = useState(searchParams.get('priceMax') || '');
 

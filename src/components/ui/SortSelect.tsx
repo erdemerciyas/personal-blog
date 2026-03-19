@@ -4,7 +4,7 @@ import { useRouter, useSearchParams } from 'next/navigation';
 
 export default function SortSelect() {
     const router = useRouter();
-    const searchParams = useSearchParams();
+    const searchParams = useSearchParams()!;
     const currentSort = searchParams.get('sort') || 'dateDesc';
 
     const handleSortChange = (e: React.ChangeEvent<HTMLSelectElement>) => {

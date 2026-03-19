@@ -18,6 +18,7 @@ import {
 } from '@heroicons/react/24/outline';
 import toast from 'react-hot-toast';
 import Swal from 'sweetalert2';
+import { PageHeader, Card, Badge, Button } from '@/components/ui';
 
 interface ProductItem {
   _id: string;
@@ -96,10 +97,10 @@ export default function AdminProductsPage() {
       const response = await fetch(`/api/admin/products?${params.toString()}`);
       if (response.ok) {
         const data = await response.json();
-        const list = Array.isArray(data.items) ? data.items : [];
+        const list = Array.isArray(data.data) ? data.data : [];
         setProducts(list);
-        setTotal(data.total || 0);
-        setTotalPages(data.totalPages || 1);
+        setTotal(data.meta?.total || 0);
+        setTotalPages(data.meta?.totalPages || 1);
       }
     } catch (error) {
       console.error('Ürünler yüklenirken hata:', error);
@@ -204,7 +205,7 @@ export default function AdminProductsPage() {
   if (status === 'loading' || loading) {
     return (
       <div className="flex items-center justify-center min-h-[60vh]">
-        <div className="w-16 h-16 border-4 border-slate-200 rounded-full border-t-indigo-600 animate-spin"></div>
+        <div className="w-16 h-16 border-4 border-brand-200 rounded-full border-t-brand-600 animate-spin"></div>
       </div>
     );
   }
@@ -212,28 +213,25 @@ export default function AdminProductsPage() {
   return (
     <div className="space-y-6">
       {/* Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 sticky top-0 z-20 bg-slate-50/80 backdrop-blur-sm py-4">
-        <div>
-          <h1 className="text-2xl font-bold text-slate-900 tracking-tight">Ürün Yönetimi</h1>
-          <p className="text-slate-500 mt-1">Mağaza ürünlerinizi ve stok durumunu yönetin</p>
-        </div>
-        <Link
-          href="/admin/products/new"
-          className="inline-flex items-center px-6 py-3 bg-slate-900 text-white font-semibold rounded-xl hover:bg-slate-800 hover:shadow-lg hover:shadow-slate-900/20 transition-all duration-200"
-        >
-          <PlusIcon className="w-5 h-5 mr-2" />
-          Yeni Ürün
-        </Link>
-      </div>
+      <PageHeader
+        title="Ürün Yönetimi"
+        description="Mağaza ürünlerinizi ve stok durumunu yönetin"
+        actions={
+          <Button variant="primary" size="lg" onClick={() => router.push('/admin/products/new')}>
+            <PlusIcon className="w-5 h-5" />
+            Yeni Ürün
+          </Button>
+        }
+      />
 
       {/* Toolbar */}
-      <div className="bg-white rounded-2xl shadow-sm border border-slate-200 p-2 sm:p-3 sticky top-24 z-30 transition-all duration-300">
+      <Card padding="sm" className="sticky top-24 z-30">
         <div className="flex flex-col lg:flex-row gap-4 items-center justify-between">
 
           {/* Search & Filters */}
           <div className="flex-1 w-full lg:w-auto flex flex-col sm:flex-row gap-3">
             <div className="relative flex-1">
-              <MagnifyingGlassIcon className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-400" />
+              <MagnifyingGlassIcon className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
               <input
                 type="text"
                 value={searchQuery}
@@ -241,7 +239,7 @@ export default function AdminProductsPage() {
                 onKeyDown={(e) => e.key === 'Enter' && setPage(1)} // Trigger search on Enter
                 onBlur={() => setPage(1)} // Trigger search on blur
                 placeholder="Ürün adı..."
-                className="w-full pl-10 pr-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500/50 focus:border-indigo-500 focus:bg-white transition-all shadow-sm"
+                className="w-full pl-10 pr-4 py-2.5 bg-surface-secondary border border-border rounded-xl focus:outline-none focus:ring-2 focus:ring-brand-500/50 focus:border-brand-500 focus:bg-white transition-all shadow-sm"
               />
             </div>
 
@@ -249,7 +247,7 @@ export default function AdminProductsPage() {
               <select
                 value={statusFilter}
                 onChange={(e) => { setStatusFilter(e.target.value); setPage(1); }}
-                className="px-3 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm font-medium text-slate-600 focus:outline-none focus:ring-2 focus:ring-indigo-500/50"
+                className="px-3 py-2.5 bg-surface-secondary border border-border rounded-xl text-sm font-medium text-gray-600 focus:outline-none focus:ring-2 focus:ring-brand-500/50"
               >
                 <option value="all">Tüm Durumlar</option>
                 <option value="published">Yayında</option>
@@ -259,7 +257,7 @@ export default function AdminProductsPage() {
               <select
                 value={stockFilter}
                 onChange={(e) => { setStockFilter(e.target.value); setPage(1); }}
-                className="px-3 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm font-medium text-slate-600 focus:outline-none focus:ring-2 focus:ring-indigo-500/50"
+                className="px-3 py-2.5 bg-surface-secondary border border-border rounded-xl text-sm font-medium text-gray-600 focus:outline-none focus:ring-2 focus:ring-brand-500/50"
               >
                 <option value="all">Stok Durumu</option>
                 <option value="in_stock">Stokta Var</option>
@@ -274,7 +272,7 @@ export default function AdminProductsPage() {
 
             {selectedItems.size > 0 && (
               <div className="flex items-center gap-3 animate-in fade-in slide-in-from-right-4 duration-200">
-                <span className="text-sm font-medium text-slate-600 hidden sm:inline">
+                <span className="text-sm font-medium text-gray-600 hidden sm:inline">
                   {selectedItems.size} seçildi
                 </span>
                 <button
@@ -287,32 +285,32 @@ export default function AdminProductsPage() {
               </div>
             )}
 
-            <div className="flex bg-slate-100 border border-slate-200/50 rounded-xl p-1 shadow-sm shrink-0">
+            <div className="flex bg-surface-tertiary border border-border/50 rounded-xl p-1 shadow-sm shrink-0">
               <button
                 onClick={() => setViewMode('grid')}
-                className={`p-2 rounded-lg transition-all ${viewMode === 'grid' ? 'bg-white text-indigo-600 shadow-sm' : 'text-slate-500 hover:text-slate-700'}`}
+                className={`p-2 rounded-lg transition-all ${viewMode === 'grid' ? 'bg-white text-brand-600 shadow-sm' : 'text-gray-500 hover:text-gray-700'}`}
               >
                 <Squares2X2Icon className="w-5 h-5" />
               </button>
               <button
                 onClick={() => setViewMode('list')}
-                className={`p-2 rounded-lg transition-all ${viewMode === 'list' ? 'bg-white text-indigo-600 shadow-sm' : 'text-slate-500 hover:text-slate-700'}`}
+                className={`p-2 rounded-lg transition-all ${viewMode === 'list' ? 'bg-white text-brand-600 shadow-sm' : 'text-gray-500 hover:text-gray-700'}`}
               >
                 <ListBulletIcon className="w-5 h-5" />
               </button>
             </div>
           </div>
         </div>
-      </div>
+      </Card>
 
       {/* Content */}
       {products.length === 0 ? (
-        <div className="bg-white rounded-2xl shadow-sm border border-slate-200 border-dashed p-12 text-center">
-          <div className="w-16 h-16 bg-slate-50 rounded-full flex items-center justify-center mx-auto mb-4">
-            <ShoppingBagIcon className="w-8 h-8 text-slate-400" />
+        <Card className="border-dashed p-12 text-center">
+          <div className="w-16 h-16 bg-surface-secondary rounded-full flex items-center justify-center mx-auto mb-4">
+            <ShoppingBagIcon className="w-8 h-8 text-gray-400" />
           </div>
-          <h3 className="text-lg font-semibold text-slate-900 mb-2">Ürün bulunamadı</h3>
-          <p className="text-slate-500 mb-6 max-w-sm mx-auto">
+          <h3 className="text-lg font-semibold text-gray-900 mb-2">Ürün bulunamadı</h3>
+          <p className="text-gray-500 mb-6 max-w-sm mx-auto">
             {searchQuery || statusFilter !== 'all'
               ? 'Arama kriterlerinize uygun ürün bulunamadı.'
               : 'Henüz hiç ürün eklenmemiş. Yeni ürün ekleyerek başlayın.'}
@@ -320,29 +318,29 @@ export default function AdminProductsPage() {
           {(searchQuery || statusFilter !== 'all') && (
             <button
               onClick={() => { setSearchQuery(''); setStatusFilter('all'); setStockFilter('all'); }}
-              className="text-indigo-600 hover:text-indigo-700 font-medium hover:underline"
+              className="text-brand-600 hover:text-brand-700 font-medium hover:underline"
             >
               Filtreleri Temizle
             </button>
           )}
-        </div>
+        </Card>
       ) : (
         <>
           {viewMode === 'grid' ? (
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+            <ul className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
               {products.map(product => (
-                <div
+                <li
                   key={product._id}
                   className={`group relative bg-white rounded-2xl border transition-all duration-300 hover:shadow-xl overflow-hidden flex flex-col
-                        ${selectedItems.has(product._id) ? 'border-indigo-500 ring-1 ring-indigo-500' : 'border-slate-200 hover:border-slate-300'}
+                        ${selectedItems.has(product._id) ? 'border-brand-500 ring-1 ring-brand-500' : 'border-border hover:border-gray-300'}
                       `}
                 >
                   {/* Image Area */}
-                  <div className="aspect-[4/3] bg-slate-100 relative overflow-hidden">
+                  <div className="aspect-[4/3] bg-surface-tertiary relative overflow-hidden">
                     {product.coverImage ? (
                       <img src={product.coverImage} alt={product.title} className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105" />
                     ) : (
-                      <div className="w-full h-full flex items-center justify-center text-slate-400">
+                      <div className="w-full h-full flex items-center justify-center text-gray-400">
                         <ShoppingBagIcon className="w-12 h-12" />
                       </div>
                     )}
@@ -355,7 +353,7 @@ export default function AdminProductsPage() {
                             `}
                     >
                       <div className={`w-8 h-8 rounded-full border-2 flex items-center justify-center
-                              ${selectedItems.has(product._id) ? 'bg-indigo-600 border-indigo-600 text-white' : 'bg-transparent border-white text-transparent hover:bg-white/20'}
+                              ${selectedItems.has(product._id) ? 'bg-brand-600 border-brand-600 text-white' : 'bg-transparent border-white text-transparent hover:bg-white/20'}
                             `}>
                         <CheckCircleIcon className="w-5 h-5" />
                       </div>
@@ -363,7 +361,7 @@ export default function AdminProductsPage() {
 
                     <div className="absolute top-3 right-3 flex flex-col gap-2">
                       <span className={`px-2 py-1 text-xs font-bold rounded-lg shadow-sm backdrop-blur-md
-                              ${product.isActive ? 'bg-emerald-500/90 text-white' : 'bg-slate-500/90 text-white'}
+                              ${product.isActive ? 'bg-success/90 text-white' : 'bg-gray-500/90 text-white'}
                             `}>
                         {product.isActive ? 'Yayında' : 'Taslak'}
                       </span>
@@ -372,17 +370,17 @@ export default function AdminProductsPage() {
 
                   {/* Content */}
                   <div className="p-5 flex-1 flex flex-col">
-                    <h3 className="font-bold text-slate-900 line-clamp-1 mb-1 group-hover:text-indigo-600 transition-colors">
+                    <h3 className="font-bold text-gray-900 line-clamp-1 mb-1 group-hover:text-brand-600 transition-colors">
                       <Link href={`/admin/products/edit/${product._id}`} className="hover:underline">
                         {product.title}
                       </Link>
                     </h3>
-                    <p className="text-sm font-semibold text-slate-700 mb-4">{formatPrice(product.price, product.currency)}</p>
+                    <p className="text-sm font-semibold text-gray-700 mb-4">{formatPrice(product.price, product.currency)}</p>
 
-                    <div className="mt-auto flex items-center justify-between pt-4 border-t border-slate-100">
+                    <div className="mt-auto flex items-center justify-between pt-4 border-t border-border-subtle">
                       <div className="flex items-center gap-2 text-xs">
-                        <span className={`w-2 h-2 rounded-full ${product.stock > 0 ? 'bg-emerald-500' : 'bg-red-500'}`} />
-                        <span className={product.stock > 0 ? 'text-slate-600' : 'text-red-600 font-medium'}>
+                        <span className={`w-2 h-2 rounded-full ${product.stock > 0 ? 'bg-success' : 'bg-red-500'}`} />
+                        <span className={product.stock > 0 ? 'text-gray-600' : 'text-red-600 font-medium'}>
                           {product.stock > 0 ? `${product.stock} Stok` : 'Tükendi'}
                         </span>
                       </div>
@@ -390,41 +388,41 @@ export default function AdminProductsPage() {
                       <div className="flex gap-1">
                         <Link
                           href={`/admin/products/edit/${product._id}`}
-                          className="p-2 text-slate-400 hover:text-indigo-600 hover:bg-indigo-50 rounded-lg transition-colors"
+                          className="p-2 text-gray-400 hover:text-brand-600 hover:bg-brand-50 rounded-lg transition-colors"
                         >
                           <TagIcon className="w-4 h-4" />
                         </Link>
                         <button
                           onClick={() => openMessages(product)}
-                          className="p-2 text-slate-400 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-colors"
+                          className="p-2 text-gray-400 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-colors"
                           title="Sorular"
                         >
                           <ChatBubbleLeftRightIcon className="w-4 h-4" />
                         </button>
                         <button
                           onClick={() => handleDelete(product._id)}
-                          className="p-2 text-slate-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors"
+                          className="p-2 text-gray-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors"
                         >
                           <TrashIcon className="w-4 h-4" />
                         </button>
                       </div>
                     </div>
                   </div>
-                </div>
+                </li>
               ))}
-            </div>
+            </ul>
           ) : (
             // List View
-            <div className="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden">
+            <Card padding="none" className="overflow-hidden">
               <table className="w-full text-left border-collapse">
                 <thead>
-                  <tr className="bg-slate-50 border-b border-slate-200 text-xs font-semibold text-slate-500 uppercase tracking-wider">
+                  <tr className="bg-surface-secondary border-b border-border text-xs font-semibold text-gray-500 uppercase tracking-wider">
                     <th className="px-6 py-4 w-12">
                       <input
                         type="checkbox"
                         checked={selectedItems.size === products.length && products.length > 0}
                         onChange={(e) => handleSelectAll(e.target.checked)}
-                        className="rounded border-slate-300 text-indigo-600 focus:ring-indigo-500"
+                        className="rounded border-gray-300 text-brand-600 focus:ring-brand-500"
                       />
                     </th>
                     <th className="px-6 py-4">Ürün</th>
@@ -434,69 +432,68 @@ export default function AdminProductsPage() {
                     <th className="px-6 py-4 text-right">İşlemler</th>
                   </tr>
                 </thead>
-                <tbody className="divide-y divide-slate-100">
+                <tbody className="divide-y divide-border-subtle">
                   {products.map(product => (
-                    <tr key={product._id} className={`group ${selectedItems.has(product._id) ? 'bg-indigo-50/50' : 'hover:bg-slate-50'}`}>
+                    <tr key={product._id} className={`group ${selectedItems.has(product._id) ? 'bg-brand-50/50' : 'hover:bg-surface-secondary'}`}>
                       <td className="px-6 py-4">
                         <input
                           type="checkbox"
                           checked={selectedItems.has(product._id)}
                           onChange={() => handleSelectItem(product._id)}
-                          className="rounded border-slate-300 text-indigo-600 focus:ring-indigo-500"
+                          className="rounded border-gray-300 text-brand-600 focus:ring-brand-500"
                         />
                       </td>
                       <td className="px-6 py-4">
                         <div className="flex items-center gap-4">
-                          <div className="w-12 h-12 bg-slate-100 rounded-lg overflow-hidden flex-shrink-0">
+                          <div className="w-12 h-12 bg-surface-tertiary rounded-lg overflow-hidden flex-shrink-0">
                             {product.coverImage ? (
                               <img src={product.coverImage} alt="" className="w-full h-full object-cover" />
                             ) : (
-                              <div className="w-full h-full flex items-center justify-center text-slate-400">
+                              <div className="w-full h-full flex items-center justify-center text-gray-400">
                                 <ShoppingBagIcon className="w-6 h-6" />
                               </div>
                             )}
                           </div>
                           <div>
-                            <Link href={`/admin/products/edit/${product._id}`} className="font-semibold text-slate-900 hover:text-indigo-600 transition-colors">
+                            <Link href={`/admin/products/edit/${product._id}`} className="font-semibold text-gray-900 hover:text-brand-600 transition-colors">
                               {product.title}
                             </Link>
-                            <p className="text-xs text-slate-500 mt-0.5">ID: {product._id.slice(-6)}</p>
+                            <p className="text-xs text-gray-500 mt-0.5">ID: {product._id.slice(-6)}</p>
                           </div>
                         </div>
                       </td>
-                      <td className="px-6 py-4 font-mono text-sm text-slate-600">
+                      <td className="px-6 py-4 font-mono text-sm text-gray-600">
                         {formatPrice(product.price, product.currency)}
                       </td>
                       <td className="px-6 py-4">
                         <div className="flex items-center gap-2">
-                          <span className={`w-2 h-2 rounded-full ${product.stock > 0 ? 'bg-emerald-500' : 'bg-red-500'}`} />
-                          <span className="text-sm text-slate-700">{product.stock}</span>
+                          <span className={`w-2 h-2 rounded-full ${product.stock > 0 ? 'bg-success' : 'bg-red-500'}`} />
+                          <span className="text-sm text-gray-700">{product.stock}</span>
                         </div>
                       </td>
                       <td className="px-6 py-4">
-                        <span className={`inline-flex px-2.5 py-1 rounded-full text-xs font-semibold ${product.isActive ? 'bg-emerald-50 text-emerald-700 border border-emerald-100' : 'bg-slate-100 text-slate-600 border border-slate-200'
-                          }`}>
+                        <Badge variant={product.isActive ? 'success' : 'default'}>
                           {product.isActive ? 'Yayında' : 'Taslak'}
-                        </span>
+                        </Badge>
                       </td>
                       <td className="px-6 py-4 text-right">
                         <div className="flex items-center justify-end gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
                           <Link
                             href={`/admin/products/edit/${product._id}`}
-                            className="p-1.5 text-slate-500 hover:text-indigo-600 hover:bg-indigo-50 rounded-lg transition-colors"
+                            className="p-1.5 text-gray-500 hover:text-brand-600 hover:bg-brand-50 rounded-lg transition-colors"
                           >
                             <TagIcon className="w-4 h-4" />
                           </Link>
                           <button
                             onClick={() => openMessages(product)}
-                            className="p-1.5 text-slate-500 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-colors"
+                            className="p-1.5 text-gray-500 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-colors"
                             title="Sorular"
                           >
                             <ChatBubbleLeftRightIcon className="w-4 h-4" />
                           </button>
                           <button
                             onClick={() => handleDelete(product._id)}
-                            className="p-1.5 text-slate-500 hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors"
+                            className="p-1.5 text-gray-500 hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors"
                           >
                             <TrashIcon className="w-4 h-4" />
                           </button>
@@ -506,22 +503,22 @@ export default function AdminProductsPage() {
                   ))}
                 </tbody>
               </table>
-            </div>
+            </Card>
           )}
         </>
       )}
 
       {/* Bottom Pagination */}
       {products.length > 0 && (
-        <div className="flex items-center justify-between border-t border-slate-200 pt-4">
-          <div className="text-sm text-slate-500">
+        <nav aria-label="Sayfalama" className="flex items-center justify-between border-t border-border pt-4">
+          <div className="text-sm text-gray-500">
             Toplam <strong>{total}</strong> üründen <strong>{(page - 1) * 20 + 1}</strong> - <strong>{Math.min(page * 20, total)}</strong> arası gösteriliyor
           </div>
           <div className="flex items-center gap-2">
             <button
               onClick={() => setPage(p => Math.max(1, p - 1))}
               disabled={page <= 1}
-              className="px-4 py-2 border border-slate-200 rounded-xl text-sm font-medium text-slate-600 hover:bg-slate-50 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+              className="px-4 py-2 border border-border rounded-xl text-sm font-medium text-gray-600 hover:bg-surface-secondary disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
             >
               Önceki
             </button>
@@ -537,7 +534,7 @@ export default function AdminProductsPage() {
                     key={p}
                     onClick={() => setPage(p)}
                     className={`w-10 h-10 rounded-xl text-sm font-medium transition-colors
-                      ${page === p ? 'bg-indigo-600 text-white shadow-lg shadow-indigo-200' : 'text-slate-600 hover:bg-slate-50'}
+                      ${page === p ? 'bg-brand-600 text-white shadow-lg shadow-brand-200' : 'text-gray-600 hover:bg-surface-secondary'}
                     `}
                   >
                     {p}
@@ -548,12 +545,12 @@ export default function AdminProductsPage() {
             <button
               onClick={() => setPage(p => Math.min(totalPages, p + 1))}
               disabled={page >= totalPages}
-              className="px-4 py-2 border border-slate-200 rounded-xl text-sm font-medium text-slate-600 hover:bg-slate-50 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+              className="px-4 py-2 border border-border rounded-xl text-sm font-medium text-gray-600 hover:bg-surface-secondary disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
             >
               Sonraki
             </button>
           </div>
-        </div>
+        </nav>
       )}
 
       {/* Messages Sidebar / Modal */}
@@ -567,46 +564,46 @@ export default function AdminProductsPage() {
 
           {/* Sidebar */}
           <div className="relative w-full max-w-md bg-white h-full shadow-2xl flex flex-col animate-in slide-in-from-right duration-300">
-            <div className="p-4 border-b border-gray-100 flex items-center justify-between bg-slate-50">
+            <div className="p-4 border-b border-gray-100 flex items-center justify-between bg-surface-secondary">
               <div>
-                <h3 className="font-bold text-slate-900">Ürün Soruları</h3>
-                <p className="text-xs text-slate-500 truncate max-w-[200px]">{selectedProductForMessages.title}</p>
+                <h3 className="font-bold text-gray-900">Ürün Soruları</h3>
+                <p className="text-xs text-gray-500 truncate max-w-[200px]">{selectedProductForMessages.title}</p>
               </div>
               <button
                 onClick={() => setSelectedProductForMessages(null)}
-                className="p-2 hover:bg-slate-200 rounded-full transition-colors"
+                className="p-2 hover:bg-gray-200 rounded-full transition-colors"
               >
-                <XMarkIcon className="w-5 h-5 text-slate-500" />
+                <XMarkIcon className="w-5 h-5 text-gray-500" />
               </button>
             </div>
 
             <div className="flex-1 overflow-y-auto p-4 space-y-4">
               {loadingMessages ? (
                 <div className="flex justify-center p-8">
-                  <div className="w-8 h-8 border-4 border-slate-200 border-t-indigo-600 rounded-full animate-spin"></div>
+                  <div className="w-8 h-8 border-4 border-brand-200 border-t-brand-600 rounded-full animate-spin"></div>
                 </div>
               ) : messages.length === 0 ? (
-                <div className="text-center py-12 text-slate-400">
+                <div className="text-center py-12 text-gray-400">
                   <ChatBubbleLeftRightIcon className="w-12 h-12 mx-auto mb-3 opacity-50" />
                   <p>Bu ürün için henüz soru sorulmamış.</p>
                 </div>
               ) : (
                 messages.map(msg => (
-                  <div key={msg._id} className="bg-white border border-slate-200 rounded-xl p-4 shadow-sm hover:shadow-md transition-shadow">
+                  <div key={msg._id} className="bg-white border border-border rounded-xl p-4 shadow-sm hover:shadow-md transition-shadow">
                     <div className="flex justify-between items-start mb-2">
-                      <div className="font-semibold text-slate-900">{msg.name}</div>
-                      <span className="text-xs text-slate-500">
+                      <div className="font-semibold text-gray-900">{msg.name}</div>
+                      <span className="text-xs text-gray-500">
                         {new Date(msg.createdAt).toLocaleDateString('tr-TR')}
                       </span>
                     </div>
-                    <div className="text-xs text-indigo-600 mb-2">{msg.email}</div>
-                    <p className="text-sm text-slate-700 bg-slate-50 p-3 rounded-lg">
+                    <div className="text-xs text-brand-600 mb-2">{msg.email}</div>
+                    <p className="text-sm text-gray-700 bg-surface-secondary p-3 rounded-lg">
                       {msg.message}
                     </p>
                     <div className="mt-3 flex justify-end">
                       <Link
                         href={`/admin/messages?id=${msg._id}`}
-                        className="text-xs font-medium text-indigo-600 hover:text-indigo-800 hover:underline"
+                        className="text-xs font-medium text-brand-600 hover:text-brand-800 hover:underline"
                       >
                         Mesaj Detayına Git &rarr;
                       </Link>

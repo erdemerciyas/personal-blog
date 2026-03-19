@@ -6,29 +6,39 @@ import News from '@/models/News';
 import { NewsItem } from '@/types/news';
 import { logger } from '@/core/lib/logger';
 import PageHero from '@/components/common/PageHero';
+import { SITE_URL, generateAlternates, generateOgImages } from '@/lib/seo-utils';
+import { Badge } from '@/components/ui/Badge';
+import { buttonVariants } from '@/components/ui/Button';
+import { cn } from '@/lib/utils';
 
 interface PageProps {
-    searchParams: {
+    params: Promise<{ lang: string }>;
+    searchParams: Promise<{
         page?: string;
         search?: string;
         tag?: string;
+    }>;
+}
+
+export async function generateMetadata(): Promise<Metadata> {
+    return {
+        title: 'Haberler | Fixral',
+        description: 'Fixral\'dan en son haberler ve duyuruları okuyun',
+        alternates: generateAlternates('/tr/haberler', '/es/noticias'),
+        openGraph: {
+            title: 'Haberler | Fixral',
+            description: 'Fixral\'dan en son haberler ve duyuruları okuyun',
+            type: 'website',
+            url: `${SITE_URL}/tr/haberler`,
+            images: generateOgImages(undefined, 'Haberler | Fixral'),
+        },
     };
 }
 
-export const metadata: Metadata = {
-    title: 'Haberler | Fixral',
-    description: 'Fixral\'dan en son haberler ve duyuruları okuyun',
-    openGraph: {
-        title: 'Haberler | Fixral',
-        description: 'Fixral\'dan en son haberler ve duyuruları okuyun',
-        type: 'website',
-        url: 'https://www.fixral.com/haberler',
-    },
-};
-
 const ITEMS_PER_PAGE = 12;
 
-export default async function NewsListPage({ searchParams }: PageProps) {
+export default async function NewsListPage({ searchParams: searchParamsPromise }: PageProps) {
+    const searchParams = await searchParamsPromise;
     try {
         await connectDB();
 
@@ -150,12 +160,12 @@ export default async function NewsListPage({ searchParams }: PageProps) {
                     {/* Articles Grid */}
                     {articles.length > 0 ? (
                         <>
-                            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mb-12">
+                            <ul className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mb-12">
                                 {articles.map((article) => {
                                     const translation = article.translations.tr;
                                     return (
+                                        <li key={article._id}>
                                         <Link
-                                            key={article._id}
                                             href={`/haberler/${article.slug}`}
                                             className="group flex flex-col h-full bg-white rounded-2xl overflow-hidden border border-gray-200 shadow-sm hover:shadow-xl hover:-translate-y-1 transition-all duration-300"
                                         >
@@ -184,9 +194,9 @@ export default async function NewsListPage({ searchParams }: PageProps) {
                                                 {/* Tags */}
                                                 {article.tags && article.tags.length > 0 && (
                                                     <div className="mb-3">
-                                                        <span className="text-xs font-semibold uppercase tracking-wider text-fixral-primary bg-fixral-primary/5 px-2 py-1 rounded">
+                                                        <Badge variant="primary" className="uppercase tracking-wider">
                                                             {article.tags[0]}
-                                                        </span>
+                                                        </Badge>
                                                     </div>
                                                 )}
 
@@ -211,13 +221,14 @@ export default async function NewsListPage({ searchParams }: PageProps) {
                                                 </div>
                                             </div>
                                         </Link>
+                                        </li>
                                     );
                                 })}
-                            </div>
+                            </ul>
 
                             {/* Pagination */}
                             {totalPages > 1 && (
-                                <div className="flex justify-center items-center gap-2">
+                                <nav aria-label="Sayfalama" className="flex justify-center items-center gap-2">
                                     {page > 1 && (
                                         <Link
                                             href={`/haberler?page=${page - 1}${search ? `&search=${search}` : ''}${tag ? `&tag=${tag}` : ''}`}
@@ -248,7 +259,7 @@ export default async function NewsListPage({ searchParams }: PageProps) {
                                             Sonraki →
                                         </Link>
                                     )}
-                                </div>
+                                </nav>
                             )}
                         </>
                     ) : (
@@ -262,7 +273,7 @@ export default async function NewsListPage({ searchParams }: PageProps) {
                             <p className="text-slate-500 mb-6">Aradığınız kriterlere uygun haber bulunamadı.</p>
                             <Link
                                 href="/haberler"
-                                className="inline-flex items-center px-4 py-2 bg-fixral-primary text-white rounded-lg hover:bg-opacity-90 transition-all font-medium"
+                                className={cn(buttonVariants({ variant: 'primary' }))}
                             >
                                 Tüm Haberleri Göster
                             </Link>

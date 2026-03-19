@@ -89,6 +89,21 @@ const portfolioSchema = new mongoose.Schema({
     type: Number,
     default: 0,
   },
+  // Çok dilli içerik desteği
+  translations: {
+    type: Map,
+    of: new mongoose.Schema(
+      {
+        title:           { type: String },
+        description:     { type: String },
+        excerpt:         { type: String },
+        metaDescription: { type: String },
+        keywords:        [{ type: String }],
+      },
+      { _id: false }
+    ),
+    default: {},
+  },
   createdAt: {
     type: Date,
     default: Date.now,
@@ -99,15 +114,13 @@ const portfolioSchema = new mongoose.Schema({
   },
 });
 
-portfolioSchema.pre('save', function (next) {
+portfolioSchema.pre('save', async function () {
   if (this.isModified('title')) {
     this.slug = slugify(this.title, { lower: true, strict: true });
   }
 
   // updatedAt'i her kaydetmede güncelle
   this.updatedAt = new Date();
-
-  next();
 });
 
 export default mongoose.models.Portfolio || mongoose.model('Portfolio', portfolioSchema);

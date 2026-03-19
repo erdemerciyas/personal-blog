@@ -117,7 +117,7 @@ export default function ModernProjectGrid({
 
       {/* Projects Grid */}
       <AnimatePresence mode="wait">
-        <motion.div
+        <motion.ul
           key={currentLayout}
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
@@ -126,14 +126,15 @@ export default function ModernProjectGrid({
           className={getGridClassName(currentLayout)}
         >
           {projects.map((project, index) => (
-            <ModernProjectCard
-              key={project.id}
-              project={project}
-              index={index}
-              layout={currentLayout}
-            />
+            <li key={project.id}>
+              <ModernProjectCard
+                project={project}
+                index={index}
+                layout={currentLayout}
+              />
+            </li>
           ))}
-        </motion.div>
+        </motion.ul>
       </AnimatePresence>
     </div>
   );

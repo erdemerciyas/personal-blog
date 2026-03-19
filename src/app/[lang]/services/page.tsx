@@ -8,7 +8,7 @@ import Breadcrumbs from '@/components/Breadcrumbs';
 import BreadcrumbsJsonLd from '@/components/seo/BreadcrumbsJsonLd';
 import ServicesListJsonLd from '@/components/seo/ServicesListJsonLd';
 
-export const dynamic = 'force-dynamic';
+export const revalidate = 3600; // 1 saatte bir yenile
 
 async function getData() {
   await connectDB();
@@ -27,16 +27,28 @@ async function getData() {
   };
 }
 
-export async function generateMetadata(): Promise<Metadata> {
+export async function generateMetadata({ params }: { params: Promise<{ lang: string }> }): Promise<Metadata> {
+  const { lang } = await params;
   const { hero } = await getData();
+  const SITE_URL = process.env.NEXT_PUBLIC_APP_URL || 'https://www.fixral.com';
 
   return {
     title: `${hero.title} | Fixral`,
     description: hero.description,
+    alternates: {
+      canonical: `${SITE_URL}/${lang}/services`,
+      languages: {
+        'tr-TR': `${SITE_URL}/tr/services`,
+        'es-ES': `${SITE_URL}/es/services`,
+        'x-default': `${SITE_URL}/tr/services`,
+      },
+    },
     openGraph: {
       title: `${hero.title} | Fixral`,
       description: hero.description,
+      url: `${SITE_URL}/${lang}/services`,
       type: 'website',
+      images: [{ url: `${SITE_URL}/og-image.jpg`, width: 1200, height: 630, alt: hero.title }],
     },
   };
 }

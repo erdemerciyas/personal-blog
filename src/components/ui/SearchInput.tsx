@@ -6,7 +6,7 @@ import { useCallback, useEffect, useState, useTransition } from 'react';
 
 export default function SearchInput() {
     const router = useRouter();
-    const searchParams = useSearchParams();
+    const searchParams = useSearchParams()!;
     const [value, setValue] = useState(searchParams.get('q') || '');
     const [isPending, startTransition] = useTransition();
     const [isTyping, setIsTyping] = useState(false);

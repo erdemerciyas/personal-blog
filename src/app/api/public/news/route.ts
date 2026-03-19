@@ -3,6 +3,7 @@ import { getServerSession } from 'next-auth';
 import mongoose from 'mongoose';
 import connectDB from '@/lib/mongoose';
 import News from '@/models/News';
+import Language from '@/models/Language';
 import User from '@/models/User';
 import slugify from 'slugify';
 import { ApiResponse, NewsListResponse, CreateNewsInput, NewsItem } from '@/types/news';
@@ -64,11 +65,15 @@ export async function GET(request: NextRequest) {
       query.status = status;
     }
 
-    // Search in Turkish title and content
+    // Search across all active language translations
     if (search) {
+      const langs = await Language.find({ isActive: true }).select('code').lean();
+      const langCodes = langs.map((l: any) => l.code);
+      const titleConditions = langCodes.map((code: string) => ({
+        [`translations.${code}.title`]: { $regex: search, $options: 'i' },
+      }));
       query.$or = [
-        { 'translations.tr.title': { $regex: search, $options: 'i' } },
-        { 'translations.es.title': { $regex: search, $options: 'i' } },
+        ...titleConditions,
         { tags: { $in: [new RegExp(search, 'i')] } },
       ];
     }
@@ -209,8 +214,16 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Generate slug from title
-    const titleForSlug = newsData.translations?.tr?.title || newsData.translations?.es?.title || 'news';
+    // Generate slug from any available translation title
+    let titleForSlug = 'news';
+    if (newsData.translations) {
+      for (const trans of Object.values(newsData.translations)) {
+        if ((trans as any)?.title) {
+          titleForSlug = (trans as any).title;
+          break;
+        }
+      }
+    }
     const slugBase = slugify(titleForSlug, { lower: true, strict: true, replacement: '-' });
     const slug = `${slugBase}-${Date.now()}`;
 

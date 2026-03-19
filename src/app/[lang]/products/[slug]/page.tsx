@@ -28,7 +28,7 @@ import AddToCartButton from './AddToCartButton';
 
 async function getProduct(slug: string) {
   const base = process.env.NEXTAUTH_URL || '';
-  const res = await fetch(`${base}/api/public/products/slug/${slug}`, { cache: 'no-store' });
+  const res = await fetch(`${base}/api/public/products/slug/${slug}`, { next: { revalidate: 3600 } });
   if (!res.ok) return null;
   return res.json();
 }

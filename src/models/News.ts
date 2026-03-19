@@ -2,27 +2,23 @@ import mongoose, { Schema, Document } from 'mongoose';
 import slugify from 'slugify';
 
 /**
+ * News Translation Interface
+ */
+export interface INewsTranslation {
+  title?: string;
+  content?: string;
+  excerpt?: string;
+  metaDescription?: string;
+  keywords?: string[];
+}
+
+/**
  * News Article Document Interface
  */
 export interface INews extends Document {
   slug: string;
   status: 'draft' | 'published';
-  translations: {
-    tr: {
-      title: string;
-      content: string;
-      excerpt: string;
-      metaDescription: string;
-      keywords: string[];
-    };
-    es: {
-      title: string;
-      content: string;
-      excerpt: string;
-      metaDescription: string;
-      keywords: string[];
-    };
-  };
+  translations: Map<string, INewsTranslation>;
   featuredImage: {
     url: string;
     altText: string;
@@ -61,34 +57,17 @@ const newsSchema = new Schema<INews>(
       index: true,
     },
     translations: {
-      type: {
-        tr: {
-          type: {
-            title: String,
-            content: String,
-            excerpt: String,
-            metaDescription: String,
-            keywords: {
-              type: [String],
-              default: [],
-            },
-          },
-          default: {},
+      type: Map,
+      of: new Schema(
+        {
+          title:           { type: String },
+          content:         { type: String },
+          excerpt:         { type: String },
+          metaDescription: { type: String },
+          keywords:        [{ type: String }],
         },
-        es: {
-          type: {
-            title: String,
-            content: String,
-            excerpt: String,
-            metaDescription: String,
-            keywords: {
-              type: [String],
-              default: [],
-            },
-          },
-          default: {},
-        },
-      },
+        { _id: false }
+      ),
       default: {},
     },
     featuredImage: {
@@ -151,37 +130,37 @@ const newsSchema = new Schema<INews>(
 );
 
 /**
- * Pre-save middleware to generate slug from Turkish title or Spanish title
+ * Pre-save middleware to generate slug from any available translation title
  */
-newsSchema.pre('save', function (next) {
-  try {
-    // Generate slug from Turkish title if available, otherwise from Spanish title
-    const titleForSlug = this.translations?.tr?.title || this.translations?.es?.title;
+newsSchema.pre('save', async function () {
+  if (!this.slug) {
+    let titleForSlug = '';
 
-    if (!this.slug) {
-      if (titleForSlug) {
-        const baseSlug = slugify(titleForSlug, {
-          lower: true,
-          strict: true,
-          replacement: '-',
-        });
-
-        // Add timestamp to ensure uniqueness
-        this.slug = `${baseSlug}-${Date.now()}`;
-      } else {
-        // Fallback: generate slug from timestamp if no title available
-        this.slug = `news-${Date.now()}`;
+    if (this.translations) {
+      // Try to find a title from any language
+      for (const [, trans] of this.translations) {
+        if (trans?.title) {
+          titleForSlug = trans.title;
+          break;
+        }
       }
     }
 
-    // Update publishedAt when status changes to published
-    if (this.isModified('status') && this.status === 'published' && !this.publishedAt) {
-      this.publishedAt = new Date();
+    if (titleForSlug) {
+      const baseSlug = slugify(titleForSlug, {
+        lower: true,
+        strict: true,
+        replacement: '-',
+      });
+      this.slug = `${baseSlug}-${Date.now()}`;
+    } else {
+      this.slug = `news-${Date.now()}`;
     }
+  }
 
-    next();
-  } catch (error) {
-    next(error as Error);
+  // Update publishedAt when status changes to published
+  if (this.isModified('status') && this.status === 'published' && !this.publishedAt) {
+    this.publishedAt = new Date();
   }
 });
 
@@ -197,8 +176,8 @@ newsSchema.index({ 'author.id': 1 });
 /**
  * Instance method to get translated content
  */
-newsSchema.methods.getTranslation = function (language: 'tr' | 'es') {
-  return this.translations[language];
+newsSchema.methods.getTranslation = function (language: string) {
+  return this.translations?.get(language);
 };
 
 /**

@@ -43,7 +43,11 @@ export const GET = withSecurity(SecurityConfigs.admin)(async (req: NextRequest) 
   }
   const items = await Product.find(filter).sort(sortSpec).skip((page - 1) * limit).limit(limit);
   const total = await Product.countDocuments(filter);
-  return NextResponse.json({ items, total, page, limit, totalPages: Math.ceil(total / limit) });
+  return NextResponse.json({
+    success: true,
+    data: items,
+    meta: { total, page, limit, totalPages: Math.ceil(total / limit) },
+  });
 });
 
 export const POST = withSecurity({
@@ -73,7 +77,7 @@ export const POST = withSecurity({
 
   try {
     const product = await Product.create(body);
-    return NextResponse.json({ product }, { status: 201 });
+    return NextResponse.json({ success: true, data: product }, { status: 201 });
   } catch (error: any) {
     console.error('Product create error:', error);
 
