@@ -16,7 +16,7 @@ export type { Column as DataTableColumn } from './DataTable'
 export { FormSection } from './FormSection'
 
 // UI Component exports
-export { default as Select } from './select';
+export { default as Select } from './Select';
 
 // Fixral Design System Components
 export { default as FixralButton } from './FixralButton';
