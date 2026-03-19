@@ -33,7 +33,7 @@ jobs:
       run: npm ci
       
     - name: ESLint check
-      run: npm run lint
+      run: npx next lint --quiet
       continue-on-error: false
       
     - name: TypeScript check

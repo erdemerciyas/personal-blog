@@ -28,8 +28,8 @@ export function isValidLocale(lang: string): lang is Locale {
 export async function getMessages(lang: string): Promise<Record<string, unknown>> {
   const locale = isValidLocale(lang) ? lang : defaultLocale;
   try {
-    const module = await import(`../messages/${locale}.json`);
-    return module.default as Record<string, unknown>;
+    const messages = await import(`../messages/${locale}.json`);
+    return messages.default as Record<string, unknown>;
   } catch {
     const fallback = await import('../messages/tr.json');
     return fallback.default as Record<string, unknown>;

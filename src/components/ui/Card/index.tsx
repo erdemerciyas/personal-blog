@@ -33,8 +33,8 @@ export function CardHeader({ className, ...props }: HTMLAttributes<HTMLDivElemen
   return <div className={cn('mb-4 flex items-center justify-between', className)} {...props} />
 }
 
-export function CardTitle({ className, ...props }: HTMLAttributes<HTMLHeadingElement>) {
-  return <h3 className={cn('text-lg font-semibold text-gray-900', className)} {...props} />
+export function CardTitle({ className, children, ...props }: HTMLAttributes<HTMLHeadingElement>) {
+  return <h3 className={cn('text-lg font-semibold text-gray-900', className)} {...props}>{children}</h3>
 }
 
 export function CardBody({ className, ...props }: HTMLAttributes<HTMLDivElement>) {

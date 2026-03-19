@@ -30,7 +30,7 @@ function ToastCard({ toast, onClose }: { toast: ToastItem; onClose: (id: string)
         'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-primary-600 focus-visible:ring-offset-2',
         variantStyles[toast.variant || 'default']
       )}
-      tabIndex={0}
+      tabIndex={-1}
     >
       <button
         type="button"
