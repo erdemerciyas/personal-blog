@@ -17,6 +17,7 @@ import {
 } from '@heroicons/react/24/outline';
 import toast from 'react-hot-toast';
 import Swal from 'sweetalert2';
+import { resolveIcon, availableIcons } from '@/lib/icons';
 
 interface PageItem {
   _id: string;
@@ -24,6 +25,7 @@ interface PageItem {
   title: string;
   path: string;
   description: string;
+  icon?: string;
   isActive: boolean;
   showInNavigation: boolean;
   order: number;
@@ -48,6 +50,7 @@ export default function AdminPagesPage() {
     title: '',
     path: '',
     description: '',
+    icon: '',
     showInNavigation: true
   });
 
@@ -181,6 +184,7 @@ export default function AdminPagesPage() {
       title: page.title,
       path: page.path,
       description: page.description,
+      icon: page.icon || '',
       showInNavigation: page.showInNavigation
     });
     setIsEditModalOpen(true);
@@ -424,6 +428,48 @@ export default function AdminPagesPage() {
                     required
                   />
                 </div>
+                {/* Icon Picker */}
+                <div>
+                  <label className="block text-sm font-medium text-slate-700 mb-2">İkon</label>
+                  <div className="grid grid-cols-5 gap-2">
+                    {/* No icon option */}
+                    <button
+                      type="button"
+                      onClick={() => setEditForm({ ...editForm, icon: '' })}
+                      className={`flex flex-col items-center justify-center p-2 rounded-lg border-2 transition-all text-xs ${
+                        !editForm.icon
+                          ? 'border-indigo-500 bg-indigo-50 text-indigo-700'
+                          : 'border-slate-200 text-slate-400 hover:border-slate-300 hover:bg-slate-50'
+                      }`}
+                      title="İkon yok"
+                    >
+                      <XMarkIcon className="w-5 h-5 mb-0.5" />
+                      <span>Yok</span>
+                    </button>
+                    {availableIcons.map((iconItem) => {
+                      const IconComp = resolveIcon(iconItem.name);
+                      if (!IconComp) return null;
+                      const isSelected = editForm.icon === iconItem.name;
+                      return (
+                        <button
+                          key={iconItem.name}
+                          type="button"
+                          onClick={() => setEditForm({ ...editForm, icon: iconItem.name })}
+                          className={`flex flex-col items-center justify-center p-2 rounded-lg border-2 transition-all text-xs ${
+                            isSelected
+                              ? 'border-indigo-500 bg-indigo-50 text-indigo-700'
+                              : 'border-slate-200 text-slate-500 hover:border-slate-300 hover:bg-slate-50'
+                          }`}
+                          title={iconItem.label}
+                        >
+                          <IconComp className="w-5 h-5 mb-0.5" />
+                          <span className="truncate w-full text-center">{iconItem.label}</span>
+                        </button>
+                      );
+                    })}
+                  </div>
+                </div>
+
                 <div className="flex items-center">
                   <input
                     type="checkbox"
@@ -461,6 +507,15 @@ export default function AdminPagesPage() {
   );
 }
 
+// Helper to get page icon component
+function PageIconDisplay({ page }: { page: PageItem }) {
+  const IconComp = page.icon ? resolveIcon(page.icon) : null;
+  if (IconComp) {
+    return <IconComp className="w-5 h-5 text-white" />;
+  }
+  return <DocumentTextIcon className="w-5 h-5 text-white" />;
+}
+
 // Draggable Page Item with specific drag controls
 function DraggablePageItem({
   page,
@@ -495,7 +550,7 @@ function DraggablePageItem({
           </div>
 
           <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-indigo-500 to-violet-600 flex items-center justify-center flex-shrink-0">
-            <DocumentTextIcon className="w-5 h-5 text-white" />
+            <PageIconDisplay page={page} />
           </div>
           <div className="flex-1 min-w-0">
             <h3 className="text-sm font-semibold text-slate-900 group-hover:text-indigo-600 transition-colors truncate">
@@ -577,7 +632,7 @@ function PageListItem({
           </div>
         )}
         <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-indigo-500 to-violet-600 flex items-center justify-center flex-shrink-0">
-          <DocumentTextIcon className="w-5 h-5 text-white" />
+          <PageIconDisplay page={page} />
         </div>
         <div className="flex-1 min-w-0">
           <h3 className="text-sm font-semibold text-slate-900 group-hover:text-indigo-600 transition-colors truncate">

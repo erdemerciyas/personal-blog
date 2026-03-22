@@ -20,6 +20,7 @@ export async function GET() {
       { pageId: 'videos', title: 'Videolar', path: '/videos', description: 'YouTube kanalımızdaki videoları izleyin', icon: 'FilmIcon', isExternal: false, isActive: true, showInNavigation: true, order: 4 },
       { pageId: 'contact', title: 'İletişim', path: '/contact', description: 'Benimle iletişime geçin ve projelerinizi konuşalım', icon: 'PhoneIcon', isExternal: false, isActive: true, showInNavigation: true, order: 5 },
       { pageId: 'products', title: 'Ürünler', path: '/products', description: 'Sıfır ve ikinci el ürünlerimizi keşfedin', icon: 'FolderOpenIcon', isExternal: false, isActive: true, showInNavigation: true, order: 6 },
+      { pageId: 'news', title: 'Haberler', path: '/haberler', description: 'Güncel haberler ve duyurular', icon: 'NewspaperIcon', isExternal: false, isActive: true, showInNavigation: true, order: 1 },
     ];
 
     // Kayıt yoksa seed et; varsa eksikleri upsert et
@@ -55,6 +56,7 @@ export async function GET() {
       { pageId: 'videos', title: 'Videolar', path: '/videos', description: 'YouTube kanalımızdaki videoları izleyin', icon: 'FilmIcon', isExternal: false, isActive: true, showInNavigation: true, order: 4 },
       { pageId: 'contact', title: 'İletişim', path: '/contact', description: 'Benimle iletişime geçin ve projelerinizi konuşalım', icon: 'PhoneIcon', isExternal: false, isActive: true, showInNavigation: true, order: 5 },
       { pageId: 'products', title: 'Ürünler', path: '/products', description: 'Sıfır ve ikinci el ürünlerimizi keşfedin', icon: 'FolderOpenIcon', isExternal: false, isActive: true, showInNavigation: true, order: 6 },
+      { pageId: 'news', title: 'Haberler', path: '/haberler', description: 'Güncel haberler ve duyurular', icon: 'NewspaperIcon', isExternal: false, isActive: true, showInNavigation: true, order: 1 },
       { pageId: 'product-detail', title: 'Ürün Detayı', path: '/products/[slug]', description: 'Ürün detay sayfası ayarları', icon: 'FolderOpenIcon', isExternal: false, isActive: true, showInNavigation: false, order: 7 },
     ];
     const resp = NextResponse.json(fallbackPages, { status: 200 });

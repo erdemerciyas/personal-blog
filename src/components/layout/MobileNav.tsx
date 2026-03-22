@@ -1,8 +1,12 @@
 'use client';
 
-import { useEffect } from 'react';
-import PrefetchLink from '../PrefetchLink';
-import { PaperAirplaneIcon } from '@heroicons/react/24/outline';
+import { Fragment } from 'react';
+import { Dialog, Transition } from '@headlessui/react';
+import { motion } from 'framer-motion';
+import { XMarkIcon, PaperAirplaneIcon, ShoppingCartIcon, UserIcon } from '@heroicons/react/24/outline';
+import Link from 'next/link';
+import { useCart } from '@/context/CartContext';
+import MobileNavLink from './MobileNavLink';
 
 interface NavLink {
     href: string;
@@ -29,130 +33,132 @@ export default function MobileNav({
     onClose,
     onOpenProjectModal,
     navLoaded,
-    isScrolled = false,
-    isTransparentPage = false
 }: MobileNavProps) {
-    // Close menu when pathname changes
+    const { cartCount } = useCart();
+    const currentLang = ['tr', 'en', 'es'].includes(pathname.split('/')[1]) ? pathname.split('/')[1] : 'tr';
 
-
-    if (!isOpen) return null;
-
-    const handleLinkClick = (e: React.MouseEvent<HTMLAnchorElement>) => {
-        e.stopPropagation();
-        onClose();
-    };
-
-    const handleProjectModalClick = (e: React.MouseEvent<HTMLButtonElement>) => {
-        e.stopPropagation();
+    const handleProjectModalClick = () => {
         onClose();
         onOpenProjectModal();
     };
 
     return (
-        <nav
-            id="mobile-menu"
-            aria-label="Mobil navigasyon"
-            className={`md:hidden absolute top-full left-0 right-0 max-h-[75vh] overflow-y-auto z-40 transition-all duration-300 ${isScrolled
-                ? 'bg-white/95 backdrop-blur-lg shadow-2xl border-t border-slate-200/50'
-                : isTransparentPage
-                    ? 'bg-white/90 backdrop-blur-lg shadow-2xl border-t border-white/20'
-                    : 'bg-white/95 backdrop-blur-lg shadow-2xl border-t border-slate-200/50'
-                }`}
-        >
-            <div className="container-main py-4">
-                <div className="space-y-1">
-                    {navLinks.map((link, index) => {
-                        const isActive = pathname === link.href;
-                        const LinkIcon = link.icon;
+        <Transition show={isOpen} as={Fragment}>
+            <Dialog onClose={onClose} className="relative z-50 lg:hidden">
+                {/* Backdrop */}
+                <Transition.Child
+                    as={Fragment}
+                    enter="ease-out duration-200"
+                    enterFrom="opacity-0"
+                    enterTo="opacity-100"
+                    leave="ease-in duration-150"
+                    leaveFrom="opacity-100"
+                    leaveTo="opacity-0"
+                >
+                    <div className="fixed inset-0 bg-black/20 backdrop-blur-sm" aria-hidden="true" />
+                </Transition.Child>
 
-                        const baseClasses = `
-                            flex items-center gap-3 
-                            px-4 py-3 
-                            rounded-lg 
-                            font-medium text-sm
-                            transition-all duration-200 
-                            focus-visible:outline-none 
-                            focus-visible:ring-2 
-                            focus-visible:ring-brand-primary-600 
-                            focus-visible:ring-offset-2
-                            ${isActive
-                                ? 'bg-brand-primary-100 text-brand-primary-900 shadow-sm'
-                                : 'text-slate-700 hover:bg-slate-100 hover:text-brand-primary-800'
-                            }
-                        `;
-
-                        const content = (
-                            <>
-                                <LinkIcon className="w-5 h-5 flex-shrink-0" aria-hidden="true" />
-                                <span className="flex-1">{link.label}</span>
-                                {isActive && (
-                                    <span
-                                        className="w-2 h-2 rounded-full bg-brand-primary-600 flex-shrink-0"
-                                        aria-hidden="true"
-                                    />
-                                )}
-                            </>
-                        );
-
-                        if (link.isExternal) {
-                            return (
-                                <a
-                                    key={index}
-                                    href={link.href}
-                                    target="_blank"
-                                    rel="noopener noreferrer"
-                                    onClick={handleLinkClick}
-                                    className={baseClasses}
-                                    aria-current={isActive ? 'page' : undefined}
-                                >
-                                    {content}
-                                </a>
-                            );
-                        }
-
-                        return (
-                            <PrefetchLink
-                                key={index}
-                                href={link.href}
-                                className={baseClasses}
-                                aria-current={isActive ? 'page' : undefined}
-                                onClick={handleLinkClick}
+                {/* Drawer Panel */}
+                <Transition.Child
+                    as={Fragment}
+                    enter="transform transition ease-out duration-300"
+                    enterFrom="translate-x-full"
+                    enterTo="translate-x-0"
+                    leave="transform transition ease-in duration-200"
+                    leaveFrom="translate-x-0"
+                    leaveTo="translate-x-full"
+                >
+                    <Dialog.Panel className="fixed top-0 right-0 bottom-0 w-[85vw] max-w-[320px] bg-white shadow-2xl flex flex-col">
+                        {/* Drawer Header */}
+                        <div className="flex items-center justify-between h-20 px-5 border-b border-slate-100">
+                            <Dialog.Title className="text-lg font-semibold text-slate-900">
+                                Menu
+                            </Dialog.Title>
+                            <button
+                                onClick={onClose}
+                                className="p-2 -mr-2 rounded-lg text-slate-400 hover:text-slate-600 hover:bg-slate-100 transition-colors duration-150 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-primary-500"
+                                aria-label="Menüyü kapat"
                             >
-                                {content}
-                            </PrefetchLink>
-                        );
-                    })}
-                </div>
+                                <XMarkIcon className="w-5 h-5" />
+                            </button>
+                        </div>
 
-                {/* CTA Button Section */}
-                {navLoaded && (
-                    <div className="mt-6 pt-6 border-t border-slate-200">
-                        <button
-                            onClick={handleProjectModalClick}
-                            className={`
-                                w-full
-                                flex items-center justify-center gap-2
-                                px-5 py-3
-                                rounded-lg
-                                font-semibold text-sm
-                                transition-all duration-200
-                                focus-visible:outline-none 
-                                focus-visible:ring-2 
-                                focus-visible:ring-brand-primary-600 
-                                focus-visible:ring-offset-2
-                                bg-brand-primary-900 text-white
-                                hover:bg-brand-primary-800
-                                shadow-md hover:shadow-lg
-                                active:scale-95
-                            `}
-                            aria-label="Proje başvurusu formunu aç"
+                        {/* Navigation Links */}
+                        <nav
+                            aria-label="Mobil navigasyon"
+                            className="flex-1 overflow-y-auto px-3 py-4"
                         >
-                            <PaperAirplaneIcon className="w-5 h-5" aria-hidden="true" />
-                            <span>Proje Başvurusu</span>
-                        </button>
-                    </div>
-                )}
-            </div>
-        </nav>
+                            <div className="space-y-1">
+                                {navLinks.map((link, index) => (
+                                    <MobileNavLink
+                                        key={index}
+                                        href={link.href}
+                                        label={link.label}
+                                        icon={link.icon}
+                                        isActive={pathname === link.href}
+                                        isExternal={link.isExternal}
+                                        index={index}
+                                        onClick={onClose}
+                                    />
+                                ))}
+                            </div>
+                        </nav>
+
+                        {/* Bottom Actions */}
+                        {navLoaded && (
+                            <div className="border-t border-slate-100 p-4 space-y-3">
+                                {/* Account & Cart Row */}
+                                <div className="flex items-center gap-2">
+                                    <Link
+                                        href={`/${currentLang}/account`}
+                                        onClick={onClose}
+                                        className="flex-1 flex items-center justify-center gap-2 px-3 py-2.5 rounded-lg text-sm font-medium text-slate-600 hover:bg-slate-50 hover:text-slate-900 transition-colors duration-150"
+                                        aria-label="Hesabım"
+                                    >
+                                        <UserIcon className="w-5 h-5" />
+                                        <span>Hesap</span>
+                                    </Link>
+                                    <Link
+                                        href={`/${currentLang}/cart`}
+                                        onClick={onClose}
+                                        className="flex-1 flex items-center justify-center gap-2 px-3 py-2.5 rounded-lg text-sm font-medium text-slate-600 hover:bg-slate-50 hover:text-slate-900 transition-colors duration-150 relative"
+                                        aria-label="Sepete git"
+                                    >
+                                        <ShoppingCartIcon className="w-5 h-5" />
+                                        <span>Sepet</span>
+                                        {cartCount > 0 && (
+                                            <span className="flex h-5 w-5 items-center justify-center rounded-full bg-red-500 text-[10px] font-bold text-white">
+                                                {cartCount}
+                                            </span>
+                                        )}
+                                    </Link>
+                                </div>
+
+                                {/* CTA Button */}
+                                <button
+                                    onClick={handleProjectModalClick}
+                                    className="
+                                        w-full flex items-center justify-center gap-2
+                                        px-5 py-3
+                                        rounded-lg
+                                        font-semibold text-sm
+                                        bg-slate-900 text-white
+                                        hover:bg-slate-800
+                                        active:scale-[0.98]
+                                        transition-all duration-150
+                                        focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-primary-600 focus-visible:ring-offset-2
+                                        shadow-sm
+                                    "
+                                    aria-label="Proje başvurusu formunu aç"
+                                >
+                                    <PaperAirplaneIcon className="w-4.5 h-4.5" aria-hidden="true" />
+                                    <span>Proje Başvurusu</span>
+                                </button>
+                            </div>
+                        )}
+                    </Dialog.Panel>
+                </Transition.Child>
+            </Dialog>
+        </Transition>
     );
 }

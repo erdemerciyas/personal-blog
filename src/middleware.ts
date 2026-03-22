@@ -90,7 +90,9 @@ export async function middleware(request: NextRequest) {
     }
 
     // Admin API route authentication check (middleware seviyesi — ikinci savunma katmanı)
-    if (pathname.startsWith('/api/admin')) {
+    // page-settings GET is public (used by Header for navigation)
+    const isPublicAdminApi = pathname === '/api/admin/page-settings' && request.method === 'GET';
+    if (pathname.startsWith('/api/admin') && !isPublicAdminApi) {
       const token = await getToken({ req: request, secret: process.env.NEXTAUTH_SECRET });
       if (!token) {
         return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });

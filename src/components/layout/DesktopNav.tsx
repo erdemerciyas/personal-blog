@@ -1,5 +1,6 @@
 'use client';
 
+import { motion, AnimatePresence } from 'framer-motion';
 import PrefetchLink from '../PrefetchLink';
 import Link from 'next/link';
 import { PaperAirplaneIcon, ShoppingCartIcon, UserIcon } from '@heroicons/react/24/outline';
@@ -29,80 +30,61 @@ export default function DesktopNav({
 }: DesktopNavProps) {
     const { cartCount } = useCart();
 
-
-    // Determine text color based on scroll state and page type
-    const textColorClass = isScrolled
-        ? 'text-slate-600'
-        : isTransparentPage
-            ? 'text-white/80 drop-shadow'
-            : 'text-slate-600';
-
-    const activeColorClass = isScrolled
-        ? 'text-brand-primary-900 font-semibold bg-slate-50'
-        : isTransparentPage
-            ? 'text-white font-semibold bg-white/10 backdrop-blur-md'
-            : 'text-brand-primary-900 font-semibold bg-slate-50';
-
-    const hoverColorClass = isScrolled
-        ? 'hover:text-brand-primary-800 hover:bg-slate-50'
-        : isTransparentPage
-            ? 'hover:text-white hover:bg-white/10'
-            : 'hover:text-brand-primary-800 hover:bg-slate-50';
-
-    const underlineColorClass = isScrolled
-        ? 'bg-brand-primary-600'
-        : isTransparentPage
-            ? 'bg-white'
-            : 'bg-brand-primary-600';
+    const isTransparent = !isScrolled && isTransparentPage;
+    const currentLang = ['tr', 'en', 'es'].includes(pathname.split('/')[1]) ? pathname.split('/')[1] : 'tr';
 
     return (
-        <div className="hidden lg:flex items-center gap-2 xl:gap-6 flex-1 justify-end ml-12 on-desktop-nav-container">
+        <div className="hidden lg:flex items-center gap-2 xl:gap-4 flex-1 justify-end ml-12">
             {/* Navigation Links */}
             <nav
                 role="navigation"
                 aria-label="Ana navigasyon"
-                className="flex items-center gap-0.5 lg:gap-1 xl:gap-4"
+                className="flex items-center gap-1 lg:gap-6"
             >
                 {navLinks.map((link, index) => {
                     const isActive = pathname === link.href;
                     const LinkIcon = link.icon;
 
-                    const baseClasses = `
-                        relative overflow-hidden 
-                        h-9 lg:h-10
-                        px-3 lg:px-4
-                        rounded-full
-                        text-sm
-                        transition-all duration-300 ease-out
-                        group 
-                        flex items-center justify-center gap-2 
-                        whitespace-nowrap
-                        focus-visible:outline-none 
-                        focus-visible:ring-2 
-                        focus-visible:ring-brand-primary-500 
+                    const linkClasses = `
+                        relative
+                        py-2 px-1
+                        text-sm font-medium
+                        transition-colors duration-150
+                        focus-visible:outline-none
+                        focus-visible:ring-2
+                        focus-visible:ring-brand-primary-500
                         focus-visible:ring-offset-2
-                        ${isActive ? activeColorClass : `${textColorClass} ${hoverColorClass}`}
+                        rounded-sm
+                        flex items-center gap-1.5
+                        group
+                        ${isActive
+                            ? isTransparent
+                                ? 'text-white'
+                                : 'text-brand-primary-900'
+                            : isTransparent
+                                ? 'text-white/70 hover:text-white'
+                                : 'text-slate-500 hover:text-slate-900'
+                        }
                     `;
 
                     const content = (
                         <>
-                            <LinkIcon className={`w-4 h-4 flex-shrink-0 ${isActive ? '' : 'opacity-70 group-hover:opacity-100'}`} aria-hidden="true" />
+                            {LinkIcon && (
+                                <LinkIcon
+                                    className={`w-4 h-4 flex-shrink-0 ${isActive ? '' : 'opacity-60 group-hover:opacity-100'} transition-opacity duration-150`}
+                                    aria-hidden="true"
+                                />
+                            )}
                             <span>{link.label}</span>
-                            {/* Animated underline indicator */}
-                            <span
-                                aria-hidden="true"
-                                className={`
-                                    pointer-events-none 
-                                    absolute left-5 right-5 bottom-1
-                                    h-[2px] 
-                                    origin-center
-                                    scale-x-0 
-                                    rounded-full
-                                    transition-transform duration-300 ease-out
-                                    ${underlineColorClass}
-                                    ${isActive ? 'scale-x-100' : 'group-hover:scale-x-[0.3]'}
-                                `}
-                            />
+                            {isActive && (
+                                <motion.span
+                                    layoutId="nav-active-indicator"
+                                    className={`absolute -bottom-[1px] left-0 right-0 h-[2px] rounded-full ${isTransparent ? 'bg-white' : 'bg-brand-primary-600'
+                                        }`}
+                                    transition={{ type: 'spring', stiffness: 500, damping: 30 }}
+                                    aria-hidden="true"
+                                />
+                            )}
                         </>
                     );
 
@@ -113,7 +95,7 @@ export default function DesktopNav({
                                 href={link.href}
                                 target="_blank"
                                 rel="noopener noreferrer"
-                                className={baseClasses}
+                                className={linkClasses}
                                 aria-current={isActive ? 'page' : undefined}
                             >
                                 {content}
@@ -125,7 +107,7 @@ export default function DesktopNav({
                         <PrefetchLink
                             key={index}
                             href={link.href}
-                            className={baseClasses}
+                            className={linkClasses}
                             aria-current={isActive ? 'page' : undefined}
                         >
                             {content}
@@ -134,81 +116,80 @@ export default function DesktopNav({
                 })}
             </nav>
 
-            {/* Cart Button */}
-            <div className="flex items-center mx-2 gap-2">
-                {/* User Menu */}
+            {/* Action Buttons - separated by border */}
+            <div className={`flex items-center gap-1 ml-4 pl-4 border-l ${isTransparent ? 'border-white/20' : 'border-slate-200'
+                }`}>
+                {/* Account */}
                 <Link
-                    href={'/account'}
+                    href={`/${currentLang}/account`}
                     className={`
-                        relative
-                        p-2
-                        rounded-full
-                        transition-all duration-200
-                        ${isScrolled
-                            ? 'text-slate-700 hover:bg-slate-100'
-                            : isTransparentPage
-                                ? 'text-white hover:bg-white/20'
-                                : 'text-slate-700 hover:bg-slate-100'
+                        p-2 rounded-lg
+                        transition-colors duration-150
+                        focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-primary-500 focus-visible:ring-offset-2
+                        ${isTransparent
+                            ? 'text-white/70 hover:text-white hover:bg-white/10'
+                            : 'text-slate-500 hover:text-slate-700 hover:bg-slate-100'
                         }
                     `}
                     aria-label="Hesabım"
                 >
-                    <UserIcon className="w-6 h-6" />
+                    <UserIcon className="w-5 h-5" />
                 </Link>
 
+                {/* Cart */}
                 <Link
-                    href="/cart"
+                    href={`/${currentLang}/cart`}
                     className={`
-                        relative
-                        p-2
-                        rounded-full
-                        transition-all duration-200
-                        ${isScrolled
-                            ? 'text-slate-700 hover:bg-slate-100'
-                            : isTransparentPage
-                                ? 'text-white hover:bg-white/20'
-                                : 'text-slate-700 hover:bg-slate-100'
+                        relative p-2 rounded-lg
+                        transition-colors duration-150
+                        focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-primary-500 focus-visible:ring-offset-2
+                        ${isTransparent
+                            ? 'text-white/70 hover:text-white hover:bg-white/10'
+                            : 'text-slate-500 hover:text-slate-700 hover:bg-slate-100'
                         }
                     `}
                     aria-label="Sepete git"
                 >
-                    <ShoppingCartIcon className="w-6 h-6" />
-                    {cartCount > 0 && (
-                        <span className="absolute -top-1 -right-1 flex h-5 w-5 items-center justify-center rounded-full bg-red-500 text-[10px] font-bold text-white shadow-sm ring-2 ring-white">
-                            {cartCount}
-                        </span>
-                    )}
+                    <ShoppingCartIcon className="w-5 h-5" />
+                    <AnimatePresence>
+                        {cartCount > 0 && (
+                            <motion.span
+                                initial={{ scale: 0 }}
+                                animate={{ scale: 1 }}
+                                exit={{ scale: 0 }}
+                                transition={{ type: 'spring', stiffness: 400, damping: 15 }}
+                                className="absolute -top-1 -right-1 flex h-4.5 w-4.5 items-center justify-center rounded-full bg-red-500 text-[10px] font-bold text-white shadow-sm ring-2 ring-white"
+                            >
+                                {cartCount}
+                            </motion.span>
+                        )}
+                    </AnimatePresence>
                 </Link>
             </div>
 
-            {/* Desktop CTA Button - Separate Group */}
+            {/* CTA Button */}
             {onOpenProjectModal && (
                 <button
                     onClick={onOpenProjectModal}
                     className={`
-                        h-10 lg:h-11
-                        px-4 lg:px-6
-                        rounded-full
+                        h-9 lg:h-10
+                        px-4 lg:px-5
+                        rounded-lg
                         font-semibold text-xs lg:text-sm
                         flex items-center gap-2
-                        whitespace-nowrap
-                        flex-shrink-0
-                        transition-all duration-300
-                        focus-visible:outline-none 
-                        focus-visible:ring-2 
-                        focus-visible:ring-brand-primary-600 
-                        focus-visible:ring-offset-2
-                        ml-4
-                        ${isScrolled
-                            ? 'bg-slate-900 text-white hover:bg-slate-800 shadow-md hover:shadow-lg hover:-translate-y-0.5'
-                            : isTransparentPage
-                                ? 'bg-white text-slate-900 hover:bg-slate-50 shadow-lg hover:shadow-xl drop-shadow hover:-translate-y-0.5'
-                                : 'bg-slate-900 text-white hover:bg-slate-800 shadow-md hover:shadow-lg hover:-translate-y-0.5'
+                        whitespace-nowrap flex-shrink-0
+                        transition-all duration-200
+                        focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-primary-600 focus-visible:ring-offset-2
+                        hover:-translate-y-px hover:shadow-md
+                        active:scale-[0.98]
+                        ${isTransparent
+                            ? 'bg-white text-slate-900 hover:bg-slate-50 shadow-lg'
+                            : 'bg-slate-900 text-white hover:bg-slate-800 shadow-sm'
                         }
                     `}
                     aria-label="Proje başvurusu formunu aç"
                 >
-                    <PaperAirplaneIcon className="w-4 h-4" aria-hidden="true" />
+                    <PaperAirplaneIcon className="w-3.5 h-3.5" aria-hidden="true" />
                     <span>Proje Başvurusu</span>
                 </button>
             )}

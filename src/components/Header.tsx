@@ -6,19 +6,17 @@ import Image from 'next/image';
 import { usePathname } from 'next/navigation';
 import {
   Bars3Icon,
-  XMarkIcon,
   HomeIcon,
   WrenchScrewdriverIcon,
   FolderOpenIcon,
   PhoneIcon,
   FilmIcon,
-  ShoppingCartIcon
+  NewspaperIcon
 } from '@heroicons/react/24/outline';
 import { resolveIcon, getIconForPage } from '../lib/icons';
 import DesktopNav from './layout/DesktopNav';
 import MobileNav from './layout/MobileNav';
 import ProjectModal from './features/ProjectModal';
-import { useCart } from '@/context/CartContext';
 
 interface SiteSettings {
   siteName: string;
@@ -49,7 +47,6 @@ const Header: React.FC = () => {
   const [navLinks, setNavLinks] = useState<Array<{ href: string; label: string; icon: any; isExternal?: boolean }>>([]);
   const [navLoaded, setNavLoaded] = useState(false);
   const [siteSettings, setSiteSettings] = useState<SiteSettings | null>(null);
-  const { cartCount } = useCart();
 
 
   const pathname = usePathname() || '';
@@ -155,6 +152,7 @@ const Header: React.FC = () => {
           // Fallback
           setNavLinks([
             { href: '/', label: 'Anasayfa', icon: HomeIcon },
+            { href: '/haberler', label: 'Haberler', icon: NewspaperIcon },
             { href: '/services', label: 'Hizmetler', icon: WrenchScrewdriverIcon },
             { href: '/portfolio', label: 'Portfolyo', icon: FolderOpenIcon },
             { href: '/videos', label: 'Videolar', icon: FilmIcon },
@@ -282,65 +280,40 @@ const Header: React.FC = () => {
               onOpenProjectModal={openProjectModal}
             />
 
-            {/* Mobile Cart Button */}
-            <Link
-              href="/cart"
-              className={`lg:hidden p-2 rounded-lg transition-all duration-200 mr-2 relative ${isScrolled
-                ? 'text-slate-700 hover:bg-slate-100'
-                : isTransparentPage
-                  ? 'text-white hover:bg-white/15 drop-shadow'
-                  : 'text-slate-700 hover:bg-slate-100'
-                }`}
-              aria-label="Sepete git"
-            >
-              <ShoppingCartIcon className="w-6 h-6" />
-              {cartCount > 0 && (
-                <span className="absolute -top-1 -right-1 flex h-5 w-5 items-center justify-center rounded-full bg-red-500 text-[10px] font-bold text-white shadow-sm ring-2 ring-white">
-                  {cartCount}
-                </span>
-              )}
-            </Link>
-
             {/* Mobile Menu Button */}
             <button
               onClick={toggleMobileMenu}
-              aria-label={isMobileMenuOpen ? "Mobil menüyü kapat" : "Mobil menüyü aç"}
-              aria-controls="mobile-menu"
+              aria-label="Mobil menüyü aç"
               aria-expanded={isMobileMenuOpen}
-              className={`lg:hidden p-2 rounded-lg transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-primary-600 focus-visible:ring-offset-2 ${isScrolled
+              className={`lg:hidden p-2 rounded-lg transition-colors duration-150 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-primary-600 focus-visible:ring-offset-2 ${isScrolled
                 ? 'text-slate-700 hover:bg-slate-100'
                 : isTransparentPage
                   ? 'text-white hover:bg-white/15 drop-shadow'
                   : 'text-slate-700 hover:bg-slate-100'
                 }`}
             >
-              {isMobileMenuOpen ? (
-                <XMarkIcon className="w-6 h-6" />
-              ) : (
-                <Bars3Icon className="w-6 h-6" />
-              )}
+              <Bars3Icon className="w-6 h-6" />
             </button>
           </div>
 
-          {/* Mobile Menu */}
-          <MobileNav
-            isOpen={isMobileMenuOpen}
-            navLinks={localizedNavLinks}
-            pathname={pathname || ''}
-            onClose={closeMobileMenu}
-            onOpenProjectModal={openProjectModal}
-            navLoaded={navLoaded}
-            isScrolled={isScrolled}
-            isTransparentPage={isTransparentPage}
-          />
         </div>
+      </header>
 
-        {/* Project Request Modal */}
-        <ProjectModal
-          isOpen={isProjectModalOpen}
-          onClose={() => setIsProjectModalOpen(false)}
-        />
-      </header >
+      {/* Mobile Drawer Menu */}
+      <MobileNav
+        isOpen={isMobileMenuOpen}
+        navLinks={localizedNavLinks}
+        pathname={pathname || ''}
+        onClose={closeMobileMenu}
+        onOpenProjectModal={openProjectModal}
+        navLoaded={navLoaded}
+      />
+
+      {/* Project Request Modal */}
+      <ProjectModal
+        isOpen={isProjectModalOpen}
+        onClose={() => setIsProjectModalOpen(false)}
+      />
     </>
   );
 };

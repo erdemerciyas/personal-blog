@@ -4,7 +4,7 @@
 [![TypeScript](https://img.shields.io/badge/TypeScript-5.0-blue?style=for-the-badge&logo=typescript)](https://www.typescriptlang.org/)
 [![MongoDB](https://img.shields.io/badge/MongoDB-6.0-green?style=for-the-badge&logo=mongodb)](https://www.mongodb.com/)
 [![Tailwind CSS](https://img.shields.io/badge/Tailwind-3.4-38B2AC?style=for-the-badge&logo=tailwind-css)](https://tailwindcss.com/)
-[![Version](https://img.shields.io/badge/Version-4.0.0-blue?style=for-the-badge)]()
+[![Version](https://img.shields.io/badge/Version-4.1.0-blue?style=for-the-badge)]()
 [![Status](https://img.shields.io/badge/Status-Production-success?style=for-the-badge)]()
 
 **Fixral 3D** is a production-grade, full-stack Content Management System (CMS) and E-Commerce platform built with Next.js 14 (App Router).
@@ -309,6 +309,27 @@ npm start             # Start production server
 ---
 
 ## Changelog
+
+### v4.1.0 - Modern Navigation & Icon Management
+
+#### Navigation Redesign
+- **Desktop Nav:** Clean text+icon links with framer-motion `layoutId` sliding active indicator
+- **Mobile Nav:** Slide-in drawer from right (replaced dropdown) with headlessui Dialog for focus trap, scroll lock, and ESC-to-close
+- **Staggered animations:** Mobile nav links animate in sequence with framer-motion
+- **Refined actions cluster:** Account & cart buttons separated by border divider, cart badge with spring scale animation
+- **CTA button:** Polished hover lift and active scale effects
+- **Transparent/solid header:** Smooth scroll transition preserved with cleaner styling
+
+#### Admin Icon Management
+- **Icon picker in page editor:** Visual grid of 15 Heroicons in the "Sayfa Düzenle" modal
+- **Icon display in page list:** Selected icon shown in page list items (replaces generic document icon)
+- **Icon removal:** "Yok" option to clear icon from a page
+- **`availableIcons` export:** Centralized icon list in `src/lib/icons.ts` for reuse
+
+#### Code Cleanup
+- Removed unused `DynamicHeader`, `DynamicDesktopNav`, `DynamicMobileNav` components (-623 lines)
+- New `MobileNavLink` component for encapsulated stagger animation logic
+- Simplified Header.tsx: removed inline mobile cart button (moved to drawer)
 
 ### v4.0.0 - UI/UX Architecture Refactor
 
