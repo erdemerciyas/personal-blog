@@ -4,7 +4,9 @@ import Image from 'next/image';
 import Link from 'next/link';
 import connectDB from '@/lib/mongoose';
 import News from '@/models/News';
-import '@/models/Portfolio'; // Ensure Portfolio model is registered for population
+import Portfolio from '@/models/Portfolio'; // Ensure Portfolio model is registered for population
+// Prevent tree-shaking of Portfolio model registration
+const _PortfolioModel = Portfolio;
 import { NewsItem } from '@/types/news';
 import { logger } from '@/core/lib/logger';
 import PageHero from '@/components/common/PageHero';
@@ -23,8 +25,8 @@ interface PageProps {
  * Generate metadata for news article detail page
  */
 export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
-    const { slug } = await params;
     try {
+    const { slug } = await params;
         await connectDB();
 
         let news = (await News.findOne({ slug }).lean()) as unknown as NewsItem | null;
