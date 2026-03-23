@@ -66,8 +66,8 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
                 type: 'article',
                 url: `${SITE_URL}/tr/haberler/${news.slug}`,
                 images: ogImages,
-                publishedTime: news.publishedAt?.toISOString(),
-                authors: [news.author.name],
+                publishedTime: news.publishedAt ? new Date(news.publishedAt).toISOString() : undefined,
+                authors: [news.author?.name || ''],
             },
             twitter: {
                 card: 'summary_large_image',
@@ -195,13 +195,13 @@ export default async function NewsDetailPage({ params: paramsPromise }: PageProp
             '@type': 'NewsArticle',
             headline: translation.title || news.slug,
             description: translation.metaDescription || '',
-            image: news.featuredImage.url,
-            datePublished: news.publishedAt?.toISOString() || news.createdAt.toISOString(),
-            dateModified: news.updatedAt.toISOString(),
+            image: news.featuredImage?.url || '',
+            datePublished: news.publishedAt ? new Date(news.publishedAt).toISOString() : new Date(news.createdAt).toISOString(),
+            dateModified: new Date(news.updatedAt).toISOString(),
             author: {
                 '@type': 'Person',
-                name: news.author.name,
-                email: news.author.email,
+                name: news.author?.name || '',
+                email: news.author?.email || '',
             },
             publisher: {
                 '@type': 'Organization',
@@ -320,7 +320,7 @@ export default async function NewsDetailPage({ params: paramsPromise }: PageProp
                                         <div className="h-px bg-slate-200 flex-grow"></div>
                                     </div>
                                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                        {(news.relatedPortfolioIds as any[]).map((portfolio) => (
+                                        {(news.relatedPortfolioIds as any[]).filter(Boolean).map((portfolio) => (
                                             <Link
                                                 key={portfolio._id}
                                                 href={`/portfolio/${portfolio.slug}`}
@@ -354,10 +354,10 @@ export default async function NewsDetailPage({ params: paramsPromise }: PageProp
                                 <h3 className="text-sm font-semibold text-slate-400 uppercase tracking-wider mb-4">Yazar</h3>
                                 <div className="flex items-center gap-4">
                                     <div className="w-12 h-12 bg-fixral-primary/10 rounded-full flex items-center justify-center text-fixral-primary font-bold text-xl">
-                                        {news.author.name.charAt(0)}
+                                        {(news.author?.name || 'A').charAt(0)}
                                     </div>
                                     <div>
-                                        <div className="font-bold text-slate-900">{news.author.name}</div>
+                                        <div className="font-bold text-slate-900">{news.author?.name || 'Anonim'}</div>
                                         <div className="text-xs text-slate-500">İçerik Editörü</div>
                                     </div>
                                 </div>
@@ -413,16 +413,18 @@ export default async function NewsDetailPage({ params: paramsPromise }: PageProp
                                 <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6 sticky top-24">
                                     <h3 className="text-sm font-semibold text-slate-400 uppercase tracking-wider mb-4">İlginizi Çekebilir</h3>
                                     <div className="space-y-4">
-                                        {(news.relatedNewsIds as any[]).map((relatedNews) => (
+                                        {(news.relatedNewsIds as any[]).filter(Boolean).map((relatedNews) => (
                                             <Link key={relatedNews._id} href={`/haberler/${relatedNews.slug}`} className="flex gap-3 group">
-                                                <div className="relative w-20 h-16 flex-shrink-0 rounded-lg overflow-hidden">
-                                                    <Image
-                                                        src={relatedNews.featuredImage.url}
-                                                        alt={relatedNews.featuredImage.altText || ''}
-                                                        fill
-                                                        className="object-cover group-hover:scale-110 transition-transform"
-                                                    />
-                                                </div>
+                                                {relatedNews.featuredImage?.url && (
+                                                    <div className="relative w-20 h-16 flex-shrink-0 rounded-lg overflow-hidden">
+                                                        <Image
+                                                            src={relatedNews.featuredImage.url}
+                                                            alt={relatedNews.featuredImage.altText || ''}
+                                                            fill
+                                                            className="object-cover group-hover:scale-110 transition-transform"
+                                                        />
+                                                    </div>
+                                                )}
                                                 <div>
                                                     <h4 className="text-sm font-medium text-slate-900 group-hover:text-fixral-primary line-clamp-2 leading-snug">
                                                         {relatedNews.translations?.tr?.title || ''}
