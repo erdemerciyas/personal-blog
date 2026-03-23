@@ -66,11 +66,14 @@ export async function GET(
 
     return NextResponse.json(response);
   } catch (error) {
-    logger.error('Error fetching news article by slug', 'NEWS_API', { error });
+    const errMsg = error instanceof Error ? error.message : String(error);
+    const errStack = error instanceof Error ? error.stack : undefined;
+    logger.error('Error fetching news article by slug', 'NEWS_API', { error: errMsg, stack: errStack });
     return NextResponse.json(
       {
         success: false,
         error: 'Failed to fetch news article',
+        debug: { message: errMsg, stack: errStack },
       } as ApiResponse<null>,
       { status: 500 }
     );
