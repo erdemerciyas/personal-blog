@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { getServerSession } from 'next-auth';
 import connectDB from '@/lib/mongoose';
 import News from '@/models/News';
+import '@/models/Portfolio'; // Ensure Portfolio model is registered for population
 import { ApiResponse } from '@/types/news';
 import { logger } from '@/core/lib/logger';
 
@@ -66,14 +67,11 @@ export async function GET(
 
     return NextResponse.json(response);
   } catch (error) {
-    const errMsg = error instanceof Error ? error.message : String(error);
-    const errStack = error instanceof Error ? error.stack : undefined;
-    logger.error('Error fetching news article by slug', 'NEWS_API', { error: errMsg, stack: errStack });
+    logger.error('Error fetching news article by slug', 'NEWS_API', { error });
     return NextResponse.json(
       {
         success: false,
         error: 'Failed to fetch news article',
-        debug: { message: errMsg, stack: errStack },
       } as ApiResponse<null>,
       { status: 500 }
     );
