@@ -443,9 +443,20 @@ export default async function NewsDetailPage({ params: paramsPromise }: PageProp
             </div>
         );
     } catch (error) {
-        logger.error('Error rendering news detail page', 'NEWS_DETAIL', { error });
-        // Do not show 404 for runtime/DB errors, let Next.js error boundary handle it (500)
-        throw error;
+        const errMsg = error instanceof Error ? error.message : String(error);
+        const errStack = error instanceof Error ? error.stack : undefined;
+        logger.error('Error rendering news detail page', 'NEWS_DETAIL', { error: errMsg, stack: errStack });
+        // Temporary: return error details for debugging
+        return (
+            <div className="min-h-screen bg-red-50 p-8">
+                <h1 className="text-2xl font-bold text-red-600 mb-4">News Detail Error (Debug)</h1>
+                <pre className="bg-white p-4 rounded border text-sm overflow-auto whitespace-pre-wrap">
+                    {errMsg}
+                    {'\n\n'}
+                    {errStack}
+                </pre>
+            </div>
+        );
     }
 }
 
