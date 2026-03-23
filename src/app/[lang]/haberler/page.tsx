@@ -37,7 +37,8 @@ export async function generateMetadata(): Promise<Metadata> {
 
 const ITEMS_PER_PAGE = 12;
 
-export default async function NewsListPage({ searchParams: searchParamsPromise }: PageProps) {
+export default async function NewsListPage({ params: paramsPromise, searchParams: searchParamsPromise }: PageProps) {
+    const { lang } = await paramsPromise;
     const searchParams = await searchParamsPromise;
     try {
         await connectDB();
@@ -123,7 +124,7 @@ export default async function NewsListPage({ searchParams: searchParamsPromise }
                         {allTags.length > 0 && (
                             <div className="flex flex-wrap gap-2 justify-center md:justify-end">
                                 <Link
-                                    href="/haberler"
+                                    href={`/${lang}/haberler`}
                                     className={`px-4 py-1.5 rounded-full text-sm font-medium transition-all ${!tag
                                         ? 'bg-fixral-primary text-white shadow-md'
                                         : 'bg-slate-100 text-slate-600 hover:bg-slate-200 hover:text-slate-900'
@@ -134,7 +135,7 @@ export default async function NewsListPage({ searchParams: searchParamsPromise }
                                 {allTags.map((t) => (
                                     <Link
                                         key={t}
-                                        href={`/haberler?tag=${encodeURIComponent(t)}`}
+                                        href={`/${lang}/haberler?tag=${encodeURIComponent(t)}`}
                                         className={`px-4 py-1.5 rounded-full text-sm font-medium transition-all ${tag === t
                                             ? 'bg-fixral-primary text-white shadow-md'
                                             : 'bg-slate-100 text-slate-600 hover:bg-slate-200 hover:text-slate-900'
@@ -166,7 +167,7 @@ export default async function NewsListPage({ searchParams: searchParamsPromise }
                                     return (
                                         <li key={article._id}>
                                         <Link
-                                            href={`/haberler/${article.slug}`}
+                                            href={`/${lang}/haberler/${article.slug}`}
                                             className="group flex flex-col h-full bg-white rounded-2xl overflow-hidden border border-gray-200 shadow-sm hover:shadow-xl hover:-translate-y-1 transition-all duration-300"
                                         >
                                             {/* Image */}
@@ -231,7 +232,7 @@ export default async function NewsListPage({ searchParams: searchParamsPromise }
                                 <nav aria-label="Sayfalama" className="flex justify-center items-center gap-2">
                                     {page > 1 && (
                                         <Link
-                                            href={`/haberler?page=${page - 1}${search ? `&search=${search}` : ''}${tag ? `&tag=${tag}` : ''}`}
+                                            href={`/${lang}/haberler?page=${page - 1}${search ? `&search=${search}` : ''}${tag ? `&tag=${tag}` : ''}`}
                                             className="px-4 py-2 bg-white border border-gray-200 rounded-lg hover:bg-gray-50 hover:border-fixral-primary hover:text-fixral-primary transition-all shadow-sm"
                                         >
                                             ← Önceki
@@ -241,7 +242,7 @@ export default async function NewsListPage({ searchParams: searchParamsPromise }
                                     {Array.from({ length: totalPages }, (_, i) => i + 1).map((p) => (
                                         <Link
                                             key={p}
-                                            href={`/haberler?page=${p}${search ? `&search=${search}` : ''}${tag ? `&tag=${tag}` : ''}`}
+                                            href={`/${lang}/haberler?page=${p}${search ? `&search=${search}` : ''}${tag ? `&tag=${tag}` : ''}`}
                                             className={`w-10 h-10 flex items-center justify-center rounded-lg transition-all shadow-sm ${p === page
                                                 ? 'bg-fixral-primary text-white shadow-md'
                                                 : 'bg-white border border-gray-200 hover:bg-gray-50 hover:border-fixral-primary hover:text-fixral-primary'
@@ -253,7 +254,7 @@ export default async function NewsListPage({ searchParams: searchParamsPromise }
 
                                     {page < totalPages && (
                                         <Link
-                                            href={`/haberler?page=${page + 1}${search ? `&search=${search}` : ''}${tag ? `&tag=${tag}` : ''}`}
+                                            href={`/${lang}/haberler?page=${page + 1}${search ? `&search=${search}` : ''}${tag ? `&tag=${tag}` : ''}`}
                                             className="px-4 py-2 bg-white border border-gray-200 rounded-lg hover:bg-gray-50 hover:border-fixral-primary hover:text-fixral-primary transition-all shadow-sm"
                                         >
                                             Sonraki →
@@ -272,7 +273,7 @@ export default async function NewsListPage({ searchParams: searchParamsPromise }
                             <h3 className="text-lg font-medium text-slate-900 mb-1">Sonuç Bulunamadı</h3>
                             <p className="text-slate-500 mb-6">Aradığınız kriterlere uygun haber bulunamadı.</p>
                             <Link
-                                href="/haberler"
+                                href={`/${lang}/haberler`}
                                 className={cn(buttonVariants({ variant: 'primary' }))}
                             >
                                 Tüm Haberleri Göster
@@ -284,12 +285,7 @@ export default async function NewsListPage({ searchParams: searchParamsPromise }
         );
     } catch (error) {
         logger.error('Error rendering news list page', 'NEWS_LIST', { error });
-        return (
-            <div className="max-w-6xl mx-auto px-4 py-12">
-                <h1 className="text-4xl font-bold text-gray-900 mb-4">Haberler</h1>
-                <p className="text-red-600">Haberler yüklenirken bir hata oluştu. Lütfen daha sonra tekrar deneyin.</p>
-            </div>
-        );
+        throw error;
     }
 }
 

@@ -4,9 +4,9 @@ import Image from 'next/image';
 import Link from 'next/link';
 import connectDB from '@/lib/mongoose';
 import News from '@/models/News';
-import Portfolio from '@/models/Portfolio'; // Ensure Portfolio model is registered for population
-// Prevent tree-shaking of Portfolio model registration
-const _PortfolioModel = Portfolio;
+import Portfolio from '@/models/Portfolio';
+// Mongoose model kaydını garanti etmek için - SİLMEYİN
+void Portfolio;
 import { NewsItem } from '@/types/news';
 import { logger } from '@/core/lib/logger';
 import PageHero from '@/components/common/PageHero';
@@ -17,6 +17,7 @@ import { cn } from '@/lib/utils';
 
 interface PageProps {
     params: Promise<{
+        lang: string;
         slug: string;
     }>;
 }
@@ -172,7 +173,7 @@ async function findNewsWithRetry(slug: string) {
  * News Detail Page Component
  */
 export default async function NewsDetailPage({ params: paramsPromise }: PageProps) {
-    const { slug } = await paramsPromise;
+    const { lang, slug } = await paramsPromise;
     try {
         const news = await findNewsWithRetry(slug);
 
@@ -215,7 +216,7 @@ export default async function NewsDetailPage({ params: paramsPromise }: PageProp
             },
             mainEntityOfPage: {
                 '@type': 'WebPage',
-                '@id': `https://www.fixral.com/haberler/${news.slug}`,
+                '@id': `https://www.fixral.com/tr/haberler/${news.slug}`,
             },
         };
 
@@ -248,7 +249,7 @@ export default async function NewsDetailPage({ params: paramsPromise }: PageProp
                             </li>
                             <li className="text-slate-300">/</li>
                             <li>
-                                <Link href="/haberler" className="hover:text-fixral-primary transition-colors">
+                                <Link href={`/${lang}/haberler`} className="hover:text-fixral-primary transition-colors">
                                     Haberler
                                 </Link>
                             </li>
@@ -416,7 +417,7 @@ export default async function NewsDetailPage({ params: paramsPromise }: PageProp
                                     <h3 className="text-sm font-semibold text-slate-400 uppercase tracking-wider mb-4">İlginizi Çekebilir</h3>
                                     <div className="space-y-4">
                                         {(news.relatedNewsIds as any[]).filter(Boolean).map((relatedNews) => (
-                                            <Link key={relatedNews._id} href={`/haberler/${relatedNews.slug}`} className="flex gap-3 group">
+                                            <Link key={relatedNews._id} href={`/${lang}/haberler/${relatedNews.slug}`} className="flex gap-3 group">
                                                 {relatedNews.featuredImage?.url && (
                                                     <div className="relative w-20 h-16 flex-shrink-0 rounded-lg overflow-hidden">
                                                         <Image
@@ -448,17 +449,7 @@ export default async function NewsDetailPage({ params: paramsPromise }: PageProp
         const errMsg = error instanceof Error ? error.message : String(error);
         const errStack = error instanceof Error ? error.stack : undefined;
         logger.error('Error rendering news detail page', 'NEWS_DETAIL', { error: errMsg, stack: errStack });
-        // Temporary: return error details for debugging
-        return (
-            <div className="min-h-screen bg-red-50 p-8">
-                <h1 className="text-2xl font-bold text-red-600 mb-4">News Detail Error (Debug)</h1>
-                <pre className="bg-white p-4 rounded border text-sm overflow-auto whitespace-pre-wrap">
-                    {errMsg}
-                    {'\n\n'}
-                    {errStack}
-                </pre>
-            </div>
-        );
+        notFound();
     }
 }
 

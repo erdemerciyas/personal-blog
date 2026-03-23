@@ -2,7 +2,9 @@ import { NextRequest, NextResponse } from 'next/server';
 import { getServerSession } from 'next-auth';
 import connectDB from '@/lib/mongoose';
 import News from '@/models/News';
-import '@/models/Portfolio'; // Ensure Portfolio model is registered for population
+import Portfolio from '@/models/Portfolio';
+// Mongoose model kaydını garanti etmek için - SİLMEYİN
+void Portfolio;
 import { ApiResponse } from '@/types/news';
 import { logger } from '@/core/lib/logger';
 
