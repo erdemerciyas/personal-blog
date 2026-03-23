@@ -2,9 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { getServerSession } from 'next-auth';
 import connectDB from '@/lib/mongoose';
 import News from '@/models/News';
-import Portfolio from '@/models/Portfolio';
-// Mongoose model kaydını garanti etmek için - SİLMEYİN
-void Portfolio;
+import { ensureModels } from '@/lib/ensure-models';
 import { ApiResponse } from '@/types/news';
 import { logger } from '@/core/lib/logger';
 
@@ -35,10 +33,17 @@ export async function GET(
 ) {
   try {
     await connectDB();
+    await ensureModels('Portfolio', 'News');
 
-    const news = await News.findOne({ slug: params.slug })
-      .populate('relatedPortfolioIds', 'title slug coverImage')
-      .populate('relatedNewsIds', 'slug translations featuredImage');
+    let news;
+    try {
+      news = await News.findOne({ slug: params.slug })
+        .populate('relatedPortfolioIds', 'title slug coverImage')
+        .populate('relatedNewsIds', 'slug translations featuredImage');
+    } catch (populateError) {
+      logger.warn('Populate failed in news slug API, trying without', 'NEWS_API', { error: (populateError as Error).message });
+      news = await News.findOne({ slug: params.slug });
+    }
 
     if (!news) {
       return NextResponse.json(

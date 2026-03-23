@@ -4,9 +4,7 @@ import Image from 'next/image';
 import Link from 'next/link';
 import connectDB from '@/lib/mongoose';
 import News from '@/models/News';
-import Portfolio from '@/models/Portfolio';
-// Mongoose model kaydını garanti etmek için - SİLMEYİN
-void Portfolio;
+import { ensureModels } from '@/lib/ensure-models';
 import { NewsItem } from '@/types/news';
 import { logger } from '@/core/lib/logger';
 import PageHero from '@/components/common/PageHero';
@@ -25,20 +23,35 @@ interface PageProps {
 /**
  * Generate metadata for news article detail page (Spanish)
  */
+// Helper: safely convert Mongoose Map to plain object for translations
+function normalizeTranslations(translations: any): Record<string, any> {
+    if (!translations) return {};
+    if (translations instanceof Map) {
+        const obj: Record<string, any> = {};
+        translations.forEach((value: any, key: string) => { obj[key] = value; });
+        return obj;
+    }
+    if (typeof translations === 'object' && !Array.isArray(translations)) {
+        return translations;
+    }
+    return {};
+}
+
 export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
   const { slug } = await params;
   try {
     await connectDB();
 
-    const news = (await News.findOne({ slug }).lean()) as unknown as NewsItem | null;
+    const newsDoc = await News.findOne({ slug }).lean();
 
-    if (!news) {
+    if (!newsDoc) {
       return {
         title: 'No encontrado',
         description: 'El artículo de noticias solicitado no fue encontrado.',
       };
     }
 
+    const news = newsDoc as any;
     if (news.status !== 'published') {
       return {
         title: 'No encontrado',
@@ -46,7 +59,8 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
       };
     }
 
-    const translation = news.translations.es;
+    const translations = normalizeTranslations(news.translations);
+    const translation = translations.es || { title: '', metaDescription: '', keywords: [] };
     const ogImages = news.featuredImage?.url
       ? [{ url: news.featuredImage.url, width: 1200, height: 630, alt: news.featuredImage.altText }]
       : generateOgImages(undefined, translation.title);
@@ -107,15 +121,10 @@ export async function generateStaticParams() {
 }
 
 /**
- * Revalidate news detail pages every hour
+ * Force dynamic rendering - required because next-intl's requestLocale
+ * internally calls headers(), which is incompatible with static/ISR rendering.
  */
-export const revalidate = 3600; // 1 hour
-
-/**
- * Enable dynamic params to allow on-demand rendering for new articles
- * This prevents 404 errors for articles not in generateStaticParams
- */
-export const dynamicParams = true;
+export const dynamic = 'force-dynamic';
 
 /**
  * News Detail Page Component (Spanish)
@@ -124,11 +133,22 @@ export default async function NewsDetailPage({ params: paramsPromise }: PageProp
   const { slug, lang } = await paramsPromise;
   try {
     await connectDB();
+    await ensureModels('Portfolio', 'News');
 
-    const news = (await News.findOne({ slug })
-      .populate('relatedPortfolioIds', 'title slug coverImage')
-      .populate('relatedNewsIds', 'slug translations featuredImage')
-      .lean()) as NewsItem | null;
+    let news: any = null;
+    try {
+      news = await News.findOne({ slug })
+        .populate('relatedPortfolioIds', 'title slug coverImage')
+        .populate('relatedNewsIds', 'slug translations featuredImage')
+        .lean();
+    } catch (populateError) {
+      logger.warn('News populate failed (ES), trying without', 'NEWS_DETAIL', { slug, error: (populateError as Error).message });
+      news = await News.findOne({ slug }).lean();
+      if (news) {
+        news.relatedPortfolioIds = [];
+        news.relatedNewsIds = [];
+      }
+    }
 
     if (!news) {
       logger.warn('News article not found (ES)', 'NEWS_DETAIL', { slug });
@@ -138,6 +158,15 @@ export default async function NewsDetailPage({ params: paramsPromise }: PageProp
     if (news.status !== 'published') {
       logger.warn('News article not published (ES)', 'NEWS_DETAIL', { slug, status: news.status });
       notFound();
+    }
+
+    // Normalize translations from Mongoose Map to plain object
+    news.translations = normalizeTranslations(news.translations);
+    if (news.relatedNewsIds && Array.isArray(news.relatedNewsIds)) {
+      news.relatedNewsIds = news.relatedNewsIds.map((rn: any) => {
+        if (rn && rn.translations) { rn.translations = normalizeTranslations(rn.translations); }
+        return rn;
+      });
     }
 
     const translation = news.translations?.es || { title: '', metaDescription: '', content: '', excerpt: '', keywords: [] };

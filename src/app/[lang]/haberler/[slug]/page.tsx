@@ -4,9 +4,7 @@ import Image from 'next/image';
 import Link from 'next/link';
 import connectDB from '@/lib/mongoose';
 import News from '@/models/News';
-import Portfolio from '@/models/Portfolio';
-// Mongoose model kaydını garanti etmek için - SİLMEYİN
-void Portfolio;
+import { ensureModels } from '@/lib/ensure-models';
 import { NewsItem } from '@/types/news';
 import { logger } from '@/core/lib/logger';
 import PageHero from '@/components/common/PageHero';
@@ -27,25 +25,26 @@ interface PageProps {
  */
 export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
     try {
-    const { slug } = await params;
+        const { slug } = await params;
         await connectDB();
 
-        let news = (await News.findOne({ slug }).lean()) as unknown as NewsItem | null;
+        let newsDoc = await News.findOne({ slug }).lean();
 
-        if (!news) {
+        if (!newsDoc) {
             const decodedSlug = decodeURIComponent(slug);
             if (decodedSlug !== slug) {
-                news = (await News.findOne({ slug: decodedSlug }).lean()) as unknown as NewsItem | null;
+                newsDoc = await News.findOne({ slug: decodedSlug }).lean();
             }
         }
 
-        if (!news) {
+        if (!newsDoc) {
             return {
                 title: 'Not Found',
                 description: 'The requested news article was not found.',
             };
         }
 
+        const news = newsDoc as any;
         if (news.status !== 'published') {
             return {
                 title: 'Not Found',
@@ -53,7 +52,8 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
             };
         }
 
-        const translation = news.translations.tr;
+        const translations = normalizeTranslations(news.translations);
+        const translation = translations.tr || { title: '', metaDescription: '', keywords: [] };
         const ogImages = news.featuredImage?.url
             ? [{ url: news.featuredImage.url, width: 1200, height: 630, alt: news.featuredImage.altText }]
             : generateOgImages(undefined, translation.title);
@@ -113,56 +113,85 @@ export async function generateStaticParams() {
 }
 
 /**
- * Revalidate news detail pages every hour
- * This ensures content updates are reflected without full rebuild
+ * Force dynamic rendering - required because next-intl's requestLocale
+ * internally calls headers(), which is incompatible with static/ISR rendering.
+ * Without this, Next.js throws "Page changed from static to dynamic" error.
  */
-export const revalidate = 3600; // 1 hour
+export const dynamic = 'force-dynamic';
 
-/**
- * Enable dynamic params to allow on-demand rendering for new articles
- * This prevents 404 errors for articles not in generateStaticParams
- */
-export const dynamicParams = true;
+// Helper: safely convert Mongoose Map to plain object for translations
+function normalizeTranslations(translations: any): Record<string, any> {
+    if (!translations) return {};
+    // Mongoose Map returned from .lean() in Mongoose 9 may still be a Map
+    if (translations instanceof Map) {
+        const obj: Record<string, any> = {};
+        translations.forEach((value: any, key: string) => {
+            obj[key] = value;
+        });
+        return obj;
+    }
+    // If it's already a plain object with $__parent (Mongoose internals), extract data
+    if (typeof translations === 'object' && !Array.isArray(translations)) {
+        return translations;
+    }
+    return {};
+}
 
-// Helper function to find news with retries and fallback
-async function findNewsWithRetry(slug: string) {
-    let news = null;
-    let attempts = 0;
-    const maxAttempts = 3;
+// Helper function to find news with populate fallback
+async function findNewsWithRetry(slug: string): Promise<any | null> {
+    await connectDB();
+    // Dynamic imports - bundler CANNOT tree-shake these
+    await ensureModels('Portfolio', 'News');
 
-    while (attempts < maxAttempts) {
-        attempts++;
+    const slugsToTry = [slug];
+    const decodedSlug = decodeURIComponent(slug);
+    if (decodedSlug !== slug) {
+        slugsToTry.push(decodedSlug);
+    }
+
+    for (const trySlug of slugsToTry) {
         try {
-            await connectDB();
-
-            // Try exact slug
-            news = await News.findOne({ slug })
+            // First try with populate
+            const news = await News.findOne({ slug: trySlug })
                 .populate('relatedPortfolioIds', 'title slug coverImage')
                 .populate('relatedNewsIds', 'slug translations featuredImage')
-                .lean() as NewsItem | null;
+                .lean();
 
-            // If not found, try decoded slug if it's different
-            if (!news) {
-                const decodedSlug = decodeURIComponent(slug);
-                if (decodedSlug !== slug) {
-                    news = await News.findOne({ slug: decodedSlug })
-                        .populate('relatedPortfolioIds', 'title slug coverImage')
-                        .populate('relatedNewsIds', 'slug translations featuredImage')
-                        .lean() as NewsItem | null;
+            if (news) {
+                // Normalize translations from Mongoose Map to plain object
+                const normalized = news as any;
+                normalized.translations = normalizeTranslations(normalized.translations);
+                // Also normalize related news translations
+                if (normalized.relatedNewsIds && Array.isArray(normalized.relatedNewsIds)) {
+                    normalized.relatedNewsIds = normalized.relatedNewsIds.map((rn: any) => {
+                        if (rn && rn.translations) {
+                            rn.translations = normalizeTranslations(rn.translations);
+                        }
+                        return rn;
+                    });
                 }
+                return normalized;
             }
-
-            if (news) return news;
-
-            // If no result but no error, it might be a true 404, or a consistency issue.
-            // We wait a bit and retry just in case of replication lag (unlikely but possible)
-            if (attempts < maxAttempts) {
-                await new Promise(resolve => setTimeout(resolve, 500));
-            }
-        } catch (error) {
-            logger.warn(`News lookup attempt ${attempts} failed`, 'NEWS_DETAIL', { slug, error: (error as Error).message });
-            if (attempts < maxAttempts) {
-                await new Promise(resolve => setTimeout(resolve, 1000));
+        } catch (populateError) {
+            logger.warn('News populate failed, trying without populate', 'NEWS_DETAIL', {
+                slug: trySlug,
+                error: (populateError as Error).message
+            });
+            // Fallback: fetch without populate if model registration fails
+            try {
+                const news = await News.findOne({ slug: trySlug }).lean();
+                if (news) {
+                    const normalized = news as any;
+                    normalized.translations = normalizeTranslations(normalized.translations);
+                    normalized.relatedPortfolioIds = [];
+                    normalized.relatedNewsIds = [];
+                    return normalized;
+                }
+            } catch (fallbackError) {
+                logger.error('News fallback query also failed', 'NEWS_DETAIL', {
+                    slug: trySlug,
+                    error: (fallbackError as Error).message
+                });
             }
         }
     }
