@@ -164,6 +164,8 @@ module.exports = {
         'fixral-scale': 'scale 0.3s ease-in-out',
         'fixral-pulse': 'pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite',
         'smooth-bounce': 'bounce 1s ease-in-out infinite',
+        'shimmer': 'shimmer 2.5s ease-in-out infinite',
+        'gradient-x': 'gradientX 3s ease infinite',
       },
       transitionProperty: {
         'transform-opacity': 'transform, opacity',
@@ -190,6 +192,14 @@ module.exports = {
         scale: {
           '0%': { transform: 'scale(0.95)', opacity: '0' },
           '100%': { transform: 'scale(1)', opacity: '1' },
+        },
+        shimmer: {
+          '0%': { backgroundPosition: '-200% 0' },
+          '100%': { backgroundPosition: '200% 0' },
+        },
+        gradientX: {
+          '0%, 100%': { backgroundPosition: '0% 50%' },
+          '50%': { backgroundPosition: '100% 50%' },
         },
       },
       borderColor: {

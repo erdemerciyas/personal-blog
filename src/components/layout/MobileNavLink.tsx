@@ -23,33 +23,39 @@ export default function MobileNavLink({
     onClick,
 }: MobileNavLinkProps) {
     const classes = `
-        flex items-center gap-3
-        px-4 py-3
-        rounded-lg
-        text-[15px] font-medium
-        transition-colors duration-150
+        flex items-center gap-4
+        px-5 py-3.5
+        rounded-xl
+        text-base font-medium tracking-wide
+        transition-all duration-200
         focus-visible:outline-none
         focus-visible:ring-2
-        focus-visible:ring-brand-primary-600
+        focus-visible:ring-white/40
         focus-visible:ring-offset-2
+        focus-visible:ring-offset-transparent
         ${isActive
-            ? 'bg-brand-primary-50 text-brand-primary-900 border-l-2 border-brand-primary-600 pl-[14px]'
-            : 'text-slate-600 hover:bg-slate-50 hover:text-slate-900'
+            ? 'bg-white/15 text-white'
+            : 'text-white/60 hover:text-white hover:bg-white/5'
         }
     `;
 
     const content = (
         <>
-            <Icon className={`w-5 h-5 flex-shrink-0 ${isActive ? 'text-brand-primary-600' : ''}`} aria-hidden="true" />
+            <span className={`flex items-center justify-center w-9 h-9 rounded-lg ${isActive ? 'bg-white/10' : 'bg-white/5'} transition-colors duration-200`}>
+                <Icon className={`w-5 h-5 flex-shrink-0 ${isActive ? 'text-white' : 'text-white/50'}`} aria-hidden="true" />
+            </span>
             <span className="flex-1">{label}</span>
+            {isActive && (
+                <span className="w-1.5 h-1.5 rounded-full bg-white" />
+            )}
         </>
     );
 
     return (
         <motion.div
-            initial={{ x: 20, opacity: 0 }}
-            animate={{ x: 0, opacity: 1 }}
-            transition={{ delay: index * 0.05, duration: 0.2, ease: 'easeOut' }}
+            initial={{ y: 15, opacity: 0 }}
+            animate={{ y: 0, opacity: 1 }}
+            transition={{ delay: 0.1 + index * 0.04, duration: 0.3, ease: [0.25, 0.46, 0.45, 0.94] }}
         >
             {isExternal ? (
                 <a
