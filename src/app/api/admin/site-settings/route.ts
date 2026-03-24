@@ -35,6 +35,7 @@ export const PUT = withSecurity(SecurityConfigs.admin)(async (request: NextReque
     const allowedFields = [
       'logo',
       'siteName',
+      'logoText',
       'slogan',
       'description',
       'colors',

@@ -32,6 +32,7 @@ interface MobileNavProps {
     navLoaded: boolean;
     isScrolled?: boolean;
     isTransparentPage?: boolean;
+    logoText?: string;
 }
 
 export default function MobileNav({
@@ -41,6 +42,7 @@ export default function MobileNav({
     onClose,
     onOpenProjectModal,
     navLoaded,
+    logoText,
 }: MobileNavProps) {
     const { cartCount } = useCart();
     const { data: session } = useSession();
@@ -93,7 +95,7 @@ export default function MobileNav({
                         {/* Header */}
                         <div className="flex items-center justify-between px-6 pt-6 pb-4 flex-shrink-0">
                             <Dialog.Title className="text-xl font-bold text-white/90 tracking-wide">
-                                Menü
+                                {logoText || 'Menü'}
                             </Dialog.Title>
                             <button
                                 onClick={onClose}

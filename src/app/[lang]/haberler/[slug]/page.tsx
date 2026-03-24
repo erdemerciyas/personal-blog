@@ -400,7 +400,7 @@ export default async function NewsDetailPage({ params: paramsPromise }: PageProp
                                 <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
                                     <h3 className="text-sm font-semibold text-slate-400 uppercase tracking-wider mb-4">Konular</h3>
                                     <div className="flex flex-wrap gap-2">
-                                        {news.tags.map((tag) => (
+                                        {news.tags.map((tag: string) => (
                                             <span key={tag} className="px-3 py-1 bg-slate-100 hover:bg-slate-200 text-slate-600 rounded-lg text-sm transition-colors cursor-default">
                                                 #{tag}
                                             </span>

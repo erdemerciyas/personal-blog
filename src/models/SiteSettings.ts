@@ -8,6 +8,7 @@ interface ISiteSettings {
     height: number;
   };
   siteName: string;
+  logoText: string;
   slogan: string;
   description: string;
   colors: {
@@ -83,6 +84,11 @@ const SiteSettingsSchema = new mongoose.Schema<ISiteSettings>({
   siteName: {
     type: String,
     required: true,
+    default: ''
+  },
+  logoText: {
+    type: String,
+    required: false,
     default: ''
   },
   slogan: {

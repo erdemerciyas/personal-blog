@@ -7,46 +7,36 @@ import connectDB from '@/lib/mongoose';
 import Settings from '@/models/Settings';
 import SiteSettings, { type ISiteSettings } from '@/models/SiteSettings';
 
-// GET Method
+// GET Method — reads from SiteSettings (single source of truth, same model admin panel writes to)
 export async function GET() {
   if (process.env.NODE_ENV === 'development') {
-    console.log('🔍 GET /api/settings called');
+    console.log('🔍 GET /api/public/settings called');
   }
   try {
     await connectDB();
-    
-    let settings = await Settings.findOne({ isActive: true });
-    
-    if (!settings) {
-      settings = await Settings.create({
-        siteName: 'Erciyas Engineering',
-        siteTitle: 'Erciyas Engineering - 3D Tasarım ve Mühendislik Çözümleri',
-        siteDescription: 'Profesyonel 3D tasarım, tersine mühendislik, 3D baskı ve mühendislik çözümleri ile projelerinizi hayata geçiriyoruz.',
-        siteKeywords: '3D tasarım, tersine mühendislik, 3D baskı, CAD tasarım, mühendislik, Ankara',
-        siteUrl: 'https://erciyas-engineering.com',
-        logo: process.env.DEFAULT_LOGO_URL || 'https://res.cloudinary.com/demo/image/upload/v1700000000/personal-blog/site/logo/default-logo.png',
-        favicon: '/favicon.ico',
-        ogImage: 'https://picsum.photos/1200/630?blur=2',
-        twitterHandle: '@erciyaseng',
-        googleSiteVerification: '',
-        googleAnalyticsId: '',
-        googleTagManagerId: '',
-        adminSettings: {
-          defaultLanguage: 'tr',
-          timezone: 'Europe/Istanbul',
-          dateFormat: 'DD/MM/YYYY',
-          enableNotifications: true,
-        },
-        maintenanceMode: false,
-        allowRegistration: false,
-        maxUploadSize: 10,
-        isActive: true,
-      });
-    }
-    
-    return NextResponse.json(settings);
+
+    const siteSettings = await SiteSettings.getSiteSettings();
+
+    // Map to a public-friendly response shape
+    const response = {
+      siteName: siteSettings.siteName || '',
+      logoText: siteSettings.logoText || '',
+      slogan: siteSettings.slogan || '',
+      description: siteSettings.description || '',
+      logo: siteSettings.logo || null,
+      favicon: siteSettings.favicon || '/favicon.ico',
+      siteUrl: siteSettings.siteUrl || '',
+      language: siteSettings.language || 'tr',
+      timezone: siteSettings.timezone || 'Europe/Istanbul',
+      socialMedia: siteSettings.socialMedia || {},
+      maintenanceMode: siteSettings.maintenanceMode || false,
+      allowRegistration: siteSettings.allowRegistration || false,
+      enableComments: siteSettings.enableComments || false,
+    };
+
+    return NextResponse.json(response);
   } catch (error) {
-  console.error('Settings GET error:', error);
+    console.error('Settings GET error:', error);
     return NextResponse.json(
       { error: 'Site ayarları getirilirken bir hata oluştu' },
       { status: 500 }

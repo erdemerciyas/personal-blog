@@ -183,6 +183,7 @@ export default function AdminSiteSettingsPage() {
               <div>
                 <label className="block text-sm font-medium text-slate-700 mb-1">Site Adı</label>
                 <input type="text" value={settings.siteName} onChange={(e) => setSettings({ ...settings, siteName: e.target.value })} className="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-indigo-500 outline-none" />
+                <p className="text-xs text-slate-500 mt-1">Tarayıcı sekmesinde ve arama sonuçlarında görünür (title)</p>
               </div>
               <div>
                 <label className="block text-sm font-medium text-slate-700 mb-1">Site URL</label>
@@ -191,6 +192,7 @@ export default function AdminSiteSettingsPage() {
               <div>
                 <label className="block text-sm font-medium text-slate-700 mb-1">Slogan</label>
                 <input type="text" value={settings.slogan || ''} onChange={(e) => setSettings({ ...settings, slogan: e.target.value })} className="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-indigo-500 outline-none" />
+                <p className="text-xs text-slate-500 mt-1">Arama sonuçlarında açıklama olarak görünür (meta description)</p>
               </div>
               <div className="grid grid-cols-2 gap-4">
                 <div>
@@ -235,6 +237,12 @@ export default function AdminSiteSettingsPage() {
                   label="Logo Yükle"
                 />
                 <p className="text-xs text-slate-500 mt-1">Önerilen boyut: 200x60px. Format: PNG, SVG</p>
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-slate-700 mb-1">Logo Kelimesi</label>
+                <input type="text" value={settings.logoText || ''} onChange={(e) => setSettings({ ...settings, logoText: e.target.value })} className="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-indigo-500 outline-none" placeholder="Logo yanında görünecek metin" />
+                <p className="text-xs text-slate-500 mt-1">Navigasyonda logo yanında gösterilecek kısa isim</p>
               </div>
 
               <div>

@@ -14,10 +14,8 @@ import Script from 'next/script'
 import GlobalBreadcrumbsJsonLd from '../components/seo/GlobalBreadcrumbsJsonLd';
 import PageTransitionWrapper from '../components/PageTransitionWrapper';
 
-// Force dynamic rendering and disable caching for layout/metadata
-// Removed for SEO and performance improvements
-// export const dynamic = 'force-dynamic'
-// export const revalidate = 0
+// Force dynamic rendering so metadata reflects latest site settings from DB
+export const dynamic = 'force-dynamic'
 
 // Env fallbacks for Google integrations
 const ENV_GOOGLE_VERIFICATION = process.env.GOOGLE_SITE_VERIFICATION
@@ -51,7 +49,7 @@ export async function generateMetadata(): Promise<Metadata> {
 
     // Default SEO from Site Settings
     let title = siteSettings.siteName || 'Personal Blog';
-    let description = siteSettings.description || 'Kişisel blog ve portfolyo sitesi';
+    let description = siteSettings.slogan || siteSettings.description || 'Kişisel blog ve portfolyo sitesi';
     let keywords = siteSettings.seo?.keywords || [];
 
     // Override/Enhance with Plugin if active
@@ -123,6 +121,9 @@ export async function generateMetadata(): Promise<Metadata> {
         icon: siteSettings.favicon || logoUrl || '/favicon.svg',
         apple: siteSettings.favicon || logoUrl || '/favicon.svg',
       },
+      other: {
+        'apple-mobile-web-app-title': title,
+      },
     };
   } catch (error) {
     console.error('Metadata generation error:', error);
@@ -133,7 +134,7 @@ export async function generateMetadata(): Promise<Metadata> {
         icon: '/favicon.svg',
         apple: '/favicon.svg',
       },
-      metadataBase: new URL(config.app.url),
+      metadataBase: new URL(config.app.url || 'http://localhost:3000'),
     };
   }
 }
@@ -153,12 +154,16 @@ export default async function RootLayout({
 }) {
   let gaId: string | undefined;
   let gtmId: string | undefined;
+  let siteName = config.app.name;
+  let siteUrl = config.app.url;
 
   if (hasValidMongoUri()) {
     try {
       await connectDB();
       // Use SiteSettings single source of truth
       const siteSettings = await SiteSettings.getSiteSettings();
+      siteName = siteSettings.siteName || config.app.name;
+      siteUrl = siteSettings.siteUrl || config.app.url;
 
       // Ensure plugins are loaded on the server
       try {
@@ -204,7 +209,7 @@ export default async function RootLayout({
         <meta name="mobile-web-app-capable" content="yes" />
         <meta name="apple-mobile-web-app-capable" content="yes" />
         <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
-        <meta name="apple-mobile-web-app-title" content="FIXRAL Blog" />
+        {/* apple-mobile-web-app-title is set dynamically via generateMetadata */}
 
         {/* PWA Manifest */}
         <link rel="manifest" href="/manifest.json" />
@@ -238,9 +243,9 @@ export default async function RootLayout({
             __html: JSON.stringify({
               '@context': 'https://schema.org',
               '@type': 'Organization',
-              name: config.app.name,
-              url: config.app.url,
-              logo: `${config.app.url}/favicon.svg`,
+              name: siteName,
+              url: siteUrl,
+              logo: `${siteUrl}/favicon.svg`,
               sameAs: [
                 'https://www.linkedin.com',
                 'https://github.com/erdemerciyas'
@@ -256,11 +261,11 @@ export default async function RootLayout({
             __html: JSON.stringify({
               '@context': 'https://schema.org',
               '@type': 'WebSite',
-              name: config.app.name,
-              url: config.app.url,
+              name: siteName,
+              url: siteUrl,
               potentialAction: {
                 '@type': 'SearchAction',
-                target: `${config.app.url}/?q={search_term_string}`,
+                target: `${siteUrl}/?q={search_term_string}`,
                 'query-input': 'required name=search_term_string'
               }
             })

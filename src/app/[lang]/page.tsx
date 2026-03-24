@@ -2,6 +2,7 @@ import { getSliderItems, getPortfolioItems, getServices } from '@/lib/data';
 import { ThemeRegistry } from '@/themes/ThemeRegistry';
 import connectDB from '@/lib/mongoose';
 import Theme from '@/models/Theme';
+import SiteSettings from '@/models/SiteSettings';
 import type { Metadata } from 'next';
 import { SITE_URL, generateAlternates, generateOgImages } from '@/lib/seo-utils';
 
@@ -10,9 +11,22 @@ export const revalidate = 3600; // ISR for 1 hour
 export async function generateMetadata({ params }: { params: Promise<{ lang: string }> }): Promise<Metadata> {
   const { lang } = await params;
   const canonical = lang === 'es' ? `${SITE_URL}/es` : `${SITE_URL}/tr`;
+
+  let title = 'Personal Blog';
+  let description = '';
+
+  try {
+    await connectDB();
+    const siteSettings = await SiteSettings.getSiteSettings();
+    title = siteSettings.siteName || title;
+    description = siteSettings.slogan || siteSettings.description || '';
+  } catch {
+    // fallback to defaults
+  }
+
   return {
-    title: 'Fixral — Dijital Çözümler ve Hizmetler',
-    description: 'Modern web teknolojileri, yazılım geliştirme ve dijital dönüşüm hizmetleri.',
+    title,
+    description,
     alternates: {
       canonical,
       languages: {
@@ -22,11 +36,11 @@ export async function generateMetadata({ params }: { params: Promise<{ lang: str
       },
     },
     openGraph: {
-      title: 'Fixral — Dijital Çözümler ve Hizmetler',
-      description: 'Modern web teknolojileri, yazılım geliştirme ve dijital dönüşüm hizmetleri.',
+      title,
+      description,
       url: canonical,
       type: 'website',
-      images: generateOgImages(undefined, 'Fixral'),
+      images: generateOgImages(undefined, title),
     },
   };
 }

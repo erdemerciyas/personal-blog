@@ -4,7 +4,7 @@
 [![TypeScript](https://img.shields.io/badge/TypeScript-5.0-blue?style=for-the-badge&logo=typescript)](https://www.typescriptlang.org/)
 [![MongoDB](https://img.shields.io/badge/MongoDB-6.0-green?style=for-the-badge&logo=mongodb)](https://www.mongodb.com/)
 [![Tailwind CSS](https://img.shields.io/badge/Tailwind-3.4-38B2AC?style=for-the-badge&logo=tailwind-css)](https://tailwindcss.com/)
-[![Version](https://img.shields.io/badge/Version-4.1.0-blue?style=for-the-badge)]()
+[![Version](https://img.shields.io/badge/Version-4.2.0-blue?style=for-the-badge)]()
 [![Status](https://img.shields.io/badge/Status-Production-success?style=for-the-badge)]()
 
 **Fixral 3D** is a production-grade, full-stack Content Management System (CMS) and E-Commerce platform built with Next.js 14 (App Router).
@@ -309,6 +309,23 @@ npm start             # Start production server
 ---
 
 ## Changelog
+
+### v4.2.0 - Dynamic Site Settings & SEO
+
+#### Site Settings → Frontend Sync
+- **Fixed model mismatch:** Admin panel saves to `SiteSettings` model; public API (`/api/public/settings`) now reads from the same model instead of the legacy `Settings` model
+- **Dynamic metadata:** `<title>` and `<meta description>` are now pulled from database (`siteName` → title, `slogan` → description) instead of hardcoded values
+- **Removed hardcoded strings:** Cleaned up "FIXRAL Blog", "Fixral — Dijital Çözümler ve Hizmetler", and `config.app.name` references in layout, JSON-LD, and page metadata
+
+#### Logo Text Feature
+- **New `logoText` field:** Added to `SiteSettings` model — a short brand name displayed next to the logo in navigation
+- **Admin UI:** "Logo Kelimesi" input added under Logo & Görseller section with descriptive helper texts for Site Adı (title) and Slogan (meta description)
+- **Responsive display:** `logoText` visible on both mobile and desktop header, and as mobile nav drawer title
+
+#### Layout & SEO Fixes
+- **Force-dynamic rendering:** Re-enabled `export const dynamic = 'force-dynamic'` on root layout so metadata always reflects latest DB values
+- **Invalid URL fix:** Added fallback for `config.app.url` when `NEXTAUTH_URL` env var is not set (prevents crash in catch block)
+- **Dynamic JSON-LD:** Organization and WebSite structured data now use `siteName` and `siteUrl` from database
 
 ### v4.1.0 - Modern Navigation & Icon Management
 

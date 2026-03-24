@@ -20,6 +20,7 @@ import ProjectModal from './features/ProjectModal';
 
 interface SiteSettings {
   siteName: string;
+  logoText: string;
   slogan: string;
   logo: {
     url: string;
@@ -102,7 +103,8 @@ const Header: React.FC = () => {
           const data = await response.json();
           setSiteSettings({
             siteName: data?.siteName || '',
-            slogan: '',
+            logoText: data?.logoText || '',
+            slogan: data?.slogan || '',
             logo: {
               url: typeof data?.logo === 'string' ? data.logo : (data?.logo?.url || ''),
               alt: 'Logo',
@@ -251,28 +253,16 @@ const Header: React.FC = () => {
                   />
                 </div>
               )}
-              <div className="hidden sm:flex lg:hidden xl:flex flex-col justify-center">
-                {siteSettings?.siteName && (
-                  <h1 className={`font-bold tracking-tight leading-none mb-0.5 transition-all duration-500 ${isScrolled ? 'text-base' : 'text-lg'} ${isScrolled
-                    ? 'text-slate-900'
-                    : isTransparentPage
-                      ? 'text-white drop-shadow-lg'
-                      : 'text-slate-900'
-                    }`}>
-                    {siteSettings.siteName}
-                  </h1>
-                )}
-                {siteSettings?.slogan && (
-                  <p className={`text-xs font-medium leading-none transition-all duration-500 ${isScrolled
-                    ? 'text-slate-500 opacity-80'
-                    : isTransparentPage
-                      ? 'text-white/80 drop-shadow'
-                      : 'text-slate-500 opacity-80'
-                    }`}>
-                    {siteSettings.slogan}
-                  </p>
-                )}
-              </div>
+              {siteSettings?.logoText && (
+                <span className={`font-bold tracking-tight transition-all duration-500 ${isScrolled ? 'text-sm sm:text-base' : 'text-base sm:text-lg'} ${isScrolled
+                  ? 'text-slate-900'
+                  : isTransparentPage
+                    ? 'text-white drop-shadow-lg'
+                    : 'text-slate-900'
+                  }`}>
+                  {siteSettings.logoText}
+                </span>
+              )}
             </Link>
 
             {/* Desktop Navigation */}
@@ -310,6 +300,7 @@ const Header: React.FC = () => {
         pathname={pathname || ''}
         onClose={closeMobileMenu}
         onOpenProjectModal={openProjectModal}
+        logoText={siteSettings?.logoText}
         navLoaded={navLoaded}
       />
 
