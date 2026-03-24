@@ -10,7 +10,7 @@ import connectDB, { hasValidMongoUri } from '../lib/mongoose'
 import SiteSettings from '../models/SiteSettings'
 import Plugin from '../models/Plugin'
 import Script from 'next/script'
-import FloatingCta from '../components/FloatingCta';
+// FloatingCta removed — project CTA is now in the header nav
 import GlobalBreadcrumbsJsonLd from '../components/seo/GlobalBreadcrumbsJsonLd';
 import PageTransitionWrapper from '../components/PageTransitionWrapper';
 
@@ -317,7 +317,7 @@ export default async function RootLayout({
                 <ClientWrapper>
                   <Header />
                   <GlobalBreadcrumbsJsonLd />
-                  <FloatingCta />
+                  {/* FloatingCta removed — CTA now lives in header */}
                   {/* Main content area with smooth transitions */}
                   <PageTransitionWrapper>
                     <div className="relative flex-grow">

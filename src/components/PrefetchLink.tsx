@@ -10,6 +10,8 @@ interface PrefetchLinkProps {
   className?: string;
   prefetch?: boolean;
   onClick?: (e: React.MouseEvent<HTMLAnchorElement>) => void;
+  onMouseEnter?: (e: React.MouseEvent<HTMLAnchorElement>) => void;
+  onMouseLeave?: (e: React.MouseEvent<HTMLAnchorElement>) => void;
   [key: string]: any;
 }
 
@@ -26,17 +28,24 @@ export default function PrefetchLink({
   className,
   prefetch = true,
   onClick,
+  onMouseEnter,
+  onMouseLeave,
   ...props
 }: PrefetchLinkProps) {
   const router = useRouter();
   const [isPrefetched, setIsPrefetched] = useState(false);
 
-  const handleMouseEnter = useCallback(() => {
+  const handleMouseEnter = useCallback((e: React.MouseEvent<HTMLAnchorElement>) => {
     if (prefetch && !isPrefetched) {
       router.prefetch(href);
       setIsPrefetched(true);
     }
-  }, [prefetch, isPrefetched, href, router]);
+    onMouseEnter?.(e);
+  }, [prefetch, isPrefetched, href, router, onMouseEnter]);
+
+  const handleMouseLeave = useCallback((e: React.MouseEvent<HTMLAnchorElement>) => {
+    onMouseLeave?.(e);
+  }, [onMouseLeave]);
 
   const handleFocus = useCallback(() => {
     if (prefetch && !isPrefetched) {
@@ -46,7 +55,6 @@ export default function PrefetchLink({
   }, [prefetch, isPrefetched, href, router]);
 
   const handleClick = useCallback((e: React.MouseEvent<HTMLAnchorElement>) => {
-    // Call the original onClick handler if provided
     if (onClick) {
       onClick(e);
     }
@@ -57,6 +65,7 @@ export default function PrefetchLink({
       href={href}
       className={className}
       onMouseEnter={handleMouseEnter}
+      onMouseLeave={handleMouseLeave}
       onFocus={handleFocus}
       onClick={handleClick}
       {...props}

@@ -225,18 +225,22 @@ const Header: React.FC = () => {
       >
         Ana içeriğe atla
       </a>
-      <header className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${isScrolled
-        ? 'bg-white/70 backdrop-blur-lg shadow-sm border-b border-white/20'
+      <header className={`fixed top-0 left-0 right-0 z-50 transition-all duration-500 ${isScrolled
+        ? 'bg-white/80 backdrop-blur-xl shadow-lg shadow-black/[0.03]'
         : isTransparentPage
           ? 'bg-transparent'
-          : 'bg-white/70 backdrop-blur-lg shadow-sm border-b border-white/20'
+          : 'bg-white/80 backdrop-blur-xl shadow-lg shadow-black/[0.03]'
         }`} role="banner">
+        {/* Gradient accent line */}
+        <div className={`absolute bottom-0 left-0 right-0 h-[1px] transition-opacity duration-500 ${isScrolled || !isTransparentPage ? 'opacity-100' : 'opacity-0'}`}>
+          <div className="h-full bg-gradient-to-r from-transparent via-brand-primary-500/30 to-transparent" />
+        </div>
         <div className="container mx-auto px-6">
-          <div className="flex items-center justify-between h-20 sm:h-24">
+          <div className={`flex items-center justify-between transition-all duration-500 ${isScrolled ? 'h-16 sm:h-18' : 'h-20 sm:h-24'}`}>
             {/* Logo - Home Link */}
-            <Link href={`/${currentLang}`} className="flex items-center space-x-3 group shrink-0 -ml-2 sm:-ml-4 lg:-ml-6 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-primary-600 focus-visible:ring-offset-2 rounded-xl" aria-label="Anasayfaya git">
+            <Link href={`/${currentLang}`} className="flex items-center space-x-3 group shrink-0 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-primary-600 focus-visible:ring-offset-2 rounded-xl" aria-label="Anasayfaya git">
               {siteSettings?.logo?.url && (
-                <div className="relative w-12 h-12 sm:w-14 sm:h-14 rounded-2xl overflow-hidden p-1">
+                <div className={`relative rounded-xl overflow-hidden transition-all duration-500 ${isScrolled ? 'w-10 h-10 sm:w-11 sm:h-11' : 'w-12 h-12 sm:w-14 sm:h-14'} p-0.5`}>
                   <Image
                     src={siteSettings.logo.url}
                     alt={siteSettings.logo.alt}
@@ -247,9 +251,9 @@ const Header: React.FC = () => {
                   />
                 </div>
               )}
-              <div className="hidden sm:flex lg:hidden xl:flex flex-col justify-center h-12 sm:h-14">
+              <div className="hidden sm:flex lg:hidden xl:flex flex-col justify-center">
                 {siteSettings?.siteName && (
-                  <h1 className={`text-lg sm:text-lg font-bold tracking-tight leading-none mb-1 transition-colors duration-300 ${isScrolled
+                  <h1 className={`font-bold tracking-tight leading-none mb-0.5 transition-all duration-500 ${isScrolled ? 'text-base' : 'text-lg'} ${isScrolled
                     ? 'text-slate-900'
                     : isTransparentPage
                       ? 'text-white drop-shadow-lg'
@@ -259,11 +263,11 @@ const Header: React.FC = () => {
                   </h1>
                 )}
                 {siteSettings?.slogan && (
-                  <p className={`text-xs sm:text-[13px] font-medium leading-none opacity-90 transition-colors duration-300 ${isScrolled
-                    ? 'text-slate-600'
+                  <p className={`text-xs font-medium leading-none transition-all duration-500 ${isScrolled
+                    ? 'text-slate-500 opacity-80'
                     : isTransparentPage
-                      ? 'text-white/90 drop-shadow'
-                      : 'text-slate-600'
+                      ? 'text-white/80 drop-shadow'
+                      : 'text-slate-500 opacity-80'
                     }`}>
                     {siteSettings.slogan}
                   </p>
@@ -285,10 +289,10 @@ const Header: React.FC = () => {
               onClick={toggleMobileMenu}
               aria-label="Mobil menüyü aç"
               aria-expanded={isMobileMenuOpen}
-              className={`lg:hidden p-2 rounded-lg transition-colors duration-150 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-primary-600 focus-visible:ring-offset-2 ${isScrolled
+              className={`lg:hidden p-2.5 rounded-xl transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-primary-600 focus-visible:ring-offset-2 ${isScrolled
                 ? 'text-slate-700 hover:bg-slate-100'
                 : isTransparentPage
-                  ? 'text-white hover:bg-white/15 drop-shadow'
+                  ? 'text-white hover:bg-white/10'
                   : 'text-slate-700 hover:bg-slate-100'
                 }`}
             >
