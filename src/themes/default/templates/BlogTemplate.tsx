@@ -19,11 +19,13 @@ interface BlogItem {
 interface BlogTemplateProps {
   posts?: BlogItem[];
   title?: string;
+  lang?: string;
 }
 
 export default function BlogTemplate({
   posts = [],
   title = 'Blog',
+  lang = 'tr',
 }: BlogTemplateProps) {
   return (
     <div className="max-w-6xl mx-auto py-12 px-4">
@@ -53,7 +55,7 @@ export default function BlogTemplate({
                 <div className="p-6">
                   <h2 className="text-xl font-semibold text-gray-900 mb-3">
                     <Link
-                      href={`/blog/${post.slug}`}
+                      href={`/${lang}/blog/${post.slug}`}
                       className="hover:text-brand-primary-600 transition-colors"
                     >
                       {post.title}

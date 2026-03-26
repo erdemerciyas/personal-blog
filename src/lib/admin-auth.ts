@@ -3,45 +3,21 @@
  */
 
 import { NextRequest } from 'next/server';
-import { headers } from 'next/headers';
+import { getServerSession } from 'next-auth';
+import { authOptions } from './auth';
 
 /**
  * Check if user is authenticated as admin
  */
 export async function isAdminAuthenticated(_request: NextRequest): Promise<boolean> {
-  // Bypass authentication in development mode for testing
-  if (process.env.NODE_ENV === 'development') {
-    console.log('[Admin Auth] Development mode - bypassing authentication');
-    return true;
-  }
-
   try {
-    const headersList = headers();
-    const authHeader = headersList.get('authorization');
-    
-    if (!authHeader) {
+    const session = await getServerSession(authOptions);
+
+    if (!session?.user?.email) {
       return false;
     }
 
-    // Check for session token or JWT
-    const token = authHeader.replace('Bearer ', '');
-    
-    // Verify token with your auth system
-    // This is a placeholder - implement your actual auth verification
-    const response = await fetch(`${process.env.NEXTAUTH_URL}/api/auth/session`, {
-      headers: {
-        'Authorization': `Bearer ${token}`,
-      },
-    });
-
-    if (!response.ok) {
-      return false;
-    }
-
-    const session = await response.json();
-    
-    // Check if user has admin role
-    return session.user?.role === 'admin';
+    return (session.user as { role?: string }).role === 'admin';
   } catch (error) {
     console.error('Auth check error:', error);
     return false;

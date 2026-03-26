@@ -11,6 +11,7 @@ import {
     SparklesIcon
 } from '@heroicons/react/24/outline';
 import HTMLContent from '@/components/HTMLContent';
+import { useLocale } from '@/hooks/useLocale';
 
 interface Service {
     _id: string;
@@ -33,6 +34,7 @@ interface ServicesClientProps {
 }
 
 export default function ServicesClient({ services, hero }: ServicesClientProps) {
+    const lang = useLocale();
     const [expandedServices, setExpandedServices] = useState<Set<string>>(new Set());
 
     const toggleExpand = (serviceId: string) => {
@@ -168,7 +170,7 @@ export default function ServicesClient({ services, hero }: ServicesClientProps) 
 
                                             {/* CTA Button */}
                                             <Link
-                                                href={`/contact?service=${encodeURIComponent(service.title)}`}
+                                                href={`/${lang}/contact?service=${encodeURIComponent(service.title)}`}
                                                 className="btn-primary inline-flex items-center group text-sm md:text-base"
                                             >
                                                 <span>Detaylı Bilgi Al</span>
@@ -201,11 +203,11 @@ export default function ServicesClient({ services, hero }: ServicesClientProps) 
                         Size özel çözümler geliştirmek için buradayız. Projenizi birlikte değerlendirelim.
                     </p>
                     <div className="flex flex-col sm:flex-row gap-6 justify-center">
-                        <Link href="/contact" className="btn-primary">
+                        <Link href={`/${lang}/contact`} className="btn-primary">
                             <SparklesIcon className="w-5 h-5 mr-2" />
                             Proje Teklifi Al
                         </Link>
-                        <Link href="/portfolio" className="btn-secondary">
+                        <Link href={`/${lang}/portfolio`} className="btn-secondary">
                             Örnek Projelerimizi İnceleyin
                             <ArrowRightIcon className="w-5 h-5 ml-2" />
                         </Link>

@@ -10,11 +10,13 @@ import PageHero from '@/components/common/PageHero';
 import PortfolioFilters from '@/components/portfolio/PortfolioFilters';
 import ModernProjectGrid from '@/components/portfolio/ModernProjectGrid';
 import { usePortfolioFilters } from '@/hooks/usePortfolioFilters';
+import { useLocale } from '@/hooks/useLocale';
 
 export default function PortfolioTemplate(props: any) {
   // If items are passed as props, we can initialize with them. But let's keep the dynamic fetching
   // logic here just in case, to maintain the rich client-side experience.
   // Use props directly to ensure soft-navigation updates the component
+  const lang = useLocale();
   const portfolioItems = props.items || [];
   const categories = props.categories || [];
   const loading = false;
@@ -173,11 +175,11 @@ export default function PortfolioTemplate(props: any) {
             </p>
           </div>
           <div className="flex flex-col sm:flex-row gap-6 justify-center">
-            <Link href="/contact" className="btn-primary">
+            <Link href={`/${lang}/contact`} className="btn-primary">
               <SparklesIcon className="w-5 h-5 mr-2" />
               Proje Başlatalım
             </Link>
-            <Link href="/services" className="btn-secondary">
+            <Link href={`/${lang}/services`} className="btn-secondary">
               Hizmetlerimizi İnceleyin
               <ArrowRightIcon className="w-5 h-5 ml-2" />
             </Link>

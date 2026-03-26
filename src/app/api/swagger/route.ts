@@ -20,13 +20,17 @@ import { swaggerConfig } from '@/lib/swagger-config';
  */
 
 export async function GET() {
+  if (process.env.NODE_ENV !== 'development') {
+    return NextResponse.json({ error: 'Not Found' }, { status: 404 });
+  }
+
   try {
     const specs = swaggerJsdoc(swaggerConfig);
     
     return NextResponse.json(specs, {
       headers: {
         'Content-Type': 'application/json',
-        'Cache-Control': 'public, max-age=3600',
+        'Cache-Control': 'no-store',
       },
     });
   } catch (error) {

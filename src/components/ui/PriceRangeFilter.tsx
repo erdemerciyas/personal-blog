@@ -3,9 +3,11 @@
 import { useRouter, useSearchParams } from 'next/navigation';
 import { useState } from 'react';
 import { CurrencyDollarIcon } from '@heroicons/react/24/outline';
+import { useLocale } from '@/hooks/useLocale';
 
 export default function PriceRangeFilter() {
     const router = useRouter();
+    const lang = useLocale();
     const searchParams = useSearchParams()!;
     const [min, setMin] = useState(searchParams.get('priceMin') || '');
     const [max, setMax] = useState(searchParams.get('priceMax') || '');
@@ -21,7 +23,7 @@ export default function PriceRangeFilter() {
         else params.delete('priceMax');
 
         params.set('page', '1');
-        router.push(`/products?${params.toString()}`);
+        router.push(`/${lang}/products?${params.toString()}`);
     };
 
     return (

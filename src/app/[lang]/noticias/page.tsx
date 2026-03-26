@@ -37,7 +37,8 @@ export async function generateMetadata(): Promise<Metadata> {
 
 const ITEMS_PER_PAGE = 12;
 
-export default async function NewsListPage({ searchParams: searchParamsPromise }: PageProps) {
+export default async function NewsListPage({ params: paramsPromise, searchParams: searchParamsPromise }: PageProps) {
+  const { lang } = await paramsPromise;
   const searchParams = await searchParamsPromise;
   try {
     await connectDB();
@@ -88,7 +89,7 @@ export default async function NewsListPage({ searchParams: searchParamsPromise }
           <nav className="mb-8 rounded-2xl border border-slate-200 bg-white/80 shadow-sm px-4 py-3 text-sm text-slate-600">
             <ol className="flex flex-wrap items-center gap-2">
               <li>
-                <Link href="/es" className="hover:text-fixral-primary transition-colors flex items-center gap-1">
+                <Link href={`/${lang}`} className="hover:text-fixral-primary transition-colors flex items-center gap-1">
                   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" className="w-4 h-4">
                     <path fillRule="evenodd" d="M9.293 2.293a1 1 0 011.414 0l7 7A1 1 0 0117.414 11H16v5a2 2 0 01-2 2H6a2 2 0 01-2-2v-5H3.293a1 1 0 01-1.414-1.414l7-7z" clipRule="evenodd" />
                   </svg>
@@ -123,7 +124,7 @@ export default async function NewsListPage({ searchParams: searchParamsPromise }
             {allTags.length > 0 && (
               <div className="flex flex-wrap gap-2 justify-center md:justify-end">
                 <Link
-                  href="/es/noticias"
+                  href="/${lang}/noticias"
                   className={`px-4 py-1.5 rounded-full text-sm font-medium transition-all ${!tag
                     ? 'bg-fixral-primary text-white shadow-md'
                     : 'bg-slate-100 text-slate-600 hover:bg-slate-200 hover:text-slate-900'
@@ -134,7 +135,7 @@ export default async function NewsListPage({ searchParams: searchParamsPromise }
                 {allTags.map((t) => (
                   <Link
                     key={t}
-                    href={`/es/noticias?tag=${encodeURIComponent(t)}`}
+                    href={`/${lang}/noticias?tag=${encodeURIComponent(t)}`}
                     className={`px-4 py-1.5 rounded-full text-sm font-medium transition-all ${tag === t
                       ? 'bg-fixral-primary text-white shadow-md'
                       : 'bg-slate-100 text-slate-600 hover:bg-slate-200 hover:text-slate-900'
@@ -166,7 +167,7 @@ export default async function NewsListPage({ searchParams: searchParamsPromise }
                   return (
                     <li key={article._id}>
                     <Link
-                      href={`/es/noticias/${article.slug}`}
+                      href={`/${lang}/noticias/${article.slug}`}
                       className="group flex flex-col h-full bg-white rounded-2xl overflow-hidden border border-gray-200 shadow-sm hover:shadow-xl hover:-translate-y-1 transition-all duration-300"
                     >
                       {/* Image */}
@@ -231,7 +232,7 @@ export default async function NewsListPage({ searchParams: searchParamsPromise }
                 <nav aria-label="Paginación" className="flex justify-center items-center gap-2">
                   {page > 1 && (
                     <Link
-                      href={`/es/noticias?page=${page - 1}${search ? `&search=${search}` : ''}${tag ? `&tag=${tag}` : ''}`}
+                      href={`/${lang}/noticias?page=${page - 1}${search ? `&search=${search}` : ''}${tag ? `&tag=${tag}` : ''}`}
                       className="px-4 py-2 bg-white border border-gray-200 rounded-lg hover:bg-gray-50 hover:border-fixral-primary hover:text-fixral-primary transition-all shadow-sm"
                     >
                       ← Anterior
@@ -241,7 +242,7 @@ export default async function NewsListPage({ searchParams: searchParamsPromise }
                   {Array.from({ length: totalPages }, (_, i) => i + 1).map((p) => (
                     <Link
                       key={p}
-                      href={`/es/noticias?page=${p}${search ? `&search=${search}` : ''}${tag ? `&tag=${tag}` : ''}`}
+                      href={`/${lang}/noticias?page=${p}${search ? `&search=${search}` : ''}${tag ? `&tag=${tag}` : ''}`}
                       className={`w-10 h-10 flex items-center justify-center rounded-lg transition-all shadow-sm ${p === page
                         ? 'bg-fixral-primary text-white shadow-md'
                         : 'bg-white border border-gray-200 hover:bg-gray-50 hover:border-fixral-primary hover:text-fixral-primary'
@@ -253,7 +254,7 @@ export default async function NewsListPage({ searchParams: searchParamsPromise }
 
                   {page < totalPages && (
                     <Link
-                      href={`/es/noticias?page=${page + 1}${search ? `&search=${search}` : ''}${tag ? `&tag=${tag}` : ''}`}
+                      href={`/${lang}/noticias?page=${page + 1}${search ? `&search=${search}` : ''}${tag ? `&tag=${tag}` : ''}`}
                       className="px-4 py-2 bg-white border border-gray-200 rounded-lg hover:bg-gray-50 hover:border-fixral-primary hover:text-fixral-primary transition-all shadow-sm"
                     >
                       Siguiente →
@@ -272,7 +273,7 @@ export default async function NewsListPage({ searchParams: searchParamsPromise }
               <h3 className="text-lg font-medium text-slate-900 mb-1">No se encontraron resultados</h3>
               <p className="text-slate-500 mb-6">No se encontraron noticias que coincidan con sus criterios.</p>
               <Link
-                href="/es/noticias"
+                href="/${lang}/noticias"
                 className={cn(buttonVariants({ variant: 'primary' }))}
               >
                 Ver todas las noticias

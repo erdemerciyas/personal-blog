@@ -15,8 +15,11 @@ import {
 } from '@heroicons/react/24/outline';
 import { resolveIcon, getIconForPage } from '../lib/icons';
 import DesktopNav from './layout/DesktopNav';
+import TopBar from './layout/TopBar';
 import MobileNav from './layout/MobileNav';
+import SearchModal from './layout/SearchModal';
 import ProjectModal from './features/ProjectModal';
+import { locales } from '@/i18n';
 
 interface SiteSettings {
   siteName: string;
@@ -41,19 +44,29 @@ interface PageSetting {
   order: number;
 }
 
+function getDefaultNavLinks() {
+  return [
+    { href: '/', label: 'Anasayfa', icon: HomeIcon },
+    { href: '/haberler', label: 'Haberler', icon: NewspaperIcon },
+    { href: '/services', label: 'Hizmetler', icon: WrenchScrewdriverIcon },
+    { href: '/portfolio', label: 'Portfolyo', icon: FolderOpenIcon },
+    { href: '/videos', label: 'Videolar', icon: FilmIcon },
+    { href: '/products', label: 'Ürünler', icon: FolderOpenIcon },
+    { href: '/contact', label: 'İletişim', icon: PhoneIcon },
+  ];
+}
+
 const Header: React.FC = () => {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isScrolled, setIsScrolled] = useState(false);
   const [isProjectModalOpen, setIsProjectModalOpen] = useState(false);
+  const [isSearchOpen, setIsSearchOpen] = useState(false);
   const [navLinks, setNavLinks] = useState<Array<{ href: string; label: string; icon: any; isExternal?: boolean }>>([]);
   const [navLoaded, setNavLoaded] = useState(false);
   const [siteSettings, setSiteSettings] = useState<SiteSettings | null>(null);
 
-
   const pathname = usePathname() || '';
 
-  // Define pages with transparent header (Hero sections)
-  // Expanded to include all pages with hero sections
   const isTransparentPage = pathname === '/' ||
     pathname.includes('/haberler') ||
     pathname.includes('/noticias') ||
@@ -63,16 +76,28 @@ const Header: React.FC = () => {
     pathname.includes('/videos') ||
     pathname.includes('/products');
 
-  // Scroll detection with improved threshold (100px for better UX)
   useEffect(() => {
     const handleScroll = () => {
-      setIsScrolled(window.scrollY > 100);
+      setIsScrolled(window.scrollY > 80);
     };
-    window.addEventListener('scroll', handleScroll);
+    window.addEventListener('scroll', handleScroll, { passive: true });
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
-  // GA4 event tracking
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if ((e.ctrlKey || e.metaKey) && e.key === 'k') {
+        e.preventDefault();
+        setIsSearchOpen(prev => !prev);
+      }
+      if (e.key === 'Escape' && isSearchOpen) {
+        setIsSearchOpen(false);
+      }
+    };
+    document.addEventListener('keydown', handleKeyDown);
+    return () => document.removeEventListener('keydown', handleKeyDown);
+  }, [isSearchOpen]);
+
   type GtagFn = (command: 'event', eventName: string, params?: Record<string, unknown>) => void;
   const getGtag = useCallback((): GtagFn | undefined => {
     if (typeof window === 'undefined') return undefined;
@@ -85,16 +110,12 @@ const Header: React.FC = () => {
     if (gtag) gtag('event', eventName, params);
   }, [getGtag]);
 
-  // Stable opener for Project Modal
   const openProjectModal = useCallback(() => {
     trackEvent('open_project_modal', { location: 'header' });
     setIsProjectModalOpen(true);
     setIsMobileMenuOpen(false);
   }, [trackEvent]);
 
-
-
-  // Fetch site settings
   useEffect(() => {
     const fetchSiteSettings = async () => {
       try {
@@ -117,11 +138,9 @@ const Header: React.FC = () => {
         setSiteSettings(null);
       }
     };
-
     fetchSiteSettings();
   }, []);
 
-  // Fetch dynamic navigation
   useEffect(() => {
     const fetchNavigation = async () => {
       try {
@@ -134,10 +153,8 @@ const Header: React.FC = () => {
             'Expires': '0'
           }
         });
-
         if (response.ok) {
           const pages = await response.json();
-
           const navPages = pages
             .filter((page: PageSetting) => page.isActive && page.showInNavigation)
             .sort((a: PageSetting, b: PageSetting) => a.order - b.order)
@@ -147,77 +164,62 @@ const Header: React.FC = () => {
               icon: resolveIcon(page.icon) || getIconForPage(page.pageId),
               isExternal: page.isExternal
             }));
-
           setNavLinks(navPages);
           setNavLoaded(true);
         } else {
-          // Fallback
-          setNavLinks([
-            { href: '/', label: 'Anasayfa', icon: HomeIcon },
-            { href: '/haberler', label: 'Haberler', icon: NewspaperIcon },
-            { href: '/services', label: 'Hizmetler', icon: WrenchScrewdriverIcon },
-            { href: '/portfolio', label: 'Portfolyo', icon: FolderOpenIcon },
-            { href: '/videos', label: 'Videolar', icon: FilmIcon },
-            { href: '/products', label: 'Ürünler', icon: FolderOpenIcon },
-            { href: '/contact', label: 'İletişim', icon: PhoneIcon },
-          ]);
+          setNavLinks(getDefaultNavLinks());
           setNavLoaded(true);
         }
       } catch (error) {
         console.error('Navigation fetch error:', error);
-        setNavLinks([
-          { href: '/', label: 'Anasayfa', icon: HomeIcon },
-          { href: '/services', label: 'Hizmetler', icon: WrenchScrewdriverIcon },
-          { href: '/portfolio', label: 'Portfolyo', icon: FolderOpenIcon },
-          { href: '/videos', label: 'Videolar', icon: FilmIcon },
-          { href: '/products', label: 'Ürünler', icon: FolderOpenIcon },
-          { href: '/contact', label: 'İletişim', icon: PhoneIcon },
-        ]);
+        setNavLinks(getDefaultNavLinks());
         setNavLoaded(true);
       }
     };
-
     fetchNavigation();
   }, []);
 
-  // Close mobile menu on route change
-  useEffect(() => {
-    setIsMobileMenuOpen(false);
-  }, [pathname]);
+  useEffect(() => { setIsMobileMenuOpen(false); }, [pathname]);
 
-  // Listen for global openProjectModal event
   useEffect(() => {
     const handleOpen: EventListener = () => openProjectModal();
     window.addEventListener('openProjectModal', handleOpen);
     return () => window.removeEventListener('openProjectModal', handleOpen);
   }, [openProjectModal]);
 
-  // Hide header on admin pages
-  if (pathname?.startsWith('/admin')) {
-    return null;
-  }
+  if (pathname?.startsWith('/admin')) return null;
 
   const toggleMobileMenu = (e: React.MouseEvent<HTMLButtonElement>) => {
     e.stopPropagation();
     setIsMobileMenuOpen(!isMobileMenuOpen);
   };
 
-  const closeMobileMenu = () => {
-    setIsMobileMenuOpen(false);
-  };
+  const firstSegment = pathname.split('/')[1];
+  const currentLang = (locales as readonly string[]).includes(firstSegment) ? firstSegment : 'tr';
 
-  const currentLang = ['tr', 'en', 'es'].includes(pathname.split('/')[1]) ? pathname.split('/')[1] : 'tr';
+  const ROUTE_SEGMENT_MAP: Record<string, Record<string, string>> = {
+    tr: { noticias: 'haberler' },
+    es: { haberler: 'noticias' },
+  };
 
   const localizedNavLinks = navLinks.map(link => {
     if (link.isExternal || link.href.startsWith('http') || link.href.startsWith('mailto:') || link.href.startsWith('tel:')) return link;
     const cleanPath = link.href.startsWith('/') ? link.href : `/${link.href}`;
-    // Avoid double prefix if it's already there
-    if (cleanPath.startsWith(`/${currentLang}/`) || cleanPath === `/${currentLang}`) {
-      return link;
+    if (cleanPath.startsWith(`/${currentLang}/`) || cleanPath === `/${currentLang}`) return link;
+
+    let targetPath = cleanPath;
+    const mapping = ROUTE_SEGMENT_MAP[currentLang];
+    if (mapping) {
+      const pathSegment = cleanPath.split('/').filter(Boolean)[0];
+      if (pathSegment && mapping[pathSegment]) {
+        targetPath = cleanPath.replace(`/${pathSegment}`, `/${mapping[pathSegment]}`);
+      }
     }
-    const newHref = `/${currentLang}${cleanPath === '/' ? '' : cleanPath}`;
+    const newHref = `/${currentLang}${targetPath === '/' ? '' : targetPath}`;
     return { ...link, href: newHref };
   });
+
+  const isTransparent = !isScrolled && isTransparentPage;
 
   return (
     <>
@@ -227,84 +229,105 @@ const Header: React.FC = () => {
       >
         Ana içeriğe atla
       </a>
-      <header className={`fixed top-0 left-0 right-0 z-50 transition-all duration-500 ${isScrolled
-        ? 'bg-white/80 backdrop-blur-xl shadow-lg shadow-black/[0.03]'
-        : isTransparentPage
-          ? 'bg-transparent'
-          : 'bg-white/80 backdrop-blur-xl shadow-lg shadow-black/[0.03]'
-        }`} role="banner">
-        {/* Gradient accent line */}
-        <div className={`absolute bottom-0 left-0 right-0 h-[1px] transition-opacity duration-500 ${isScrolled || !isTransparentPage ? 'opacity-100' : 'opacity-0'}`}>
-          <div className="h-full bg-gradient-to-r from-transparent via-brand-primary-500/30 to-transparent" />
-        </div>
-        <div className="container mx-auto px-6">
-          <div className={`flex items-center justify-between transition-all duration-500 ${isScrolled ? 'h-16 sm:h-18' : 'h-20 sm:h-24'}`}>
-            {/* Logo - Home Link */}
-            <Link href={`/${currentLang}`} className="flex items-center space-x-3 group shrink-0 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-primary-600 focus-visible:ring-offset-2 rounded-xl" aria-label="Anasayfaya git">
-              {siteSettings?.logo?.url && (
-                <div className={`relative rounded-xl overflow-hidden transition-all duration-500 ${isScrolled ? 'w-10 h-10 sm:w-11 sm:h-11' : 'w-12 h-12 sm:w-14 sm:h-14'} p-0.5`}>
-                  <Image
-                    src={siteSettings.logo.url}
-                    alt={siteSettings.logo.alt}
-                    fill
-                    className="object-contain"
-                    sizes="(min-width: 640px) 56px, 48px"
-                    priority
-                  />
-                </div>
-              )}
-              {siteSettings?.logoText && (
-                <span className={`font-bold tracking-tight transition-all duration-500 ${isScrolled ? 'text-sm sm:text-base' : 'text-base sm:text-lg'} ${isScrolled
-                  ? 'text-slate-900'
-                  : isTransparentPage
-                    ? 'text-white drop-shadow-lg'
-                    : 'text-slate-900'
-                  }`}>
-                  {siteSettings.logoText}
-                </span>
-              )}
-            </Link>
 
-            {/* Desktop Navigation */}
-            <DesktopNav
-              navLinks={localizedNavLinks}
-              pathname={pathname || ''}
-              isScrolled={isScrolled}
-              isTransparentPage={isTransparentPage}
-              onOpenProjectModal={openProjectModal}
-            />
+      <header className="fixed top-0 left-0 right-0 z-50" role="banner">
+        {/* Utility Top Bar */}
+        <TopBar
+          currentLang={currentLang}
+          isTransparentPage={isTransparentPage}
+          visible={!isScrolled}
+        />
 
-            {/* Mobile Menu Button */}
-            <button
-              onClick={toggleMobileMenu}
-              aria-label="Mobil menüyü aç"
-              aria-expanded={isMobileMenuOpen}
-              className={`lg:hidden p-2.5 rounded-xl transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-primary-600 focus-visible:ring-offset-2 ${isScrolled
-                ? 'text-slate-700 hover:bg-slate-100'
-                : isTransparentPage
-                  ? 'text-white hover:bg-white/10'
-                  : 'text-slate-700 hover:bg-slate-100'
-                }`}
-            >
-              <Bars3Icon className="w-6 h-6" />
-            </button>
+        {/* Main Navigation */}
+        <div
+          className={`relative transition-all duration-400 ${
+            isScrolled
+              ? 'bg-white/90 backdrop-blur-2xl shadow-[0_1px_3px_rgba(0,0,0,0.05),0_8px_24px_rgba(0,0,0,0.04)]'
+              : isTransparentPage
+                ? 'bg-transparent'
+                : 'bg-white/90 backdrop-blur-2xl shadow-[0_1px_3px_rgba(0,0,0,0.05)]'
+          }`}
+        >
+          {/* Bottom accent */}
+          <div className={`absolute bottom-0 left-0 right-0 h-px transition-opacity duration-400 ${isScrolled || !isTransparentPage ? 'opacity-100' : 'opacity-0'}`}>
+            <div className="h-full bg-gradient-to-r from-transparent via-brand-primary-500/20 to-transparent" />
           </div>
 
+          <div className="container mx-auto px-6">
+            <div className={`flex items-center transition-all duration-400 ${isScrolled ? 'h-[56px]' : 'h-[68px]'}`}>
+              {/* Logo */}
+              <Link
+                href={`/${currentLang}`}
+                className="flex items-center gap-2.5 group shrink-0 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-primary-600 focus-visible:ring-offset-2 rounded-lg"
+                aria-label="Anasayfaya git"
+              >
+                {siteSettings?.logo?.url && (
+                  <div className={`relative rounded-lg overflow-hidden transition-all duration-400 ${isScrolled ? 'w-9 h-9' : 'w-11 h-11'}`}>
+                    <Image
+                      src={siteSettings.logo.url}
+                      alt={siteSettings.logo.alt}
+                      fill
+                      className="object-contain"
+                      sizes="44px"
+                      priority
+                    />
+                  </div>
+                )}
+                {siteSettings?.logoText && (
+                  <span className={`font-bold tracking-tight transition-all duration-400 ${isScrolled ? 'text-sm' : 'text-base'} ${
+                    isTransparent ? 'text-white drop-shadow-[0_1px_2px_rgba(0,0,0,0.3)]' : 'text-slate-900'
+                  }`}>
+                    {siteSettings.logoText}
+                  </span>
+                )}
+              </Link>
+
+              {/* Desktop Nav */}
+              <div className="hidden lg:flex flex-1 items-center justify-center ml-8">
+                <DesktopNav
+                  navLinks={localizedNavLinks}
+                  pathname={pathname || ''}
+                  isScrolled={isScrolled}
+                  isTransparentPage={isTransparentPage}
+                  onOpenProjectModal={openProjectModal}
+                  onOpenSearch={() => setIsSearchOpen(true)}
+                  compact={isScrolled}
+                />
+              </div>
+
+              {/* Mobile Hamburger */}
+              <button
+                onClick={toggleMobileMenu}
+                aria-label="Mobil menüyü aç"
+                aria-expanded={isMobileMenuOpen}
+                className={`lg:hidden ml-auto p-2 rounded-lg transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-primary-600 ${
+                  isTransparent
+                    ? 'text-white hover:bg-white/10'
+                    : 'text-slate-700 hover:bg-slate-100'
+                }`}
+              >
+                <Bars3Icon className="w-6 h-6" />
+              </button>
+            </div>
+          </div>
         </div>
       </header>
 
-      {/* Mobile Drawer Menu */}
       <MobileNav
         isOpen={isMobileMenuOpen}
         navLinks={localizedNavLinks}
         pathname={pathname || ''}
-        onClose={closeMobileMenu}
+        onClose={() => setIsMobileMenuOpen(false)}
         onOpenProjectModal={openProjectModal}
         logoText={siteSettings?.logoText}
         navLoaded={navLoaded}
       />
 
-      {/* Project Request Modal */}
+      <SearchModal
+        isOpen={isSearchOpen}
+        onClose={() => setIsSearchOpen(false)}
+      />
+
       <ProjectModal
         isOpen={isProjectModalOpen}
         onClose={() => setIsProjectModalOpen(false)}

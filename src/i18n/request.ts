@@ -1,18 +1,16 @@
 import { getRequestConfig } from 'next-intl/server';
-
-const locales = ['tr', 'es'] as const;
-type Locale = (typeof locales)[number];
-
-function isValidLocale(lang: string): lang is Locale {
-  return locales.includes(lang as Locale);
-}
+import { locales, defaultLocale, isValidLocale } from '../i18n';
 
 export default getRequestConfig(async ({ requestLocale }) => {
   const requested = await requestLocale;
-  const locale: Locale = isValidLocale(requested || '') ? (requested as Locale) : 'tr';
+  const locale = isValidLocale(requested || '') ? (requested as typeof locales[number]) : defaultLocale;
 
-  return {
-    locale,
-    messages: (await import(`../../messages/${locale}.json`)).default,
-  };
+  let messages;
+  try {
+    messages = (await import(`../../messages/${locale}.json`)).default;
+  } catch {
+    messages = (await import(`../../messages/${defaultLocale}.json`)).default;
+  }
+
+  return { locale, messages };
 });

@@ -7,13 +7,15 @@ import {
   SparklesIcon,
   ExclamationCircleIcon 
 } from '@heroicons/react/24/outline';
+import { useLocale } from '@/hooks/useLocale';
 
 export default function NotFound() {
+  const lang = useLocale();
   const handleGoBack = () => {
     if (typeof window !== 'undefined' && window.history.length > 1) {
       window.history.back();
     } else {
-      window.location.href = '/';
+      window.location.href = `/${lang}`;
     }
   };
 
@@ -78,7 +80,7 @@ export default function NotFound() {
 
           {/* Action Buttons */}
           <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
-            <Link href="/" className="btn-primary flex items-center space-x-2">
+            <Link href={`/${lang}`} className="btn-primary flex items-center space-x-2">
               <HomeIcon className="w-5 h-5" />
               <span>Ana Sayfaya Dön</span>
             </Link>
@@ -102,25 +104,25 @@ export default function NotFound() {
             </div>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
               <Link 
-                href="/services" 
+                href={`/${lang}/services`} 
                 className="text-brand-primary-800 hover:text-brand-primary-900 font-medium p-2 rounded-lg hover:bg-brand-primary-100 transition-colors"
               >
                 Hizmetlerimiz
               </Link>
               <Link 
-                href="/portfolio" 
+                href={`/${lang}/portfolio`} 
                 className="text-brand-primary-800 hover:text-brand-primary-900 font-medium p-2 rounded-lg hover:bg-brand-primary-100 transition-colors"
               >
                 Portfolyo
               </Link>
               <Link 
-                href="/about" 
+                href={`/${lang}/about`} 
                 className="text-brand-primary-800 hover:text-brand-primary-900 font-medium p-2 rounded-lg hover:bg-brand-primary-100 transition-colors"
               >
                 Hakkımızda
               </Link>
               <Link 
-                href="/contact" 
+                href={`/${lang}/contact`} 
                 className="text-brand-primary-800 hover:text-brand-primary-900 font-medium p-2 rounded-lg hover:bg-brand-primary-100 transition-colors"
               >
                 İletişim

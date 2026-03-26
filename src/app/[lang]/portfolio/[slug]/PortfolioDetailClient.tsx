@@ -17,9 +17,10 @@ interface Props {
   portfolioItem: PortfolioItem;
   relatedProjects: PortfolioItem[];
   slug: string;
+  lang?: string;
 }
 
-export default function PortfolioDetailClient({ portfolioItem, relatedProjects, slug }: Props) {
+export default function PortfolioDetailClient({ portfolioItem, relatedProjects, slug, lang = 'tr' }: Props) {
   const allImages = portfolioItem.coverImage
     ? [portfolioItem.coverImage, ...(portfolioItem.images || []).filter(img => img !== portfolioItem.coverImage)]
     : (portfolioItem.images || []);
@@ -38,9 +39,9 @@ export default function PortfolioDetailClient({ portfolioItem, relatedProjects, 
 
       <BreadcrumbsJsonLd
         items={[
-          { name: 'Anasayfa', item: '/' },
-          { name: 'Portfolyo', item: '/portfolio' },
-          { name: portfolioItem.title, item: `/portfolio/${slug}` },
+          { name: 'Anasayfa', item: `/${lang}` },
+          { name: 'Portfolyo', item: `/${lang}/portfolio` },
+          { name: portfolioItem.title, item: `/${lang}/portfolio/${slug}` },
         ]}
       />
       <PortfolioJsonLd
@@ -170,7 +171,7 @@ export default function PortfolioDetailClient({ portfolioItem, relatedProjects, 
                     <p className="text-brand-primary-100 text-sm mb-6 leading-relaxed text-white">
                       Sizin için de benzer bir çözüm üretebiliriz. Detayları konuşmak için iletişime geçin.
                     </p>
-                    <Link href="/contact" className="inline-flex items-center justify-center w-full px-6 py-3 bg-white text-brand-primary-900 text-sm font-bold rounded-xl hover:bg-brand-primary-50 transition-colors duration-200">
+                    <Link href={`/${lang}/contact`} className="inline-flex items-center justify-center w-full px-6 py-3 bg-white text-brand-primary-900 text-sm font-bold rounded-xl hover:bg-brand-primary-50 transition-colors duration-200">
                       Teklif Alın
                     </Link>
                   </div>
@@ -205,7 +206,7 @@ export default function PortfolioDetailClient({ portfolioItem, relatedProjects, 
                 />
               </div>
               <div className="text-center">
-                <Link href="/portfolio" className="btn-outline">Tüm Portfolyoyu Görüntüle</Link>
+                <Link href={`/${lang}/portfolio`} className="btn-outline">Tüm Portfolyoyu Görüntüle</Link>
               </div>
             </div>
           )}

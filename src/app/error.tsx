@@ -8,6 +8,7 @@ import {
   HomeIcon,
   SparklesIcon 
 } from '@heroicons/react/24/outline';
+import { useLocale } from '@/hooks/useLocale';
 
 export default function Error({
   error,
@@ -16,8 +17,8 @@ export default function Error({
   error: Error & { digest?: string };
   reset: () => void;
 }) {
+  const lang = useLocale();
   useEffect(() => {
-    // Always log errors for debugging (will be removed in production build)
     console.error('Application Error:', error);
     
     // In production, you might want to send to error tracking service
@@ -75,7 +76,7 @@ export default function Error({
               <span>Sayfayı Yenile</span>
             </button>
             
-            <Link href="/" className="btn-outline flex items-center space-x-2">
+            <Link href={`/${lang}`} className="btn-outline flex items-center space-x-2">
               <HomeIcon className="w-5 h-5" />
               <span>Ana Sayfaya Dön</span>
             </Link>
@@ -94,7 +95,7 @@ export default function Error({
               memnuniyet duyarız.
             </p>
             <Link 
-              href="/contact" 
+              href={`/${lang}/contact`} 
               className="inline-flex items-center text-blue-600 hover:text-blue-700 font-semibold"
             >
               İletişime Geç

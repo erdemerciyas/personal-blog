@@ -5,6 +5,7 @@ import Image from 'next/image';
 import { ArrowRightIcon } from '@heroicons/react/24/outline';
 import HTMLContent from '../HTMLContent';
 import { resolveIcon } from '../../lib/icons';
+import { useLocale } from '@/hooks/useLocale';
 
 interface ServiceItem {
     _id: string;
@@ -20,11 +21,12 @@ interface ServicesGridProps {
 }
 
 export default function ServicesGrid({ services = [] }: ServicesGridProps) {
+    const lang = useLocale();
     if (!services || services.length === 0) {
         return (
             <div className="col-span-full text-center py-12 mb-16">
                 <p className="text-slate-600 mb-4">Şu an gösterilecek hizmet bulunamadı.</p>
-                <Link href="/contact" className="btn-secondary">Proje talebi bırakın</Link>
+                <Link href={`/${lang}/contact`} className="btn-secondary">Proje talebi bırakın</Link>
             </div>
         );
     }
@@ -92,7 +94,7 @@ export default function ServicesGrid({ services = [] }: ServicesGridProps) {
                                 />
                             </div>
                             <Link
-                                href={`/services#${service.title.toLowerCase().replace(/\s+/g, '-').replace(/&/g, '')}`}
+                                href={`/${lang}/services#${service.title.toLowerCase().replace(/\s+/g, '-').replace(/&/g, '')}`}
                                 className="inline-flex items-center text-brand-primary-800 hover:text-brand-primary-900 font-semibold transition-colors duration-200 mt-auto focus:outline-none focus:ring-2 focus:ring-brand-primary-600/50 rounded-full px-4 py-2 min-h-[44px]"
                             >
                                 Detayları Gör

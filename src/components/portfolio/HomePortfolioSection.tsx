@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
+import { usePathname } from 'next/navigation';
 import { motion } from 'framer-motion';
 import { 
   ArrowRightIcon,
@@ -24,6 +25,8 @@ export default function HomePortfolioSection({
 }: HomePortfolioSectionProps) {
   const [currentSlide, setCurrentSlide] = useState(0);
   const [isAutoPlaying, setIsAutoPlaying] = useState(true);
+  const pathname = usePathname() || '';
+  const currentLang = ['tr', 'es'].includes(pathname.split('/')[1]) ? pathname.split('/')[1] : 'tr';
 
   // Featured projects (first 6 or all if less than 6)
   const featuredProjects = portfolioItems.slice(0, 6);
@@ -243,7 +246,7 @@ export default function HomePortfolioSection({
           viewport={{ once: true }}
           className="text-center mt-16"
         >
-          <Link href="/portfolio" className="btn-secondary group">
+          <Link href={`/${currentLang}/portfolio`} className="btn-secondary group">
             <EyeIcon className="w-5 h-5 mr-2 transition-transform duration-300 group-hover:scale-110" />
             Tüm Projeleri Görüntüle
             <ArrowRightIcon className="w-5 h-5 ml-2 transition-transform duration-300 group-hover:translate-x-1" />

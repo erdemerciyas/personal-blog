@@ -15,12 +15,14 @@ interface HomeTemplateProps {
   sliderItems?: any[];
   portfolioItems?: any[];
   services?: any[];
+  lang?: string;
 }
 
 export default function HomeTemplate({
   sliderItems = [],
   portfolioItems = [],
   services = [],
+  lang = 'tr',
 }: HomeTemplateProps) {
   return (
     <>
@@ -45,7 +47,7 @@ export default function HomeTemplate({
 
             {/* View All Link */}
             <nav className="text-center" aria-label="Hizmetler navigasyonu">
-              <Link href="/services" className="btn-secondary">
+              <Link href={`/${lang}/services`} className="btn-secondary">
                 Tüm Hizmetlerimizi Görüntüle
                 <ArrowRightIcon className="w-5 h-5 ml-2" />
               </Link>
@@ -69,7 +71,7 @@ export default function HomeTemplate({
 
             {/* View All Link */}
             <nav className="text-center mt-8" aria-label="Haberler navigasyonu">
-              <Link href="/tr/haberler" className="btn-secondary">
+              <Link href={`/${lang}/${lang === 'es' ? 'noticias' : 'haberler'}`} className="btn-secondary">
                 Tüm Haberleri Görüntüle
                 <ArrowRightIcon className="w-5 h-5 ml-2" />
               </Link>
@@ -101,11 +103,11 @@ export default function HomeTemplate({
               Uzman ekibimiz ve modern teknolojilerimizle fikirlerinizi hayata geçirmeye hazırız.
             </p>
             <nav className="flex flex-col sm:flex-row gap-6 justify-center animate-fade-in [animation-delay:400ms]" aria-label="Ana eylem navigasyonu">
-              <Link href="/contact" className={cn(buttonVariants({ variant: 'primary', size: 'lg' }), 'transform-gpu hover:scale-105 active:scale-95')}>
+              <Link href={`/${lang}/contact`} className={cn(buttonVariants({ variant: 'primary', size: 'lg' }), 'transform-gpu hover:scale-105 active:scale-95')}>
                 <SparklesIcon className="w-5 h-5 mr-2" />
                 İletişime Geçin
               </Link>
-              <Link href="/portfolio" className={cn(buttonVariants({ variant: 'secondary', size: 'lg' }), 'transform-gpu hover:scale-105 active:scale-95')}>
+              <Link href={`/${lang}/portfolio`} className={cn(buttonVariants({ variant: 'secondary', size: 'lg' }), 'transform-gpu hover:scale-105 active:scale-95')}>
                 Projelerimizi İnceleyin
                 <ArrowRightIcon className="w-5 h-5 ml-2" />
               </Link>

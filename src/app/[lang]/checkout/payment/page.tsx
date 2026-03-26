@@ -5,9 +5,11 @@ import { useRouter } from 'next/navigation';
 import { useCart } from '@/context/CartContext';
 import { LockClosedIcon, CreditCardIcon } from '@heroicons/react/24/solid';
 import toast from 'react-hot-toast';
+import { useLocale } from '@/hooks/useLocale';
 
 export default function CheckoutPaymentPage() {
     const router = useRouter();
+    const lang = useLocale();
     const { cart, cartTotal, loading: cartLoading } = useCart();
     const [address, setAddress] = useState<any>(null);
     const [isProcessing, setIsProcessing] = useState(false);
@@ -16,7 +18,7 @@ export default function CheckoutPaymentPage() {
         // Validation: Redirect if no address
         const savedAddress = localStorage.getItem('checkout_address');
         if (!savedAddress) {
-            router.push('/checkout/address');
+            router.push(`/${lang}/checkout/address`);
             return;
         }
         setAddress(JSON.parse(savedAddress));
@@ -47,7 +49,7 @@ export default function CheckoutPaymentPage() {
                 localStorage.removeItem('guestCartId');
                 localStorage.removeItem('checkout_address');
                 // Redirect
-                router.push(`/checkout/success?orderId=${data.orderId}`);
+                router.push(`/${lang}/checkout/success?orderId=${data.orderId}`);
             } else {
                 toast.error('Ödeme başarısız oldu. Lütfen tekrar deneyiniz.');
             }

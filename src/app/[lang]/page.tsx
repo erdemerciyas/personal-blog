@@ -45,7 +45,8 @@ export async function generateMetadata({ params }: { params: Promise<{ lang: str
   };
 }
 
-export default async function HomePage() {
+export default async function HomePage({ params }: { params: Promise<{ lang: string }> }) {
+  const { lang } = await params;
   await connectDB();
   const activeThemeRecord = await Theme.findOne({ isActive: true }).lean() as any;
   const activeThemeFolder = activeThemeRecord?.slug || 'default';
@@ -64,6 +65,7 @@ export default async function HomePage() {
       sliderItems={sliderItems}
       portfolioItems={portfolioItems}
       services={services}
+      lang={lang}
     />
   );
 }

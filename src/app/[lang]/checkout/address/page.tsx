@@ -4,9 +4,11 @@ import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { useSession } from 'next-auth/react';
 import toast from 'react-hot-toast';
+import { useLocale } from '@/hooks/useLocale';
 
 export default function CheckoutAddressPage() {
     const router = useRouter();
+    const lang = useLocale();
     const { data: session } = useSession();
 
     // Initial state
@@ -107,7 +109,7 @@ export default function CheckoutAddressPage() {
 
             // Save to local storage for checkout flow
             localStorage.setItem('checkout_address', JSON.stringify(formData));
-            router.push('/checkout/payment');
+            router.push(`/${lang}/checkout/payment`);
         } catch (error) {
             console.error('Submit error', error);
             toast.error('Bir hata oluştu.');

@@ -3,9 +3,11 @@
 import { MagnifyingGlassIcon } from '@heroicons/react/24/outline';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { useCallback, useEffect, useState, useTransition } from 'react';
+import { useLocale } from '@/hooks/useLocale';
 
 export default function SearchInput() {
     const router = useRouter();
+    const lang = useLocale();
     const searchParams = useSearchParams()!;
     const [value, setValue] = useState(searchParams.get('q') || '');
     const [isPending, startTransition] = useTransition();
@@ -27,7 +29,7 @@ export default function SearchInput() {
         params.set('page', '1');
 
         startTransition(() => {
-            router.replace(`/products?${params.toString()}`, { scroll: false });
+            router.replace(`/${lang}/products?${params.toString()}`, { scroll: false });
         });
     }, [router, searchParams]);
 

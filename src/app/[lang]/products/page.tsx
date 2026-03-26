@@ -44,24 +44,30 @@ async function getPageSettings(pageId: string) {
   }
 }
 
+const META_BY_LANG: Record<string, { title: string; description: string }> = {
+  tr: { title: 'Ürünler | Fixral', description: 'İkinci el ve sıfır ürünleri keşfedin. Güvenli alışveriş, hızlı teslimat.' },
+  es: { title: 'Productos | Fixral', description: 'Descubre productos nuevos y de segunda mano. Compra segura, entrega rápida.' },
+};
+
 export async function generateMetadata({ params }: { params: Promise<{ lang: string }> }): Promise<Metadata> {
   const { lang } = await params;
-  const canonical = lang === 'es' ? `${SITE_URL}/es/products` : `${SITE_URL}/tr/products`;
+  const meta = META_BY_LANG[lang] || META_BY_LANG.tr;
   return {
-    title: 'Ürünler | Fixral',
-    description: 'İkinci el ve sıfır ürünleri keşfedin. Güvenli alışveriş, hızlı teslimat.',
+    title: meta.title,
+    description: meta.description,
     alternates: generateAlternates('/tr/products', '/es/products'),
     openGraph: {
-      title: 'Ürünler | Fixral',
-      description: 'İkinci el ve sıfır ürünleri keşfedin. Güvenli alışveriş, hızlı teslimat.',
-      url: canonical,
+      title: meta.title,
+      description: meta.description,
+      url: `${SITE_URL}/${lang}/products`,
       type: 'website',
-      images: generateOgImages(undefined, 'Ürünler | Fixral'),
+      images: generateOgImages(undefined, meta.title),
     },
   };
 }
 
-export default async function ProductsPage({ searchParams }: { searchParams: Record<string, string> }) {
+export default async function ProductsPage({ params: paramsPromise, searchParams }: { params: Promise<{ lang: string }>; searchParams: Record<string, string> }) {
+  const { lang } = await paramsPromise;
   const page = Number(searchParams?.page || '1');
   const condition = searchParams?.condition || '';
   const category = searchParams?.category || '';
@@ -129,7 +135,7 @@ export default async function ProductsPage({ searchParams }: { searchParams: Rec
     return (
       <TiltHover key={p._id} className="[transform-style:preserve-3d]">
         <FixralCard className={`overflow-hidden ${isRecommended ? 'border-amber-200 ring-1 ring-amber-100' : ''}`} variant="default">
-          <Link href={`/products/${p.slug}`} className="block group">
+          <Link href={`/${lang}/products/${p.slug}`} className="block group">
             <div className="relative h-48 w-full bg-gray-100 overflow-hidden rounded-t-lg">
               <NextImage src={p.coverImage} alt={p.title} fill className="object-cover transition-transform group-hover:scale-[1.02]" sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw" />
               {p.stock <= 0 && (
@@ -218,8 +224,8 @@ export default async function ProductsPage({ searchParams }: { searchParams: Rec
                   const listParams = new URLSearchParams(baseParams); listParams.set('view', 'list');
                   return (
                     <>
-                      <Link href={`/products?${gridParams.toString()}`} className={`px-3 py-1 rounded border ${view === 'grid' ? 'bg-emerald-600 text-white border-emerald-600' : 'bg-white text-slate-700'}`}>Grid</Link>
-                      <Link href={`/products?${listParams.toString()}`} className={`px-3 py-1 rounded border ${view === 'list' ? 'bg-emerald-600 text-white border-emerald-600' : 'bg-white text-slate-700'}`}>Liste</Link>
+                      <Link href={`/${lang}/products?${gridParams.toString()}`} className={`px-3 py-1 rounded border ${view === 'grid' ? 'bg-emerald-600 text-white border-emerald-600' : 'bg-white text-slate-700'}`}>Grid</Link>
+                      <Link href={`/${lang}/products?${listParams.toString()}`} className={`px-3 py-1 rounded border ${view === 'list' ? 'bg-emerald-600 text-white border-emerald-600' : 'bg-white text-slate-700'}`}>Liste</Link>
                     </>
                   );
                 })()}
@@ -240,7 +246,7 @@ export default async function ProductsPage({ searchParams }: { searchParams: Rec
                           )}
                         </div>
                         <div>
-                          <Link href={`/products/${p.slug}`} className="block group">
+                          <Link href={`/${lang}/products/${p.slug}`} className="block group">
                             <div className="font-semibold text-slate-900 group-hover:text-emerald-700 transition line-clamp-2">{p.title}</div>
                           </Link>
                           <div className="mt-2 flex flex-wrap items-center gap-3 text-xs text-slate-600">
@@ -256,7 +262,7 @@ export default async function ProductsPage({ searchParams }: { searchParams: Rec
                           {typeof p.price === 'number' && (
                             <div className="text-lg font-semibold text-emerald-700">{p.price} {p.currency}</div>
                           )}
-                          <Link href={`/products/${p.slug}?${sp.toString()}`} className="inline-flex items-center justify-center h-9 px-4 rounded-md border mt-2 text-sm text-slate-700 hover:border-emerald-600 hover:text-emerald-700">Detaya Git</Link>
+                          <Link href={`/${lang}/products/${p.slug}?${sp.toString()}`} className="inline-flex items-center justify-center h-9 px-4 rounded-md border mt-2 text-sm text-slate-700 hover:border-emerald-600 hover:text-emerald-700">Detaya Git</Link>
                         </div>
                       </div>
                     </FixralCard>
@@ -270,7 +276,7 @@ export default async function ProductsPage({ searchParams }: { searchParams: Rec
                   <h3 className="text-lg font-bold text-slate-900 mb-2">Aradığınız kriterlere uygun ürün bulunamadı.</h3>
                   <p className="text-slate-500 max-w-md mx-auto mb-8">Farklı anahtar kelimeler deneyebilir veya filtreleri temizleyebilirsiniz.</p>
 
-                  <Link href="/products" className="inline-flex items-center px-4 py-2 bg-emerald-600 text-white rounded-lg hover:bg-emerald-700 transition mb-12">
+                  <Link href={`/${lang}/products`} className="inline-flex items-center px-4 py-2 bg-emerald-600 text-white rounded-lg hover:bg-emerald-700 transition mb-12">
                     Filtreleri Temizle
                   </Link>
 

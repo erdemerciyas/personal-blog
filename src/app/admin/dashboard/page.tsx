@@ -11,7 +11,6 @@ import {
   CubeIcon,
   UserGroupIcon,
   ChatBubbleLeftRightIcon,
-  ArrowTrendingUpIcon,
   ClockIcon,
   CheckCircleIcon,
   PlusIcon,
@@ -23,7 +22,6 @@ import { Card, CardHeader, CardTitle, CardBody, Badge, Button } from '@/componen
 interface StatCard {
   title: string;
   value: number;
-  change: string;
   icon: any;
   color: string;
   href: string;
@@ -121,12 +119,12 @@ export default function AdminDashboard() {
   const activities = allActivities.sort((a, b) => (b.sortKey ?? 0) - (a.sortKey ?? 0)).slice(0, 8);
 
   const stats: StatCard[] = [
-    { title: 'Toplam Haber', value: dashboardStats.newsCount, change: '+12%', icon: DocumentTextIcon, color: 'from-indigo-500 to-violet-600', href: '/admin/news' },
-    { title: 'Portfolyo', value: dashboardStats.portfolioCount, change: '+8%', icon: PhotoIcon, color: 'from-emerald-500 to-teal-600', href: '/admin/portfolio' },
-    { title: 'Hizmetler', value: dashboardStats.servicesCount, change: '+5%', icon: CubeIcon, color: 'from-amber-500 to-orange-600', href: '/admin/services' },
-    { title: 'Ürünler', value: dashboardStats.productsCount, change: '+15%', icon: CubeIcon, color: 'from-rose-500 to-pink-600', href: '/admin/products' },
-    { title: 'Kullanıcılar', value: dashboardStats.usersCount, change: '+20%', icon: UserGroupIcon, color: 'from-cyan-500 to-blue-600', href: '/admin/users' },
-    { title: 'Medya', value: dashboardStats.videosCount, change: '+10%', icon: PhotoIcon, color: 'from-purple-500 to-indigo-600', href: '/admin/media' },
+    { title: 'Toplam Haber', value: dashboardStats.newsCount, icon: DocumentTextIcon, color: 'from-indigo-500 to-violet-600', href: '/admin/news' },
+    { title: 'Portfolyo', value: dashboardStats.portfolioCount, icon: PhotoIcon, color: 'from-emerald-500 to-teal-600', href: '/admin/portfolio' },
+    { title: 'Hizmetler', value: dashboardStats.servicesCount, icon: CubeIcon, color: 'from-amber-500 to-orange-600', href: '/admin/services' },
+    { title: 'Ürünler', value: dashboardStats.productsCount, icon: CubeIcon, color: 'from-rose-500 to-pink-600', href: '/admin/products' },
+    { title: 'Kullanıcılar', value: dashboardStats.usersCount, icon: UserGroupIcon, color: 'from-cyan-500 to-blue-600', href: '/admin/users' },
+    { title: 'Medya', value: dashboardStats.videosCount, icon: PhotoIcon, color: 'from-purple-500 to-indigo-600', href: '/admin/media' },
   ];
 
   const quickActions = [
@@ -164,7 +162,7 @@ export default function AdminDashboard() {
         <div className="flex items-start justify-between">
           <div>
             <h1 className="text-3xl font-bold mb-2 text-white">
-              Hos geldin, {session?.user?.name || 'Yönetici'}!
+              Hoş geldin, {session?.user?.name || 'Yönetici'}!
             </h1>
             <p className="text-brand-100 text-lg">
               Bugün sitenizde olan bitenler.
@@ -178,7 +176,7 @@ export default function AdminDashboard() {
               onClick={() => router.push('/admin/news/create')}
             >
               <PlusIcon className="w-5 h-5" />
-              Yeni Icerik Olustur
+              Yeni İçerik Oluştur
             </Button>
           </div>
         </div>
@@ -195,10 +193,6 @@ export default function AdminDashboard() {
                     <div className="flex-1">
                       <p className="text-sm font-medium text-gray-500 mb-1">{stat.title}</p>
                       <h3 className="text-3xl font-bold text-gray-900 mb-2">{stat.value}</h3>
-                      <Badge variant="success">
-                        <ArrowTrendingUpIcon className="w-3.5 h-3.5 mr-1" />
-                        {stat.change}
-                      </Badge>
                     </div>
                     <div className={`w-14 h-14 rounded-xl bg-gradient-to-br ${stat.color} flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform duration-base`}>
                       <stat.icon className="w-7 h-7 text-white" />
@@ -214,7 +208,7 @@ export default function AdminDashboard() {
       {/* Quick Actions */}
       <Card>
         <CardHeader>
-          <CardTitle>Hizli Islemler</CardTitle>
+          <CardTitle>Hızlı İşlemler</CardTitle>
         </CardHeader>
         <CardBody>
           <ul className="grid grid-cols-2 md:grid-cols-4 gap-4">
@@ -242,9 +236,9 @@ export default function AdminDashboard() {
         {/* Recent Content */}
         <Card>
           <CardHeader>
-            <CardTitle>Son Icerikler</CardTitle>
+            <CardTitle>Son İçerikler</CardTitle>
             <Link href="/admin/news" className="text-sm font-medium text-brand-600 hover:text-brand-700">
-              Tumunu Gor →
+              Tümünü Gör →
             </Link>
           </CardHeader>
           <CardBody>
@@ -283,7 +277,17 @@ export default function AdminDashboard() {
                       <span>{item.views}</span>
                     </div>
                     <Link
-                      href={`/admin/${item.type}/${item.id}/edit`}
+                      href={
+                        item.type === 'news'
+                          ? `/admin/news/${item.id}/edit`
+                          : item.type === 'product'
+                            ? `/admin/products/edit/${item.id}`
+                            : item.type === 'portfolio'
+                              ? `/admin/portfolio/edit/${item.id}`
+                              : item.type === 'service'
+                                ? `/admin/services/edit/${item.id}`
+                                : `/admin/${item.type}/${item.id}/edit`
+                      }
                       className="p-2 hover:bg-brand-50 hover:text-brand-600 rounded-lg transition-colors"
                     >
                       <PencilIcon className="w-4 h-4" />
@@ -392,7 +396,7 @@ export default function AdminDashboard() {
             className="bg-white text-brand-600 hover:bg-brand-50 border-0"
             onClick={() => router.push('/admin/messages')}
           >
-            Mesajlari Goruntule
+            Mesajları Görüntüle
           </Button>
         </div>
       </Card>

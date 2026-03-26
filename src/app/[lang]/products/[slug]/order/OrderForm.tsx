@@ -4,6 +4,7 @@ import { useState } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
 import { CheckCircleIcon, ArrowLeftIcon, ShieldCheckIcon, TruckIcon, MinusIcon, PlusIcon } from '@heroicons/react/24/outline';
+import { useLocale } from '@/hooks/useLocale';
 
 interface OrderFormProps {
     product: {
@@ -19,6 +20,7 @@ interface OrderFormProps {
 }
 
 export default function OrderForm({ product }: OrderFormProps) {
+    const lang = useLocale();
     const [loading, setLoading] = useState(false);
     const [success, setSuccess] = useState(false);
     const [quantity, setQuantity] = useState(1);
@@ -100,7 +102,7 @@ export default function OrderForm({ product }: OrderFormProps) {
                     <p>Siparişiniz başarıyla oluşturulmuştur. Detaylar <strong>{formData.customerEmail}</strong> adresine gönderilmiştir.</p>
                 </div>
                 <Link
-                    href="/products"
+                    href={`/${lang}/products`}
                     className="group relative inline-flex items-center justify-center px-8 py-4 rounded-xl bg-brand-primary-900 text-white font-bold text-lg shadow-lg shadow-brand-primary-900/25 hover:bg-brand-primary-800 hover:shadow-xl hover:shadow-brand-primary-900/30 transition-all duration-300 hover:-translate-y-1 active:translate-y-0"
                 >
                     Alışverişe Devam Et
@@ -112,7 +114,7 @@ export default function OrderForm({ product }: OrderFormProps) {
     return (
         <div className="max-w-6xl mx-auto pt-8">
             <div className="mb-8">
-                <Link href={`/products/${product.slug}`} className="inline-flex items-center text-slate-500 hover:text-brand-primary-600 transition-colors font-medium group">
+                <Link href={`/${lang}/products/${product.slug}`} className="inline-flex items-center text-slate-500 hover:text-brand-primary-600 transition-colors font-medium group">
                     <ArrowLeftIcon className="w-5 h-5 mr-2 group-hover:-translate-x-1 transition-transform" />
                     Ürüne Dön
                 </Link>

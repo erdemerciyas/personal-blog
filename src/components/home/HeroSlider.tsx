@@ -11,6 +11,7 @@ import {
     PlayIcon,
     PauseIcon
 } from '@heroicons/react/24/outline';
+import { useLocale } from '@/hooks/useLocale';
 
 interface SliderItem {
     _id: string;
@@ -41,6 +42,7 @@ const defaultSlider: SliderItem[] = [
 ];
 
 export default function HeroSlider({ items = [] }: HeroSliderProps) {
+    const lang = useLocale();
     const sliderItems = items.length > 0 ? items : defaultSlider;
 
     const [currentSlideIndex, setCurrentSlideIndex] = useState(0);
@@ -201,12 +203,12 @@ export default function HeroSlider({ items = [] }: HeroSliderProps) {
 
                     {/* CTAs */}
                     <nav className="flex flex-col sm:flex-row gap-4 sm:gap-6 justify-center items-center animate-fade-in" style={{ animationDelay: '1s' }} aria-label="Hero eylem navigasyonu">
-                        <Link href={currentSlide.buttonLink || '/portfolio'} className="btn-primary w-full sm:w-auto">
+                        <Link href={currentSlide.buttonLink || `/${lang}/portfolio`} className="btn-primary w-full sm:w-auto">
                             <RocketLaunchIcon className="w-5 h-5 mr-2" />
                             {currentSlide.buttonText}
                             <ArrowRightIcon className="w-5 h-5 ml-2" />
                         </Link>
-                        <Link href="/contact" className="btn-secondary w-full sm:w-auto">
+                        <Link href={`/${lang}/contact`} className="btn-secondary w-full sm:w-auto">
                             İletişime Geçin
                         </Link>
                     </nav>

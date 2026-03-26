@@ -3,11 +3,13 @@
 import { useState } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import Link from 'next/link';
+import { useLocale } from '@/hooks/useLocale';
 
 export default function RegisterPage() {
     const router = useRouter();
     const searchParams = useSearchParams()!;
-    const redirectUrl = searchParams.get('redirect') || '/';
+    const lang = useLocale();
+    const redirectUrl = searchParams.get('redirect') || `/${lang}`;
 
     const [formData, setFormData] = useState({
         name: '',

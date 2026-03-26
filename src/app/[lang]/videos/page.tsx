@@ -64,8 +64,8 @@ export default function VideosPage() {
         const data = await response.json();
         setVideos(data.videos);
         setHasMore(data.hasMore);
+        setNextPageToken(data.nextPageToken || null);
         
-        // Extract unique tags from videos
         const uniqueTags = [...new Set(data.videos.flatMap((video: any) => video.tags || []))];
         setAvailableTags(uniqueTags as string[]);
         

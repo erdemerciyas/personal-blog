@@ -2,10 +2,12 @@
 
 import Link from 'next/link';
 import { useEffect, useState } from 'react';
+import { useLocale } from '@/hooks/useLocale';
 
 type Product = { _id: string; slug: string; title: string; coverImage: string; price?: number; currency?: string };
 
 export default function FavoritesPage() {
+  const lang = useLocale();
   const [items, setItems] = useState<Product[]>([]);
 
   useEffect(() => {
@@ -31,7 +33,7 @@ export default function FavoritesPage() {
             {/* eslint-disable-next-line @next/next/no-img-element */}
             <img src={p.coverImage} alt={p.title} className="w-full h-44 object-cover" />
             <div className="p-3">
-              <Link href={`/products/${p.slug}`} className="font-medium hover:underline">{p.title}</Link>
+              <Link href={`/${lang}/products/${p.slug}`} className="font-medium hover:underline">{p.title}</Link>
               {typeof p.price === 'number' && (
                 <div className="text-emerald-700 font-semibold mt-1">{p.price} {p.currency}</div>
               )}

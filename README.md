@@ -1,10 +1,10 @@
 # FIXRAL 3D - Advanced CMS & E-Commerce Platform
 
 [![Next.js](https://img.shields.io/badge/Next.js-14.2-black?style=for-the-badge&logo=next.js)](https://nextjs.org/)
-[![TypeScript](https://img.shields.io/badge/TypeScript-5.0-blue?style=for-the-badge&logo=typescript)](https://www.typescriptlang.org/)
+[![TypeScript](https://img.shields.io/badge/TypeScript-5.6-blue?style=for-the-badge&logo=typescript)](https://www.typescriptlang.org/)
 [![MongoDB](https://img.shields.io/badge/MongoDB-6.0-green?style=for-the-badge&logo=mongodb)](https://www.mongodb.com/)
 [![Tailwind CSS](https://img.shields.io/badge/Tailwind-3.4-38B2AC?style=for-the-badge&logo=tailwind-css)](https://tailwindcss.com/)
-[![Version](https://img.shields.io/badge/Version-4.2.0-blue?style=for-the-badge)]()
+[![Version](https://img.shields.io/badge/Version-4.3.0-blue?style=for-the-badge)]()
 [![Status](https://img.shields.io/badge/Status-Production-success?style=for-the-badge)]()
 
 **Fixral 3D** is a production-grade, full-stack Content Management System (CMS) and E-Commerce platform built with Next.js 14 (App Router).
@@ -85,7 +85,7 @@ Next.js 14 App Router
 
 ## Design System
 
-### Token-Based Architecture (v4.0.0)
+### Token-Based Architecture
 
 The project uses a layered design token system:
 
@@ -112,37 +112,26 @@ All CVA-based components live under `src/components/ui/`:
 | `DataTable` | - | Generic typed columns, sorting, empty state |
 | `FormSection` | - | Semantic `<fieldset>` + `<legend>` |
 
-### Semantic HTML Standards
-
-The project enforces semantic HTML via ESLint `jsx-a11y` rules and an [ELEMENT_GUIDE.md](ELEMENT_GUIDE.md):
-
-- All layouts use proper landmarks (`<main>`, `<header>`, `<nav>`, `<aside>`, `<footer>`)
-- Card grids use `<ul>/<li>` patterns
-- Navigation elements carry `aria-label` attributes
-- Skip-to-content links on all layouts
-- Heading hierarchy enforced (`h1` > `h2` > `h3`, no skipping)
-- Z-index uses semantic tokens (`z-dropdown`, `z-modal`, `z-tooltip`)
-
 ---
 
 ## Tech Stack
 
 | Category | Technology |
 |----------|-----------|
-| **Framework** | Next.js 14 (React 18 + App Router) |
-| **Language** | TypeScript 5 |
+| **Framework** | Next.js 14.2 (React 18 + App Router) |
+| **Language** | TypeScript 5.6 |
 | **Styling** | Tailwind CSS 3.4, CVA, tailwind-merge |
 | **Animation** | Framer Motion |
 | **Icons** | Heroicons |
 | **Database** | MongoDB (Mongoose ODM) |
 | **3D Graphics** | Three.js, React Three Fiber |
 | **Authentication** | NextAuth.js |
-| **Validation** | React Hook Form, Zod |
 | **Media** | Cloudinary |
 | **i18n** | next-intl |
 | **Email** | Nodemailer |
-| **Testing** | Jest |
+| **Testing** | Jest, Testing Library |
 | **Linting** | ESLint, jsx-a11y, Prettier |
+| **CI/CD** | GitHub Actions, Vercel |
 
 ---
 
@@ -176,19 +165,7 @@ src/
 │   └── layout.tsx           # Root layout with skip-to-content
 ├── components/
 │   ├── ui/                  # Design system components (CVA)
-│   │   ├── Button/          # Button with variants
-│   │   ├── Input/           # Input with states
-│   │   ├── Card/            # Polymorphic card
-│   │   ├── Badge/           # Status badges
-│   │   ├── Alert/           # Alert messages
-│   │   ├── Skeleton/        # Loading skeletons
-│   │   ├── PageHeader/      # Semantic page header
-│   │   ├── DataTable/       # Generic data table
-│   │   └── FormSection/     # Fieldset-based form section
-│   ├── layouts/             # Layout system
-│   │   ├── AdminLayout/     # Admin sidebar, topbar, breadcrumb
-│   │   ├── PublicLayout/    # Public navbar, footer, container
-│   │   └── templates/       # Page templates (Admin/Public List/Form/Detail)
+│   ├── layouts/             # Layout system (Admin/Public)
 │   ├── home/                # Homepage components
 │   ├── portfolio/           # Portfolio components
 │   └── admin/               # Admin-specific components
@@ -201,7 +178,8 @@ src/
 ├── types/                   # TypeScript type definitions
 ├── styles/                  # Design tokens (tokens.ts)
 ├── i18n/                    # Internationalization config
-└── middleware.ts            # Auth, i18n, rate limiting middleware
+├── plugins/                 # Plugin system (PluginManager)
+└── core/                    # Core utilities
 ```
 
 ---
@@ -209,8 +187,8 @@ src/
 ## Getting Started
 
 ### Prerequisites
-- **Node.js** v18.17.0 or higher
-- **npm** or **yarn**
+- **Node.js** v20 or higher (recommended)
+- **npm** v9+
 - **MongoDB** connection URI (local or Atlas)
 - **Cloudinary** account (for image uploads)
 
@@ -225,6 +203,7 @@ cd personal-blog
 npm install
 
 # 3. Create .env.local (see Environment Variables section)
+cp .env.example .env.local
 
 # 4. Start development server
 npm run dev
@@ -272,6 +251,7 @@ SMTP_PASS=app_password
 | `npm run test:coverage` | Run tests with coverage report |
 | `npm run type-check` | TypeScript type checking |
 | `npm run clean` | Remove .next and out directories |
+| `npm run format` | Format code with Prettier |
 | `npm run deploy` | Deploy to Vercel (production) |
 | `npm run deploy:preview` | Deploy preview to Vercel |
 
@@ -286,6 +266,21 @@ npm run deploy
 ```
 
 Ensure all environment variables are configured in the Vercel dashboard. If using MongoDB Atlas, configure Network Access appropriately.
+
+### CI/CD Pipeline
+
+The project includes a GitHub Actions CI/CD pipeline (`.github/workflows/ci.yml`):
+
+1. **Code Quality** - ESLint, TypeScript type-checking, security audit
+2. **Build** - Production build with environment fallbacks
+3. **Deploy** - Automatic deployment to Vercel on `main` branch push
+
+Required GitHub Secrets for deployment:
+- `VERCEL_TOKEN` - Vercel authentication token
+- `VERCEL_ORG_ID` - Vercel organization ID
+- `VERCEL_PROJECT_ID` - Vercel project ID
+- `NEXTAUTH_SECRET` - NextAuth secret key
+- `MONGODB_URI` - MongoDB connection string
 
 ### Manual Build
 
@@ -310,95 +305,44 @@ npm start             # Start production server
 
 ## Changelog
 
+### v4.3.0 - Project Cleanup & CI/CD Optimization
+- Removed stray build artifacts and nested `.next` directories
+- Removed temporary migration scripts (`fix2.js`, `fix3.js`, `move-*.js`, `fix-api-imports.js`)
+- Removed dead code (`route-enhanced.ts`) and redundant admin `tsconfig.json`
+- Cleaned up `.kiro/` tooling directory and `SKILL.md`
+- Updated `.gitignore` with comprehensive patterns
+- Simplified CI/CD pipeline: removed redundant build steps (bundle analysis in quality job, duplicate performance build)
+- Added `VERCEL_ORG_ID` and `VERCEL_PROJECT_ID` support in deploy job
+- Aligned version numbers across `package.json` and `README.md`
+- Updated Node.js prerequisite to v20
+
 ### v4.2.0 - Dynamic Site Settings & SEO
-
-#### Site Settings → Frontend Sync
-- **Fixed model mismatch:** Admin panel saves to `SiteSettings` model; public API (`/api/public/settings`) now reads from the same model instead of the legacy `Settings` model
-- **Dynamic metadata:** `<title>` and `<meta description>` are now pulled from database (`siteName` → title, `slogan` → description) instead of hardcoded values
-- **Removed hardcoded strings:** Cleaned up "FIXRAL Blog", "Fixral — Dijital Çözümler ve Hizmetler", and `config.app.name` references in layout, JSON-LD, and page metadata
-
-#### Logo Text Feature
-- **New `logoText` field:** Added to `SiteSettings` model — a short brand name displayed next to the logo in navigation
-- **Admin UI:** "Logo Kelimesi" input added under Logo & Görseller section with descriptive helper texts for Site Adı (title) and Slogan (meta description)
-- **Responsive display:** `logoText` visible on both mobile and desktop header, and as mobile nav drawer title
-
-#### Layout & SEO Fixes
-- **Force-dynamic rendering:** Re-enabled `export const dynamic = 'force-dynamic'` on root layout so metadata always reflects latest DB values
-- **Invalid URL fix:** Added fallback for `config.app.url` when `NEXTAUTH_URL` env var is not set (prevents crash in catch block)
-- **Dynamic JSON-LD:** Organization and WebSite structured data now use `siteName` and `siteUrl` from database
+- Fixed `SiteSettings` model mismatch between admin and public API
+- Dynamic `<title>` and `<meta description>` from database
+- New `logoText` field in `SiteSettings` for brand name in navigation
+- Force-dynamic rendering on root layout for latest DB values
+- Dynamic JSON-LD structured data from database
 
 ### v4.1.0 - Modern Navigation & Icon Management
-
-#### Navigation Redesign
-- **Desktop Nav:** Clean text+icon links with framer-motion `layoutId` sliding active indicator
-- **Mobile Nav:** Slide-in drawer from right (replaced dropdown) with headlessui Dialog for focus trap, scroll lock, and ESC-to-close
-- **Staggered animations:** Mobile nav links animate in sequence with framer-motion
-- **Refined actions cluster:** Account & cart buttons separated by border divider, cart badge with spring scale animation
-- **CTA button:** Polished hover lift and active scale effects
-- **Transparent/solid header:** Smooth scroll transition preserved with cleaner styling
-
-#### Admin Icon Management
-- **Icon picker in page editor:** Visual grid of 15 Heroicons in the "Sayfa Düzenle" modal
-- **Icon display in page list:** Selected icon shown in page list items (replaces generic document icon)
-- **Icon removal:** "Yok" option to clear icon from a page
-- **`availableIcons` export:** Centralized icon list in `src/lib/icons.ts` for reuse
-
-#### Code Cleanup
-- Removed unused `DynamicHeader`, `DynamicDesktopNav`, `DynamicMobileNav` components (-623 lines)
-- New `MobileNavLink` component for encapsulated stagger animation logic
-- Simplified Header.tsx: removed inline mobile cart button (moved to drawer)
+- Desktop nav redesign with framer-motion sliding active indicator
+- Mobile nav slide-in drawer with headlessui Dialog
+- Admin icon picker for page editor with visual Heroicons grid
+- Removed unused `DynamicHeader`, `DynamicDesktopNav`, `DynamicMobileNav` components
 
 ### v4.0.0 - UI/UX Architecture Refactor
-
-#### Design System Foundation
-- Token-based design system with CSS variables, Tailwind config, and TypeScript tokens
+- Token-based design system (CSS variables, Tailwind config, TypeScript tokens)
 - CVA-powered atomic components: Button, Input, Card, Badge, Alert, Skeleton
-- `cn()` utility (clsx + tailwind-merge) for class composition
-- Dark mode support via CSS variable overrides
-
-#### Semantic HTML & Accessibility
-- Full DOM audit and semantic HTML migration across all pages
-- `ELEMENT_GUIDE.md` documenting landmark, heading, and ARIA conventions
-- All card grids converted to `<ul>/<li>` patterns (admin, public, themes)
-- Skip-to-content links on all layouts
-- `aria-label` on all `<nav>` elements; `aria-expanded` on toggle buttons
-- Pagination elements wrapped in `<nav aria-label="...">`
-- ESLint `jsx-a11y/recommended` enforcement with heading, role, and anchor rules
-
-#### Layout & Template System
-- `AdminLayout` (sidebar, topbar, breadcrumb) with semantic landmarks
-- `PublicLayout` with container size variants
-- 4 reusable page templates: AdminList, AdminForm, PublicList, PublicDetail
-- `PageHeader` using `<header>` + `<hgroup>`, `FormSection` using `<fieldset>` + `<legend>`
-- Polymorphic `Card` component with `as` prop (div/article/section/li)
-
-#### UI Patterns
-- `DataTable` component with generic typed columns, sorting, and loading states
-- Social media color tokens (twitter, facebook, linkedin)
-- Semantic z-index tokens (dropdown, sticky, fixed, modal, popover, tooltip)
-- PR template with UI/Semantic HTML checklist
-
-#### Code Cleanup
-- Removed 16 orphan files (unused hooks, libs, layouts, backup files, UI stubs)
-- Removed hardcoded hex colors in favor of Tailwind tokens
-- Removed redundant `role="list"` attributes across 9 files
-- Cleaned up barrel exports in `ui/index.ts`
-- All inline styles verified as legitimate dynamic usage (65 instances)
-
-#### Theme Integration
-- Default and Fixral theme templates updated with semantic HTML
-- Blog templates: `<div>` grids migrated to `<ul>/<li>`
-- Single templates: tag lists migrated to `<ul>/<li>`
-- Portfolio templates already use `ModernProjectGrid` with `motion.ul`
+- Full semantic HTML migration with `ELEMENT_GUIDE.md`
+- `AdminLayout` / `PublicLayout` with reusable page templates
+- `DataTable` component with generic typed columns
+- Removed 16 orphan files and hardcoded hex colors
+- ESLint `jsx-a11y/recommended` enforcement
 
 ### v3.7.0 - Modular Architecture
-
 - Full i18n integration with `[lang]` dynamic segments
 - API endpoints separated into `public/` and `admin/`
 - Plugin and Theme Registry systems
 - SSR migration for portfolio pages
-- Glassmorphism navigation design
-- Performance fixes (removed 30s header polling, fixed navigation loops)
 
 ---
 

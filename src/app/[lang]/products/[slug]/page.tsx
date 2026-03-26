@@ -54,7 +54,8 @@ async function getPageSettings(pageId: string) {
   }
 }
 
-export default async function ProductDetail({ params }: { params: { slug: string } }) {
+export default async function ProductDetail({ params }: { params: { slug: string; lang: string } }) {
+  const { lang } = params;
   const product = await getProduct(params.slug);
   if (!product) return notFound();
   const pageSettings = await getPageSettings('product-detail');
@@ -77,8 +78,8 @@ export default async function ProductDetail({ params }: { params: { slug: string
   } catch (e) { console.error(e); }
 
   let breadcrumbItems = [
-    { label: 'Anasayfa', href: '/' },
-    { label: 'Ürünler', href: '/products' }
+    { label: 'Anasayfa', href: `/${lang}` },
+    { label: 'Ürünler', href: `/${lang}/products` }
   ];
 
   if (product.categoryIds && product.categoryIds.length > 0) {
@@ -94,10 +95,10 @@ export default async function ProductDetail({ params }: { params: { slug: string
     // Fallback if not found in allCats (maybe inactive?) but present in product
     if (!curr && typeof product.categoryIds[0] === 'object') {
       const c = product.categoryIds[0];
-      path.push({ label: c.name, href: `/products?categorySlug=${c.slug}` });
+      path.push({ label: c.name, href: `/${lang}/products?categorySlug=${c.slug}` });
     } else {
       while (curr) {
-        path.unshift({ label: curr.name, href: `/products?category=${curr._id}` });
+        path.unshift({ label: curr.name, href: `/${lang}/products?category=${curr._id}` });
         if (!curr.parent) break;
         curr = allCats.find(c => String(c._id) === String(curr.parent));
       }
@@ -105,7 +106,7 @@ export default async function ProductDetail({ params }: { params: { slug: string
     breadcrumbItems = [...breadcrumbItems, ...path];
   }
 
-  breadcrumbItems.push({ label: product.title, href: `/products/${product.slug}` });
+  breadcrumbItems.push({ label: product.title, href: `/${lang}/products/${product.slug}` });
 
   return (
     <ProductClientWrapper product={{ _id: product._id as string, name: product.title, slug: product.slug as string }}>
@@ -298,7 +299,7 @@ export default async function ProductDetail({ params }: { params: { slug: string
                       <div className="text-xs font-bold text-slate-400 uppercase tracking-wider mb-2">Kategoriler</div>
                       <div className="flex flex-wrap gap-2">
                         {product.categoryIds.map((c: { _id?: string; slug: string; name: string }) => (
-                          <a key={c._id || c.slug} href={`/products?categorySlug=${c.slug}`} className="px-3 py-1 text-xs font-medium rounded-lg bg-slate-50 text-slate-700 hover:bg-brand-primary-50 hover:text-brand-primary-700 border border-slate-100">
+                          <a key={c._id || c.slug} href={`/${lang}/products?categorySlug=${c.slug}`} className="px-3 py-1 text-xs font-medium rounded-lg bg-slate-50 text-slate-700 hover:bg-brand-primary-50 hover:text-brand-primary-700 border border-slate-100">
                             {c.name}
                           </a>
                         ))}
@@ -374,7 +375,7 @@ export default async function ProductDetail({ params }: { params: { slug: string
                 {related.map((p) => (
                   <TiltHover key={p._id} className="[transform-style:preserve-3d]">
                     <FixralCard className="overflow-hidden group h-full" variant="default">
-                      <Link href={`/products/${p.slug}`} className="block h-full">
+                      <Link href={`/${lang}/products/${p.slug}`} className="block h-full">
                         <div className="relative aspect-[4/3] overflow-hidden">
                           {/* eslint-disable-next-line @next/next/no-img-element */}
                           <img src={p.coverImage} alt={p.title} loading="lazy" className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110" />

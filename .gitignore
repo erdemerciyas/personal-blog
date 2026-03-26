@@ -1,15 +1,23 @@
 # See https://help.github.com/articles/ignoring-files/ for more about ignoring files.
 
-# Claude Code
+# AI tooling
 .claude/
+.kiro/
 
 # dependencies
 /node_modules
+node_modules/
 /.pnp
 .pnp.js
+jspm_packages/
 
 # testing
 /coverage
+.nyc_output
+*.lcov
+/test-results/
+/playwright-report/
+/playwright/.cache/
 
 # next.js
 /.next/
@@ -17,20 +25,25 @@
 
 # production
 /build
+/dist
 
 # misc
 .DS_Store
+Thumbs.db
 *.pem
 
-# debug
+# debug & logs
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
+*.log
+logs
 
 # local env files
-.env*.local
-.env.local
 .env
+.env.local
+.env*.local
+.env.production
 conf.env
 
 # vercel
@@ -40,9 +53,6 @@ conf.env
 *.tsbuildinfo
 next-env.d.ts
 
-# build info
-*.tsbuildinfo
-
 # IDE
 .vscode/
 .idea/
@@ -50,25 +60,11 @@ next-env.d.ts
 *.swo
 *~
 
-# OS
-Thumbs.db
-
-# logs
-logs
-*.log
-
 # runtime data
 pids
 *.pid
 *.seed
 *.pid.lock
-
-# nyc test coverage
-.nyc_output
-
-# Dependency directories
-node_modules/
-jspm_packages/
 
 # Optional npm cache directory
 .npm
@@ -82,14 +78,8 @@ jspm_packages/
 # Yarn Integrity file
 .yarn-integrity
 
-# Temporary commit message file
+# Temporary files
 temp_commit_message.txt
-
-# Test artifacts
-/test-results/
-/playwright-report/
-/playwright/.cache/
-*.lcov
 
 # Cache directories
 .cache/
@@ -97,3 +87,6 @@ temp_commit_message.txt
 
 # Sentry
 .sentryclirc
+
+# Bundle analysis output
+analyze.log

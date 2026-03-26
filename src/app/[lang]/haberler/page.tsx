@@ -89,7 +89,7 @@ export default async function NewsListPage({ params: paramsPromise, searchParams
                     <nav className="mb-8 rounded-2xl border border-slate-200 bg-white/80 shadow-sm px-4 py-3 text-sm text-slate-600">
                         <ol className="flex flex-wrap items-center gap-2">
                             <li>
-                                <Link href="/" className="hover:text-fixral-primary transition-colors flex items-center gap-1">
+                                <Link href={`/${lang}`} className="hover:text-fixral-primary transition-colors flex items-center gap-1">
                                     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" className="w-4 h-4">
                                         <path fillRule="evenodd" d="M9.293 2.293a1 1 0 011.414 0l7 7A1 1 0 0117.414 11H16v5a2 2 0 01-2 2H6a2 2 0 01-2-2v-5H3.293a1 1 0 01-1.414-1.414l7-7z" clipRule="evenodd" />
                                     </svg>

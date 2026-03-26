@@ -104,6 +104,7 @@ export async function generateStaticParams() {
         logger.info('Generated static params for news articles', 'NEWS_DETAIL', { count: news.length });
 
         return news.map((item: any) => ({
+            lang: 'tr',
             slug: item.slug,
         }));
     } catch (error) {
@@ -269,7 +270,7 @@ export default async function NewsDetailPage({ params: paramsPromise }: PageProp
                     <nav className="mb-6 rounded-2xl border border-slate-200 bg-white/80 shadow-sm px-4 py-3 text-sm text-slate-600">
                         <ol className="flex flex-wrap items-center gap-2">
                             <li>
-                                <Link href="/" className="hover:text-fixral-primary transition-colors flex items-center gap-1">
+                                <Link href={`/${lang}`} className="hover:text-fixral-primary transition-colors flex items-center gap-1">
                                     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" className="w-4 h-4">
                                         <path fillRule="evenodd" d="M9.293 2.293a1 1 0 011.414 0l7 7A1 1 0 0117.414 11H16v5a2 2 0 01-2 2H6a2 2 0 01-2-2v-5H3.293a1 1 0 01-1.414-1.414l7-7z" clipRule="evenodd" />
                                     </svg>
@@ -355,7 +356,7 @@ export default async function NewsDetailPage({ params: paramsPromise }: PageProp
                                         {(news.relatedPortfolioIds as any[]).filter(Boolean).map((portfolio) => (
                                             <Link
                                                 key={portfolio._id}
-                                                href={`/portfolio/${portfolio.slug}`}
+                                                href={`/${lang}/portfolio/${portfolio.slug}`}
                                                 className="group relative h-48 rounded-xl overflow-hidden shadow-sm hover:shadow-md transition-all"
                                             >
                                                 <Image
@@ -414,7 +415,7 @@ export default async function NewsDetailPage({ params: paramsPromise }: PageProp
                                 <h3 className="text-sm font-semibold text-slate-400 uppercase tracking-wider mb-4">Bu Haberi Paylaş</h3>
                                 <div className="flex justify-center gap-4">
                                     <a
-                                        href={`https://twitter.com/intent/tweet?url=https://www.fixral.com/haberler/${news.slug}`}
+                                        href={`https://twitter.com/intent/tweet?url=${SITE_URL}/tr/haberler/${news.slug}`}
                                         target="_blank"
                                         rel="noopener noreferrer"
                                         className="w-10 h-10 bg-social-twitter text-white rounded-full flex items-center justify-center hover:opacity-90 transition-opacity"
@@ -422,7 +423,7 @@ export default async function NewsDetailPage({ params: paramsPromise }: PageProp
                                         <svg fill="currentColor" viewBox="0 0 24 24" className="w-5 h-5"><path d="M23.953 4.57a10 10 0 01-2.825.775 4.958 4.958 0 002.163-2.723c-.951.555-2.005.959-3.127 1.184a4.92 4.92 0 00-8.384 4.482C7.69 8.095 4.067 6.13 1.64 3.162a4.822 4.822 0 00-.666 2.475c0 1.71.87 3.213 2.188 4.096a4.904 4.904 0 01-2.228-.616v.06a4.923 4.923 0 003.946 4.84 4.996 4.996 0 01-2.212.085 4.936 4.936 0 004.604 3.417 9.867 9.867 0 01-6.102 2.105c-.39 0-.779-.023-1.17-.067a13.995 13.995 0 007.557 2.209c9.053 0 13.998-7.496 13.998-13.985 0-.21 0-.42-.015-.63A9.935 9.935 0 0024 4.59z" /></svg>
                                     </a>
                                     <a
-                                        href={`https://www.facebook.com/sharer/sharer.php?u=https://www.fixral.com/haberler/${news.slug}`}
+                                        href={`https://www.facebook.com/sharer/sharer.php?u=${SITE_URL}/tr/haberler/${news.slug}`}
                                         target="_blank"
                                         rel="noopener noreferrer"
                                         className="w-10 h-10 bg-social-facebook text-white rounded-full flex items-center justify-center hover:opacity-90 transition-opacity"
@@ -430,7 +431,7 @@ export default async function NewsDetailPage({ params: paramsPromise }: PageProp
                                         <svg fill="currentColor" viewBox="0 0 24 24" className="w-5 h-5"><path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z" /></svg>
                                     </a>
                                     <a
-                                        href={`https://www.linkedin.com/sharing/share-offsite/?url=https://www.fixral.com/haberler/${news.slug}`}
+                                        href={`https://www.linkedin.com/sharing/share-offsite/?url=${SITE_URL}/tr/haberler/${news.slug}`}
                                         target="_blank"
                                         rel="noopener noreferrer"
                                         className="w-10 h-10 bg-social-linkedin text-white rounded-full flex items-center justify-center hover:opacity-90 transition-opacity"

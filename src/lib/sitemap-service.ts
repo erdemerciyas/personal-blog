@@ -4,7 +4,6 @@ import SiteSettings from '@/models/SiteSettings';
 import News from '@/models/News';
 import Product from '@/models/Product';
 import Portfolio from '@/models/Portfolio';
-import Service from '@/models/Service';
 import fs from 'fs';
 import path from 'path';
 import os from 'os';
@@ -17,7 +16,7 @@ export interface SitemapURL {
 }
 
 export class SitemapService {
-    private static readonly SUPPORTED_LOCALES = ['tr'];
+    private static readonly SUPPORTED_LOCALES = ['tr', 'es'];
 
     private static readonly STATIC_PAGES = [
         { path: '', changefreq: 'daily' as const, priority: 1.0 },
@@ -50,18 +49,23 @@ export class SitemapService {
             });
         }
 
-        // 3. Add News (Blog Posts)
+        // 3. Add News (locale-specific paths: haberler for TR, noticias for ES)
         try {
             const posts = await News.find({ status: 'published' }).select('slug updatedAt').lean();
             posts.forEach((post: any) => {
-                for (const locale of this.SUPPORTED_LOCALES) {
-                    urls.push({
-                        loc: `${baseUrl}/${locale}/haberler/${post.slug}`,
-                        lastmod: post.updatedAt ? new Date(post.updatedAt).toISOString() : new Date().toISOString(),
-                        changefreq: 'weekly',
-                        priority: 0.7
-                    });
-                }
+                const lastmod = post.updatedAt ? new Date(post.updatedAt).toISOString() : new Date().toISOString();
+                urls.push({
+                    loc: `${baseUrl}/tr/haberler/${post.slug}`,
+                    lastmod,
+                    changefreq: 'weekly',
+                    priority: 0.7
+                });
+                urls.push({
+                    loc: `${baseUrl}/es/noticias/${post.slug}`,
+                    lastmod,
+                    changefreq: 'weekly',
+                    priority: 0.7
+                });
             });
         } catch (e) {
             console.error('Error fetching news for sitemap:', e);
@@ -101,19 +105,10 @@ export class SitemapService {
             console.error('Error fetching portfolio for sitemap:', e);
         }
 
-        // 6. Add Services
+        // 6. Services - no detail page exists, skip individual service URLs
         try {
-            const services = await Service.find({ isActive: true }).select('slug updatedAt').lean();
-            services.forEach((service: any) => {
-                for (const locale of this.SUPPORTED_LOCALES) {
-                    urls.push({
-                        loc: `${baseUrl}/${locale}/services/${service.slug}`,
-                        lastmod: service.updatedAt ? new Date(service.updatedAt).toISOString() : new Date().toISOString(),
-                        changefreq: 'monthly',
-                        priority: 0.7
-                    });
-                }
-            });
+            // Service detail pages (/services/[slug]) don't exist in the app router
+            // Only the listing page is included via STATIC_PAGES
         } catch (e) {
             console.error('Error fetching services for sitemap:', e);
         }

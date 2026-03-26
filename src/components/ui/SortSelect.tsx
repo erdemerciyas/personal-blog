@@ -1,9 +1,11 @@
 'use client';
 
 import { useRouter, useSearchParams } from 'next/navigation';
+import { useLocale } from '@/hooks/useLocale';
 
 export default function SortSelect() {
     const router = useRouter();
+    const lang = useLocale();
     const searchParams = useSearchParams()!;
     const currentSort = searchParams.get('sort') || 'dateDesc';
 
@@ -11,7 +13,7 @@ export default function SortSelect() {
         const params = new URLSearchParams(searchParams.toString());
         params.set('sort', e.target.value);
         params.set('page', '1'); // Reset pagination
-        router.push(`/products?${params.toString()}`);
+        router.push(`/${lang}/products?${params.toString()}`);
     };
 
     return (

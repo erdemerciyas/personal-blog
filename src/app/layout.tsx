@@ -10,7 +10,7 @@ import connectDB, { hasValidMongoUri } from '../lib/mongoose'
 import SiteSettings from '../models/SiteSettings'
 import Plugin from '../models/Plugin'
 import Script from 'next/script'
-// FloatingCta removed — project CTA is now in the header nav
+import { headers } from 'next/headers'
 import GlobalBreadcrumbsJsonLd from '../components/seo/GlobalBreadcrumbsJsonLd';
 import PageTransitionWrapper from '../components/PageTransitionWrapper';
 
@@ -91,6 +91,7 @@ export async function generateMetadata(): Promise<Metadata> {
         url: baseUrl,
         siteName: siteSettings.siteName,
         locale: 'tr_TR',
+        alternateLocale: ['es_ES'],
         type: 'website',
         images: [
           {
@@ -200,8 +201,11 @@ export default async function RootLayout({
   if (!gtmId) gtmId = ENV_GTM_ID || undefined;
 
 
+  const headersList = await headers();
+  const locale = headersList.get('x-locale') || 'tr';
+
   return (
-    <html lang="tr" className="scroll-smooth">
+    <html lang={locale} className="scroll-smooth">
       <head>
         {/* Performance and SEO meta tags */}
         <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />

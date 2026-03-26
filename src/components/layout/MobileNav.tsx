@@ -46,7 +46,7 @@ export default function MobileNav({
 }: MobileNavProps) {
     const { cartCount } = useCart();
     const { data: session } = useSession();
-    const currentLang = ['tr', 'en', 'es'].includes(pathname.split('/')[1]) ? pathname.split('/')[1] : 'tr';
+    const currentLang = ['tr', 'es'].includes(pathname.split('/')[1]) ? pathname.split('/')[1] : 'tr';
 
     const [searchQuery, setSearchQuery] = useState('');
     const searchInputRef = useRef<HTMLInputElement>(null);

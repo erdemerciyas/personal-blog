@@ -3,6 +3,7 @@
 import { useState, useMemo, useCallback, useEffect } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import type { PortfolioItem, Category } from '../types/portfolio';
+import { useLocale } from '@/hooks/useLocale';
 
 interface FilterState {
   search: string;
@@ -32,6 +33,7 @@ export function usePortfolioFilters(
 ): UsePortfolioFiltersReturn {
   const router = useRouter();
   const searchParams = useSearchParams();
+  const lang = useLocale();
 
   // Initialize filters from URL params
   const [filters, setFiltersState] = useState<FilterState>(() => {
@@ -97,7 +99,7 @@ export function usePortfolioFilters(
       params.set('sort', `${newFilters.sortBy}-${newFilters.sortOrder}`);
     }
 
-    const newURL = params.toString() ? `/portfolio?${params.toString()}` : '/portfolio';
+    const newURL = params.toString() ? `/${lang}/portfolio?${params.toString()}` : `/${lang}/portfolio`;
     router.push(newURL, { scroll: false });
   }, [router]);
 

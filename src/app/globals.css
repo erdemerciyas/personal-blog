@@ -146,8 +146,13 @@
 
 html {
   scroll-behavior: smooth;
-  scroll-padding-top: 80px;
-  /* Header yüksekliği için */
+  scroll-padding-top: 120px;
+}
+
+@media (min-width: 1024px) {
+  html {
+    scroll-padding-top: 130px;
+  }
 }
 
 /* Smooth scrolling for anchor links */

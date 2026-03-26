@@ -28,13 +28,11 @@ try {
 
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-  // Determine strictness based on environment
-  // In CI/Vercel builds we enforce lint and type-check errors to fail the build
   eslint: {
-    ignoreDuringBuilds: true,
+    ignoreDuringBuilds: false,
   },
   typescript: {
-    ignoreBuildErrors: true,
+    ignoreBuildErrors: false,
   },
   // Vercel optimizations
   webpack: (config) => {

@@ -3,6 +3,7 @@
 import React, { useState } from 'react';
 import Image from 'next/image';
 import { motion } from 'framer-motion';
+import { usePathname } from 'next/navigation';
 import {
   PhotoIcon,
   CubeIcon
@@ -38,6 +39,8 @@ export default function ModernProjectCard({
 }: ModernProjectCardProps) {
   const [imageLoaded, setImageLoaded] = useState(false);
   const [imageError, setImageError] = useState(false);
+  const pathname = usePathname() || '';
+  const currentLang = ['tr', 'es'].includes(pathname.split('/')[1]) ? pathname.split('/')[1] : 'tr';
 
   const handleImageError = () => {
     setImageError(true);
@@ -77,7 +80,7 @@ export default function ModernProjectCard({
       className={`group relative bg-white rounded-3xl shadow hover:shadow-2xl border border-slate-200/70 overflow-hidden transition-all duration-500 flex flex-col h-full hover:-translate-y-1.5 cursor-pointer ${layout === 'masonry' ? 'break-inside-avoid mb-6' : ''
         }`}
       onClick={() => {
-        window.location.href = `/portfolio/${project.slug}`;
+        window.location.href = `/${currentLang}/portfolio/${project.slug}`;
       }}
     >
       {/* Featured Badge */}

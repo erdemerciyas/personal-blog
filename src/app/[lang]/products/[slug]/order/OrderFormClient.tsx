@@ -2,6 +2,7 @@
 
 import React, { useState } from 'react';
 import { useRouter } from 'next/navigation';
+import { useLocale } from '@/hooks/useLocale';
 
 interface ProductSummary {
   _id: string;
@@ -15,6 +16,7 @@ interface ProductSummary {
 
 export default function OrderFormClient({ product }: { product: ProductSummary }) {
   const router = useRouter();
+  const lang = useLocale();
   const [form, setForm] = useState({
     name: '',
     email: '',
@@ -69,7 +71,7 @@ export default function OrderFormClient({ product }: { product: ProductSummary }
       setSuccess('Siparişiniz onaylandı! E-posta ile bilgilendirme gönderildi.');
 
       setTimeout(() => {
-        router.replace(`/products/${product.slug}`);
+        router.replace(`/${lang}/products/${product.slug}`);
       }, 2000);
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Beklenmeyen bir hata oluştu');

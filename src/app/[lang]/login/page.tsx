@@ -5,12 +5,13 @@ import { signIn } from 'next-auth/react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import Link from 'next/link';
 import { toast } from 'react-hot-toast';
+import { useLocale } from '@/hooks/useLocale';
 
 export default function LoginPage() {
     const router = useRouter();
     const searchParams = useSearchParams();
-    // Prioritize query param callback, else default to /products as requested
-    const callbackUrl = searchParams?.get('callbackUrl') || '/products';
+    const lang = useLocale();
+    const callbackUrl = searchParams?.get('callbackUrl') || `/${lang}/products`;
 
     const [formData, setFormData] = useState({
         email: '',
@@ -83,7 +84,7 @@ export default function LoginPage() {
                         </div>
 
                         <div className="flex items-center justify-end">
-                            <Link href="/forgot-password" className="text-sm text-brand-primary-900 hover:underline">
+                            <Link href={`/${lang}/forgot-password`} className="text-sm text-brand-primary-900 hover:underline">
                                 Şifremi Unuttum
                             </Link>
                         </div>
@@ -98,7 +99,7 @@ export default function LoginPage() {
                     </form>
 
                     <div className="mt-6 pt-6 border-t border-slate-100 text-center text-sm text-slate-500">
-                        Hesabınız yok mu? <Link href="/register" className="text-brand-primary-900 font-bold hover:underline">Kayıt Ol</Link>
+                        Hesabınız yok mu? <Link href={`/${lang}/register`} className="text-brand-primary-900 font-bold hover:underline">Kayıt Ol</Link>
                     </div>
                 </div>
             </div>

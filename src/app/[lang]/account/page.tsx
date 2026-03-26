@@ -9,6 +9,7 @@ import { useCart } from '@/context/CartContext';
 import Image from 'next/image';
 import toast from 'react-hot-toast';
 import Swal from 'sweetalert2';
+import { useLocale } from '@/hooks/useLocale';
 
 // Simple Modal Component
 function Modal({ isOpen, onClose, title, children }: { isOpen: boolean; onClose: () => void; title: string; children: React.ReactNode }) {
@@ -33,6 +34,7 @@ function Modal({ isOpen, onClose, title, children }: { isOpen: boolean; onClose:
 export default function AccountPage() {
     const { data: session, status } = useSession();
     const router = useRouter();
+    const lang = useLocale();
     const [activeTab, setActiveTab] = useState('orders');
 
     // Orders Logic
@@ -333,7 +335,7 @@ export default function AccountPage() {
                 await addToCart(item.product._id, item.quantity);
             }
         }
-        router.push('/cart');
+        router.push(`/${lang}/cart`);
     };
 
     const handleCancelOrder = async () => {
@@ -455,7 +457,7 @@ export default function AccountPage() {
                                 <p className="text-slate-500 mb-6 max-w-sm mx-auto">
                                     Alışverişe başlayarak favori ürünlerinizi sipariş verebilirsiniz.
                                 </p>
-                                <Link href="/products" className="inline-block px-8 py-3 bg-brand-primary-900 text-white font-bold rounded-xl hover:bg-brand-primary-800 transition-colors">
+                                <Link href={`/${lang}/products`} className="inline-block px-8 py-3 bg-brand-primary-900 text-white font-bold rounded-xl hover:bg-brand-primary-800 transition-colors">
                                     Alışverişe Başla
                                 </Link>
                             </div>

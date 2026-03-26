@@ -4,10 +4,12 @@ import { useEffect } from 'react';
 import { useSession, signIn } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
+import { useLocale } from '@/hooks/useLocale';
 
 export default function CheckoutAuthPage() {
     const { data: session, status } = useSession();
     const router = useRouter();
+    const lang = useLocale();
 
     // Removed auto-redirect useEffect to allow user choice
 
@@ -31,13 +33,13 @@ export default function CheckoutAuthPage() {
 
                 <div className="flex flex-col sm:flex-row gap-4 justify-center">
                     <button
-                        onClick={() => router.push('/checkout/address')}
+                        onClick={() => router.push(`/${lang}/checkout/address`)}
                         className="px-8 py-3 bg-brand-primary-900 text-white font-bold rounded-xl hover:bg-brand-primary-800 transition-colors shadow-lg shadow-brand-primary-900/10"
                     >
                         Evet, Devam Et
                     </button>
                     <Link
-                        href="/api/auth/signout?callbackUrl=/checkout/auth"
+                        href={`/api/auth/signout?callbackUrl=/${lang}/checkout/auth`}
                         className="px-8 py-3 bg-white border border-slate-300 text-slate-700 font-bold rounded-xl hover:bg-slate-50 transition-colors"
                     >
                         Farklı Hesapla Giriş Yap
@@ -65,10 +67,9 @@ export default function CheckoutAuthPage() {
                             email,
                             password,
                             redirect: false,
-                            callbackUrl: '/checkout/address'
+                            callbackUrl: `/${lang}/checkout/address`
                         });
-                        // Manual redirect after successful sign in to update state
-                        router.push('/checkout/address');
+                        router.push(`/${lang}/checkout/address`);
                     }}
                     className="space-y-4"
                 >
@@ -84,7 +85,7 @@ export default function CheckoutAuthPage() {
                         Giriş Yap ve Devam Et
                     </button>
                     <div className="text-center text-sm text-slate-500">
-                        Hesabınız yok mu? <Link href="/register?redirect=/checkout/auth" className="text-brand-primary-900 font-bold hover:underline">Kayıt Ol</Link>
+                        Hesabınız yok mu? <Link href={`/${lang}/register?redirect=/${lang}/checkout/auth`} className="text-brand-primary-900 font-bold hover:underline">Kayıt Ol</Link>
                     </div>
                 </form>
             </div>
@@ -97,7 +98,7 @@ export default function CheckoutAuthPage() {
                 </p>
 
                 <button
-                    onClick={() => router.push('/checkout/address')}
+                    onClick={() => router.push(`/${lang}/checkout/address`)}
                     className="w-full py-3 bg-white border-2 border-slate-900 text-slate-900 font-bold rounded-xl hover:bg-slate-50 transition-colors"
                 >
                     Misafir Olarak Devam Et

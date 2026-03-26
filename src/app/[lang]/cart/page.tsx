@@ -5,9 +5,11 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { TrashIcon, MinusIcon, PlusIcon, ShoppingBagIcon } from '@heroicons/react/24/outline';
 import dynamic from 'next/dynamic';
+import { useLocale } from '@/hooks/useLocale';
 
 const CartPage = () => {
     const { cart, loading, updateQuantity, removeFromCart, cartTotal } = useCart();
+    const lang = useLocale();
 
     if (loading) {
         return (
@@ -59,7 +61,7 @@ const CartPage = () => {
                         <p className="text-slate-500 mb-8 max-w-sm mx-auto">
                             Henüz sepetinize bir ürün eklemediniz. Hemen alışverişe başlayın!
                         </p>
-                        <Link href="/products" className="inline-block px-8 py-3 bg-brand-primary-900 text-white rounded-xl font-bold hover:bg-brand-primary-800 transition-colors shadow-lg shadow-brand-primary-900/20">
+                        <Link href={`/${lang}/products`} className="inline-block px-8 py-3 bg-brand-primary-900 text-white rounded-xl font-bold hover:bg-brand-primary-800 transition-colors shadow-lg shadow-brand-primary-900/20">
                             Ürünleri Keşfet
                         </Link>
                     </div>
@@ -82,7 +84,7 @@ const CartPage = () => {
                                     {/* Content */}
                                     <div className="flex-1 flex flex-col sm:flex-row justify-between">
                                         <div className="flex-1 mr-4">
-                                            <Link href={`/products/${item.product.slug}`} className="font-bold text-slate-900 hover:text-brand-primary-700 transition-colors line-clamp-2 mb-2 text-lg">
+                                            <Link href={`/${lang}/products/${item.product.slug}`} className="font-bold text-slate-900 hover:text-brand-primary-700 transition-colors line-clamp-2 mb-2 text-lg">
                                                 {item.product.title}
                                             </Link>
                                             <div className="text-sm font-medium text-slate-500 mb-4 bg-slate-50 inline-block px-2 py-1 rounded-md border border-slate-100">
@@ -163,7 +165,7 @@ const CartPage = () => {
                                     </div>
                                 </div>
 
-                                <Link href="/checkout/auth" className="block w-full py-4 bg-brand-primary-900 text-white text-center font-bold rounded-xl hover:bg-brand-primary-800 transition-all shadow-lg shadow-brand-primary-900/20 hover:shadow-brand-primary-900/40 transform active:scale-[0.98]">
+                                <Link href={`/${lang}/checkout/auth`} className="block w-full py-4 bg-brand-primary-900 text-white text-center font-bold rounded-xl hover:bg-brand-primary-800 transition-all shadow-lg shadow-brand-primary-900/20 hover:shadow-brand-primary-900/40 transform active:scale-[0.98]">
                                     Alışverişi Tamamla
                                 </Link>
 

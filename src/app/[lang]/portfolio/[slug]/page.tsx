@@ -69,7 +69,7 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
 }
 
 export default async function PortfolioDetailPage({ params }: PageProps) {
-  const { slug } = await params;
+  const { slug, lang } = await params;
   const [portfolioItem, relatedProjects] = await Promise.all([
     getPortfolioItem(slug),
     getRelatedProjects(slug),
@@ -84,6 +84,7 @@ export default async function PortfolioDetailPage({ params }: PageProps) {
       portfolioItem={portfolioItem}
       relatedProjects={relatedProjects}
       slug={slug}
+      lang={lang || 'tr'}
     />
   );
 }

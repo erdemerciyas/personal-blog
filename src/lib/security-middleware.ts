@@ -11,7 +11,6 @@ import { logger } from '@/core/lib/logger';
 export interface SecurityConfig {
   requireAuth?: boolean;
   requireAdmin?: boolean;
-  rateLimitType?: string;
   validateInput?: boolean;
   logRequests?: boolean;
 }
@@ -196,8 +195,7 @@ export const SecurityConfigs = {
     requireAuth: true,
     requireAdmin: false,
     validateInput: true,
-    logRequests: true,
-    rateLimitType: 'STRICT'
+    logRequests: true
   }
 };
 

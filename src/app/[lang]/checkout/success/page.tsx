@@ -5,8 +5,10 @@ import Link from 'next/link';
 import { CheckCircleIcon } from '@heroicons/react/24/solid';
 import { useEffect } from 'react';
 import { useCart } from '@/context/CartContext';
+import { useLocale } from '@/hooks/useLocale';
 
 export default function CheckoutSuccessPage() {
+    const lang = useLocale();
     const searchParams = useSearchParams();
     const orderId = searchParams?.get('orderId');
 
@@ -17,7 +19,7 @@ export default function CheckoutSuccessPage() {
 
         // Auto redirect after 15 seconds
         const timer = setTimeout(() => {
-            window.location.href = '/products';
+            window.location.href = `/${lang}/products`;
         }, 15000);
 
         return () => clearTimeout(timer);
@@ -58,10 +60,10 @@ export default function CheckoutSuccessPage() {
             </div>
 
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
-                <Link href="/" className="px-8 py-3.5 bg-brand-primary-900 text-white font-bold rounded-xl hover:bg-brand-primary-800 transition-all shadow-lg shadow-brand-primary-900/20 active:scale-95">
+                <Link href={`/${lang}`} className="px-8 py-3.5 bg-brand-primary-900 text-white font-bold rounded-xl hover:bg-brand-primary-800 transition-all shadow-lg shadow-brand-primary-900/20 active:scale-95">
                     Anasayfaya Dön
                 </Link>
-                <Link href="/products" className="px-8 py-3.5 bg-white border border-slate-200 text-slate-700 font-bold rounded-xl hover:bg-slate-50 transition-colors active:scale-95">
+                <Link href={`/${lang}/products`} className="px-8 py-3.5 bg-white border border-slate-200 text-slate-700 font-bold rounded-xl hover:bg-slate-50 transition-colors active:scale-95">
                     Alışverişe Devam Et
                 </Link>
             </div>

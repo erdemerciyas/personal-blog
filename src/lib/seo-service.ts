@@ -25,15 +25,17 @@ export async function generateNewsSitemapEntries(): Promise<
       .select('slug updatedAt publishedAt')
       .lean();
 
+    const siteUrl = (process.env.NEXT_PUBLIC_APP_URL || 'https://www.fixral.com').replace(/\/$/, '');
+
     const entries = articles.flatMap((article: any) => [
       {
-        url: `https://www.fixral.com/tr/haberler/${article.slug}`,
+        url: `${siteUrl}/tr/haberler/${article.slug}`,
         lastmod: new Date(article.updatedAt || article.publishedAt).toISOString().split('T')[0],
         changefreq: 'weekly',
         priority: 0.8,
       },
       {
-        url: `https://www.fixral.com/es/noticias/${article.slug}`,
+        url: `${siteUrl}/es/noticias/${article.slug}`,
         lastmod: new Date(article.updatedAt || article.publishedAt).toISOString().split('T')[0],
         changefreq: 'weekly',
         priority: 0.8,
@@ -83,34 +85,34 @@ ${entries
  * Generate JSON-LD NewsArticle schema
  */
 export function generateNewsArticleSchema(article: any, language: 'tr' | 'es' = 'tr') {
-  const translation = article.translations[language];
+  const translation = article.translations?.[language];
+  const siteUrl = (process.env.NEXT_PUBLIC_APP_URL || 'https://www.fixral.com').replace(/\/$/, '');
 
   return {
     '@context': 'https://schema.org',
     '@type': 'NewsArticle',
-    headline: translation.title,
-    description: translation.metaDescription,
-    image: article.featuredImage.url,
-    datePublished: article.publishedAt?.toISOString() || article.createdAt.toISOString(),
-    dateModified: article.updatedAt.toISOString(),
+    headline: translation?.title || '',
+    description: translation?.metaDescription || '',
+    image: article.featuredImage?.url || '',
+    datePublished: article.publishedAt?.toISOString() || article.createdAt?.toISOString(),
+    dateModified: article.updatedAt?.toISOString(),
     author: {
       '@type': 'Person',
-      name: article.author.name,
-      email: article.author.email,
+      name: article.author?.name || 'Fixral',
     },
     publisher: {
       '@type': 'Organization',
       name: 'Fixral',
       logo: {
         '@type': 'ImageObject',
-        url: 'https://www.fixral.com/logo.png',
+        url: `${siteUrl}/logo.png`,
       },
     },
     mainEntityOfPage: {
       '@type': 'WebPage',
-      '@id': `https://www.fixral.com/${language === 'tr' ? 'tr/haberler' : 'es/noticias'}/${article.slug}`,
+      '@id': `${siteUrl}/${language === 'tr' ? 'tr/haberler' : 'es/noticias'}/${article.slug}`,
     },
-    keywords: translation.keywords.join(', '),
+    keywords: translation?.keywords?.join(', ') || '',
   };
 }
 
@@ -118,20 +120,21 @@ export function generateNewsArticleSchema(article: any, language: 'tr' | 'es' = 
  * Generate Open Graph meta tags
  */
 export function generateOpenGraphTags(article: any, language: 'tr' | 'es' = 'tr') {
-  const translation = article.translations[language];
-  const url = `https://www.fixral.com/${language === 'tr' ? 'tr/haberler' : 'es/noticias'}/${article.slug}`;
+  const translation = article.translations?.[language];
+  const siteUrl = (process.env.NEXT_PUBLIC_APP_URL || 'https://www.fixral.com').replace(/\/$/, '');
+  const url = `${siteUrl}/${language === 'tr' ? 'tr/haberler' : 'es/noticias'}/${article.slug}`;
 
   return {
-    'og:title': translation.title,
-    'og:description': translation.metaDescription,
-    'og:image': article.featuredImage.url,
+    'og:title': translation?.title || '',
+    'og:description': translation?.metaDescription || '',
+    'og:image': article.featuredImage?.url || '',
     'og:url': url,
     'og:type': 'article',
     'og:site_name': 'Fixral',
-    'article:published_time': article.publishedAt?.toISOString() || article.createdAt.toISOString(),
-    'article:modified_time': article.updatedAt.toISOString(),
-    'article:author': article.author.name,
-    'article:tag': translation.keywords.join(', '),
+    'article:published_time': article.publishedAt?.toISOString() || article.createdAt?.toISOString(),
+    'article:modified_time': article.updatedAt?.toISOString(),
+    'article:author': article.author?.name || '',
+    'article:tag': translation?.keywords?.join(', ') || '',
   };
 }
 
@@ -139,13 +142,13 @@ export function generateOpenGraphTags(article: any, language: 'tr' | 'es' = 'tr'
  * Generate Twitter Card meta tags
  */
 export function generateTwitterCardTags(article: any, language: 'tr' | 'es' = 'tr') {
-  const translation = article.translations[language];
+  const translation = article.translations?.[language];
 
   return {
     'twitter:card': 'summary_large_image',
-    'twitter:title': translation.title,
-    'twitter:description': translation.metaDescription,
-    'twitter:image': article.featuredImage.url,
+    'twitter:title': translation?.title || '',
+    'twitter:description': translation?.metaDescription || '',
+    'twitter:image': article.featuredImage?.url || '',
     'twitter:site': '@fixral',
   };
 }

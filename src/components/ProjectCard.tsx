@@ -1,15 +1,19 @@
+'use client';
+
 import React from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
 import { ProjectSummary } from '@/types/portfolio';
 import { ArrowRightIcon } from '@heroicons/react/24/outline';
 import HTMLContent from './HTMLContent';
+import { useLocale } from '@/hooks/useLocale';
 
 interface ProjectCardProps {
   project: ProjectSummary;
 }
 
 const ProjectCard: React.FC<ProjectCardProps> = ({ project }) => {
+  const lang = useLocale();
   const handleImageError = (e: React.SyntheticEvent<HTMLImageElement>) => {
     e.currentTarget.style.display = 'none';
     const parent = e.currentTarget.parentElement;
@@ -30,7 +34,7 @@ const ProjectCard: React.FC<ProjectCardProps> = ({ project }) => {
   };
 
   return (
-    <Link href={`/portfolio/${project.slug}`} legacyBehavior>
+    <Link href={`/${lang}/portfolio/${project.slug}`} legacyBehavior>
       <a className="card group block overflow-hidden transform transition-all duration-300 hover:shadow-2xl hover:-translate-y-1">
         <div className="relative w-full h-64 overflow-hidden rounded-t-xl">
           <Image 
