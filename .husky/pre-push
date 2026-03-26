@@ -1,9 +1,5 @@
-#!/usr/bin/env sh
-. "$(dirname -- "$0")/_/husky.sh"
+echo "Pre-push hook running..."
 
-echo "🚀 Pre-push hook çalıştırılıyor..."
-
-# Build test
 npm run build
 
-echo "✅ Pre-push hook tamamlandı!" 
+echo "Pre-push hook completed!"
